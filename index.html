@@ -19,7 +19,7 @@
     document.getElementById('searchForm').addEventListener('submit', function(event) {
       event.preventDefault();
       const email = document.getElementById('email').value;
-      fetch(`https://script.google.com/macros/s/AKfycbz7vAOIMgFCkOvhEHy9lYme_V8AOTRk9qJThRmB9uHFjeA7ZrtIBJZenlNao5wTj2BL/exec?email=${encodeURIComponent(email)}`)
+      fetch(`https://script.google.com/macros/s/AKfycbxI5iXhee1hqMrN8172pCvOLObCRrkyqZCCmT9xRL0nD8FavK3Lu0xUTVqpKwB97pP9/exec?email=${encodeURIComponent(email)}`)
         .then(response => response.json())
         .then(data => {
           const resultsDiv = document.getElementById('results');
