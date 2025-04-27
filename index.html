@@ -3,40 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ver Correos</title>
+    <title>Correo Buscador</title>
 </head>
 <body>
-    <h2>Buscar Correos Recibidos</h2>
-    <form id="search-form">
-        <label for="email">Escribe el correo a buscar:</label>
-        <input type="email" id="email" name="email" required>
-        <button type="submit">Buscar</button>
-    </form>
-    <div id="result"></div>
+    <h1>Buscar Correos</h1>
+    <input type="text" id="email" placeholder="Introduce un correo">
+    <button onclick="buscarCorreos()">Buscar</button>
+    <div id="resultados"></div>
 
     <script>
-        document.getElementById('search-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            fetch(`https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=${email}`)
-            .then(response => response.json())
-            .then(data => {
-                let output = '';
-                if (data.length > 0) {
-                    data.forEach(message => {
-                        output += `<h3>Asunto: ${message.subject}</h3>`;
-                        output += `<p>${message.body}</p>`;
-                    });
-                } else {
-                    output = 'No se encontraron correos para este correo electrónico.';
-                }
-                document.getElementById('result').innerHTML = output;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('result').innerHTML = 'Error al recuperar los mensajes.';
-            });
-        });
+        function buscarCorreos() {
+            var email = document.getElementById('email').value; // Obtener correo del input
+
+            // URL de tu Google Apps Script
+            var url = `https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=${email}`;
+
+            // Hacer la solicitud para obtener los correos
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var resultadosDiv = document.getElementById('resultados');
+                    resultadosDiv.innerHTML = ''; // Limpiar resultados previos
+
+                    if (data.length > 0) {
+                        data.forEach(message => {
+                            var messageElement = document.createElement('div');
+                            messageElement.innerHTML = `
+                                <h3>${message.subject}</h3>
+                                <p>${message.body}</p>
+                            `;
+                            resultadosDiv.appendChild(messageElement);
+                        });
+                    } else {
+                        resultadosDiv.innerHTML = 'No se encontraron correos.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     </script>
 </body>
 </html>
