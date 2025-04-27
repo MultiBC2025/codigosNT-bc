@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correo Buscador</title>
+    <title>Buscar Correos</title>
 </head>
 <body>
     <h1>Buscar Correos</h1>
@@ -29,8 +29,8 @@
                         data.forEach(message => {
                             var messageElement = document.createElement('div');
                             messageElement.innerHTML = `
-                                <h3>${message.subject}</h3>
-                                <p>${message.body}</p>
+                                <h3>${message.body}</h3>
+                                <p>${message.subject}</p>
                             `;
                             resultadosDiv.appendChild(messageElement);
                         });
@@ -40,6 +40,7 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    alert("Hubo un error al obtener los correos.");
                 });
         }
     </script>
