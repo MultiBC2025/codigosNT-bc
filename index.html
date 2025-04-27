@@ -3,33 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Buscar Código de Actualización</title>
+  <title>Correos Filtrados</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .email { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
+    .email h3 { margin: 0; }
+    .email p { margin: 5px 0; }
+    .email a { color: blue; }
+  </style>
 </head>
-<body style="font-family: Arial; text-align: center; margin-top: 100px;">
-  <h1>Consulta tu Código</h1>
-  <input type="email" id="correoCliente" placeholder="Escribe tu correo" style="padding: 10px; width: 300px;">
-  <br><br>
-  <button onclick="buscarCodigo()" style="padding: 10px 20px;">Buscar</button>
-
-  <h2 id="resultado" style="margin-top: 30px;"></h2>
+<body>
+  <h1>Correos Filtrados Recientes</h1>
+  <div id="emails-container"></div>
 
   <script>
-    const baseDatos = {
-      "cliente1@gmail.com": "Tu código Netflix es: 123456",
-      "cliente2@gmail.com": "Tu cuenta Disney fue actualizada.",
-      "cliente3@gmail.com": "Código Prime Video: 789012"
-    };
-
-    function buscarCodigo() {
-      const correo = document.getElementById("correoCliente").value.toLowerCase();
-      const resultado = document.getElementById("resultado");
-
-      if (baseDatos[correo]) {
-        resultado.innerText = baseDatos[correo];
-      } else {
-        resultado.innerText = "No hay actualizaciones disponibles para este correo.";
-      }
-    }
+    // Cargar el archivo JSON desde el repositorio GitHub
+    fetch('https://raw.githubusercontent.com/tu_usuario/tu_repositorio/main/emails.json')
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById('emails-container');
+        data.forEach(email => {
+          const emailDiv = document.createElement('div');
+          emailDiv.classList.add('email');
+          emailDiv.innerHTML = `
+            <h3>${email.subject}</h3>
+            <p><strong>De:</strong> ${email.sender}</p>
+            <p><strong>Fecha:</strong> ${email.date}</p>
+            <p>${email.content}</p>
+            <a href="${email.link}" target="_blank">Ver más</a>
+          `;
+          container.appendChild(emailDiv);
+        });
+      })
+      .catch(error => console.error('Error al cargar el archivo JSON:', error));
   </script>
 </body>
 </html>
