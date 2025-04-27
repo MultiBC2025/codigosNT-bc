@@ -1,48 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Correos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Correos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      margin: 10px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .results {
+      margin-top: 20px;
+      text-align: left;
+    }
+    .result-item {
+      margin: 10px 0;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    a {
+      text-decoration: none;
+      color: #007BFF;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
     <h1>Buscar Correos</h1>
-    <input type="text" id="email" placeholder="Introduce un correo">
-    <button onclick="buscarCorreos()">Buscar</button>
-    <div id="resultados"></div>
+    <input type="text" id="email" placeholder="Ingresa el correo para buscar mensajes">
+    <button onclick="searchEmails()">Buscar</button>
+    
+    <div class="results" id="results"></div>
+  </div>
 
-    <script>
-        function buscarCorreos() {
-            var email = document.getElementById('email').value; // Obtener correo del input
+  <script>
+    function searchEmails() {
+      var email = document.getElementById('email').value;
+      if (!email) {
+        alert('Por favor ingrese un correo electrónico.');
+        return;
+      }
 
-            // URL de tu Google Apps Script
-            var url = `https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=${email}`;
+      var url = 'https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=' + encodeURIComponent(email);
 
-            // Hacer la solicitud para obtener los correos
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    var resultadosDiv = document.getElementById('resultados');
-                    resultadosDiv.innerHTML = ''; // Limpiar resultados previos
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          var resultsDiv = document.getElementById('results');
+          resultsDiv.innerHTML = ''; // Limpiar resultados previos
 
-                    if (data.length > 0) {
-                        data.forEach(message => {
-                            var messageElement = document.createElement('div');
-                            messageElement.innerHTML = `
-                                <h3>${message.body}</h3>
-                                <p>${message.subject}</p>
-                            `;
-                            resultadosDiv.appendChild(messageElement);
-                        });
-                    } else {
-                        resultadosDiv.innerHTML = 'No se encontraron correos.';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("Hubo un error al obtener los correos.");
-                });
-        }
-    </script>
+          if (data.length === 0) {
+            resultsDiv.innerHTML = 'No se encontraron correos para este email.';
+          } else {
+            data.forEach(function(message) {
+              var messageDiv = document.createElement('div');
+              messageDiv.classList.add('result-item');
+              
+              // Mostrar solo el asunto y un enlace al correo
+              var messageLink = document.createElement('a');
+              messageLink.href = message.link;
+              messageLink.target = '_blank';
+              messageLink.textContent = message.subject;
+              
+              messageDiv.appendChild(messageLink);
+              resultsDiv.appendChild(messageDiv);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Hubo un error al buscar los correos.');
+        });
+    }
+  </script>
 </body>
 </html>
