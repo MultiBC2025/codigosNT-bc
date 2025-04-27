@@ -5,21 +5,21 @@
   <title>Buscar Correos</title>
 </head>
 <body>
-  <h2>Buscar Correos de un Email</h2>
+  <h2>Buscar Correos de un Email1</h2>
   <form id="searchForm">
     <label for="email">Correo a buscar:</label>
     <input type="email" id="email" required>
     <button type="submit">Buscar</button>
   </form>
 
-  <h3>Resultados:</h3>
+  <h3>Resultados 1:</h3>
   <div id="results"></div>
 
   <script>
     document.getElementById('searchForm').addEventListener('submit', function(event) {
       event.preventDefault();
       const email = document.getElementById('email').value;
-      fetch(`https://script.google.com/macros/s/AKfycbxI5iXhee1hqMrN8172pCvOLObCRrkyqZCCmT9xRL0nD8FavK3Lu0xUTVqpKwB97pP9/exec?email=${encodeURIComponent(email)}`)
+      fetch(`https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=${encodeURIComponent(email)}`)
         .then(response => response.json())
         .then(data => {
           const resultsDiv = document.getElementById('results');
