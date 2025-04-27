@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Código de Actualización</title>
+</head>
+<body style="font-family: Arial; text-align: center; margin-top: 100px;">
+  <h1>Consulta tu Código</h1>
+  <input type="email" id="correoCliente" placeholder="Escribe tu correo" style="padding: 10px; width: 300px;">
+  <br><br>
+  <button onclick="buscarCodigo()" style="padding: 10px 20px;">Buscar</button>
+
+  <h2 id="resultado" style="margin-top: 30px;"></h2>
+
+  <script>
+    const baseDatos = {
+      "cliente1@gmail.com": "Tu código Netflix es: 123456",
+      "cliente2@gmail.com": "Tu cuenta Disney fue actualizada.",
+      "cliente3@gmail.com": "Código Prime Video: 789012"
+    };
+
+    function buscarCodigo() {
+      const correo = document.getElementById("correoCliente").value.toLowerCase();
+      const resultado = document.getElementById("resultado");
+
+      if (baseDatos[correo]) {
+        resultado.innerText = baseDatos[correo];
+      } else {
+        resultado.innerText = "No hay actualizaciones disponibles para este correo.";
+      }
+    }
+  </script>
+</body>
+</html>
