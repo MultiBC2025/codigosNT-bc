@@ -1,36 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Buscar Correos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Correos</title>
 </head>
 <body>
-  <h2>Buscar Correos de un Email1</h2>
-  <form id="searchForm">
-    <label for="email">Correo a buscar:</label>
-    <input type="email" id="email" required>
-    <button type="submit">Buscar</button>
-  </form>
+    <h2>Buscar Correos Recibidos</h2>
+    <form id="search-form">
+        <label for="email">Escribe el correo a buscar:</label>
+        <input type="email" id="email" name="email" required>
+        <button type="submit">Buscar</button>
+    </form>
+    <div id="result"></div>
 
-  <h3>Resultados 1:</h3>
-  <div id="results"></div>
-
-  <script>
-    document.getElementById('searchForm').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const email = document.getElementById('email').value;
-      fetch(`https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=${encodeURIComponent(email)}`)
-        .then(response => response.json())
-        .then(data => {
-          const resultsDiv = document.getElementById('results');
-          resultsDiv.innerHTML = '';
-          data.forEach(item => {
-            const div = document.createElement('div');
-            div.innerHTML = `<strong>${item.subject}</strong> - ${item.date} <br> <a href="${item.link}" target="_blank">Ver Mensaje</a><br><hr>`;
-            resultsDiv.appendChild(div);
-          });
+    <script>
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            fetch(`https://script.google.com/macros/s/AKfycbwK4XeqWePZr7Rtx9kjZiqKyrQ83jYqWtJjCEZ3-VmEPOc-Lm3w2pJqLGMi1GYbM3pW/exec?email=${email}`)
+            .then(response => response.json())
+            .then(data => {
+                let output = '';
+                if (data.length > 0) {
+                    data.forEach(message => {
+                        output += `<h3>Asunto: ${message.subject}</h3>`;
+                        output += `<p>${message.body}</p>`;
+                    });
+                } else {
+                    output = 'No se encontraron correos para este correo electrónico.';
+                }
+                document.getElementById('result').innerHTML = output;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'Error al recuperar los mensajes.';
+            });
         });
-    });
-  </script>
+    </script>
 </body>
 </html>
