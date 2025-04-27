@@ -3,40 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Correos Filtrados 1</title>
+  <title>Buscar Correos</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .email { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
-    .email h3 { margin: 0; }
-    .email p { margin: 5px 0; }
-    .email a { color: blue; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 100%;
+      max-width: 400px;
+    }
+    #resultados {
+      margin-top: 20px;
+    }
+    .mensaje {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
   </style>
+  <script>
+    function buscarCorreo() {
+      const correo = document.getElementById("correo").value;
+
+      fetch(https://script.google.com/macros/s/AKfycbzWu-hOnWj-IA3h_-YSURmBc08OURKzmtxe96yjy3WVsL2Pvv-6ODvSIdzuaJgNhK8kmQ/exec)
+        .then(response => response.json())
+        .then(data => {
+          const resultados = data.filter(correoData => correoData.body.includes(correo));
+          let contenido = "";
+          resultados.forEach(c => {
+            contenido += `<div class="mensaje">
+                            <h3>${c.subject}</h3>
+                            <p>${c.body}</p>
+                            <p><em>Recibido: ${c.date}</em></p>
+                          </div>`;
+          });
+          document.getElementById("resultados").innerHTML = contenido || "<p>No se encontraron correos.</p>";
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          document.getElementById("resultados").innerHTML = "<p>Hubo un error al buscar los correos.</p>";
+        });
+    }
+  </script>
 </head>
 <body>
-  <h1>Correos Filtrados Recientes</h1>
-  <div id="emails-container"></div>
-
-  <script>
-    // Cargar el archivo JSON desde el repositorio GitHub
-    fetch('https://raw.githubusercontent.com/tu_usuario/tu_repositorio/main/emails.json')
-      .then(response => response.json())
-      .then(data => {
-        const container = document.getElementById('emails-container');
-        data.forEach(email => {
-          const emailDiv = document.createElement('div');
-          emailDiv.classList.add('email');
-          emailDiv.innerHTML = `
-            <h3>${email.subject}</h3>
-            <p><strong>De:</strong> ${email.sender}</p>
-            <p><strong>Fecha:</strong> ${email.date}</p>
-            <p>${email.content}</p>
-            <a href="${email.link}" target="_blank">Ver más</a>
-          `;
-          container.appendChild(emailDiv);
-        });
-      })
-      .catch(error => console.error('Error al cargar el archivo JSON:', error));
-  </script>
+  <h1>Buscar Correos Recientes</h1>
+  <p>Escribe el correo para buscar mensajes.</p>
+  <input type="text" id="correo" placeholder="Escribe el correo a buscar">
+  <button onclick="buscarCorreo()">Buscar Correos</button>
+  <div id="resultados"></div>
 </body>
 </html>
- 
