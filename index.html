@@ -9,20 +9,21 @@
     <h1>Correos Recientes de Yopmail</h1>
     <div id="rss-feed"></div>
 
+    <!-- Aquí se mostrará el iframe cuando el usuario haga clic en un correo -->
+    <div id="correo-detalle" style="display:none;">
+        <iframe id="correo-frame" width="100%" height="500px"></iframe>
+    </div>
+
     <script>
-        // URL del RSS Feed de Yopmail
         const rssUrl = 'https://yopmail.com/rss?login=mayornetsa&h=3741e98f272043bb890d8f09fb6a3ada';
 
-        // Función para obtener y mostrar los correos
         async function fetchRSS() {
             try {
-                // Usamos un CORS proxy para evitar problemas de CORS
                 const proxyUrl = 'https://api.allorigins.win/get?url=';
                 const response = await fetch(proxyUrl + encodeURIComponent(rssUrl));
                 const data = await response.json();
                 const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
 
-                // Extraemos los items (correos)
                 const items = rssData.querySelectorAll('item');
                 let html = '<ul>';
 
@@ -31,10 +32,9 @@
                     const link = item.querySelector('link').textContent;
                     const description = item.querySelector('description').textContent;
 
-                    // Construir el HTML para cada correo
                     html += `
                         <li>
-                            <strong><a href="${link}" target="_blank">${title}</a></strong><br>
+                            <strong><a href="javascript:void(0);" onclick="verCorreo('${link}')">${title}</a></strong><br>
                             <p>${description}</p>
                         </li>
                     `;
@@ -48,7 +48,13 @@
             }
         }
 
-        // Llamar a la función para cargar el RSS al cargar la página
+        // Función para mostrar el correo en un iframe
+        function verCorreo(link) {
+            document.getElementById('rss-feed').style.display = 'none';
+            document.getElementById('correo-detalle').style.display = 'block';
+            document.getElementById('correo-frame').src = link;
+        }
+
         fetchRSS();
     </script>
 </body>
