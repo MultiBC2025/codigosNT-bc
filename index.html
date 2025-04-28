@@ -1,61 +1,172 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Bandeja de Entrada de Yopmail</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Correos de Netflix</title>
+  <style>
+    /* Estilos CSS */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .search-container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    #search-email {
+      padding: 10px;
+      width: 60%;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .loading {
+      font-size: 18px;
+      color: #007BFF;
+      margin-top: 20px;
+    }
+
+    .results-container {
+      margin-top: 20px;
+    }
+
+    .result-item {
+      background-color: #f8f9fa;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .result-item h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .result-item p {
+      margin: 5px 0;
+    }
+
+    .result-item a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .result-item a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <h1>Correos Recientes de Yopmail</h1>
-    <div id="rss-feed"></div>
-
-    <!-- Aquí se mostrará el iframe cuando el usuario haga clic en un correo -->
-    <div id="correo-detalle" style="display:none;">
-        <iframe id="correo-frame" width="100%" height="500px"></iframe>
+  <div class="search-container">
+    <h1>Buscador de Correos NETFLIX</h1>
+    <div class="search-box">
+      <input type="text" id="search-email" placeholder="Escribe el correo (ejemplo@gmail.com)">
+      <button onclick="searchEmails()">Buscar</button>
     </div>
+    <div class="loading" id="loading" style="display: none;">Buscando correos...</div>
+    <div id="results"></div>
+  </div>
 
-    <script>
-        const rssUrl = 'https://yopmail.com/rss?login=mayornetsa&h=3741e98f272043bb890d8f09fb6a3ada';
+  <script>
+    // Lógica JavaScript
 
-        async function fetchRSS() {
-            try {
-                const proxyUrl = 'https://api.allorigins.win/get?url=';
-                const response = await fetch(proxyUrl + encodeURIComponent(rssUrl));
-                const data = await response.json();
-                const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
+    const feeds = {
+      "mayornetsa": "https://yopmail.com/rss?login=mayornetsa&h=3741e98f272043bb890d8f09fb6a3ada",
+      "example1": "https://yopmail.com/rss?login=example1&h=3741e98f272043bb890d8f09fb6a3ada",
+      "example2": "https://yopmail.com/rss?login=example2&h=3741e98f272043bb890d8f09fb6a3ada",
+      // Agrega más feeds aquí
+    };
 
-                const items = rssData.querySelectorAll('item');
-                let html = '<ul>';
+    function searchEmails() {
+      const email = document.getElementById('search-email').value.trim();
+      if (!email) {
+        alert("Por favor, ingresa un correo.");
+        return;
+      }
 
-                items.forEach(item => {
-                    const title = item.querySelector('title').textContent;
-                    const link = item.querySelector('link').textContent;
-                    const description = item.querySelector('description').textContent;
+      // Mostrar animación de carga
+      document.getElementById('loading').style.display = 'block';
+      document.getElementById('results').innerHTML = ''; // Limpiar resultados previos
 
-                    html += `
-                        <li>
-                            <strong><a href="javascript:void(0);" onclick="verCorreo('${link}')">${title}</a></strong><br>
-                            <p>${description}</p>
-                        </li>
-                    `;
-                });
+      const username = email.split('@')[0]; // Obtenemos solo la parte antes de '@'
 
-                html += '</ul>';
-                document.getElementById('rss-feed').innerHTML = html;
+      // Verificar si el correo ingresado tiene un feed disponible
+      if (feeds[username]) {
+        fetchRSS(feeds[username], email);
+      } else {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results').innerHTML = '<p>No se encontraron resultados para este correo.</p>';
+      }
+    }
 
-            } catch (error) {
-                console.error('Error al obtener el RSS:', error);
+    function fetchRSS(url, email) {
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(data, "text/xml");
+          const items = xmlDoc.getElementsByTagName('item');
+          
+          let resultsHTML = `<h2>Resultados para "${email}"</h2>`;
+
+          if (items.length > 0) {
+            for (let i = 0; i < items.length; i++) {
+              const title = items[i].getElementsByTagName('title')[0].textContent;
+              const link = items[i].getElementsByTagName('link')[0].textContent;
+              const description = items[i].getElementsByTagName('description')[0].textContent;
+
+              resultsHTML += `
+                <div class="result-item">
+                  <h3><a href="${link}" target="_blank">${title}</a></h3>
+                  <p>${description}</p>
+                </div>
+              `;
             }
-        }
+          } else {
+            resultsHTML += '<p>No se encontraron correos en este feed.</p>';
+          }
 
-        // Función para mostrar el correo en un iframe
-        function verCorreo(link) {
-            document.getElementById('rss-feed').style.display = 'none';
-            document.getElementById('correo-detalle').style.display = 'block';
-            document.getElementById('correo-frame').src = link;
-        }
-
-        fetchRSS();
-    </script>
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('results').innerHTML = resultsHTML;
+        })
+        .catch(error => {
+          document.getElementById('loading').style.display = 'none';
+          document.getElementById('results').innerHTML = '<p>Error al cargar los correos. Intenta nuevamente.</p>';
+        });
+    }
+  </script>
 </body>
 </html>
