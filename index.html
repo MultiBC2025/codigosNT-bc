@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Bandeja de Entrada - Yopmail</title>
+    <title>Bandeja de Entrada de Correos de Netflix</title>
     <style>
         /* General page styles */
         body {
@@ -15,7 +15,7 @@
         }
 
         header {
-            background: #007bff;
+            background: #39FF14; /* Neon green */
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -23,6 +23,8 @@
         }
 
         .main-container {
+            display: flex;
+            justify-content: space-between;
             width: 90%;
             max-width: 1200px;
             margin: 0 auto;
@@ -31,16 +33,17 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        h2 {
-            color: #007bff;
-            text-align: center;
-            margin-top: 20px;
+        .instructions {
+            width: 45%;
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #333;
         }
 
-        .instructions {
-            font-size: 1.1rem;
-            color: #555;
-            margin-bottom: 20px;
+        .instructions h3 {
+            color: #39FF14;
         }
 
         .search-container {
@@ -53,7 +56,7 @@
             padding: 10px;
             font-size: 1rem;
             width: 60%;
-            border: 2px solid #007bff;
+            border: 2px solid #39FF14;
             border-radius: 5px;
             margin-right: 10px;
         }
@@ -61,7 +64,7 @@
         .search-container button {
             padding: 10px 20px;
             font-size: 1rem;
-            background: #007bff;
+            background: #39FF14;
             color: white;
             border: none;
             border-radius: 5px;
@@ -69,11 +72,12 @@
         }
 
         .search-container button:hover {
-            background: #0056b3;
+            background: #28a745;
         }
 
         #rss-feed {
             margin-top: 20px;
+            width: 50%;
         }
 
         .correo-item {
@@ -92,40 +96,51 @@
         }
 
         footer {
-            text-align: center;
-            padding: 20px;
-            background: #007bff;
+            background: #39FF14;
             color: white;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 1rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        Bandeja de Entrada de Yopmail
+        Bandeja de Entrada de Correos de Netflix
     </header>
 
     <div class="main-container">
-        <h2>Bienvenido a tu Bandeja de Entrada de Yopmail</h2>
 
+        <!-- Instructions Section -->
         <div class="instructions">
-            <p>Usa el buscador para encontrar los correos que has recibido en tu cuenta de Yopmail. Solo debes escribir el nombre de la cuenta, y nosotros te mostraremos los correos recientes.</p>
-            <p>Ejemplo: Si tu cuenta es <strong>mayornetsa</strong>, solo escribe ese nombre en el buscador.</p>
+            <h3>Instrucciones</h3>
+            <p><strong>#1</strong> Ingresa la cuenta de Netflix en tu dispositivo y solicita el código desde la opción "Estoy de viaje" o "Actualizar hogar con Netflix".</p>
+            <p><strong>#2</strong> Digita el correo de tu cuenta Netflix en "Escribir Correo Aquí".</p>
+            <p><strong>#3</strong> Clic en el botón "Buscar" para obtener los correos correspondientes.</p>
+            <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
+
+            <h3>NOTA</h3>
+            <p><strong>#1</strong> Espera 2 o 3 minutos desde el envío del código y la consulta del correo.</p>
+            <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
+            <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
         </div>
 
-        <!-- Search Form -->
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Escribe tu correo de Yopmail...">
-            <button onclick="buscarCorreo()">Buscar Correos</button>
+        <!-- RSS Feed Section -->
+        <div>
+            <h2>Busca tus correos de Netflix</h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix...">
+                <button onclick="buscarCorreo()">Buscar Correos</button>
+            </div>
+            <div id="rss-feed"></div>
         </div>
-
-        <!-- RSS Feed Display -->
-        <div id="rss-feed"></div>
 
     </div>
+
+    <footer>
+        2024 Copyright Variedades y MultiEntretenimiento BC 2025
+    </footer>
 
     <script>
         // Configura los feeds RSS
