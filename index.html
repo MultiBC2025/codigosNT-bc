@@ -33,32 +33,20 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .instructions {
-            width: 45%;
-            background: #f7f7f7;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            color: #333;
-        }
-
-        .instructions h3 {
-            color: #39FF14;
-        }
-
         .search-container {
+            width: 65%;
             display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
+            flex-direction: column;
+            padding: 20px;
         }
 
         .search-container input {
             padding: 10px;
             font-size: 1rem;
-            width: 60%;
+            width: 100%;
             border: 2px solid #39FF14;
             border-radius: 5px;
-            margin-right: 10px;
+            margin-bottom: 10px;
         }
 
         .search-container button {
@@ -75,9 +63,24 @@
             background: #28a745;
         }
 
-        #rss-feed {
-            margin-top: 20px;
-            width: 50%;
+        .instructions {
+            width: 30%;
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .instructions h3 {
+            color: #39FF14;
+        }
+
+        .instructions p {
+            background-color: #39FF14;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
 
         .correo-item {
@@ -102,6 +105,16 @@
             padding: 10px 0;
             font-size: 1rem;
         }
+
+        .correo-item strong {
+            color: #28a745;
+        }
+
+        .fecha {
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -111,6 +124,16 @@
     </header>
 
     <div class="main-container">
+
+        <!-- RSS Feed Section -->
+        <div class="search-container">
+            <h2>Busca tus correos de Netflix</h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix...">
+                <button onclick="buscarCorreo()">Buscar Correos</button>
+            </div>
+            <div id="rss-feed"></div>
+        </div>
 
         <!-- Instructions Section -->
         <div class="instructions">
@@ -124,16 +147,6 @@
             <p><strong>#1</strong> Espera 2 o 3 minutos desde el envío del código y la consulta del correo.</p>
             <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
             <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
-        </div>
-
-        <!-- RSS Feed Section -->
-        <div>
-            <h2>Busca tus correos de Netflix</h2>
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix...">
-                <button onclick="buscarCorreo()">Buscar Correos</button>
-            </div>
-            <div id="rss-feed"></div>
         </div>
 
     </div>
@@ -164,11 +177,13 @@
                     const title = item.querySelector('title').textContent;
                     const link = item.querySelector('link').textContent;
                     const description = item.querySelector('description').textContent;
+                    const date = item.querySelector('pubDate').textContent;
 
                     html += `
                         <div class="correo-item">
                             <strong><a href="${link}" target="_blank">${title}</a></strong><br>
                             <p>${description}</p>
+                            <div class="fecha">Fecha: ${new Date(date).toLocaleString()}</div>
                         </div>
                     `;
                 });
