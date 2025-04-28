@@ -97,7 +97,7 @@
 
         <!-- Buscador -->
         <div class="search-box">
-            <input type="text" id="emailInput" placeholder="Escribe el correo (ej. mayornetsa)" />
+            <input type="text" id="emailInput" placeholder="Escribe el correo (ej. netflix@gmail.com)" />
             <button onclick="searchEmails()">Buscar Correos</button>
         </div>
 
@@ -109,11 +109,6 @@
 
         <!-- RSS Feed -->
         <div id="rss-feed"></div>
-
-        <!-- Aquí se mostrará el iframe cuando el usuario haga clic en un correo -->
-        <div id="correo-detalle" style="display:none;">
-            <iframe id="correo-frame" width="100%" height="500px"></iframe>
-        </div>
     </div>
 
     <script>
@@ -164,7 +159,7 @@
 
                     html += `
                         <li>
-                            <strong><a href="javascript:void(0);" onclick="verCorreo('${link}')">${title}</a></strong><br>
+                            <strong><a href="${link}" target="_blank">${title}</a></strong><br>
                             <p>${description}</p>
                             <p><small>Fecha: ${pubDate}</small></p>
                         </li>
@@ -176,19 +171,3 @@
                 loader.style.display = 'none';
 
             } catch (error) {
-                console.error('Error al obtener el RSS:', error);
-                document.getElementById('result').innerHTML = `<p class="error">Error al cargar los correos. Intenta más tarde.</p>`;
-                loader.style.display = 'none';
-            }
-        }
-
-        // Función para mostrar el correo en un iframe
-        function verCorreo(link) {
-            document.getElementById('rss-feed').style.display = 'none';
-            document.getElementById('correo-detalle').style.display = 'block';
-            document.getElementById('correo-frame').src = link;
-        }
-    </script>
-
-</body>
-</html>
