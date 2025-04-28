@@ -97,7 +97,7 @@
 
         <!-- Buscador -->
         <div class="search-box">
-            <input type="text" id="emailInput" placeholder="Escribe el correo (ej. netflix@gmail.com)" />
+            <input type="text" id="emailInput" placeholder="Escribe el correo (ej. mayornetsa)" />
             <button onclick="searchEmails()">Buscar Correos</button>
         </div>
 
@@ -107,8 +107,6 @@
         <!-- Resultados -->
         <div id="result" class="results"></div>
 
-        <!-- RSS Feed -->
-        <div id="rss-feed"></div>
     </div>
 
     <script>
@@ -158,7 +156,7 @@
                     const pubDate = item.querySelector('pubDate').textContent;
 
                     html += `
-                        <li>
+                        <li class="result-item">
                             <strong><a href="${link}" target="_blank">${title}</a></strong><br>
                             <p>${description}</p>
                             <p><small>Fecha: ${pubDate}</small></p>
@@ -167,7 +165,17 @@
                 });
 
                 html += '</ul>';
-                document.getElementById('rss-feed').innerHTML = html;
-                loader.style.display = 'none';
+                document.getElementById('result').innerHTML = html;
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
 
             } catch (error) {
+                console.error('Error al obtener el RSS:', error);
+                document.getElementById('result').innerHTML = `<p class="error">Error al cargar los correos. Intenta más tarde.</p>`;
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>
