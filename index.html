@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscador de Correos</title>
+    <title>Mi Bandeja de Entrada de Yopmail</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -91,30 +91,45 @@
 
     <div class="container">
         <header>
-            <h1>Buscador de Correos Yopmail</h1>
+            <h1>Mi Bandeja de Entrada de Yopmail</h1>
             <p>Encuentra tus correos de forma fácil y rápida.</p>
         </header>
 
+        <!-- Buscador -->
         <div class="search-box">
             <input type="text" id="emailInput" placeholder="Escribe el correo (ej. mayornetsa)" />
             <button onclick="searchEmails()">Buscar Correos</button>
         </div>
 
+        <!-- Loader -->
         <div class="loader" id="loader"></div>
+
+        <!-- Resultados -->
         <div id="result" class="results"></div>
+
+        <!-- RSS Feed -->
+        <div id="rss-feed"></div>
+
+        <!-- Aquí se mostrará el iframe cuando el usuario haga clic en un correo -->
+        <div id="correo-detalle" style="display:none;">
+            <iframe id="correo-frame" width="100%" height="500px"></iframe>
+        </div>
     </div>
 
     <script>
-        // Solo feed de mayornetsa
+        // Feeds para los diferentes correos
         const feeds = {
             "mayornetsa": "https://yopmail.com/rss?login=mayornetsa&h=3741e98f272043bb890d8f09fb6a3ada",
+            "correo2": "https://yopmail.com/rss?login=correo2&h=3741e98f272043bb890d8f09fb6a3ada",
+            // Agrega más correos y sus respectivos feeds aquí
         };
 
+        // Función para buscar correos
         function searchEmails() {
             const emailInput = document.getElementById('emailInput').value.trim();
             const resultContainer = document.getElementById('result');
             const loader = document.getElementById('loader');
-            
+
             // Mostrar el loader mientras se busca
             loader.style.display = 'block';
             resultContainer.style.display = 'none';
@@ -123,48 +138,55 @@
             resultContainer.innerHTML = '';
 
             if (emailInput && feeds[emailInput]) {
-                fetch(feeds[emailInput])
-                    .then(response => response.text())
-                    .then(data => {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(data, "text/xml");
-
-                        const items = xmlDoc.getElementsByTagName('item');
-                        if (items.length > 0) {
-                            // Mostrar resultados
-                            resultContainer.style.display = 'block';
-                            loader.style.display = 'none';
-                            
-                            let resultsHTML = `<h3>Correos encontrados para: ${emailInput}</h3>`;
-                            for (let i = 0; i < items.length; i++) {
-                                const title = items[i].getElementsByTagName('title')[0].textContent;
-                                const description = items[i].getElementsByTagName('description')[0].textContent;
-                                const link = items[i].getElementsByTagName('link')[0].textContent;
-                                const pubDate = items[i].getElementsByTagName('pubDate')[0].textContent;
-
-                                resultsHTML += `
-                                    <div class="result-item">
-                                        <h3>${title}</h3>
-                                        <p><strong>Fecha:</strong> ${pubDate}</p>
-                                        <p>${description}</p>
-                                        <a href="${link}" target="_blank">Ver correo</a>
-                                    </div>
-                                `;
-                            }
-                            resultContainer.innerHTML = resultsHTML;
-                        } else {
-                            resultContainer.innerHTML = `<p class="error">No se encontraron correos para este correo electrónico.</p>`;
-                            loader.style.display = 'none';
-                        }
-                    })
-                    .catch(error => {
-                        resultContainer.innerHTML = `<p class="error">Error al cargar los correos. Intenta más tarde.</p>`;
-                        loader.style.display = 'none';
-                    });
+                fetchRSS(feeds[emailInput]);
             } else {
                 loader.style.display = 'none';
                 resultContainer.innerHTML = `<p class="error">Por favor ingresa un correo válido.</p>`;
             }
+        }
+
+        // Función para obtener RSS y mostrar correos
+        async function fetchRSS(rssUrl) {
+            try {
+                const proxyUrl = 'https://api.allorigins.win/get?url=';
+                const response = await fetch(proxyUrl + encodeURIComponent(rssUrl));
+                const data = await response.json();
+                const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
+
+                const items = rssData.querySelectorAll('item');
+                let html = '<ul>';
+
+                items.forEach(item => {
+                    const title = item.querySelector('title').textContent;
+                    const link = item.querySelector('link').textContent;
+                    const description = item.querySelector('description').textContent;
+                    const pubDate = item.querySelector('pubDate').textContent;
+
+                    html += `
+                        <li>
+                            <strong><a href="javascript:void(0);" onclick="verCorreo('${link}')">${title}</a></strong><br>
+                            <p>${description}</p>
+                            <p><small>Fecha: ${pubDate}</small></p>
+                        </li>
+                    `;
+                });
+
+                html += '</ul>';
+                document.getElementById('rss-feed').innerHTML = html;
+                loader.style.display = 'none';
+
+            } catch (error) {
+                console.error('Error al obtener el RSS:', error);
+                document.getElementById('result').innerHTML = `<p class="error">Error al cargar los correos. Intenta más tarde.</p>`;
+                loader.style.display = 'none';
+            }
+        }
+
+        // Función para mostrar el correo en un iframe
+        function verCorreo(link) {
+            document.getElementById('rss-feed').style.display = 'none';
+            document.getElementById('correo-detalle').style.display = 'block';
+            document.getElementById('correo-frame').src = link;
         }
     </script>
 
