@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORREOS NETFLIX - MultiBC</title>
+    <title>Correos Netflix - MultiBC</title>
     <style>
         /* General page styles */
         body {
@@ -129,7 +129,7 @@
         <div class="search-container">
             <h2>Busca tus correos de Netflix</h2>
             <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix...">
+                <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix..." onkeyup="checkEnter(event)">
                 <button onclick="buscarCorreo()">Buscar Correos</button>
             </div>
             <div id="rss-feed"></div>
@@ -207,6 +207,13 @@
                 cargarCorreos(rssFeeds[searchQuery]);
             } else {
                 document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico.</p>";
+            }
+        }
+
+        // Función para verificar si la tecla Enter fue presionada
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                buscarCorreo();
             }
         }
     </script>
