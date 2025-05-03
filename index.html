@@ -199,73 +199,69 @@
         ©2025 - Copyright Variedades y MultiEntretenimiento BC 2025
     </footer>
 
-    <script>
-        // Configura los feeds RSS
-        const rssFeeds = {
-    "multinetflix01net+eo3jl01@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.eo3jl01&h=e69dea5c02e64164b291048657070769",
-    "multinetflix01net+ae8jm02@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.ae8jm02&h=83bbc2029bdb49bfbfbc52590f48c24b",
-    "multinetflix01net+xk9jd03@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.xk9jd03&h=f40e3e338fe2474caf1e8806cd794110",
-    "multinetflix01net+ae3pt04@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.ae3pt04&h=6767b0c4ff444104a6a38e6e501f28dd",
-    "multinetflix01net+bz7lm05@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.bz7lm05&h=1ea389ec357b4fc1b3f1e21567b6dbd2",
-    "multinetflix01net+qw1rn06@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.qw1rn06&h=549427018ab14b38876dff5fadb2aff6",
-    "multinetflix01net+uv5kc07@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.uv5kc07&h=dccbb96a051f4539ba43d668a7c092df",
-    "multinetflix01net+md6yt08@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.md6yt08&h=6bf7e1bb8eef454f83e92fd4c68dd4dc"
-};
+   <script>
+        // Función para transformar el correo original al formato Yopmail
+        function getYopmailUsername(email) {
+            const local = email.split('@')[0];
+            return local.replace('+', '.');
+        }
 
+        // Función para obtener los correos usando el servidor
+        async function obtenerCorreos(correo) {
+            const correoYopmail = getYopmailUsername(correo);
 
+            try {
+                // Primer intento con el RSS
+                let response = await fetch(`https://api.allorigins.win/raw?url=https://yopmail.com/en/rss.php?login=${correoYopmail}`);
+                let xml = await response.text();
+                console.log("Datos RSS:", xml);
+                return xml; // O el procesamiento que estés haciendo con el RSS
+            } catch (err) {
+                console.warn("RSS falló, intentando con HTML...");
 
-        // Función para cargar los correos
-async function cargarCorreos(feedUrl) {
-    try {
-        const proxyUrl = 'https://api.allorigins.win/raw?url=';
-        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-        const text = await response.text();
-        const rssData = new DOMParser().parseFromString(text, 'application/xml');
-
-        const items = rssData.querySelectorAll('item');
-        let html = '';
-
-        items.forEach(item => {
-            const title = item.querySelector('title').textContent;
-            const link = item.querySelector('link').textContent;
-            const description = item.querySelector('description').textContent;
-            const date = item.querySelector('pubDate').textContent;
-
-            html += `
-                <div class="correo-item" onclick="window.open('${link}', '_blank')">
-                    <strong>${title}</strong>
-                    <div class="fecha">${date}</div>
-                    <p>${description}</p>
-                </div>
-            `;
-        });
-
-        document.getElementById('rss-feed').innerHTML = html;
-
-    } catch (error) {
-        console.error('Error al cargar el feed RSS:', error);
-        document.getElementById('rss-feed').innerHTML = '<p style="color:red;">No se pudieron cargar los correos. Intenta más tarde.</p>';
-    }
-}
-
-        // Función para buscar el correo
-        function buscarCorreo() {
-            const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
-
-            if (rssFeeds[searchQuery]) {
-                cargarCorreos(rssFeeds[searchQuery]);
-            } else {
-                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
+                // Si el RSS no carga, usa el servidor backend
+                let res = await fetch(`http://localhost:3000/yopmail/${correoYopmail}`);
+                let correos = await res.json();
+                console.log("Correos obtenidos desde HTML:", correos);
+                return correos; // Aquí puedes manipular los datos como quieras
             }
         }
 
-        // Función para verificar si la tecla Enter fue presionada
-        function checkEnter(event) {
-            if (event.key === 'Enter') {
-                buscarCorreo();
+        // Lista de correos para verificar
+        const correos = [
+            "multinetflix01net+uv5kc07@gmail.com",
+            "multinetflix02net+uv5kc07@gmail.com",
+            "multinetflix03net+uv5kc07@gmail.com",
+            "multinetflix04net+uv5kc07@gmail.com",
+            "multinetflix05net+uv5kc07@gmail.com",
+            "multinetflix06net+uv5kc07@gmail.com",
+            "multinetflix07net+uv5kc07@gmail.com"
+        ];
+
+        // Función para cargar y mostrar los correos obtenidos
+        async function cargarCorreos() {
+            let listaCorreos = document.getElementById('correos-lista');
+            for (let correo of correos) {
+                console.log(`Consultando correos para: ${correo}`);
+                let datos = await obtenerCorreos(correo);
+                
+                // Creando elementos de la lista de correos para mostrarlos en la página
+                let item = document.createElement('div');
+                item.classList.add('correo-item');
+                item.textContent = `Correos para ${correo}: ${JSON.stringify(datos)}`;
+                listaCorreos.appendChild(item);
             }
         }
+
+        // Llamamos la función para cargar los correos al cargar la página
+        window.onload = cargarCorreos;
     </script>
-
+</head>
+<body>
+    <div class="container">
+        <h1>Verificación de Correos Yopmail</h1>
+        <p>Consultando correos...</p>
+        <div id="correos-lista" class="correos-lista"></div>
+    </div>
 </body>
 </html>
