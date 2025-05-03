@@ -199,7 +199,7 @@
         ©2025 - Copyright Variedades y MultiEntretenimiento BC 2025
     </footer>
 
-    <script>
+        <script>
         // Correos autorizados (los correos principales que deseas consultar)
         const correosAutorizados = [
             "multinetflix01net+uv5kc07@gmail.com",
@@ -219,7 +219,19 @@
                 // Intentar obtener datos desde el servidor Yopmail usando el RSS
                 let response = await fetch(`https://api.allorigins.win/raw?url=https://yopmail.com/en/rss.php?login=${correoYopmail}`);
                 let xml = await response.text();
-                return xml;  // Regresar los datos obtenidos (puedes procesar estos datos)
+                
+                // Parsear el XML para extraer los correos
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xml, "text/xml");
+                const items = xmlDoc.getElementsByTagName("item");
+                const correos = [];
+                
+                for (let i = 0; i < items.length; i++) {
+                    const titulo = items[i].getElementsByTagName("title")[0].textContent;
+                    correos.push(titulo); // Obtener el asunto de cada correo
+                }
+                
+                return correos;  // Regresar los correos encontrados
             } catch (err) {
                 console.warn("Error al obtener los correos", err);
                 return null;
@@ -236,13 +248,15 @@
             
             if (correosAutorizados.includes(correoInput)) {
                 // Si el correo es autorizado, buscar y mostrar los correos
-                let datos = await obtenerCorreos(correoInput);
-                if (datos) {
+                let correos = await obtenerCorreos(correoInput);
+                if (correos && correos.length > 0) {
                     // Mostrar los correos obtenidos
-                    let item = document.createElement('div');
-                    item.classList.add('correo-item');
-                    item.textContent = `Correos para ${correoInput}: ${datos}`;
-                    resultado.appendChild(item);
+                    correos.forEach(correo => {
+                        let item = document.createElement('div');
+                        item.classList.add('correo-item');
+                        item.textContent = `Correo: ${correo}`;
+                        resultado.appendChild(item);
+                    });
                 } else {
                     // Si no se encuentran correos
                     let item = document.createElement('div');
@@ -259,8 +273,7 @@
             }
         }
     </script>
-
-    </head>
+</head>
 <body>
     <div class="container">
         <h1>Verificación de Correos Yopmail</h1>
