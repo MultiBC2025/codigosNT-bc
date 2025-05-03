@@ -175,6 +175,7 @@
             <div class="search-container">
                 <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix..." onkeyup="checkEnter(event)">
                 <button onclick="buscarCorreo()">Buscar Correos</button>
+                <button onclick="abrirExternamente()">Abrir Externamente</button>
             </div>
             <div id="rss-feed"></div>
         </div>
@@ -188,7 +189,7 @@
             <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
 
             <h3>NOTA</h3>
-            <p><strong>#1</strong> Espera 2 o 3 minutos desde el envío del código y la consulta del correo.</p>
+            <p><strong>#1</strong> Espera 2 o 8 minutos desde el envío del código y la consulta del correo.</p>
             <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
             <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
         </div>
@@ -258,6 +259,21 @@ async function cargarCorreos(feedUrl) {
                 document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
             }
         }
+
+        function abrirExternamente() {
+    const input = document.getElementById('searchInput').value.trim().toLowerCase();
+    const feedUrl = rssFeeds[input];
+
+    if (!feedUrl) {
+        document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
+        return;
+    }
+
+    const confirmacion = confirm("Se abrirá en una nueva pestaña. Solo usar si el correo no llegó pasados los 10 minutos.");
+    if (confirmacion) {
+        window.open(feedUrl, '_blank');
+    }
+}
 
         // Función para verificar si la tecla Enter fue presionada
         function checkEnter(event) {
