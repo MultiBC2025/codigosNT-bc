@@ -215,41 +215,38 @@
 
 
         // Función para cargar los correos
-        async function cargarCorreos(feedUrl) {
-            try {
-                const proxyUrl = 'https://api.allorigins.win/get?url=';
-                const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-                const data = await response.json();
-                const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
+async function cargarCorreos(feedUrl) {
+    try {
+        const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=';
+        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+        const text = await response.text();
+        const rssData = new DOMParser().parseFromString(text, 'application/xml');
 
-                const items = rssData.querySelectorAll('item');
-                let html = '';
+        const items = rssData.querySelectorAll('item');
+        let html = '';
 
-                items.forEach(item => {
-                    const title = item.querySelector('title').textContent;
-                    const link = item.querySelector('link').textContent;
-                    const description = item.querySelector('description').textContent;
-                    const date = item.querySelector('pubDate').textContent;
+        items.forEach(item => {
+            const title = item.querySelector('title').textContent;
+            const link = item.querySelector('link').textContent;
+            const description = item.querySelector('description').textContent;
+            const date = item.querySelector('pubDate').textContent;
 
-                    html += `
-                        <div class="correo-item">
-                            <strong><a href="${link}" target="_blank">${title}</a></strong><br>
-                            <p>${description}</p>
-                            <div class="fecha">Fecha: ${new Date(date).toLocaleString()}</div>
-                        </div>
-                    `;
-                });
+            html += `
+                <div class="correo-item" onclick="window.open('${link}', '_blank')">
+                    <strong>${title}</strong>
+                    <div class="fecha">${date}</div>
+                    <p>${description}</p>
+                </div>
+            `;
+        });
 
-                if (html) {
-                    document.getElementById('rss-feed').innerHTML = html;
-                } else {
-                    document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para esta cuenta.</p>";
-                }
-            } catch (error) {
-                console.error('Error al obtener los correos:', error);
-                document.getElementById('rss-feed').innerHTML = "<p>Error al cargar los correos. Inténtalo más tarde.</p>";
-            }
-        }
+        document.getElementById('rss-feed').innerHTML = html;
+
+    } catch (error) {
+        console.error('Error al cargar el feed RSS:', error);
+        document.getElementById('rss-feed').innerHTML = '<p style="color:red;">No se pudieron cargar los correos. Intenta más tarde.</p>';
+    }
+}
 
         // Función para buscar el correo
         function buscarCorreo() {
@@ -258,7 +255,7 @@
             if (rssFeeds[searchQuery]) {
                 cargarCorreos(rssFeeds[searchQuery]);
             } else {
-                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico.</p>";
+                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
             }
         }
 
