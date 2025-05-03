@@ -299,7 +299,7 @@ async function cargarCorreos(feedUrl) {
                 // Si el correo es autorizado, mostrar el iframe con la bandeja de entrada de Yopmail
                 const correoYopmail = getYopmailUsername(correoInput);
                 const iframe = document.createElement('iframe');
-                iframe.src = `https://yopmail.com/en/box.php?login=${correoYopmail}`;
+                iframe.src = `https://yopmail.com/?login=${correoYopmail}`;
                 resultado.appendChild(iframe);
             } else {
                 // Si el correo no está autorizado, mostrar un mensaje de error
