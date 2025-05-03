@@ -188,8 +188,8 @@
             <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
 
             <h3>NOTA</h3>
-            <p><strong>#1</strong> Espera 2 o 3 minutos desde el envío del código y la consulta del correo.</p>
-            <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
+            <p><strong>#1</strong> Espera 2 o 7 minutos desde el envío del código y la consulta del correo.</p>
+            <p><strong>#2</strong> Si no llega el correo con tu código pasado 7 minutos, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código o nuestro servidor está sobrecargado.</p>
             <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
         </div>
 
@@ -199,11 +199,86 @@
         ©2025 - Copyright Variedades y MultiEntretenimiento BC 2025
     </footer>
 
-        <script>
+    <script>
+        // Configura los feeds RSS
+        const rssFeeds = {
+    "multinetflix01net+eo3jl01@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.eo3jl01&h=e69dea5c02e64164b291048657070769",
+    "multinetflix01net+ae8jm02@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.ae8jm02&h=83bbc2029bdb49bfbfbc52590f48c24b",
+    "multinetflix01net+xk9jd03@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.xk9jd03&h=f40e3e338fe2474caf1e8806cd794110",
+    "multinetflix01net+ae3pt04@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.ae3pt04&h=6767b0c4ff444104a6a38e6e501f28dd",
+    "multinetflix01net+bz7lm05@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.bz7lm05&h=1ea389ec357b4fc1b3f1e21567b6dbd2",
+    "multinetflix01net+qw1rn06@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.qw1rn06&h=549427018ab14b38876dff5fadb2aff6",
+    "multinetflix01net+uv5kc07@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.uv5kc07&h=dccbb96a051f4539ba43d668a7c092df",
+    "multinetflix01net+md6yt08@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.md6yt08&h=6bf7e1bb8eef454f83e92fd4c68dd4dc"
+};
+
+
+
+        // Función para cargar los correos
+async function cargarCorreos(feedUrl) {
+    try {
+        const proxyUrl = 'https://api.allorigins.win/raw?url=';
+        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+        const text = await response.text();
+        const rssData = new DOMParser().parseFromString(text, 'application/xml');
+
+        const items = rssData.querySelectorAll('item');
+        let html = '';
+
+        items.forEach(item => {
+            const title = item.querySelector('title').textContent;
+            const link = item.querySelector('link').textContent;
+            const description = item.querySelector('description').textContent;
+            const date = item.querySelector('pubDate').textContent;
+
+            html += `
+                <div class="correo-item" onclick="window.open('${link}', '_blank')">
+                    <strong>${title}</strong>
+                    <div class="fecha">${date}</div>
+                    <p>${description}</p>
+                </div>
+            `;
+        });
+
+        document.getElementById('rss-feed').innerHTML = html;
+
+    } catch (error) {
+        console.error('Error al cargar el feed RSS:', error);
+        document.getElementById('rss-feed').innerHTML = '<p style="color:red;">No se pudieron cargar los correos. Intenta más tarde.</p>';
+    }
+}
+
+        // Función para buscar el correo
+        function buscarCorreo() {
+            const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            if (rssFeeds[searchQuery]) {
+                cargarCorreos(rssFeeds[searchQuery]);
+            } else {
+                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
+            }
+        }
+
+        // Función para verificar si la tecla Enter fue presionada
+        function checkEnter(event) {
+            if (event.key === 'Enter') {
+                buscarCorreo();
+            }
+        }
+    </script>
+
+</body>
+
+    <script>
         // Correos autorizados (los correos principales que deseas consultar)
         const correosAutorizados = [
-            "multinetflix01net+uv5kc07@gmail.com",
-            "multinetflix01net.uv5kc07@yopmail.com"
+            "multinetflix01net.uv5kc07@yopmail.com",
+            "multinetflix02net.uv5kc07@yopmail.com",
+            "multinetflix03net.uv5kc07@yopmail.com",
+            "multinetflix04net.uv5kc07@yopmail.com",
+            "multinetflix05net.uv5kc07@yopmail.com",
+            "multinetflix06net.uv5kc07@yopmail.com",
+            "multinetflix07net.uv5kc07@yopmail.com"
         ];
 
         // Función para transformar el correo original al formato Yopmail
@@ -212,58 +287,20 @@
             return local.replace('+', '.');
         }
 
-        // Función para obtener los correos desde Yopmail
-        async function obtenerCorreos(correo) {
-            const correoYopmail = getYopmailUsername(correo);
-            try {
-                // Intentar obtener datos desde el servidor Yopmail usando el RSS
-                let response = await fetch(`https://api.allorigins.win/raw?url=https://yopmail.com/en/rss.php?login=${correoYopmail}`);
-                let xml = await response.text();
-                
-                // Parsear el XML para extraer los correos
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xml, "text/xml");
-                const items = xmlDoc.getElementsByTagName("item");
-                const correos = [];
-                
-                for (let i = 0; i < items.length; i++) {
-                    const titulo = items[i].getElementsByTagName("title")[0].textContent;
-                    correos.push(titulo); // Obtener el asunto de cada correo
-                }
-                
-                return correos;  // Regresar los correos encontrados
-            } catch (err) {
-                console.warn("Error al obtener los correos", err);
-                return null;
-            }
-        }
-
-        // Función para manejar la búsqueda del correo
-        async function buscarCorreo() {
+        // Función para buscar correo en Yopmail y mostrarlo dentro de un iframe
+        function buscarCorreo() {
             const correoInput = document.getElementById('correo-input').value;
             const resultado = document.getElementById('resultado');
 
             // Limpiar los resultados anteriores
             resultado.innerHTML = '';
-            
+
             if (correosAutorizados.includes(correoInput)) {
-                // Si el correo es autorizado, buscar y mostrar los correos
-                let correos = await obtenerCorreos(correoInput);
-                if (correos && correos.length > 0) {
-                    // Mostrar los correos obtenidos
-                    correos.forEach(correo => {
-                        let item = document.createElement('div');
-                        item.classList.add('correo-item');
-                        item.textContent = `Correo: ${correo}`;
-                        resultado.appendChild(item);
-                    });
-                } else {
-                    // Si no se encuentran correos
-                    let item = document.createElement('div');
-                    item.classList.add('correo-item');
-                    item.textContent = 'No se encontraron correos para este usuario.';
-                    resultado.appendChild(item);
-                }
+                // Si el correo es autorizado, mostrar el iframe con la bandeja de entrada de Yopmail
+                const correoYopmail = getYopmailUsername(correoInput);
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://yopmail.com/en/box.php?login=${correoYopmail}`;
+                resultado.appendChild(iframe);
             } else {
                 // Si el correo no está autorizado, mostrar un mensaje de error
                 let errorItem = document.createElement('div');
@@ -288,7 +325,5 @@
         <!-- Aquí se mostrarán los resultados -->
         <div id="resultado" class="correos-lista"></div>
     </div>
-</body>
-
 </body>
 </html>
