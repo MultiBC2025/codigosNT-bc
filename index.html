@@ -267,30 +267,5 @@ async function cargarCorreos(feedUrl) {
         }
     </script>
 
-    <script>
-let intervaloBusqueda; // Variable global para guardar el intervalo
-
-function buscarCorreo() {
-    const input = document.getElementById('searchInput').value.trim().toLowerCase();
-    const feedUrl = rssFeeds[input];
-
-    if (!feedUrl) {
-        document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
-        return;
-    }
-
-    // Llamada inicial
-    cargarCorreos(feedUrl);
-
-    // Limpiar intervalos anteriores si los hay
-    clearInterval(intervaloBusqueda);
-
-    // Ejecutar cada segundo (1000 ms)
-    intervaloBusqueda = setInterval(() => {
-        cargarCorreos(feedUrl);
-    }, 1000);
-}
-</script>
-
 </body>
 </html>
