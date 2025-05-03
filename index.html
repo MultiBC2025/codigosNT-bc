@@ -188,8 +188,8 @@
             <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
 
             <h3>NOTA</h3>
-            <p><strong>#1</strong> Espera 2 o 7 minutos desde el envío del código y la consulta del correo.</p>
-            <p><strong>#2</strong> Si no llega el correo con tu código pasado 7 minutos, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código o nuestro servidor está sobrecargado.</p>
+            <p><strong>#1</strong> Espera 2 o 3 minutos desde el envío del código y la consulta del correo.</p>
+            <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
             <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
         </div>
 
@@ -215,38 +215,41 @@
 
 
         // Función para cargar los correos
-async function cargarCorreos(feedUrl) {
-    try {
-        const proxyUrl = 'https://api.allorigins.win/raw?url=';
-        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-        const text = await response.text();
-        const rssData = new DOMParser().parseFromString(text, 'application/xml');
+        async function cargarCorreos(feedUrl) {
+            try {
+                const proxyUrl = 'https://api.allorigins.win/get?url=';
+                const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+                const data = await response.json();
+                const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
 
-        const items = rssData.querySelectorAll('item');
-        let html = '';
+                const items = rssData.querySelectorAll('item');
+                let html = '';
 
-        items.forEach(item => {
-            const title = item.querySelector('title').textContent;
-            const link = item.querySelector('link').textContent;
-            const description = item.querySelector('description').textContent;
-            const date = item.querySelector('pubDate').textContent;
+                items.forEach(item => {
+                    const title = item.querySelector('title').textContent;
+                    const link = item.querySelector('link').textContent;
+                    const description = item.querySelector('description').textContent;
+                    const date = item.querySelector('pubDate').textContent;
 
-            html += `
-                <div class="correo-item" onclick="window.open('${link}', '_blank')">
-                    <strong>${title}</strong>
-                    <div class="fecha">${date}</div>
-                    <p>${description}</p>
-                </div>
-            `;
-        });
+                    html += 
+                        <div class="correo-item">
+                            <strong><a href="${link}" target="_blank">${title}</a></strong><br>
+                            <p>${description}</p>
+                            <div class="fecha">Fecha: ${new Date(date).toLocaleString()}</div>
+                        </div>
+                    ;
+                });
 
-        document.getElementById('rss-feed').innerHTML = html;
-
-    } catch (error) {
-        console.error('Error al cargar el feed RSS:', error);
-        document.getElementById('rss-feed').innerHTML = '<p style="color:red;">No se pudieron cargar los correos. Intenta más tarde.</p>';
-    }
-}
+                if (html) {
+                    document.getElementById('rss-feed').innerHTML = html;
+                } else {
+                    document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para esta cuenta.</p>";
+                }
+            } catch (error) {
+                console.error('Error al obtener los correos:', error);
+                document.getElementById('rss-feed').innerHTML = "<p>Error al cargar los correos. Inténtalo más tarde.</p>";
+            }
+        }
 
         // Función para buscar el correo
         function buscarCorreo() {
@@ -255,7 +258,7 @@ async function cargarCorreos(feedUrl) {
             if (rssFeeds[searchQuery]) {
                 cargarCorreos(rssFeeds[searchQuery]);
             } else {
-                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
+                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico.</p>";
             }
         }
 
@@ -268,33 +271,4 @@ async function cargarCorreos(feedUrl) {
     </script>
 
 </body>
-
-<script>
-    const correosAutorizados = [
-        "multinetflix01net.uv5kc07@yopmail.com",
-        "multinetflix02net.uv5kc07@yopmail.com",
-        "multinetflix03net.uv5kc07@yopmail.com",
-        "multinetflix04net.uv5kc07@yopmail.com",
-        "multinetflix05net.uv5kc07@yopmail.com",
-        "multinetflix06net.uv5kc07@yopmail.com",
-        "multinetflix07net.uv5kc07@yopmail.com"
-    ];
-
-    function buscarCorreo() {
-        const correoInput = document.getElementById('correo-input').value.trim().toLowerCase();
-        const resultado = document.getElementById('resultado');
-        resultado.innerHTML = '';
-
-        if (correosAutorizados.includes(correoInput)) {
-            // Reemplaza el correo por la URL de yopmail
-            const url = `https://yopmail.com/?login=${correoInput}`;
-            window.open(url, '_blank');
-        } else {
-            const errorItem = document.createElement('div');
-            errorItem.classList.add('error-message');
-            errorItem.textContent = 'Este correo no está autorizado o no existe.';
-            resultado.appendChild(errorItem);
-        }
-    }
-</script>
 </html>
