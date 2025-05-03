@@ -269,6 +269,33 @@
             }
         }
     </script>
+    <script>
+    const correosAutorizados = [
+      "multinetflix01net.uv5kc07@yopmail.com",
+      "multinetflix02net.uv5kc07@yopmail.com",
+      "multinetflix03net.uv5kc07@yopmail.com",
+      "multinetflix04net.uv5kc07@yopmail.com",
+      "multinetflix05net.uv5kc07@yopmail.com",
+      "multinetflix06net.uv5kc07@yopmail.com",
+      "multinetflix07net.uv5kc07@yopmail.com"
+    ];
+
+    function buscarCorreo() {
+      const correoInput = document.getElementById('correo-input').value.trim().toLowerCase();
+      const resultado = document.getElementById('resultado');
+      resultado.innerHTML = '';
+
+      if (correosAutorizados.includes(correoInput)) {
+        const url = `https://yopmail.com/?login=${correoInput}`;
+        window.open(url, '_blank');
+      } else {
+        const errorItem = document.createElement('div');
+        errorItem.classList.add('error-message');
+        errorItem.textContent = 'Este correo no está autorizado o no existe.';
+        resultado.appendChild(errorItem);
+      }
+    }
+  </script>
 
 </body>
 </html>
