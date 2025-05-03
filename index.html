@@ -269,61 +269,32 @@ async function cargarCorreos(feedUrl) {
 
 </body>
 
-    <script>
-        // Correos autorizados (los correos principales que deseas consultar)
-        const correosAutorizados = [
-            "multinetflix01net.uv5kc07@yopmail.com",
-            "multinetflix02net.uv5kc07@yopmail.com",
-            "multinetflix03net.uv5kc07@yopmail.com",
-            "multinetflix04net.uv5kc07@yopmail.com",
-            "multinetflix05net.uv5kc07@yopmail.com",
-            "multinetflix06net.uv5kc07@yopmail.com",
-            "multinetflix07net.uv5kc07@yopmail.com"
-        ];
+<script>
+    const correosAutorizados = [
+        "multinetflix01net.uv5kc07@yopmail.com",
+        "multinetflix02net.uv5kc07@yopmail.com",
+        "multinetflix03net.uv5kc07@yopmail.com",
+        "multinetflix04net.uv5kc07@yopmail.com",
+        "multinetflix05net.uv5kc07@yopmail.com",
+        "multinetflix06net.uv5kc07@yopmail.com",
+        "multinetflix07net.uv5kc07@yopmail.com"
+    ];
 
-        // Función para transformar el correo original al formato Yopmail
-        function getYopmailUsername(email) {
-            const local = email.split('@')[0];
-            return local.replace('+', '.');
+    function buscarCorreo() {
+        const correoInput = document.getElementById('correo-input').value.trim().toLowerCase();
+        const resultado = document.getElementById('resultado');
+        resultado.innerHTML = '';
+
+        if (correosAutorizados.includes(correoInput)) {
+            // Reemplaza el correo por la URL de yopmail
+            const url = `https://yopmail.com/?login=${correoInput}`;
+            window.open(url, '_blank');
+        } else {
+            const errorItem = document.createElement('div');
+            errorItem.classList.add('error-message');
+            errorItem.textContent = 'Este correo no está autorizado o no existe.';
+            resultado.appendChild(errorItem);
         }
-
-        // Función para buscar correo en Yopmail y mostrarlo dentro de un iframe
-        function buscarCorreo() {
-            const correoInput = document.getElementById('correo-input').value;
-            const resultado = document.getElementById('resultado');
-
-            // Limpiar los resultados anteriores
-            resultado.innerHTML = '';
-
-            if (correosAutorizados.includes(correoInput)) {
-                // Si el correo es autorizado, mostrar el iframe con la bandeja de entrada de Yopmail
-                const correoYopmail = getYopmailUsername(correoInput);
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://yopmail.com/?login=${correoYopmail}`;
-                resultado.appendChild(iframe);
-            } else {
-                // Si el correo no está autorizado, mostrar un mensaje de error
-                let errorItem = document.createElement('div');
-                errorItem.classList.add('error-message');
-                errorItem.textContent = 'Este correo no está autorizado o no existe.';
-                resultado.appendChild(errorItem);
-            }
-        }
-    </script>
-</head>
-<body>
-    <div class="container">
-        <h1>Verificación de Correos Yopmail</h1>
-        <p>Ingresa un correo para verificar si tiene correos asociados en Yopmail:</p>
-        
-        <!-- Input para ingresar el correo principal -->
-        <div class="input-container">
-            <input type="text" id="correo-input" placeholder="Ingresa el correo principal" />
-            <button onclick="buscarCorreo()">Buscar Correos</button>
-        </div>
-
-        <!-- Aquí se mostrarán los resultados -->
-        <div id="resultado" class="correos-lista"></div>
-    </div>
-</body>
+    }
+</script>
 </html>
