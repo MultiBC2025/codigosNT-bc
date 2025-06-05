@@ -15,7 +15,7 @@
       align-items: center;
       text-align: center;
       font-family: Arial, sans-serif;
-      color: white;
+      overflow-x: hidden;
     }
 
     h1 {
@@ -23,16 +23,16 @@
       font-weight: bold;
       margin: 0 0 20px;
       animation: sway 3s ease-in-out infinite;
-      color: #000000;
+      color: #000;
     }
 
-    p, #countdown {
+    p {
       font-size: 1.8rem;
       max-width: 600px;
-      margin: 0 20px;
+      margin: 0 20px 50px;
       animation: sway 3s ease-in-out infinite;
       animation-delay: 0.5s;
-      color: #000000;
+      color: #000;
     }
 
     @keyframes sway {
@@ -40,8 +40,61 @@
         transform: translateX(0);
       }
       50% {
-        transform: translateX(15px);
+        transform: translateX(10px);
       }
+    }
+
+    .countdown-container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .circle {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .circle svg {
+      transform: rotate(-90deg);
+    }
+
+    .circle circle {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
+
+    .circle .bg {
+      stroke: #ddd;
+    }
+
+    .circle .progress {
+      stroke: #00ffcc;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 314;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    .circle .value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .label {
+      text-align: center;
+      font-size: 1rem;
+      color: #000;
+      margin-top: 8px;
+      font-weight: bold;
     }
 
     .whatsapp-float {
@@ -49,43 +102,96 @@
       bottom: 20px;
       right: 20px;
       z-index: 100;
+      transition: transform 0.3s ease;
     }
 
     .whatsapp-float img {
       width: 60px;
       height: 60px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      border-left: 5px solid transparent;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .whatsapp-float:hover img {
+      transform: scale(1.2);
+      border-left: 5px solid white;
     }
   </style>
 </head>
 <body>
   <h1>Página en construcción</h1>
   <p>Una vez terminemos, abriremos al público. De mientras, contáctate al soporte +57 3503938788 y resolvemos tus dudas.</p>
-  <p id="countdown">Cargando contador...</p>
+
+  <div class="countdown-container">
+    <div class="circle" id="days">
+      <svg width="120" height="120">
+        <circle class="bg" cx="60" cy="60" r="50" />
+        <circle class="progress" cx="60" cy="60" r="50" />
+      </svg>
+      <div class="value">0</div>
+      <div class="label">Días</div>
+    </div>
+    <div class="circle" id="hours">
+      <svg width="120" height="120">
+        <circle class="bg" cx="60" cy="60" r="50" />
+        <circle class="progress" cx="60" cy="60" r="50" />
+      </svg>
+      <div class="value">0</div>
+      <div class="label">Horas</div>
+    </div>
+    <div class="circle" id="minutes">
+      <svg width="120" height="120">
+        <circle class="bg" cx="60" cy="60" r="50" />
+        <circle class="progress" cx="60" cy="60" r="50" />
+      </svg>
+      <div class="value">0</div>
+      <div class="label">Minutos</div>
+    </div>
+    <div class="circle" id="seconds">
+      <svg width="120" height="120">
+        <circle class="bg" cx="60" cy="60" r="50" />
+        <circle class="progress" cx="60" cy="60" r="50" />
+      </svg>
+      <div class="value">0</div>
+      <div class="label">Segundos</div>
+    </div>
+  </div>
+
+  <a class="whatsapp-float" href="https://wa.me/573503938788" target="_blank">
+    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="WhatsApp">
+  </a>
 
   <script>
-    const countDownDate = new Date("Jul 20, 2025 00:00:00").getTime();
-    const x = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = countDownDate - now;
+    const targetDate = new Date("2025-06-20T00:00:00").getTime();
 
-      if (distance < 0) {
-        clearInterval(x);
-        document.getElementById("countdown").innerHTML = "¡Ya estamos en línea!";
-        return;
-      }
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
 
       const days = Math.floor(distance / (1000 * 60 * 60 * 24));
       const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-      document.getElementById("countdown").innerHTML =
-        `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para el lanzamiento`;
-    }, 1000);
-  </script>
+      const totalDays = 30;
+      setCircle("days", days, totalDays);
+      setCircle("hours", hours, 24);
+      setCircle("minutes", minutes, 60);
+      setCircle("seconds", seconds, 60);
+    }
 
-  <a class="whatsapp-float" href="https://wa.me/573503938788" target="_blank">
-    <img src="https://img.icons8.com/ios-filled/100/25D366/whatsapp.png" alt="WhatsApp">
-  </a>
+    function setCircle(id, value, max) {
+      const circle = document.querySelector(`#${id} .progress`);
+      const text = document.querySelector(`#${id} .value`);
+      const offset = 314 - (314 * value) / max;
+      circle.style.strokeDashoffset = offset;
+      text.textContent = value;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
 </body>
 </html>
