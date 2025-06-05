@@ -55,15 +55,15 @@
     .countdown-container {
       display: flex;
       justify-content: center;
-      gap: 40px;
+      gap: 50px;
       flex-wrap: wrap;
       margin-bottom: 40px;
     }
 
     .circle {
       position: relative;
-      width: 120px;
-      height: 120px;
+      width: 150px;  /* más grande */
+      height: 150px;
     }
 
     .circle svg {
@@ -72,7 +72,7 @@
 
     .circle circle {
       fill: none;
-      stroke-width: 10;
+      stroke-width: 12;  /* más grueso */
       stroke-linecap: round;
     }
 
@@ -96,7 +96,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-family: 'Cinzel Decorative', serif;
-      font-size: 2.5rem;
+      font-size: 3.5rem;  /* más grande */
       color: #222;
       font-weight: 700;
       text-shadow:
@@ -105,18 +105,17 @@
         0 0 15px #888;
     }
 
-    /* Texto etiquetas con Divulge Regular (Raleway usado aquí) y efecto metalizado negro brillante */
+    /* Texto etiquetas con Divulge Regular (Raleway usado aquí), más grande y sombra blanca */
     .label {
       text-align: center;
       font-family: 'Raleway', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.6rem;  /* más grande */
       color: #222;
-      margin-top: 8px;
+      margin-top: 10px;
       font-weight: 600;
+      /* sombra blanca suave */
       text-shadow:
-        1px 1px 0 #555,
-        2px 2px 4px #000,
-        -1px -1px 2px #fff;
+        0 0 6px rgba(255, 255, 255, 0.9);
     }
 
     /* Botón flotante WhatsApp a la izquierda con borde blanco */
@@ -154,33 +153,33 @@
 
   <div class="countdown-container">
     <div class="circle" id="days">
-      <svg width="120" height="120">
-        <circle class="bg" cx="60" cy="60" r="50" />
-        <circle class="progress" cx="60" cy="60" r="50" />
+      <svg width="150" height="150">
+        <circle class="bg" cx="75" cy="75" r="50" />
+        <circle class="progress" cx="75" cy="75" r="50" />
       </svg>
       <div class="value">0</div>
       <div class="label">Días</div>
     </div>
     <div class="circle" id="hours">
-      <svg width="120" height="120">
-        <circle class="bg" cx="60" cy="60" r="50" />
-        <circle class="progress" cx="60" cy="60" r="50" />
+      <svg width="150" height="150">
+        <circle class="bg" cx="75" cy="75" r="50" />
+        <circle class="progress" cx="75" cy="75" r="50" />
       </svg>
       <div class="value">0</div>
       <div class="label">Horas</div>
     </div>
     <div class="circle" id="minutes">
-      <svg width="120" height="120">
-        <circle class="bg" cx="60" cy="60" r="50" />
-        <circle class="progress" cx="60" cy="60" r="50" />
+      <svg width="150" height="150">
+        <circle class="bg" cx="75" cy="75" r="50" />
+        <circle class="progress" cx="75" cy="75" r="50" />
       </svg>
       <div class="value">0</div>
       <div class="label">Minutos</div>
     </div>
     <div class="circle" id="seconds">
-      <svg width="120" height="120">
-        <circle class="bg" cx="60" cy="60" r="50" />
-        <circle class="progress" cx="60" cy="60" r="50" />
+      <svg width="150" height="150">
+        <circle class="bg" cx="75" cy="75" r="50" />
+        <circle class="progress" cx="75" cy="75" r="50" />
       </svg>
       <div class="value">0</div>
       <div class="label">Segundos</div>
