@@ -5,7 +5,6 @@
   <title>Página en construcción</title>
   <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
   <style>
-    /* Fondo con degradado azul a blanco */
     body {
       margin: 0;
       height: 100vh;
@@ -27,7 +26,7 @@
       color: #000000;
     }
 
-    p {
+    p, #countdown {
       font-size: 1.8rem;
       max-width: 600px;
       margin: 0 20px;
@@ -36,7 +35,6 @@
       color: #000000;
     }
 
-    /* Animación de movimiento suave, balanceo horizontal */
     @keyframes sway {
       0%, 100% {
         transform: translateX(0);
@@ -45,10 +43,49 @@
         transform: translateX(15px);
       }
     }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .whatsapp-float img {
+      width: 60px;
+      height: 60px;
+    }
   </style>
 </head>
 <body>
   <h1>Página en construcción</h1>
   <p>Una vez terminemos, abriremos al público. De mientras, contáctate al soporte +57 3503938788 y resolvemos tus dudas.</p>
+  <p id="countdown">Cargando contador...</p>
+
+  <script>
+    const countDownDate = new Date("Jul 20, 2025 00:00:00").getTime();
+    const x = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = countDownDate - now;
+
+      if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("countdown").innerHTML = "¡Ya estamos en línea!";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").innerHTML =
+        `Faltan ${days}d ${hours}h ${minutes}m ${seconds}s para el lanzamiento`;
+    }, 1000);
+  </script>
+
+  <a class="whatsapp-float" href="https://wa.me/573503938788" target="_blank">
+    <img src="https://img.icons8.com/ios-filled/100/25D366/whatsapp.png" alt="WhatsApp">
+  </a>
 </body>
 </html>
