@@ -204,6 +204,8 @@
 
     </div>
 
+    </div>
+
     <footer>
         ©2025 - Copyright Variedades y MultiEntretenimiento BC 2025
     </footer>
@@ -239,13 +241,13 @@ async function cargarCorreos(feedUrl) {
             const description = item.querySelector('description').textContent;
             const date = item.querySelector('pubDate').textContent;
 
-            html += 
+            html += `
                 <div class="correo-item" onclick="window.open('${link}', '_blank')">
                     <strong>${title}</strong>
                     <div class="fecha">${date}</div>
                     <p>${description}</p>
                 </div>
-            ;
+            `;
         });
 
         document.getElementById('rss-feed').innerHTML = html;
