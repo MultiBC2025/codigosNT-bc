@@ -221,5 +221,49 @@
     updateCountdown();
     setInterval(updateCountdown, 1000);
   </script>
+
+  <div id="smart-message" style="
+  font-family: 'Raleway', sans-serif; 
+  font-size: 1.5rem; 
+  color: #222; 
+  max-width: 600px; 
+  margin: 0 auto 40px; 
+  text-align: center;
+  text-shadow: 0 0 6px rgba(255,255,255,0.8);
+"></div>
+
+<script>
+  const messages = [
+    "Estamos mejorando para ti, ¡como un chef afilando su cuchillo!",
+    "Solo un poco más... mientras tanto, síguenos en redes.",
+    "Preparándonos para darte el mejor streaming, ¡aguanta un toque!",
+    "Cargando magia... como DJs ajustando sus mezclas.",
+    "Un poquito más y estaremos en vivo, ¡como un concierto que empieza!",
+    "Estamos afinando todo, ¡como guitarristas antes del solo!",
+    "Casi listo... como palomitas en el microondas.",
+    "Mejorando la experiencia para ti, ¡como un editor de video en acción!",
+    "Pronto podrás disfrutar, ¡como un estreno que no te quieres perder!",
+    "Estamos haciendo streaming de calidad, ¡como un barista preparando café!",
+    "Mantente conectado, estamos creando algo épico para ti.",
+    "Estamos en modo backstage, ¡preparando todo para el show!",
+    "Tu streaming favorito está casi listo, ¡como un piloto ajustando controles!",
+    "No te desconectes, ¡el espectáculo comienza pronto!",
+    "Estamos dando los últimos retoques, ¡como un chef con su plato estrella!"
+  ];
+
+  function pickMessage() {
+    let lastMessage = localStorage.getItem('lastMessageIndex');
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * messages.length);
+    } while (newIndex == lastMessage);
+    localStorage.setItem('lastMessageIndex', newIndex);
+    return messages[newIndex];
+  }
+
+  document.getElementById('smart-message').textContent = pickMessage();
+</script>
+
+  
 </body>
 </html>
