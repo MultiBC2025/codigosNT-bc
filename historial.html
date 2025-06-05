@@ -5,16 +5,12 @@
   <title>Página en construcción</title>
   <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
 
-  <!-- Fuentes Google Fonts y personalizadas -->
+  <!-- Fuentes Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Georgia&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Divulge+Regular&display=swap" rel="stylesheet" />
-  <!-- Cuartz Italy no está en Google Fonts, si tienes el archivo .woff o .ttf debes subirlo o usar otra similar -->
-  <!-- Para efectos prácticos usaré una fuente similar: 'Cinzel' que es elegante y serif -->
-
   <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet" />
 
   <style>
-    /* Reset y estilos generales */
     body {
       margin: 0;
       height: 100vh;
@@ -86,7 +82,6 @@
       stroke: #ddd;
     }
 
-    /* Cambié a rojo como pediste */
     .circle .progress {
       stroke: #ff3b3b;
       stroke-dasharray: 314;
@@ -94,19 +89,17 @@
       transition: stroke-dashoffset 1s linear;
     }
 
-    /* Fuente para los números */
     .circle .value {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 2.5rem;
-      font-family: 'Cinzel', serif; /* simil Cuartz Italy */
+      font-family: 'Cinzel', serif;
       font-weight: 600;
       color: #000;
     }
 
-    /* Fuente para los textos (días, horas, etc) */
     .label {
       text-align: center;
       font-size: 1.4rem;
@@ -114,7 +107,6 @@
       margin-top: 12px;
       font-weight: normal;
       font-family: 'Divulge Regular', serif;
-      /* Sombra blanca suave */
       text-shadow:
         0 0 5px rgba(255,255,255,0.8),
         0 0 10px rgba(255,255,255,0.6);
@@ -122,7 +114,31 @@
       text-transform: uppercase;
     }
 
-    /* WhatsApp botón a la izquierda con borde blanco */
+    /* Logo de la empresa redondo y clickeable */
+    .logo-page-link {
+      display: inline-block;
+      border-radius: 50%;
+      overflow: hidden;
+      width: 120px;
+      height: 120px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+    .logo-page-link:hover {
+      transform: scale(1.1);
+    }
+    .logo-page-link img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      user-select: none;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* Botón WhatsApp redondo perfecto */
     .whatsapp-float {
       position: fixed;
       bottom: 20px;
@@ -131,34 +147,28 @@
       transition: transform 0.3s ease;
       border: 3px solid white;
       border-radius: 50%;
-      padding: 5px;
+      padding: 0; /* quitamos padding para controlar tamaño */
+      width: 70px;
+      height: 70px;
       background: #25D366;
       box-shadow: 0 0 10px rgba(37, 211, 102, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-
-    .whatsapp-float img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-      border-left: 5px solid transparent;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-      display: block;
-    }
-
     .whatsapp-float:hover {
       transform: scale(1.2);
       border-color: white;
       box-shadow: 0 0 20px white;
     }
-
-    /* Logo tuyo visible en la página */
-    .logo-page {
-      width: 120px;
-      margin-bottom: 30px;
+    .whatsapp-float img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: block;
       user-select: none;
       pointer-events: none;
-      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+      object-fit: contain;
     }
 
     /* Mensaje inteligente debajo del contador */
@@ -174,14 +184,16 @@
       text-align: center;
       user-select: none;
       text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
+      min-height: 70px; /* para evitar salto al cambiar mensajes */
     }
-
   </style>
 </head>
 <body>
 
-  <!-- Logo personal arriba -->
-  <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="Mi Logo" class="logo-page" />
+  <!-- Logo con enlace -->
+  <a href="https://multibc2025.github.io/codigosNT-bc/" target="_blank" rel="noopener noreferrer" class="logo-page-link" aria-label="Ir a Multi BC">
+    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="Logo Multi BC" />
+  </a>
 
   <h1>Página en construcción</h1>
   <p class="description">Una vez terminemos, abriremos al público. De mientras, contáctate al soporte +57 3503938788 y resolvemos tus dudas.</p>
@@ -221,76 +233,104 @@
     </div>
   </div>
 
-  <!-- Mensaje inteligente con cambio automático -->
-  <div id="smart-message"></div>
+  <div id="smart-message">Estamos mejorando para ti, ¡como un chef afilando su cuchillo!</div>
 
-  <!-- Botón WhatsApp a la izquierda -->
-  <a class="whatsapp-float" href="https://wa.me/573503938788" target="_blank" rel="noopener noreferrer" aria-label="Contacto WhatsApp">
+  <!-- Botón flotante WhatsApp -->
+  <a href="https://wa.me/573503938788" target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label="Contactar por WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
   </a>
 
-  <script>
-    const targetDate = new Date("2025-06-20T00:00:00").getTime();
+<script>
+  // Cuenta regresiva
+  const countdownDate = new Date('2025-12-31T23:59:59').getTime();
 
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = countdownDate - now;
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      const totalDays = 30; // o el total que tengas previsto
-      setCircle("days", days, totalDays);
-      setCircle("hours", hours, 24);
-      setCircle("minutes", minutes, 60);
-      setCircle("seconds", seconds, 60);
+    if (distance < 0) {
+      document.querySelectorAll('.circle .value').forEach(el => el.textContent = '0');
+      return;
     }
 
-    function setCircle(id, value, max) {
-      const circle = document.querySelector(`#${id} .progress`);
-      const text = document.querySelector(`#${id} .value`);
-      const offset = 314 - (314 * value) / max;
-      circle.style.strokeDashoffset = offset;
-      text.textContent = value;
-    }
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    setCircleProgress('days', days, 365);
+    setCircleProgress('hours', hours, 24);
+    setCircleProgress('minutes', minutes, 60);
+    setCircleProgress('seconds', seconds, 60);
 
-    // Mensajes inteligentes que cambian sin repetir el mismo dos veces seguidas
-    const messages = [
-      "Estamos mejorando para ti, ¡como un chef afilando su cuchillo!",
-      "Solo un poco más... mientras tanto, síguenos en redes.",
-      "Preparando algo genial, como un DJ afinando su equipo.",
-      "Esto va a estar increíble, casi listo para ti.",
-      "Un toque final y listo, gracias por tu paciencia.",
-      "Como una estrella que se prepara para brillar, pronto aquí.",
-      "Estamos cocinando algo especial para ti, espera un momento.",
-      "Casi lo tenemos, gracias por seguir con nosotros.",
-      "Nuestro equipo está trabajando duro para ti, aguanta un poco.",
-      "No te vayas, ¡lo bueno está por llegar!"
-    ];
+    document.querySelector('#days .value').textContent = days;
+    document.querySelector('#hours .value').textContent = hours;
+    document.querySelector('#minutes .value').textContent = minutes;
+    document.querySelector('#seconds .value').textContent = seconds;
+  }
 
-    function pickMessage() {
-      let lastIndex = localStorage.getItem('lastMessageIndex');
-      let newIndex;
-      do {
-        newIndex = Math.floor(Math.random() * messages.length);
-      } while (newIndex == lastIndex);
-      localStorage.setItem('lastMessageIndex', newIndex);
-      return messages[newIndex];
-    }
+  function setCircleProgress(id, value, max) {
+    const circle = document.querySelector(`#${id} .progress`);
+    const radius = 50;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (value / max) * circumference;
+    circle.style.strokeDashoffset = offset;
+  }
 
-    function showMessage() {
-      const msgDiv = document.getElementById('smart-message');
-      msgDiv.textContent = pickMessage();
-    }
+  setInterval(updateCountdown, 1000);
+  updateCountdown();
 
-    showMessage();
-    setInterval(showMessage, 12000);
-  </script>
+  // Mensajes inteligentes - 30 frases
+  const smartMessages = [
+    "Estamos mejorando para ti, ¡como un chef afilando su cuchillo!",
+    "Solo un poco más... mientras tanto, síguenos en redes.",
+    "Preparando algo increíble, gracias por tu paciencia.",
+    "El show está por comenzar, aguanta un momento.",
+    "Estamos afinando los detalles, ¡pronto listo!",
+    "¡Casi listo! Mientras tanto, disfruta un café.",
+    "Mejorando la experiencia, un paso a la vez.",
+    "Nuestro equipo está trabajando duro para ti.",
+    "Gracias por esperar, valdrá la pena.",
+    "Pulimos los últimos detalles para ti.",
+    "Se viene algo genial, aguanta un poco más.",
+    "Actualizamos para darte lo mejor.",
+    "Estamos cocinando algo especial.",
+    "¡Gracias por tu paciencia, casi terminamos!",
+    "Estamos creando magia detrás de escena.",
+    "El futuro se está preparando ahora mismo.",
+    "Un poco más de tiempo y estaremos listos.",
+    "Preparando una experiencia increíble para ti.",
+    "Estamos trabajando, vuelve pronto a ver.",
+    "Cada segundo cuenta, gracias por esperar.",
+    "Actualización en proceso, gracias por tu paciencia.",
+    "Estamos mejorando para hacerte feliz.",
+    "Un pequeño descanso para grandes cambios.",
+    "Pronto volveremos con más sorpresas.",
+    "Gracias por estar aquí, casi terminamos.",
+    "Hacemos esto con amor para ti.",
+    "La espera valdrá la pena, confía en nosotros.",
+    "Actualizando todo para un mejor servicio.",
+    "Volvemos enseguida con novedades frescas.",
+    "Disfruta la espera, algo bueno viene."
+  ];
+
+  let lastIndex = -1;
+  const messageElement = document.getElementById('smart-message');
+
+  function changeMessage() {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * smartMessages.length);
+    } while (newIndex === lastIndex);
+    lastIndex = newIndex;
+    messageElement.textContent = smartMessages[newIndex];
+  }
+
+  // Cambiar mensaje cada 20 segundos (3 mensajes por minuto)
+  setInterval(changeMessage, 20000);
+  changeMessage();
+
+</script>
 
 </body>
 </html>
