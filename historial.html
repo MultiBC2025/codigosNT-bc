@@ -3,7 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <title>Página en construcción</title>
+  
+  <!-- Favicon con tu logo -->
   <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
+
+  <!-- Fuentes aproximadas desde Google Fonts para Divulge Regular y Quartz Italy -->
+  <!-- Divulge Regular: usaremos 'Raleway' para estilo elegante y condensado -->
+  <!-- Quartz Italy: usaremos 'Cinzel Decorative' para estilo numerales elegantes -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Raleway:wght@600&display=swap" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
@@ -72,37 +80,56 @@
       stroke: #ddd;
     }
 
+    /* Progreso rojo */
     .circle .progress {
-      stroke: #00ffcc;
+      stroke: #ff0000;
       stroke-dasharray: 314;
       stroke-dashoffset: 314;
       transition: stroke-dashoffset 1s linear;
+      filter: drop-shadow(0 0 4px #ff0000);
     }
 
+    /* Números con Quartz Italy (Cinzel Decorative aquí) */
     .circle .value {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 1.5rem;
-      color: #000;
-      font-weight: bold;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 2.5rem;
+      color: #222;
+      font-weight: 700;
+      text-shadow:
+        0 0 5px #fff,
+        0 0 10px #bbb,
+        0 0 15px #888;
     }
 
+    /* Texto etiquetas con Divulge Regular (Raleway usado aquí) y efecto metalizado negro brillante */
     .label {
       text-align: center;
-      font-size: 1rem;
-      color: #000;
+      font-family: 'Raleway', sans-serif;
+      font-size: 1.1rem;
+      color: #222;
       margin-top: 8px;
-      font-weight: bold;
+      font-weight: 600;
+      text-shadow:
+        1px 1px 0 #555,
+        2px 2px 4px #000,
+        -1px -1px 2px #fff;
     }
 
+    /* Botón flotante WhatsApp a la izquierda con borde blanco */
     .whatsapp-float {
       position: fixed;
       bottom: 20px;
-      right: 20px;
+      left: 20px;
       z-index: 100;
       transition: transform 0.3s ease;
+      border: 3px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(255,255,255,0.8);
+      background: #25d366;
     }
 
     .whatsapp-float img {
@@ -110,13 +137,14 @@
       height: 60px;
       border-radius: 50%;
       transition: all 0.3s ease;
-      border-left: 5px solid transparent;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-left: 0;
+      box-shadow: none;
+      display: block;
     }
 
-    .whatsapp-float:hover img {
+    .whatsapp-float:hover {
       transform: scale(1.2);
-      border-left: 5px solid white;
+      box-shadow: 0 0 20px white;
     }
   </style>
 </head>
@@ -159,8 +187,9 @@
     </div>
   </div>
 
-  <a class="whatsapp-float" href="https://wa.me/573503938788" target="_blank">
-    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="WhatsApp">
+  <!-- Botón WhatsApp -->
+  <a class="whatsapp-float" href="https://wa.me/573503938788" target="_blank" aria-label="Contacto WhatsApp">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
   </a>
 
   <script>
@@ -170,12 +199,12 @@
       const now = new Date().getTime();
       const distance = targetDate - now;
 
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      const days = Math.max(0, Math.floor(distance / (1000 * 60 * 60 * 24)));
+      const hours = Math.max(0, Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+      const minutes = Math.max(0, Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+      const seconds = Math.max(0, Math.floor((distance % (1000 * 60)) / 1000));
 
-      const totalDays = 30;
+      const totalDays = 30; // ajustar al total esperado si quieres la barra proporcional
       setCircle("days", days, totalDays);
       setCircle("hours", hours, 24);
       setCircle("minutes", minutes, 60);
