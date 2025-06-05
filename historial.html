@@ -1,11 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Pagina en construccion</title>
+  <meta charset="UTF-8" />
+  <title>Página en construcción</title>
+  <style>
+    /* Fondo con degradado azul a blanco */
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #0057b8, #ffffff);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    h1 {
+      font-size: 4rem;
+      font-weight: bold;
+      margin: 0 0 20px;
+      animation: sway 3s ease-in-out infinite;
+    }
+
+    p {
+      font-size: 1.8rem;
+      max-width: 600px;
+      margin: 0 20px;
+      animation: sway 3s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    /* Animación de movimiento suave, balanceo horizontal */
+    @keyframes sway {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(15px);
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Pagina en construccion</h1>
-  <p>Una vez terminemos, abriremos al publico, de mientras contactate al soporte +57 3503938788 y resolvemos tus dudas.</p>
+  <h1>Página en construcción</h1>
+  <p>Una vez terminemos, abriremos al público. De mientras, contáctate al soporte +57 3503938788 y resolvemos tus dudas.</p>
 </body>
 </html>
