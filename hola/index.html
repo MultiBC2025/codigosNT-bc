@@ -1,98 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>IPTV Portal</title>
+  <meta charset="UTF-8" />
+  <title>Reproductor IPTV Xtream - GitHub</title>
   <style>
     body {
-      margin: 0;
+      background-color: black;
+      color: white;
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #f2f2f2, #fff);
-      text-align: center;
+      margin: 0; padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
     }
-
-    .container {
-      padding: 50px;
-    }
-
-    h1 {
-      color: #e60000;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-      width: 80%;
-      max-width: 500px;
-      padding: 15px;
-      font-size: 16px;
-      border: 2px solid #e60000;
+    video {
+      width: 90vw;
+      max-width: 800px;
+      height: 450px;
+      background: black;
+      border: 2px solid #3498db;
       border-radius: 8px;
     }
-
-    button {
+    select {
       margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #e60000;
-      color: white;
-      border: none;
+      padding: 10px;
+      font-size: 1rem;
       border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #cc0000;
-    }
-
-    #player-section {
-      display: none;
-      margin-top: 50px;
-    }
-
-    #player {
-      width: 80%;
-      max-width: 900px;
-      height: 500px;
-      margin: 0 auto;
+      border: none;
+      outline: none;
+      background-color: #222;
+      color: white;
     }
   </style>
-
-  <!-- JW Player CDN -->
-  <script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
 </head>
 <body>
+  <h1>Reproductor IPTV Xtream</h1>
 
-  <div class="container" id="main-screen">
-    <h1>Bienvenido al Portal IPTV</h1>
-    <p>Ingresa manualmente la URL de tu lista o stream:</p>
-    <input type="text" id="stream-url" placeholder="https://ejemplo.com/playlist.m3u8" />
-    <br>
-    <button onclick="loadPlayer()">Ingresar</button>
-  </div>
+  <video id="player" controls crossorigin="anonymous" poster="">
+    Tu navegador no soporta video HTML5.
+  </video>
 
-  <div id="player-section">
-    <h1>Reproduciendo IPTV</h1>
-    <div id="player"></div>
-  </div>
+  <select id="channelSelect">
+    <option value="">Selecciona un canal</option>
+  </select>
 
   <script>
-    function loadPlayer() {
-      const url = document.getElementById("stream-url").value;
-      if (!url) {
-        alert("Por favor, ingresa una URL válida.");
-        return;
+    // Datos del playlist Xtream (Ejemplo básico)
+    // Normalmente, el URL tiene esta estructura: 
+    // http://server:port/player_api.php?username=XXX&password=YYY&action=get_live_streams
+    // Pero aquí pondremos URLs de ejemplo directas de streams (m3u8 u otros)
+    
+    const channels = [
+      {
+        name: "Canal 1 - Noticias",
+        url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+      },
+      {
+        name: "Canal 2 - Deportes",
+        url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
+      },
+      {
+        name: "Canal 3 - Música",
+        url: "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8"
       }
+    ];
 
-      document.getElementById("main-screen").style.display = "none";
-      document.getElementById("player-section").style.display = "block";
+    const select = document.getElementById('channelSelect');
+    const player = document.getElementById('player');
 
-      jwplayer("player").setup({
-        file: url,
-        width: "100%",
-        aspectratio: "16:9",
-        autostart: true
-      });
-    }
+    // Cargar canales en el select
+    channels.forEach((channel, index) => {
+      const option = document.createElement('option');
+      option.value = channel.url;
+      option.textContent = channel.name;
+      select.appendChild(option);
+    });
+
+    // Cambiar canal y reproducir
+    select.addEventListener('change', () => {
+      const url = select.value;
+      if(url) {
+        player.src = url;
+        player.play();
+      } else {
+        player.pause();
+        player.src = "";
+      }
+    });
   </script>
 </body>
 </html>
