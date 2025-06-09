@@ -1,94 +1,82 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Reproductor IPTV Xtream - GitHub</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0; padding: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      justify-content: center;
-      align-items: center;
-    }
-    video {
-      width: 90vw;
-      max-width: 800px;
-      height: 450px;
-      background: black;
-      border: 2px solid #3498db;
-      border-radius: 8px;
-    }
-    select {
-      margin-top: 20px;
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-      background-color: #222;
-      color: white;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Reproductor Xtream IPTV</title>
+<style>
+  body { font-family: Arial; background: #111; color: white; padding: 20px; }
+  input, button { padding: 10px; margin: 5px 0; width: 100%; max-width: 400px; }
+  #channels { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .channel {
+    background: #222; padding: 10px; border-radius: 6px; cursor: pointer;
+    flex: 1 0 150px; max-width: 150px; text-align: center;
+  }
+  .channel img { width: 100%; border-radius: 4px; }
+  video { margin-top: 20px; width: 90vw; max-width: 800px; height: 450px; background: black; }
+</style>
 </head>
 <body>
-  <h1>Reproductor IPTV Xtream</h1>
 
-  <video id="player" controls crossorigin="anonymous" poster="">
-    Tu navegador no soporta video HTML5.
-  </video>
+<h2>Login Xtream IPTV</h2>
+<input id="server" placeholder="URL del servidor Xtream (ej: http://ip:port)" />
+<input id="username" placeholder="Usuario" />
+<input id="password" type="password" placeholder="Contraseña" />
+<button id="loginBtn">Entrar y cargar canales</button>
 
-  <select id="channelSelect">
-    <option value="">Selecciona un canal</option>
-  </select>
+<div id="channels"></div>
 
-  <script>
-    // Datos del playlist Xtream (Ejemplo básico)
-    // Normalmente, el URL tiene esta estructura: 
-    // http://server:port/player_api.php?username=XXX&password=YYY&action=get_live_streams
-    // Pero aquí pondremos URLs de ejemplo directas de streams (m3u8 u otros)
-    
-    const channels = [
-      {
-        name: "Canal 1 - Noticias",
-        url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
-      },
-      {
-        name: "Canal 2 - Deportes",
-        url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
-      },
-      {
-        name: "Canal 3 - Música",
-        url: "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8"
-      }
-    ];
+<video id="player" controls></video>
 
-    const select = document.getElementById('channelSelect');
-    const player = document.getElementById('player');
+<script>
+const loginBtn = document.getElementById('loginBtn');
+const channelsDiv = document.getElementById('channels');
+const player = document.getElementById('player');
 
-    // Cargar canales en el select
-    channels.forEach((channel, index) => {
-      const option = document.createElement('option');
-      option.value = channel.url;
-      option.textContent = channel.name;
-      select.appendChild(option);
-    });
+loginBtn.onclick = async () => {
+  const server = document.getElementById('server').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-    // Cambiar canal y reproducir
-    select.addEventListener('change', () => {
-      const url = select.value;
-      if(url) {
-        player.src = url;
-        player.play();
-      } else {
-        player.pause();
-        player.src = "";
-      }
-    });
-  </script>
+  if(!server || !username || !password) {
+    alert('Completa todos los campos');
+    return;
+  }
+
+  const apiURL = `${server}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&action=get_live_streams`;
+
+  try {
+    // IMPORTANTE: Si la API no permite CORS, aquí fallará, para probar usa un proxy CORS
+    // Puedes usar un proxy temporal, p.ej: 
+    // const proxy = 'https://cors-anywhere.herokuapp.com/';
+    // const response = await fetch(proxy + apiURL);
+
+    const response = await fetch(apiURL);
+    if(!response.ok) throw new Error('Error al obtener datos');
+
+    const channels = await response.json();
+
+    if(channels && channels.length) {
+      channelsDiv.innerHTML = '';
+      channels.forEach(ch => {
+        const div = document.createElement('div');
+        div.classList.add('channel');
+        div.innerHTML = `<img src="${ch.stream_icon}" alt="${ch.name}" />
+                         <div>${ch.name}</div>`;
+        div.onclick = () => {
+          player.src = ch.stream_url; // En Xtream el stream_url es el link directo para reproducir
+          player.play();
+        };
+        channelsDiv.appendChild(div);
+      });
+    } else {
+      alert('No se encontraron canales');
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+    console.error(e);
+  }
+}
+</script>
+
 </body>
 </html>
