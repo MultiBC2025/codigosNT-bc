@@ -84,15 +84,12 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            /* Transición base que puede ser sobreescrita por clases de animación específicas */
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             position: relative;
             z-index: 1;
-
-            /* Por defecto visibles (se animarán desde una posición de inicio) */
-            opacity: 1; /* Esto se controlará en JS para la animación de entrada */
-            transform: translate(0,0); /* Base para las animaciones */
         }
 
         .device-card i {
@@ -148,25 +145,22 @@
         .device-card[data-device="windows"].animate-out { transform: translate(100vw, -100vh); }
         .device-card[data-device="android-tv"].animate-out { transform: translate(-100vw, 100vh); }
         .device-card[data-device="roku"].animate-out { transform: translateY(100vh); }
-        .device-card[data-device="tvs"].animate:out { transform: translate(100vw, 100vh); }
+        .device-card[data-device="tvs"].animate-out { transform: translate(100vw, 100vh); }
 
-        /* Animación de entrada para las tarjetas originales al cargar la página */
-        .device-card.initial-start { /* Clase inicial para que JS aplique el transform */
-            opacity: 0;
-            transition: none; /* Sin transición al aplicar la posición inicial */
-        }
-        .device-card.animate-in { /* Clase para activar la animación hacia la posición final */
+        /* Clases de posición inicial para las animaciones de entrada (sin transición) */
+        .device-card.initial-top-left { transform: translate(-100vw, -100vh); opacity: 0; transition: none; }
+        .device-card.initial-top { transform: translateY(-100vh); opacity: 0; transition: none; }
+        .device-card.initial-top-right { transform: translate(100vw, -100vh); opacity: 0; transition: none; }
+        .device-card.initial-bottom-left { transform: translate(-100vw, 100vh); opacity: 0; transition: none; }
+        .device-card.initial-bottom { transform: translateY(100vh); opacity: 0; transition: none; }
+        .device-card.initial-bottom-right { transform: translate(100vw, 100vh); opacity: 0; transition: none; }
+
+        /* Clase para la animación de entrada (a la posición final) */
+        .device-card.animate-in {
             opacity: 1;
             transform: translate(0,0);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Habilitar transición */
         }
-        /* Direcciones de inicio para la animación de entrada de las tarjetas originales */
-        .device-card[data-device="android"].initial-top-left { transform: translate(-100vw, -100vh); }
-        .device-card[data-device="ios"].initial-top { transform: translateY(-100vh); }
-        .device-card[data-device="windows"].initial-top-right { transform: translate(100vw, -100vh); }
-        .device-card[data-device="android-tv"].initial-bottom-left { transform: translate(-100vw, 100vh); }
-        .device-card[data-device="roku"].initial-bottom { transform: translateY(100vh); }
-        .device-card[data-device="tvs"].initial-bottom-right { transform: translate(100vw, 100vh); }
 
 
         /* Área de contenido de los pasos */
@@ -268,17 +262,18 @@
 
         /* Animaciones de entrada para las tarjetas small (SIMÉTRICAS a las de salida de las originales) */
         /* Estas son las posiciones de inicio para la animación */
-        .device-card.small.start-top-left { transform: translate(-100vw, -100vh); }
-        .device-card.small.start-top { transform: translateY(-100vh); }
-        .device-card.small.start-top-right { transform: translate(100vw, -100vh); }
-        .device-card.small.start-bottom-left { transform: translate(-100vw, 100vh); }
-        .device-card.small.start-bottom { transform: translateY(100vh); }
-        .device-card.small.start-bottom-right { transform: translate(100vw, 100vh); }
+        .device-card.small.start-top-left { transform: translate(-100vw, -100vh); opacity: 0; transition: none; }
+        .device-card.small.start-top { transform: translateY(-100vh); opacity: 0; transition: none; }
+        .device-card.small.start-top-right { transform: translate(100vw, -100vh); opacity: 0; transition: none; }
+        .device-card.small.start-bottom-left { transform: translate(-100vw, 100vh); opacity: 0; transition: none; }
+        .device-card.small.start-bottom { transform: translateY(100vh); opacity: 0; transition: none; }
+        .device-card.small.start-bottom-right { transform: translate(100vw, 100vh); opacity: 0; transition: none; }
 
         /* Clase para la posición final animada para tarjetas small */
         .device-card.small.animate-in {
             opacity: 1;
             transform: translateX(0) translateY(0);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
 
 
@@ -591,7 +586,7 @@
 
             // --- Funciones de Animación ---
 
-            // Función para animar la entrada de las tarjetas (ya sean originales o clones)
+            // Función para animar la entrada de las tarjetas (originales o clones)
             const animateCardsIn = (cardsToAnimate, delayPerCard = 100, initialDelay = 0, isInitialLoad = false) => {
                 const animationDirections = [
                     'top-left', 'top', 'top-right', // Para primera fila o grupo
@@ -599,26 +594,31 @@
                 ];
                 
                 cardsToAnimate.forEach((card, index) => {
-                    // Resetea las clases de animación para asegurar que la animación se dispare cada vez
-                    card.classList.remove('animate-in', 'initial-top-left', 'initial-top', 'initial-top-right',
+                    // 1. Limpiar clases de animación y transiciones previas
+                    card.classList.remove('animate-in', 
+                                        'initial-top-left', 'initial-top', 'initial-top-right',
                                         'initial-bottom-left', 'initial-bottom', 'initial-bottom-right',
                                         'start-top-left', 'start-top', 'start-top-right',
                                         'start-bottom-left', 'start-bottom', 'start-bottom-right');
                     card.style.opacity = '0'; // Asegura que comience oculto
-                    card.style.transition = 'none'; // Deshabilita la transición para aplicar el transform inicial instantáneamente
+                    card.style.transform = ''; // Resetea transform para que la clase de dirección lo defina
+                    card.style.transition = 'none'; // Deshabilita la transición para aplicar la posición inicial instantáneamente
                     card.style.pointerEvents = 'none'; // Deshabilita clics durante la animación de entrada
 
+                    // 2. Aplicar la clase de dirección inicial
                     let directionClass = '';
-                    if (isInitialLoad) { // Para la animación de carga inicial de las tarjetas originales
+                    if (isInitialLoad) {
                         directionClass = `initial-${animationDirections[index % animationDirections.length]}`;
-                    } else { // Para la animación de entrada de las tarjetas small
+                    } else {
                         directionClass = `start-${animationDirections[index % animationDirections.length]}`;
                     }
                     card.classList.add(directionClass);
 
-                    // Pequeño retraso para que el navegador "vea" la posición inicial antes de animar
+                    // 3. Disparar la animación después de un pequeño retraso
                     setTimeout(() => {
-                        card.classList.add('animate-in'); // Clase que lleva a la posición final (opacity: 1, transform: none)
+                        // Forzar un reflow para asegurar que el navegador "vea" la posición inicial
+                        card.offsetWidth; 
+                        card.classList.add('animate-in'); // Añade la clase que activa la transición a la posición final
                         card.style.pointerEvents = 'auto'; // Habilita clics una vez que la animación comienza
                     }, initialDelay + (index * delayPerCard));
                 });
@@ -647,7 +647,7 @@
 
             // --- Lógica Principal ---
 
-            // Oculta las tarjetas duplicadas al cargar la página
+            // Oculta las tarjetas duplicadas al cargar la página (mantienen display: none)
             clonedDeviceCards.forEach(card => card.classList.add('hidden'));
 
             // 1. Animación inicial al cargar la página para el título
@@ -661,22 +661,10 @@
             }, 100);
 
             // 2. Animación inicial al cargar la página para las tarjetas originales
-            // Primero, aplicar la posición inicial sin transición
-            deviceCards.forEach((card, index) => {
-                const animationDirections = [
-                    'initial-top-left', 'initial-top', 'initial-top-right',
-                    'initial-bottom-left', 'initial-bottom', 'initial-bottom-right'
-                ];
-                card.classList.add(animationDirections[index % animationDirections.length]);
-                card.style.opacity = '0'; // Asegura que estén ocultas al inicio
-                card.style.transition = 'none'; // Deshabilita la transición inicial
-            });
-
-            // Luego, animarlas hacia su posición final
+            // Llamar a animateCardsIn directamente, ella maneja el estado inicial y la animación.
             setTimeout(() => {
-                animateCardsIn(deviceCards, 150, 0, true); // initialDelay 0 ya que ya hay un setTimeout aquí
-            }, 500); // Retraso para que las tarjetas originales animen su entrada después del título
-
+                animateCardsIn(deviceCards, 150, 0, true); // initialDelay 0, es el retraso total de 500ms el que importa
+            }, 500); // Retraso total para que las tarjetas animen su entrada después del título
 
             // Event listener para las tarjetas principales
             deviceCards.forEach(card => {
@@ -722,7 +710,7 @@
                         // Ajustar el grid para 5 elementos (3 arriba, 2 abajo y centrados)
                         if (filteredClones.length === 5) {
                             otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                            otherDevicesGrid.style.justifyItems = 'center'; // Centra los items
+                            otherDevicesGrid.style.justifyItems = 'center';
                         } else {
                             otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
                         }
@@ -737,9 +725,8 @@
                             }
                         });
 
-
                         // Animar la entrada de las tarjetas clonadas
-                        animateCardsIn(filteredClones, 100, 100);
+                        animateCardsIn(filteredClones, 100, 100, false); // No es carga inicial
 
                         document.body.style.pointerEvents = 'auto';
 
@@ -759,10 +746,12 @@
 
                 clonedDeviceCards.forEach(cdc => {
                     cdc.classList.add('hidden');
+                    // Resetear todas las clases de animación de los clones
                     cdc.classList.remove('animate-in', 'start-top-left', 'start-top', 'start-top-right',
                                         'start-bottom-left', 'start-bottom', 'start-bottom-right');
                     cdc.style.opacity = '';
                     cdc.style.transform = '';
+                    cdc.style.transition = ''; // Restaurar la transición por defecto si es necesario
                 });
                 stepContents.forEach(content => {
                     content.classList.remove('active');
@@ -778,32 +767,22 @@
                     card.style.width = '';
                     card.style.height = '';
                     card.style.padding = '';
-                    card.style.transition = 'all 0.6s ease-in-out';
+                    card.style.transition = 'all 0.6s ease-in-out'; // Restaurar transición general
                     card.querySelector('.card-content').style.opacity = '1';
                     card.style.borderRadius = '';
                     card.style.backgroundColor = '';
                     card.style.display = 'flex'; // Asegura que vuelvan a ser flex
                     card.style.pointerEvents = 'auto'; // Habilitar clics
+                    card.style.opacity = '0'; // Asegura que se oculten para la re-animación
                 });
 
                 deviceGrid.classList.remove('hidden-grid');
 
                 // Re-animar la entrada de las tarjetas originales
-                // Primero, aplicar la posición inicial sin transición para la re-entrada
-                deviceCards.forEach((card, index) => {
-                    const animationDirections = [
-                        'initial-top-left', 'initial-top', 'initial-top-right',
-                        'initial-bottom-left', 'initial-bottom', 'initial-bottom-right'
-                    ];
-                    card.classList.add(animationDirections[index % animationDirections.length]);
-                    card.style.opacity = '0';
-                    card.style.transition = 'none';
-                });
-                // Luego, disparar la animación
+                // El `animateCardsIn` se encargará de aplicar las clases de posición inicial y luego animar.
                 setTimeout(() => {
                     animateCardsIn(deviceCards, 150, 0, true);
-                }, 100);
-
+                }, 100); // Pequeño retraso para que la pantalla se "limpie" antes de la re-entrada
 
                 setTimeout(() => {
                     document.body.style.pointerEvents = 'auto';
@@ -830,6 +809,7 @@
                                             'start-bottom-left', 'start-bottom', 'start-bottom-right');
                         cdc.style.opacity = '';
                         cdc.style.transform = '';
+                        cdc.style.transition = '';
                     });
 
 
@@ -869,8 +849,7 @@
                             }
                         });
 
-
-                        animateCardsIn(filteredClones, 100, 100);
+                        animateCardsIn(filteredClones, 100, 100, false); // No es carga inicial
 
                         document.body.style.pointerEvents = 'auto';
 
