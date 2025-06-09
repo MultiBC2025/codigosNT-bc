@@ -1,82 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<title>Reproductor Xtream IPTV</title>
-<style>
-  body { font-family: Arial; background: #111; color: white; padding: 20px; }
-  input, button { padding: 10px; margin: 5px 0; width: 100%; max-width: 400px; }
-  #channels { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
-  .channel {
-    background: #222; padding: 10px; border-radius: 6px; cursor: pointer;
-    flex: 1 0 150px; max-width: 150px; text-align: center;
-  }
-  .channel img { width: 100%; border-radius: 4px; }
-  video { margin-top: 20px; width: 90vw; max-width: 800px; height: 450px; background: black; }
-</style>
+  <meta charset="UTF-8" />
+  <title>IPTV Smarters Embed Test</title>
+  <style>
+    body, html { margin:0; padding:0; height:100%; }
+    iframe { border:none; width:100%; height:100vh; }
+  </style>
 </head>
 <body>
 
-<h2>Login Xtream IPTV</h2>
-<input id="server" placeholder="URL del servidor Xtream (ej: http://ip:port)" />
-<input id="username" placeholder="Usuario" />
-<input id="password" type="password" placeholder="Contraseña" />
-<button id="loginBtn">Entrar y cargar canales</button>
-
-<div id="channels"></div>
-
-<video id="player" controls></video>
-
-<script>
-const loginBtn = document.getElementById('loginBtn');
-const channelsDiv = document.getElementById('channels');
-const player = document.getElementById('player');
-
-loginBtn.onclick = async () => {
-  const server = document.getElementById('server').value.trim();
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  if(!server || !username || !password) {
-    alert('Completa todos los campos');
-    return;
-  }
-
-  const apiURL = `${server}/player_api.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&action=get_live_streams`;
-
-  try {
-    // IMPORTANTE: Si la API no permite CORS, aquí fallará, para probar usa un proxy CORS
-    // Puedes usar un proxy temporal, p.ej: 
-    // const proxy = 'https://cors-anywhere.herokuapp.com/';
-    // const response = await fetch(proxy + apiURL);
-
-    const response = await fetch(apiURL);
-    if(!response.ok) throw new Error('Error al obtener datos');
-
-    const channels = await response.json();
-
-    if(channels && channels.length) {
-      channelsDiv.innerHTML = '';
-      channels.forEach(ch => {
-        const div = document.createElement('div');
-        div.classList.add('channel');
-        div.innerHTML = `<img src="${ch.stream_icon}" alt="${ch.name}" />
-                         <div>${ch.name}</div>`;
-        div.onclick = () => {
-          player.src = ch.stream_url; // En Xtream el stream_url es el link directo para reproducir
-          player.play();
-        };
-        channelsDiv.appendChild(div);
-      });
-    } else {
-      alert('No se encontraron canales');
-    }
-  } catch (e) {
-    alert('Error: ' + e.message);
-    console.error(e);
-  }
-}
-</script>
+  <iframe src="http://webtv.iptvsmarters.com/index.php?adduser"></iframe>
 
 </body>
 </html>
