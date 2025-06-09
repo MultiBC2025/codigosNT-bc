@@ -2,76 +2,95 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Reproductor M3U - MosherTV</title>
-  <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+  <title>IPTV Portal</title>
   <style>
     body {
-      background: linear-gradient(to right, #f0f0f0, #c8d6e5);
+      margin: 0;
       font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f2f2f2, #fff);
       text-align: center;
-      padding: 20px;
     }
-    input, select, button {
-      padding: 10px;
-      margin: 8px;
+
+    .container {
+      padding: 50px;
+    }
+
+    h1 {
+      color: #e60000;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      max-width: 500px;
+      padding: 15px;
       font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      border: 2px solid #e60000;
+      border-radius: 8px;
     }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #e60000;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #cc0000;
+    }
+
+    #player-section {
+      display: none;
+      margin-top: 50px;
+    }
+
     #player {
-      margin-top: 30px;
-      width: 100%;
-      max-width: 800px;
-      height: 480px;
-      margin-left: auto;
-      margin-right: auto;
+      width: 80%;
+      max-width: 900px;
+      height: 500px;
+      margin: 0 auto;
     }
   </style>
+
+  <!-- JW Player CDN -->
+  <script src="https://cdn.jwplayer.com/libraries/IDzF9Zmk.js"></script>
 </head>
 <body>
 
-  <h2>Reproductor IPTV - MosherTV</h2>
-
-  <div>
-    <input type="text" id="user" placeholder="Usuario">
-    <input type="text" id="pass" placeholder="Contraseña">
-    <input type="text" id="stream" placeholder="URL directa .m3u8">
+  <div class="container" id="main-screen">
+    <h1>Bienvenido al Portal IPTV</h1>
+    <p>Ingresa manualmente la URL de tu lista o stream:</p>
+    <input type="text" id="stream-url" placeholder="https://ejemplo.com/playlist.m3u8" />
     <br>
-    <button onclick="loadPlayer()">Cargar Reproductor</button>
+    <button onclick="loadPlayer()">Ingresar</button>
   </div>
 
-  <p id="info"></p>
-  <div id="player"></div>
+  <div id="player-section">
+    <h1>Reproduciendo IPTV</h1>
+    <div id="player"></div>
+  </div>
 
   <script>
     function loadPlayer() {
-      const user = document.getElementById('user').value;
-      const pass = document.getElementById('pass').value;
-      const stream = document.getElementById('stream').value;
-
-      let m3uUrl = '';
-      if (stream) {
-        m3uUrl = stream;
-      } else if (user && pass) {
-        m3uUrl = `http://odenfull.co:2086/playlist/${user}/${pass}/m3u_plus`;
-        document.getElementById('info').innerText = `URL generada: ${m3uUrl}`;
-        alert("Esta URL es una lista M3U. Cópiala y ábrela con VLC u otro reproductor compatible.");
-        return;
-      } else {
-        alert("Debes ingresar usuario y contraseña, o una URL .m3u8 directa.");
+      const url = document.getElementById("stream-url").value;
+      if (!url) {
+        alert("Por favor, ingresa una URL válida.");
         return;
       }
 
-      document.getElementById('info').innerText = `Reproduciendo: ${m3uUrl}`;
-      document.getElementById('player').innerHTML = ''; // limpiar anterior
+      document.getElementById("main-screen").style.display = "none";
+      document.getElementById("player-section").style.display = "block";
 
-      new Clappr.Player({
-        source: m3uUrl,
-        parentId: "#player",
+      jwplayer("player").setup({
+        file: url,
         width: "100%",
-        height: "100%",
-        autoPlay: true,
-        mimeType: "application/x-mpegURL",
+        aspectratio: "16:9",
+        autostart: true
       });
     }
   </script>
