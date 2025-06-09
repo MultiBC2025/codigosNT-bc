@@ -34,6 +34,7 @@
             position: relative;
             border-radius: 0 0 50px 50px; /* Bordes redondeados en la parte inferior */
             cursor: pointer; /* Para el reseteo al hacer clic en el título */
+            z-index: 10; /* Asegura que el header esté por encima de todo */
         }
 
         .main-header h1 {
@@ -76,12 +77,13 @@
             width: 100%;
             max-width: 900px; /* Ancho máximo para el grid */
             transition: opacity 0.6s ease-in-out; /* Transición para el desvanecimiento del grid */
-            /* No usaremos transform: translateY para colapsar, solo opacity */
         }
 
+        /* Clase para ocultar completamente el grid original */
         .device-grid.hidden-grid {
-            opacity: 0;
-            pointer-events: none; /* Deshabilita clics cuando está colapsado */
+            display: none; /* Oculta completamente el grid */
+            opacity: 0; /* Por si acaso, para una transición más suave si vuelve a aparecer */
+            pointer-events: none; /* Deshabilita clics */
         }
 
         /* Tarjeta de dispositivo */
@@ -95,11 +97,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, left 0.6s ease, top 0.6s ease, width 0.6s ease, height 0.6s ease, opacity 0.3s ease; /* Agregamos opacity */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease; /* Transición general */
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             position: relative; /* Necesario para la animación de posición absoluta */
-            z-index: 1;
+            z-index: 1; /* Para que esté por encima de otros elementos mientras no esté seleccionado */
         }
 
         .device-card i {
@@ -122,9 +124,9 @@
             border-color: #007bff; /* Color al pasar el ratón */
         }
 
-        /* Estado de la tarjeta seleccionada */
+        /* Estado de la tarjeta seleccionada (fija en el centro) */
         .device-card.selected {
-            position: fixed; /* Ojo: fixed lo saca del flujo normal */
+            position: fixed; /* Lo saca del flujo normal */
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(1.1); /* Ligeramente más grande y centrado */
@@ -135,6 +137,7 @@
             width: auto; /* Ajusta el ancho automáticamente */
             height: auto; /* Ajusta la altura automáticamente */
             padding: 40px 30px; /* Más padding para que se vea más grande */
+            transition: transform 0.6s ease, top 0.6s ease, left 0.6s ease, width 0.6s ease, height 0.6s ease, padding 0.6s ease;
         }
 
         .device-card.selected i {
@@ -410,7 +413,6 @@
                 <h2>Configuración en Android</h2>
                 <p>Aquí el paso a paso detallado para configurar en dispositivos Android.</p>
                 <p>Puedes descargar la aplicación desde <a href="#">aquí</a>.</p>
-                <p>Sigue estos pasos para la instalación:</p>
                 <ol>
                     <li>Paso 1: Abre la tienda de aplicaciones.</li>
                     <li>Paso 2: Busca "MultiEntretenimiento BC".</li>
@@ -539,30 +541,47 @@
                 card.addEventListener('click', () => {
                     const deviceType = card.dataset.device;
 
-                    // Desactivar todos los eventos de clic temporalmente para evitar interacciones durante la animación
-                    deviceCards.forEach(dc => dc.style.pointerEvents = 'none');
-                    mainHeader.style.pointerEvents = 'none'; // Desactivar clic en el título también
-                    clonedDeviceCards.forEach(cdc => cdc.style.pointerEvents = 'none'); // Desactivar clics en clones también
+                    // Desactivar todos los eventos de clic en el documento para evitar interacciones no deseadas
+                    document.body.style.pointerEvents = 'none';
 
                     // 1. Mover la tarjeta seleccionada al centro y hacerla más grande
                     deviceCards.forEach(dc => {
                         if (dc === card) {
                             dc.classList.add('selected');
                         } else {
-                            // Ocultar las otras tarjetas originales con opacidad
+                            // 2. Ocultar completamente las otras tarjetas originales inmediatamente
                             dc.style.opacity = '0';
-                            dc.style.transition = 'opacity 0.3s ease';
-                            // No display: none, solo opacidad para que no interfieran en el flujo
+                            setTimeout(() => {
+                                dc.style.display = 'none';
+                            }, 300); // Un pequeño retraso para que la opacidad tenga efecto
                         }
                     });
 
-                    // 2. Ocultar el grid de dispositivos original (pero no eliminarlo del DOM)
-                    deviceGrid.classList.add('hidden-grid'); // Clase para opacidad 0 y pointer-events none
+                    // 3. Ocultar completamente el grid de dispositivos original
+                    setTimeout(() => {
+                        deviceGrid.classList.add('hidden-grid'); // Esto aplicará display: none
+                    }, 300); // Sincroniza con el desvanecimiento de las tarjetas individuales
 
-                    // 3. Mostrar el área de contenido principal
+                    // 4. Mostrar el área de contenido principal y las tarjetas clonadas
                     setTimeout(() => {
                         contentArea.classList.remove('hidden');
                         contentArea.classList.add('visible');
+                        otherDevicesMessage.classList.remove('hidden');
+                        otherDevicesMessage.classList.add('visible');
+                        otherDevicesGrid.classList.add('visible');
+
+                        clonedDeviceCards.forEach(cdc => {
+                            if (cdc.dataset.device !== deviceType) {
+                                cdc.classList.remove('hidden'); // Hace que la tarjeta sea visible
+                                cdc.style.opacity = '0'; // Comienza transparente para la animación
+                                setTimeout(() => {
+                                    cdc.style.opacity = '1'; // Anima la opacidad
+                                    cdc.style.transition = 'opacity 0.5s ease'; // Asegura la transición
+                                }, 50); // Pequeño retraso para la animación
+                            } else {
+                                cdc.classList.add('hidden'); // Asegura que la tarjeta clonada de la seleccionada esté oculta
+                            }
+                        });
 
                         // Ocultar todos los pasos y luego mostrar el relevante
                         stepContents.forEach(content => {
@@ -576,43 +595,17 @@
                             targetStepContent.classList.add('active');
                         }
 
-                        // Mostrar el mensaje de "Más formas de agregar IPTV"
-                        otherDevicesMessage.classList.remove('hidden');
-                        otherDevicesMessage.classList.add('visible');
-
-                        // Mostrar el grid de los "demás dispositivos" abajo
-                        otherDevicesGrid.classList.add('visible');
-                        clonedDeviceCards.forEach(cdc => {
-                            // Mostrar solo las tarjetas clonadas que NO son la seleccionada originalmente
-                            if (cdc.dataset.device !== deviceType) {
-                                cdc.classList.remove('hidden'); // Hace que la tarjeta sea visible
-                                cdc.style.opacity = '0'; // Comienza transparente para la animación
-                                setTimeout(() => {
-                                    cdc.style.opacity = '1'; // Anima la opacidad
-                                    cdc.style.transition = 'opacity 0.5s ease'; // Asegura la transición
-                                }, 50); // Pequeño retraso para la animación
-                            } else {
-                                cdc.classList.add('hidden'); // Asegura que la tarjeta clonada de la seleccionada esté oculta
-                            }
-                        });
-
-
                         // Habilitar de nuevo los eventos de clic
-                        deviceCards.forEach(dc => dc.style.pointerEvents = 'auto');
-                        mainHeader.style.pointerEvents = 'auto';
-                        clonedDeviceCards.forEach(cdc => cdc.style.pointerEvents = 'auto'); // Habilitar clics en clones
+                        document.body.style.pointerEvents = 'auto';
 
-                    }, 600); // El retraso debe ser similar o un poco mayor que la duración de la transición del grid
+                    }, 600); // Un retraso mayor para permitir que las animaciones anteriores se completen
                 });
             });
 
             // Función para resetear la vista al estado inicial al hacer clic en el título
             mainHeader.addEventListener('click', () => {
                 // Desactivar todos los eventos de clic temporalmente
-                deviceCards.forEach(dc => dc.style.pointerEvents = 'none');
-                mainHeader.style.pointerEvents = 'none';
-                clonedDeviceCards.forEach(cdc => cdc.style.pointerEvents = 'none');
-
+                document.body.style.pointerEvents = 'none';
 
                 // Ocultar el área de contenido
                 contentArea.classList.remove('visible');
@@ -621,15 +614,12 @@
                 otherDevicesMessage.classList.add('hidden');
                 otherDevicesGrid.classList.remove('visible');
                 clonedDeviceCards.forEach(cdc => cdc.classList.add('hidden')); // Ocultar los clones
-
-                // Ocultar el contenido de los pasos
                 stepContents.forEach(content => {
                     content.classList.remove('active');
                     content.classList.add('hidden');
                 });
 
-
-                // Resetear el estado de las tarjetas originales
+                // Resetear las tarjetas originales
                 deviceCards.forEach(card => {
                     card.classList.remove('selected');
                     card.style.position = ''; // Elimina la posición fija
@@ -641,39 +631,30 @@
                     card.style.height = '';
                     card.style.padding = '';
                     card.style.opacity = '1'; // Restaurar la opacidad
+                    card.style.display = 'flex'; // Restaurar el display
                     card.style.transition = 'all 0.6s ease-in-out'; // Restaurar la transición por defecto
-
-                    // Asegurarse de que el display se restablezca después de la transición
-                    setTimeout(() => {
-                        card.style.display = 'flex'; // Asegurarse de que sea visible
-                    }, 600); // Pequeño retraso para que la animación del grid sea visible
                 });
 
                 // Mostrar el grid original de nuevo
-                deviceGrid.classList.remove('hidden-grid'); // Remueve la clase que lo oculta
+                deviceGrid.classList.remove('hidden-grid'); // Esto eliminará display: none
 
                 // Habilitar de nuevo los eventos de clic después de un tiempo
                 setTimeout(() => {
-                    deviceCards.forEach(dc => dc.style.pointerEvents = 'auto');
-                    mainHeader.style.pointerEvents = 'auto';
-                    clonedDeviceCards.forEach(cdc => cdc.style.pointerEvents = 'auto');
+                    document.body.style.pointerEvents = 'auto';
                 }, 800); // Un poco más largo que el tiempo de la animación de reset
             });
 
             // Manejo de clic en las tarjetas "pequeñas" de la parte de abajo
             clonedDeviceCards.forEach(clonedCard => {
                 clonedCard.addEventListener('click', (event) => {
-                    // Prevenir que el clic en el clon active el click en la tarjeta original si estuviera superpuesta
-                    event.stopPropagation();
+                    event.stopPropagation(); // Evita que el clic se propague a elementos superiores
 
                     const deviceType = clonedCard.dataset.device;
 
                     // Desactivar todos los eventos de clic temporalmente
-                    deviceCards.forEach(dc => dc.style.pointerEvents = 'none');
-                    mainHeader.style.pointerEvents = 'none';
-                    clonedDeviceCards.forEach(cdc => cdc.style.pointerEvents = 'none');
+                    document.body.style.pointerEvents = 'none';
 
-                    // Ocultar el mensaje y el grid de otros dispositivos
+                    // Ocultar el mensaje y el grid de otros dispositivos temporalmente
                     otherDevicesMessage.classList.remove('visible');
                     otherDevicesMessage.classList.add('hidden');
                     otherDevicesGrid.classList.remove('visible');
@@ -698,13 +679,13 @@
                         }
                     });
 
-                     // Volver a mostrar el mensaje y los demás dispositivos después de un cambio de contenido
+                    // Volver a mostrar el mensaje y los demás dispositivos después de un cambio de contenido
                     setTimeout(() => {
                         otherDevicesMessage.classList.remove('hidden');
                         otherDevicesMessage.classList.add('visible');
                         otherDevicesGrid.classList.add('visible');
 
-                        // Ocultar la tarjeta clonada que fue clickeada
+                        // Ocultar la tarjeta clonada que fue clickeada, y mostrar las demás
                         clonedDeviceCards.forEach(cdc => {
                             if (cdc.dataset.device === deviceType) {
                                 cdc.classList.add('hidden'); // Ocultar la tarjeta clonada que se acaba de seleccionar
@@ -716,9 +697,7 @@
                         });
 
                         // Habilitar de nuevo los eventos de clic
-                        deviceCards.forEach(dc => dc.style.pointerEvents = 'auto');
-                        mainHeader.style.pointerEvents = 'auto';
-                        clonedDeviceCards.forEach(cdc => cdc.style.pointerEvents = 'auto');
+                        document.body.style.pointerEvents = 'auto';
 
                     }, 600); // Pequeño retraso para que se vea el cambio
                 });
