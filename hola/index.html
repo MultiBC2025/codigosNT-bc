@@ -1,165 +1,580 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Guía Activación MultiTV</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: url('https://yourdomain.com/fondo.png') center/cover no-repeat;
-      backdrop-filter: blur(3px);
-      color: #222;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiEntretenimiento BC - Guía de Dispositivos</title>
 
-    header {
-      background: #0066e0;
-      color: white;
-      text-align: center;
-      padding: 2rem 1rem;
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-    header h1 {
-      font-size: 2rem;
-      margin: 0;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    header p {
-      margin-top: 0.5rem;
-    }
+    <style>
+        /* Aquí va todo el CSS */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Evita el scroll horizontal en las animaciones */
+        }
 
-    .wrapper {
-      max-width: 700px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
+        /* Header */
+        .main-header {
+            background-color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            border-radius: 0 0 50px 50px; /* Bordes redondeados en la parte inferior */
+        }
 
-    .card {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
+        .main-header h1 {
+            margin: 0;
+            font-size: 3em;
+            color: #333;
+            letter-spacing: 2px;
+            animation: fadeInDown 1s ease-out; /* Animación de carga */
+        }
 
-    .card-header {
-      padding: 1rem;
-      font-weight: bold;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: white;
-    }
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .card-content {
-      max-height: 0;
-      overflow: hidden;
-      transition: all 0.4s ease;
-      padding: 0 1rem;
-    }
+        /* Contenedor principal */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box; /* Incluye padding en el ancho */
+        }
 
-    .card-content.open {
-      padding: 1rem;
-      max-height: 500px;
-    }
+        /* Grid de dispositivos */
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 900px; /* Ancho máximo para el grid */
+            transition: all 0.6s ease-in-out; /* Transición para el movimiento del grid */
+        }
 
-    .card-content p {
-      margin: 0.3rem 0;
-    }
+        .device-grid.collapsed {
+            transform: translateY(calc(100vh - 250px)); /* Mueve el grid hacia abajo */
+            opacity: 0; /* Opcional: hacer que se desvanezca */
+            pointer-events: none; /* Deshabilita clics cuando está colapsado */
+        }
 
-    .example {
-      font-style: italic;
-      font-size: 0.9rem;
-      color: #555;
-      margin-bottom: 0.5rem;
-    }
+        /* Tarjeta de dispositivo */
+        .device-card {
+            background-color: #ffffff;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, left 0.6s ease, top 0.6s ease, width 0.6s ease, height 0.6s ease;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative; /* Necesario para la animación de posición absoluta */
+            z-index: 1;
+        }
 
-    .icon {
-      transition: transform 0.3s ease;
-    }
+        .device-card i {
+            font-size: 3.5em;
+            color: #555;
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
 
-    .rotate {
-      transform: rotate(180deg);
-    }
-  </style>
+        .device-card span {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-color: #007bff; /* Color al pasar el ratón */
+        }
+
+        /* Estado de la tarjeta seleccionada */
+        .device-card.selected {
+            position: fixed; /* Ojo: fixed lo saca del flujo normal */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.1); /* Ligeramente más grande y centrado */
+            z-index: 100; /* Asegura que esté por encima de todo */
+            border-color: #007bff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background-color: #e0f0ff; /* Un color de fondo diferente para el seleccionado */
+            width: auto; /* Ajusta el ancho automáticamente */
+            height: auto; /* Ajusta la altura automáticamente */
+            padding: 40px 30px; /* Más padding para que se vea más grande */
+        }
+
+        .device-card.selected i {
+            color: #007bff;
+        }
+        .device-card.selected span {
+            color: #007bff;
+        }
+
+        /* Área de contenido de los pasos */
+        .content-area {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            z-index: 50; /* Por encima de los dispositivos colapsados */
+            text-align: center; /* Centra el contenido dentro del área */
+        }
+
+        .content-area.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step-content {
+            display: none; /* Oculto por defecto */
+        }
+
+        .step-content.active {
+            display: block; /* Muestra el contenido activo */
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .step-content h2 {
+            color: #007bff;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .step-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Mensaje "Más formas de agregar IPTV" */
+        .other-devices-message {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #666;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out 0.4s, transform 0.8s ease-out 0.4s; /* Retraso */
+        }
+
+        .other-devices-message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .other-devices-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: #ffffff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            border-top: 2px solid #333;
+            border-radius: 50px 50px 0 0; /* Bordes redondeados en la parte superior */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+
+        .footer-left, .footer-right {
+            flex-basis: 20%; /* Ajusta el tamaño de los lados */
+            text-align: center;
+        }
+
+        .footer-center {
+            flex-basis: 50%; /* Ajusta el tamaño del centro */
+            text-align: center;
+            color: #555;
+            font-size: 0.9em;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .footer-center .bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px; /* Ancho de la barra */
+            height: 5px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+        .circle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            background-color: #fff;
+            color: #333;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 0.9em;
+        }
+
+        .circle-btn:hover {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Ocultar elementos */
+        .hidden {
+            display: none;
+        }
+
+        /* Animaciones generales */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Media Queries para responsividad */
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 2em;
+            }
+
+            .device-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas pequeñas */
+                max-width: 600px;
+            }
+
+            .device-card {
+                padding: 20px 10px;
+            }
+
+            .device-card i {
+                font-size: 2.5em;
+            }
+
+            .device-card span {
+                font-size: 1em;
+            }
+
+            .footer-left, .footer-right, .footer-center {
+                flex-basis: 100%;
+                margin-bottom: 15px;
+            }
+            .footer-center .bottom-bar {
+                position: static;
+                transform: none;
+                margin: 10px auto 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .device-grid {
+                grid-template-columns: 1fr; /* 1 columna en las pantallas más pequeñas */
+                max-width: 300px;
+            }
+
+            .device-card {
+                padding: 15px;
+            }
+
+            .circle-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 0.8em;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <h1>Guía Completa de Activación MultiTV</h1>
-  <p>Configura tu cuenta fácilmente en todos tus dispositivos</p>
-</header>
+    <header class="main-header">
+        <h1>TITULO</h1>
+    </header>
 
-<div class="wrapper">
+    <main class="container">
+        <div class="device-grid">
+            <div class="device-card" data-device="android">
+                <i class="fab fa-android"></i>
+                <span>ANDROID</span>
+            </div>
+            <div class="device-card" data-device="ios">
+                <i class="fab fa-apple"></i>
+                <span>IOS</span>
+            </div>
+            <div class="device-card" data-device="windows">
+                <i class="fab fa-windows"></i>
+                <span>WINDOWS</span>
+            </div>
+            <div class="device-card" data-device="android-tv">
+                <i class="fas fa-tv"></i> <span>ANDROID TV...</span>
+            </div>
+            <div class="device-card" data-device="roku">
+                <i class="fas fa-stream"></i> <span>ROKU</span>
+            </div>
+            <div class="device-card" data-device="tvs">
+                <i class="fas fa-desktop"></i> <span>TVS</span>
+            </div>
+        </div>
 
-  <div class="card">
-    <div class="card-header" onclick="toggleCard(this)">
-      Android
-      <span class="icon">▼</span>
-    </div>
-    <div class="card-content">
-      <p class="example">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
-      <p>1. Abre la aplicación IPTV Smarters Pro.</p>
-      <p>2. Selecciona 'Agregar nuevo usuario'.</p>
-      <p>3. Elige 'Iniciar sesión con Xtream Codes API'.</p>
-      <p>4. Introduce el nombre de usuario, contraseña y URL del servidor proporcionado.</p>
-      <p>5. Haz clic en 'Agregar usuario'.</p>
-    </div>
-  </div>
+        <div class="content-area hidden">
+            <div class="android-steps step-content hidden">
+                <h2>Configuración en Android</h2>
+                <p>Aquí el paso a paso detallado para configurar en dispositivos Android.</p>
+                <p>Puedes descargar la aplicación desde <a href="#">aquí</a>.</p>
+                <p>Sigue estos pasos para la instalación:</p>
+                <ol>
+                    <li>Paso 1: Abre la tienda de aplicaciones.</li>
+                    <li>Paso 2: Busca "MultiEntretenimiento BC".</li>
+                    <li>Paso 3: Instala y abre la aplicación.</li>
+                    <li>Paso 4: Ingresa tus credenciales.</li>
+                </ol>
+            </div>
+            <div class="ios-steps step-content hidden">
+                <h2>Configuración en iOS</h2>
+                <p>Aquí el paso a paso detallado para configurar en dispositivos iOS.</p>
+                <p>Para iOS, puedes usar la aplicación X Y Z.</p>
+                <ol>
+                    <li>Paso 1: Abre App Store.</li>
+                    <li>Paso 2: Busca la aplicación recomendada.</li>
+                    <li>Paso 3: Descarga e instala.</li>
+                    <li>Paso 4: Configura con tus datos.</li>
+                </ol>
+            </div>
+            <div class="windows-steps step-content hidden">
+                <h2>Configuración en Windows</h2>
+                <p>Aquí el paso a paso detallado para configurar en dispositivos Windows.</p>
+                <p>Nuestra aplicación para Windows está disponible.</p>
+                <ol>
+                    <li>Paso 1: Descarga el instalador desde nuestro sitio.</li>
+                    <li>Paso 2: Ejecuta el instalador.</li>
+                    <li>Paso 3: Sigue las instrucciones de instalación.</li>
+                    <li>Paso 4: Inicia sesión.</li>
+                </ol>
+            </div>
+            <div class="android-tv-steps step-content hidden">
+                <h2>Configuración en Android TV</h2>
+                <p>Aquí el paso a paso detallado para configurar en dispositivos Android TV.</p>
+                <p>Disfruta de tu contenido directamente en tu televisor con Android TV.</p>
+                <ol>
+                    <li>Paso 1: Ve a Google Play Store en tu Android TV.</li>
+                    <li>Paso 2: Busca "MultiEntretenimiento BC TV".</li>
+                    <li>Paso 3: Instala la aplicación.</li>
+                    <li>Paso 4: Inicia sesión con tu cuenta.</li>
+                </ol>
+            </div>
+            <div class="roku-steps step-content hidden">
+                <h2>Configuración en Roku</h2>
+                <p>Aquí el paso a paso detallado para configurar en dispositivos Roku.</p>
+                <p>Añade nuestro canal a tu Roku y empieza a ver.</p>
+                <ol>
+                    <li>Paso 1: En tu dispositivo Roku, ve a "Canales de Streaming".</li>
+                    <li>Paso 2: Busca nuestro canal por nombre.</li>
+                    <li>Paso 3: Añade el canal.</li>
+                    <li>Paso 4: Abre el canal y activa tu suscripción.</li>
+                </ol>
+            </div>
+            <div class="tvs-steps step-content hidden">
+                <h2>Configuración en TVs (Smart TV, etc.)</h2>
+                <p>Aquí el paso a paso detallado para configurar en televisores inteligentes.</p>
+                <p>Para Smart TVs, la configuración puede variar según la marca.</p>
+                <ol>
+                    <li>Paso 1: Abre la tienda de aplicaciones de tu Smart TV (ej. LG Content Store, Samsung Apps).</li>
+                    <li>Paso 2: Busca nuestra aplicación si está disponible.</li>
+                    <li>Paso 3: Si no, puedes usar un navegador web en tu TV para acceder a nuestra versión web.</li>
+                    <li>Paso 4: Sigue las instrucciones específicas de tu TV.</li>
+                </ol>
+            </div>
 
-  <div class="card">
-    <div class="card-header" onclick="toggleCard(this)">
-      iOS (iPhone & iPad)
-      <span class="icon">▼</span>
-    </div>
-    <div class="card-content">
-      <p class="example">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
-      <p>1. Descarga IPTV Smarters desde la App Store.</p>
-      <p>2. Abre la app y selecciona 'Agregar nuevo usuario'.</p>
-      <p>3. Selecciona 'Iniciar sesión con Xtream Codes API'.</p>
-      <p>4. Ingresa los datos de acceso proporcionados.</p>
-      <p>5. Pulsa en 'Agregar usuario'.</p>
-    </div>
-  </div>
+            <div class="other-devices-message hidden">
+                <p>Más formas de agregar IPTV y entretenimiento.</p>
+                <div class="other-devices-grid">
+                    </div>
+            </div>
+        </div>
+    </main>
 
-  <div class="card">
-    <div class="card-header" onclick="toggleCard(this)">
-      Windows
-      <span class="icon">▼</span>
-    </div>
-    <div class="card-content">
-      <p class="example">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
-      <p>1. Descarga IPTV Smarters para Windows desde el sitio oficial.</p>
-      <p>2. Instala y abre la aplicación.</p>
-      <p>3. Selecciona 'Agregar nuevo usuario'.</p>
-      <p>4. Elige 'Iniciar sesión con Xtream Codes API'.</p>
-      <p>5. Introduce el nombre de usuario, contraseña y URL del servidor.</p>
-      <p>6. Haz clic en 'Agregar usuario'.</p>
-    </div>
-  </div>
+    <footer class="main-footer">
+        <div class="footer-left">
+            <a href="#" class="circle-btn">ASISTENTE</a>
+        </div>
+        <div class="footer-center">
+            <p>MultiEntretenimiento BC</p>
+            <p>Copyrigth...</p>
+            <div class="bottom-bar"></div>
+        </div>
+        <div class="footer-right">
+            <a href="#" class="circle-btn whatsapp-link" target="_blank" rel="noopener noreferrer">WHATSAPP</a>
+        </div>
+    </footer>
 
-</div>
+    <script>
+        // Aquí va todo el JavaScript
+        document.addEventListener('DOMContentLoaded', () => {
+            const deviceCards = document.querySelectorAll('.device-card');
+            const deviceGrid = document.querySelector('.device-grid');
+            const contentArea = document.querySelector('.content-area');
+            const stepContents = document.querySelectorAll('.step-content');
+            const otherDevicesMessage = document.querySelector('.other-devices-message');
+            const whatsappLink = document.querySelector('.whatsapp-link');
 
-<script>
-  function toggleCard(header) {
-    const content = header.nextElementSibling;
-    const icon = header.querySelector('.icon');
-    const isOpen = content.classList.contains('open');
+            // ** Puedes agregar tu URL de WhatsApp aquí **
+            // Ejemplo: whatsappLink.href = "https://wa.me/XXXXXXXXXXX?text=Hola!%20Necesito%20ayuda...";
+            // Asegúrate de reemplazar XXXXXXXXXXX con tu número de teléfono y el texto codificado si lo deseas.
+            whatsappLink.href = "https://wa.me/XXXXXXXXXXX?text=Hola!%20Me%20interesa%20la%20informaci%C3%B3n%20de%20dispositivos."; // Ejemplo: reemplaza XXXXXXXXXXX
 
-    document.querySelectorAll('.card-content').forEach(c => c.classList.remove('open'));
-    document.querySelectorAll('.icon').forEach(i => i.classList.remove('rotate'));
+            deviceCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const deviceType = card.dataset.device;
 
-    if (!isOpen) {
-      content.classList.add('open');
-      icon.classList.add('rotate');
-    }
-  }
-</script>
+                    // Desactivar todos los eventos de clic temporalmente para evitar interacciones durante la animación
+                    deviceCards.forEach(dc => dc.style.pointerEvents = 'none');
+                    mainHeader.style.pointerEvents = 'none';
 
+                    // 1. Mover la tarjeta seleccionada al centro y hacerla más grande
+                    deviceCards.forEach(dc => {
+                        if (dc === card) {
+                            dc.classList.add('selected');
+                        } else {
+                            // Ocultar las otras tarjetas rápidamente
+                            dc.style.opacity = '0';
+                            dc.style.transition = 'opacity 0.3s ease';
+                            setTimeout(() => {
+                                dc.style.display = 'none'; // Después de desvanecerse, ocultarlas
+                            }, 300);
+                        }
+                    });
+
+                    // 2. Colapsar el grid de dispositivos y hacerlo desaparecer
+                    deviceGrid.classList.add('collapsed');
+
+                    // 3. Mostrar el área de contenido principal
+                    // Añadimos un pequeño retraso para que la animación del grid sea visible
+                    setTimeout(() => {
+                        contentArea.classList.remove('hidden');
+                        contentArea.classList.add('visible');
+
+                        // Ocultar todos los pasos y luego mostrar el relevante
+                        stepContents.forEach(content => {
+                            content.classList.remove('active');
+                            content.classList.add('hidden');
+                        });
+
+                        const targetStepContent = document.querySelector(`.${deviceType}-steps`);
+                        if (targetStepContent) {
+                            targetStepContent.classList.remove('hidden');
+                            targetStepContent.classList.add('active');
+                        }
+
+                        // Mostrar el mensaje de "Más formas de agregar IPTV"
+                        otherDevicesMessage.classList.remove('hidden');
+                        otherDevicesMessage.classList.add('visible');
+
+                         // Habilitar de nuevo los eventos de clic
+                        deviceCards.forEach(dc => dc.style.pointerEvents = 'auto');
+                        mainHeader.style.pointerEvents = 'auto';
+
+                    }, 600); // El retraso debe ser similar o un poco mayor que la duración de la transición del grid
+                });
+            });
+
+            // Función para resetear la vista al estado inicial al hacer clic en el título
+            const mainHeader = document.querySelector('.main-header');
+            mainHeader.addEventListener('click', () => {
+                // Desactivar todos los eventos de clic temporalmente
+                deviceCards.forEach(dc => dc.style.pointerEvents = 'none');
+                mainHeader.style.pointerEvents = 'none';
+
+                deviceGrid.classList.remove('collapsed');
+                contentArea.classList.remove('visible');
+                contentArea.classList.add('hidden');
+                otherDevicesMessage.classList.remove('visible');
+                otherDevicesMessage.classList.add('hidden');
+
+                // Ocultar el contenido de los pasos
+                stepContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.classList.add('hidden');
+                });
+
+
+                // Resetear el estado de las tarjetas
+                deviceCards.forEach(card => {
+                    card.classList.remove('selected');
+                    card.style.position = ''; // Elimina la posición fija
+                    card.style.top = '';
+                    card.style.left = '';
+                    card.style.transform = '';
+                    card.style.zIndex = '';
+                    card.style.width = '';
+                    card.style.height = '';
+                    card.style.padding = '';
+                    card.style.opacity = '1'; // Restaurar la opacidad
+                    card.style.display = 'flex'; // Restaurar el display
+                    card.style.transition = 'all 0.6s ease-in-out'; // Restaurar la transición por defecto
+
+                    // Asegurarse de que el display se restablezca después de la transición
+                    setTimeout(() => {
+                        card.style.display = 'flex'; // Asegurarse de que sea visible
+                    }, 600); // Pequeño retraso para que la animación del grid sea visible
+                });
+
+                // Habilitar de nuevo los eventos de clic después de un tiempo
+                setTimeout(() => {
+                    deviceCards.forEach(dc => dc.style.pointerEvents = 'auto');
+                    mainHeader.style.pointerEvents = 'auto';
+                }, 800); // Un poco más largo que el tiempo de la animación de reset
+            });
+        });
+    </script>
 </body>
 </html>
