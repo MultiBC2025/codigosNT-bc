@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tutorial de Activación IPTV</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <style>
     body {
       margin: 0;
@@ -12,88 +13,138 @@
       background: linear-gradient(120deg, #1e1e2f, #282c34);
       color: #ffffff;
       text-align: center;
+      overflow-x: hidden;
     }
-
     .container {
       padding: 50px 20px;
-      max-width: 800px;
+      max-width: 1000px;
       margin: 0 auto;
     }
-
     .title {
       font-size: 2.5rem;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       animation: fadeIn 2s ease;
     }
-
     .subtitle {
       font-size: 1.3rem;
       color: #a0a0a0;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
       animation: fadeInUp 2s ease;
     }
-
     .platforms {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
+      gap: 15px;
+      margin-bottom: 40px;
     }
-
-    .platform-button {
-      padding: 15px 25px;
-      background: #4CAF50;
-      color: #fff;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
+    .platform {
+      flex: 1 1 200px;
+      background: #333;
+      border-radius: 12px;
+      padding: 20px;
       cursor: pointer;
       transition: all 0.3s ease;
-      min-width: 120px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      position: relative;
     }
-
-    .platform-button:hover {
-      transform: translateY(-5px);
-      background: #45a049;
+    .platform:hover {
+      transform: scale(1.05);
+      background: #444;
     }
-
+    .platform h3 {
+      margin-top: 10px;
+    }
+    .tutorial {
+      display: none;
+      text-align: left;
+      background: #222;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+      animation: slideDown 0.5s ease-out;
+    }
+    .active .tutorial {
+      display: block;
+    }
+    .platforms.hidden {
+      opacity: 0.2;
+      pointer-events: none;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    footer {
-      margin-top: 50px;
-      font-size: 0.9rem;
-      color: #888;
+    @keyframes slideDown {
+      from { max-height: 0; opacity: 0; }
+      to { max-height: 500px; opacity: 1; }
     }
   </style>
 </head>
 <body>
-
   <div class="container">
     <h1 class="title">¡Bienvenido al Tutorial de Activación IPTV!</h1>
-    <p class="subtitle">Selecciona tu dispositivo para ver las instrucciones paso a paso:</p>
-
-    <div class="platforms">
-      <button class="platform-button" onclick="location.href='android.html'">Android</button>
-      <button class="platform-button" onclick="location.href='ios.html'">iOS</button>
-      <button class="platform-button" onclick="location.href='tvbox.html'">TV Box</button>
-      <button class="platform-button" onclick="location.href='roku.html'">Roku</button>
-      <button class="platform-button" onclick="location.href='androidtv.html'">Android TV</button>
-      <button class="platform-button" onclick="location.href='pc.html'">PC</button>
+    <p class="subtitle">Selecciona tu dispositivo para ver los pasos de activación:</p>
+    <div id="platforms" class="platforms">
+      <div class="platform" onclick="showTutorial(this, 'android')">
+        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_u4yrau.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>Android</h3>
+      </div>
+      <div class="platform" onclick="showTutorial(this, 'ios')">
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_rqyoaexr.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>iOS</h3>
+      </div>
+      <div class="platform" onclick="showTutorial(this, 'windows')">
+        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_4kx2q32n.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>Windows</h3>
+      </div>
+      <div class="platform" onclick="showTutorial(this, 'androidtv')">
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_touohxv0.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>Android TV</h3>
+      </div>
+      <div class="platform" onclick="showTutorial(this, 'googletv')">
+        <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_3vbOcw.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>Google TV</h3>
+      </div>
+      <div class="platform" onclick="showTutorial(this, 'tv')">
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>TV</h3>
+      </div>
+      <div class="platform" onclick="showTutorial(this, 'roku')">
+        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_hvwfywya.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
+        <h3>Roku</h3>
+      </div>
     </div>
 
-    <footer>
-      Multi Entretenimiento BC © 2025
-    </footer>
+    <div id="tutorial-container"></div>
   </div>
 
+  <script>
+    const tutorials = {
+      android: '<div class="tutorial"><h2>Activar IPTV en Android</h2><ol><li>Descarga la app IPTV Smarters desde Google Play.</li><li>Abre la app y selecciona "Login con Xtream Codes API".</li><li>Ingresa los datos proporcionados: usuario, contraseña y URL.</li><li>¡Listo! Disfruta del servicio.</li></ol></div>',
+      ios: '<div class="tutorial"><h2>Activar IPTV en iOS</h2><ol><li>Descarga IPTV Smarters desde la App Store.</li><li>Abre la app y selecciona "Login con Xtream Codes API".</li><li>Ingresa usuario, contraseña y URL.</li><li>¡Listo!</li></ol></div>',
+      windows: '<div class="tutorial"><h2>Activar IPTV en Windows</h2><ol><li>Descarga el programa IPTV Smarters para PC desde la web oficial.</li><li>Instálalo y ábrelo.</li><li>Coloca usuario, contraseña y URL Xtream.</li></ol></div>',
+      androidtv: '<div class="tutorial"><h2>Activar IPTV en Android TV</h2><ol><li>Abre Play Store en tu Android TV.</li><li>Busca IPTV Smarters Pro.</li><li>Instala y abre la app, ingresa los datos Xtream.</li></ol></div>',
+      googletv: '<div class="tutorial"><h2>Activar IPTV en Google TV</h2><ol><li>Desde Google TV, busca IPTV Smarters.</li><li>Instala la app.</li><li>Ingresa usuario, contraseña y URL.</li></ol></div>',
+      tv: '<div class="tutorial"><h2>Activar IPTV en TV</h2><p>Para televisores sin Android TV o Google TV, se recomienda usar un TV Box o Roku.</p></div>',
+      roku: '<div class="tutorial"><h2>Activar IPTV en Roku</h2><p>Instala una app compatible como "IPTV Purple" mediante screen mirroring o código de canal privado si disponible.</p></div>',
+    };
+
+    function showTutorial(element, key) {
+      const all = document.querySelectorAll('.platform');
+      all.forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+      document.getElementById('platforms').classList.add('hidden');
+      document.getElementById('tutorial-container').innerHTML = tutorials[key] + '<br><button onclick="resetTutorial()">Volver</button>';
+    }
+
+    function resetTutorial() {
+      document.getElementById('tutorial-container').innerHTML = '';
+      document.getElementById('platforms').classList.remove('hidden');
+    }
+  </script>
 </body>
 </html>
