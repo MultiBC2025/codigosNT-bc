@@ -127,7 +127,6 @@
             border-color: #007bff;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             background-color: #e0f0ff;
-            /* Estos valores serán ajustados por JS para simular la expansión del content-area */
             width: auto;
             height: auto;
             padding: 40px 30px;
@@ -155,7 +154,7 @@
 
         /* Área de contenido de los pasos */
         .content-area {
-            position: relative; /* Asegura que las transiciones funcionen correctamente */
+            position: relative;
             margin-top: 40px;
             width: 100%;
             max-width: 800px;
@@ -238,7 +237,6 @@
             height: 100px;
             justify-content: space-around;
             opacity: 0; /* Inicialmente ocultas para animar su aparición */
-            transform: translateY(50px); /* Inicialmente abajo para animar subida */
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
         .device-card.small i {
@@ -248,11 +246,22 @@
         .device-card.small span {
             font-size: 0.9em;
         }
-        /* Animaciones individuales para las tarjetas small */
-        .device-card.small.appear-from-left { transform: translateX(-100px); opacity: 0; }
-        .device-card.small.appear-from-right { transform: translateX(100px); opacity: 0; }
-        .device-card.small.appear-from-bottom { transform: translateY(50px); opacity: 0; }
-        .device-card.small.animate-in { transform: translateX(0) translateY(0); opacity: 1; }
+
+        /* Animaciones de entrada para las tarjetas small */
+        .device-card.small.from-left {
+            transform: translateX(-150px);
+        }
+        .device-card.small.from-right {
+            transform: translateX(150px);
+        }
+        .device-card.small.from-bottom {
+            transform: translateY(100px);
+        }
+        /* Clase para la posición final animada */
+        .device-card.small.animate-in {
+            opacity: 1;
+            transform: translateX(0) translateY(0);
+        }
 
 
         /* Footer */
@@ -564,6 +573,36 @@
             // Oculta las tarjetas duplicadas al cargar la página
             clonedDeviceCards.forEach(card => card.classList.add('hidden'));
 
+            const animateClonedCardsIn = (selectedDeviceType) => {
+                const remainingClones = Array.from(clonedDeviceCards).filter(c => c.dataset.device !== selectedDeviceType);
+
+                // Resetear clases de animación para asegurar que la animación se dispare cada vez
+                remainingClones.forEach(cdc => {
+                    cdc.classList.remove('animate-in', 'from-left', 'from-right', 'from-bottom');
+                    cdc.style.opacity = '0'; // Asegura que comience oculto
+                    cdc.classList.add('hidden'); // Asegura que no se muestren antes de tiempo
+                });
+
+                // Determinar el orden y dirección de animación
+                const animationOrder = [
+                    'from-left', 'from-bottom', 'from-right', // Primera fila (o primeros 3)
+                    'from-left', 'from-right' // Segunda fila (o los siguientes 2)
+                ];
+
+                remainingClones.forEach((cdc, index) => {
+                    setTimeout(() => {
+                        cdc.classList.remove('hidden'); // Mostrar la tarjeta
+                        cdc.classList.add(animationOrder[index] || 'from-bottom'); // Asigna dirección
+                        
+                        // Pequeño retraso para que el navegador "vea" la posición inicial antes de animar
+                        setTimeout(() => {
+                            cdc.classList.add('animate-in'); // Clase que lleva a la posición final
+                        }, 50); 
+                    }, index * 100); // Retraso escalonado para cada tarjeta
+                });
+            };
+
+
             deviceCards.forEach(card => {
                 card.addEventListener('click', () => {
                     const deviceType = card.dataset.device;
@@ -571,24 +610,10 @@
                     // Desactivar todos los eventos de clic temporalmente
                     document.body.style.pointerEvents = 'none';
 
-                    // Obtener la posición y tamaño inicial de la tarjeta clicada
-                    const rect = card.getBoundingClientRect();
-
-                    // Aplicar la clase 'selected' para moverla al centro
-                    card.classList.add('selected');
+                    // 1. Mover la tarjeta seleccionada al centro y hacerla más grande
                     // Ocultar el contenido interno de la tarjeta seleccionada
                     card.querySelector('.card-content').style.opacity = '0';
-
-                    // Calcular el tamaño final y la posición del content-area
-                    // (Asumimos que contentArea ya tiene un width/max-width y padding definidos en CSS)
-                    const contentAreaTargetWidth = contentArea.offsetWidth;
-                    const contentAreaTargetHeight = contentArea.offsetHeight;
-
-                    // Transicionar la tarjeta seleccionada a la posición del content-area final
-                    card.style.width = `${contentAreaTargetWidth}px`;
-                    card.style.height = `${contentAreaTargetHeight}px`;
-                    card.style.padding = `${contentArea.style.padding || '30px'}`; // Tomar padding del content-area o default
-                    card.style.borderRadius = `${getComputedStyle(contentArea).borderRadius}`;
+                    card.classList.add('selected'); // Aplica animación de centrado/escala inicial
 
                     // Mover las demás tarjetas originales fuera de la vista y ocultarlas
                     deviceCards.forEach(dc => {
@@ -607,8 +632,8 @@
 
                     // Mostrar el content-area y animarlo
                     setTimeout(() => {
-                        // Esconder la tarjeta seleccionada y mostrar el content-area en su lugar
-                        card.style.display = 'none';
+                        // Esconder la tarjeta seleccionada (su elemento original) y mostrar el content-area en su lugar
+                        card.style.display = 'none'; // La tarjeta original desaparece
                         contentArea.classList.remove('hidden');
                         contentArea.classList.add('visible');
 
@@ -628,46 +653,8 @@
                         otherDevicesMessage.classList.add('visible');
                         otherDevicesGrid.classList.add('visible');
 
-                        // Ajustar el grid para 5 elementos (3 en primera fila, 2 en segunda)
-                        // Si hay 5 elementos (6 total - 1 seleccionado), podemos ajustar el grid.
-                        const remainingClones = Array.from(clonedDeviceCards).filter(c => c.dataset.device !== deviceType);
-                        if (remainingClones.length === 5) {
-                            otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)'; // Primera fila 3
-                            otherDevicesGrid.style.justifyItems = 'center'; // Centrar items si sobran
-                            // Para la segunda fila de 2, podemos usar un elemento dummy o flexbox anidado si fuera más complejo
-                            // Por ahora, grid auto-placement lo manejará al haber 5 elementos en 3 columnas.
-                            // Si solo queremos 2 en la última fila, los 3 primeros ocuparán 3 columnas y los 2 siguientes
-                            // se ajustarán automáticamente en la siguiente fila.
-                        } else {
-                            otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)'; // Default 3 columnas
-                        }
-
-
-                        // Animar la aparición de las tarjetas pequeñas desde diferentes direcciones
-                        remainingClones.forEach((cdc, index) => {
-                            cdc.classList.remove('hidden');
-                            // Resetea las clases de animación para asegurar que la animación se dispare
-                            cdc.classList.remove('appear-from-left', 'appear-from-right', 'appear-from-bottom', 'animate-in');
-                            cdc.style.opacity = '0'; // Asegura que comience oculto
-
-                            let delay = 0;
-                            // Asigna clases de animación y retrasos
-                            if (index % 3 === 0) { // Primera columna (izquierda)
-                                cdc.classList.add('appear-from-left');
-                                delay = 100;
-                            } else if (index % 3 === 1) { // Segunda columna (centro)
-                                cdc.classList.add('appear-from-bottom');
-                                delay = 200;
-                            } else { // Tercera columna (derecha)
-                                cdc.classList.add('appear-from-right');
-                                delay = 300;
-                            }
-
-                            setTimeout(() => {
-                                cdc.classList.add('animate-in'); // Clase que lleva a la posición final
-                            }, 700 + delay); // Retraso total: transición principal + retraso individual
-                        });
-
+                        // Animar la entrada de las tarjetas clonadas
+                        animateClonedCardsIn(deviceType);
 
                         // Habilitar de nuevo los eventos de clic
                         document.body.style.pointerEvents = 'auto';
@@ -691,7 +678,7 @@
                 // Ocultar todas las tarjetas clonadas y resetear sus animaciones
                 clonedDeviceCards.forEach(cdc => {
                     cdc.classList.add('hidden');
-                    cdc.classList.remove('appear-from-left', 'appear-from-right', 'appear-from-bottom', 'animate-in');
+                    cdc.classList.remove('animate-in', 'from-left', 'from-right', 'from-bottom'); // Resetea las clases de animación
                     cdc.style.opacity = ''; // Resetea la opacidad
                     cdc.style.transform = ''; // Resetea la transformación
                 });
@@ -723,10 +710,6 @@
                 // Mostrar el grid original de nuevo
                 deviceGrid.classList.remove('hidden-grid');
 
-                // Restablecer el grid de otros dispositivos por si se había modificado
-                otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-
-
                 // Habilitar de nuevo los eventos de clic después de un tiempo
                 setTimeout(() => {
                     document.body.style.pointerEvents = 'auto';
@@ -743,15 +726,15 @@
                     // Desactivar todos los eventos de clic temporalmente
                     document.body.style.pointerEvents = 'none';
 
-                    // Ocultar el mensaje y el grid de otros dispositivos temporalmente (con animación)
+                    // Ocultar el mensaje y el grid de otros dispositivos temporalmente (para la re-animación)
                     otherDevicesMessage.classList.remove('visible');
                     otherDevicesMessage.classList.add('hidden');
                     otherDevicesGrid.classList.remove('visible');
-
-                    // Ocultar todas las tarjetas clonadas y resetear sus animaciones
+                    
+                    // Ocultar todas las tarjetas clonadas y resetear sus animaciones para que re-animen
                     clonedDeviceCards.forEach(cdc => {
                         cdc.classList.add('hidden');
-                        cdc.classList.remove('appear-from-left', 'appear-from-right', 'appear-from-bottom', 'animate-in');
+                        cdc.classList.remove('animate-in', 'from-left', 'from-right', 'from-bottom');
                         cdc.style.opacity = '';
                         cdc.style.transform = '';
                     });
@@ -769,51 +752,14 @@
                         targetStepContent.classList.add('active');
                     }
 
-                    // Asegurarse de que la tarjeta original correspondiente no esté 'selected'
-                    deviceCards.forEach(originalCard => {
-                        if (originalCard.dataset.device === deviceType) {
-                            originalCard.classList.remove('selected');
-                            originalCard.querySelector('.card-content').style.opacity = '1'; // Asegurarse de que su contenido es visible si se resetea
-                        }
-                    });
-
                     // Volver a mostrar el mensaje y los demás dispositivos después de un cambio de contenido
                     setTimeout(() => {
                         otherDevicesMessage.classList.remove('hidden');
                         otherDevicesMessage.classList.add('visible');
                         otherDevicesGrid.classList.add('visible');
 
-                        // Ajustar el grid para 5 elementos (3 en primera fila, 2 en segunda)
-                        const remainingClones = Array.from(clonedDeviceCards).filter(c => c.dataset.device !== deviceType);
-                        if (remainingClones.length === 5) {
-                            otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                        } else {
-                            otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                        }
-
-                        // Animar la aparición de las tarjetas pequeñas desde diferentes direcciones
-                        remainingClones.forEach((cdc, index) => {
-                            cdc.classList.remove('hidden');
-                            cdc.classList.remove('appear-from-left', 'appear-from-right', 'appear-from-bottom', 'animate-in');
-                            cdc.style.opacity = '0';
-
-                            let delay = 0;
-                            if (index % 3 === 0) {
-                                cdc.classList.add('appear-from-left');
-                                delay = 100;
-                            } else if (index % 3 === 1) {
-                                cdc.classList.add('appear-from-bottom');
-                                delay = 200;
-                            } else {
-                                cdc.classList.add('appear-from-right');
-                                delay = 300;
-                            }
-
-                            setTimeout(() => {
-                                cdc.classList.add('animate-in');
-                            }, 100 + delay); // Retraso total para la reaparición
-                        });
-
+                        // Animar la entrada de las tarjetas clonadas (excluyendo la recién clicada)
+                        animateClonedCardsIn(deviceType);
 
                         // Habilitar de nuevo los eventos de clic
                         document.body.style.pointerEvents = 'auto';
