@@ -20,8 +20,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow-x: hidden; /* Evita el scroll horizontal en las animaciones */
-            perspective: 1000px; /* Para efectos 3D, si los necesitamos */
+            overflow-x: hidden; 
         }
 
         /* Header */
@@ -43,8 +42,8 @@
             font-size: 3em;
             color: #333;
             letter-spacing: 2px;
-            opacity: 0; /* Oculto inicialmente para animación */
-            transform: translateY(-20px); /* Ligeramente arriba para animación */
+            opacity: 0; 
+            transform: translateY(-20px); 
         }
 
         /* Contenedor principal */
@@ -91,7 +90,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             position: relative;
             z-index: 1;
-            overflow: hidden; /* Para contener la "explosión" si la hacemos con pseudo-elementos */
+            overflow: hidden; 
         }
 
         .device-card i {
@@ -114,79 +113,35 @@
             border-color: #007bff;
         }
 
-        /* Estado de la tarjeta seleccionada (fija en el centro y se expande) */
-        .device-card.selected {
-            position: fixed;
+        /* Animación para la tarjeta seleccionada (transformación tipo Google) */
+        .device-card.selected-transform {
+            position: fixed; /* Mantenemos fixed para centrar */
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(1.1); /* Escala inicial antes de la expansión */
+            transform: translate(-50%, -50%) scale(1); /* Posición inicial antes de la transformación */
             z-index: 100;
-            border-color: #007bff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            background-color: #e0f0ff;
-            width: auto;
-            height: auto;
-            padding: 40px 30px;
-            transition: transform 0.6s ease, top 0.6s ease, left 0.6s ease, width 0.6s ease, height 0.6s ease, padding 0.6s ease, border-radius 0.6s ease, background-color 0.6s ease;
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out; /* Transición para la animación de "desaparecer" */
+            opacity: 1;
+            /* La animación de desaparición será controlada por JS */
         }
-        /* Para ocultar el contenido interno de la tarjeta seleccionada durante la transición */
-        .device-card.selected .card-content {
+        .device-card.selected-transform .card-content {
+            transition: opacity 0.3s ease-out;
+        }
+        .device-card.selected-transform.fade-out-scale {
             opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        /* Animación de "Mini Explosión" para la tarjeta seleccionada */
-        .device-card.exploding {
-            animation: miniExplosion 0.5s ease-out forwards;
-        }
-
-        @keyframes miniExplosion {
-            0% { 
-                transform: translate(-50%, -50%) scale(1.1); 
-                opacity: 1; 
-                filter: blur(0px);
-                box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            }
-            25% { /* Pulso de "explosión" */
-                transform: translate(-50%, -50%) scale(1.2); 
-                opacity: 0.8;
-                filter: blur(2px);
-                box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-                border-color: #ffcc00; /* Un color de pulso */
-            }
-            50% { 
-                transform: translate(-50%, -50%) scale(1.0); 
-                opacity: 0.5;
-                filter: blur(0px);
-                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(0.9); /* Ligeramente más pequeña antes de desaparecer */
-                opacity: 0;
-                filter: blur(0px);
-                pointer-events: none; /* Asegura que ya no se pueda clickear */
-            }
+            transform: translate(-50%, -50%) scale(0.8); /* Se encoge un poco mientras desaparece */
         }
 
 
-        /* Animación para las tarjetas originales que se van (Tipo Universo - desvanecer y alejar) */
-        .device-card.animate-out-universe {
+        /* Animación para las tarjetas originales que se van (desvanecer y alejar sutilmente) */
+        .device-card.animate-out-subtle {
             opacity: 0;
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Más suave */
-            pointer-events: none; /* Asegura que no se puedan clickear mientras se van */
-            filter: blur(0);
+            transform: scale(0.9) translateY(-20px); /* Un poco más pequeña y ligeramente arriba */
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            pointer-events: none; 
         }
-        /* Direcciones de salida (alejándose hacia el "universo") */
-        .device-card[data-device="android"].animate-out-universe { transform: translate3d(-150vw, -150vh, -500px) rotateX(45deg); filter: blur(5px); }
-        .device-card[data-device="ios"].animate-out-universe { transform: translate3d(0, -150vh, -500px) rotateY(45deg); filter: blur(5px); }
-        .device-card[data-device="windows"].animate-out-universe { transform: translate3d(150vw, -150vh, -500px) rotateZ(45deg); filter: blur(5px); }
-        .device-card[data-device="android-tv"].animate-out-universe { transform: translate3d(-150vw, 150vh, -500px) rotateY(-45deg); filter: blur(5px); }
-        .device-card[data-device="roku"].animate-out-universe { transform: translate3d(0, 150vh, -500px) rotateX(-45deg); filter: blur(5px); }
-        .device-card[data-device="tvs"].animate-out-universe { transform: translate3d(150vw, 150vh, -500px) rotateZ(-45deg); filter: blur(5px); }
-
 
         /* Clases de posición inicial para las animaciones de entrada */
-        /* Estas clases establecen la posición de inicio y opacidad 0 */
         .device-card.initial-top-left { transform: translate(-100vw, -100vh); opacity: 0; }
         .device-card.initial-top { transform: translateY(-100vh); opacity: 0; }
         .device-card.initial-top-right { transform: translate(100vw, -100vh); opacity: 0; }
@@ -198,13 +153,13 @@
         .device-card.animate-in {
             opacity: 1;
             transform: translate(0,0);
-            transition: opacity 1s ease-out, transform 1s ease-out; /* Animación más larga para "universo" */
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Curva más suave */
         }
 
 
         /* Área de contenido de los pasos */
         .content-area {
-            position: relative;
+            position: relative; /* Cambiado a relative para que siga el flujo normal cuando aparece */
             margin-top: 40px;
             width: 100%;
             max-width: 800px;
@@ -213,15 +168,15 @@
             padding: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out, width 0.6s ease, height 0.6s ease, padding 0.6s ease, border-radius 0.6s ease;
+            transform: scale(0.8); /* Empieza pequeño */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, width 0.6s ease, height 0.6s ease, padding 0.6s ease, border-radius 0.6s ease;
             z-index: 50;
             text-align: center;
         }
 
         .content-area.visible {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1); /* Crece a tamaño normal */
         }
 
         .step-content {
@@ -264,47 +219,42 @@
         /* Grid para los "demás dispositivos" que aparecen abajo */
         .other-devices-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Por defecto para 3 o más */
+            grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columnas flexibles */
             gap: 15px;
             margin-top: 20px;
             width: 100%;
             max-width: 900px;
-            justify-content: center; /* Centra el grid en sí */
+            justify-content: center; /* Centra el grid en sí si es más pequeño que max-width */
             justify-items: center; /* Centra los ítems dentro de las celdas del grid */
             opacity: 0;
             transition: opacity 0.8s ease-out 0.6s, transform 0.8s ease-out 0.6s;
         }
 
-        /* Ajuste para 5 elementos (3 arriba, 2 abajo centrados) */
-        .other-devices-grid.five-items {
-            grid-template-columns: repeat(3, 1fr); /* Sigue siendo 3 columnas */
-            /* No necesitamos justify-items porque ya está en .other-devices-grid */
-        }
-        /* Para centrar la segunda fila con 2 elementos en un grid de 3 columnas */
-        .other-devices-grid.five-items > :nth-child(4),
-        .other-devices-grid.five-items > :nth-child(5) {
-            grid-column: span 1; /* Ocupa 1 columna */
-            /* Para que los dos últimos se centren, el grid como un todo necesita un ajuste sutil
-               o podríamos usar flexbox solo para la última fila.
-               La forma más sencilla con grid es `justify-content` si usáramos `display: flex` para una fila específica,
-               pero para grid, `justify-items` ayuda a centrar los elementos.
-               Si realmente quieres un centrado perfecto de "3 y 2", a veces se necesita un contenedor flexbox
-               para la segunda fila o ajustar el `grid-template-columns` dinámicamente si solo hubiera 2.
-               Por ahora, `justify-items: center;` es lo que más se acerca con un grid puro.
-            */
-        }
-        /* Si solo son 2 elementos, centrar directamente en la fila */
-        .other-devices-grid.two-items {
-            grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-            justify-content: center; /* Centra las columnas si no llenan todo el ancho */
-            gap: 50px; /* Aumenta el espacio entre ellas */
-        }
-
-
         .other-devices-grid.visible {
             opacity: 1;
             transform: translateY(0);
         }
+        
+        /* Ajuste para 5 elementos (3 arriba, 2 abajo centrados) */
+        .other-devices-grid.five-items {
+            /* Las primeras 3 tarjetas ocuparán las 3 columnas, las siguientes 2 se "envolverán"
+               y el `justify-items: center` junto con el `max-width` y `justify-content`
+               del padre `.other-devices-grid` ayudará a centrarlas visualmente.
+               Si se requiere un centrado absoluto de la última fila, a veces es necesario
+               un `display: flex` en la última fila con `justify-content: center` o
+               manipular el `grid-column` de los últimos elementos para que se centren.
+               Por simplicidad, confiamos en `justify-items: center` y el flujo de grid.
+            */
+            grid-template-columns: repeat(3, minmax(0, 1fr)); 
+        }
+
+        /* Para el caso de 2 elementos, lo ponemos en 2 columnas y centramos el grid. */
+        .other-devices-grid.two-items {
+            grid-template-columns: repeat(2, minmax(0, 1fr)); 
+            max-width: 600px; /* Reducir max-width para centrar mejor 2 elementos */
+            justify-content: center;
+        }
+
 
         /* Estilo para las tarjetas pequeñas/reubicadas en el footer */
         .device-card.small {
@@ -334,7 +284,7 @@
         .device-card.small.animate-in {
             opacity: 1;
             transform: translateX(0) translateY(0);
-            transition: opacity 0.7s ease-out, transform 0.7s ease-out; /* Suave y futurista */
+            transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
         }
 
 
@@ -423,6 +373,9 @@
                 grid-template-columns: repeat(2, 1fr);
                 max-width: 600px;
             }
+            .other-devices-grid.five-items, .other-devices-grid.two-items {
+                grid-template-columns: repeat(2, 1fr);
+            }
 
             .device-card {
                 padding: 20px 10px;
@@ -460,6 +413,10 @@
                 grid-template-columns: 1fr;
                 max-width: 300px;
             }
+            .other-devices-grid.five-items, .other-devices-grid.two-items {
+                grid-template-columns: 1fr;
+            }
+
 
             .device-card {
                 padding: 15px;
@@ -661,7 +618,7 @@
                                         'initial-bottom-left', 'initial-bottom', 'initial-bottom-right',
                                         'start-top-left', 'start-top', 'start-top-right',
                                         'start-bottom-left', 'start-bottom', 'start-bottom-right',
-                                        'animate-out-universe', 'exploding'); // También limpiar clases de salida
+                                        'animate-out-subtle', 'selected-transform', 'fade-out-scale'); 
                     card.style.opacity = ''; 
                     card.style.transform = '';
                     card.style.transition = 'none'; // Desactivar transiciones para establecer la posición inicial instantáneamente
@@ -686,11 +643,11 @@
                 });
             };
 
-            // Función para animar la salida de las demás tarjetas principales al seleccionar una
-            const animateMainCardsOutUniverse = (selectedCard) => {
+            // Función para animar la salida de las demás tarjetas principales
+            const animateMainCardsOutSubtle = (selectedCard) => {
                 deviceCards.forEach(dc => {
                     if (dc !== selectedCard) {
-                        dc.classList.add('animate-out-universe'); // Aplica animación de salida al "universo"
+                        dc.classList.add('animate-out-subtle'); // Aplica animación de salida sutil
                         dc.style.pointerEvents = 'none'; 
                     }
                 });
@@ -721,67 +678,95 @@
 
                     document.body.style.pointerEvents = 'none'; // Deshabilitar interacciones globales
 
-                    // 1. Animación de "Mini Explosión" para la tarjeta seleccionada
-                    card.querySelector('.card-content').style.opacity = '0'; // Ocultar el contenido de la tarjeta
-                    card.classList.add('selected'); // Mueve y escala la tarjeta
+                    // 1. Preparar la tarjeta seleccionada para la transformación
+                    card.classList.add('selected-transform'); // La mueve al centro y establece su posición fija
+                    card.querySelector('.card-content').style.opacity = '0'; // Oculta el contenido interno
+
+                    // Obtener la posición y tamaño actual de la tarjeta para el content-area
+                    const cardRect = card.getBoundingClientRect();
                     
-                    // Pequeño retraso para que la tarjeta se posicione antes de "explotar"
-                    setTimeout(() => {
-                        card.classList.add('exploding'); 
-                    }, 300); // 300ms después de que se active 'selected'
+                    // Ajustar el content-area para que aparezca desde la posición de la tarjeta
+                    contentArea.style.position = 'absolute'; // Necesita ser absoluto para superponerse
+                    contentArea.style.top = `${cardRect.top}px`;
+                    contentArea.style.left = `${cardRect.left}px`;
+                    contentArea.style.width = `${cardRect.width}px`;
+                    contentArea.style.height = `${cardRect.height}px`;
+                    contentArea.style.padding = '0'; // Sin padding inicial
+                    contentArea.style.borderRadius = '15px'; // Mismo border-radius que la tarjeta
+                    contentArea.style.opacity = '0';
+                    contentArea.style.transform = 'scale(0.8)'; // Pequeño para la animación de entrada
+                    contentArea.classList.remove('hidden'); // Mostrar el content-area
 
-                    // 2. Animar la salida de las demás tarjetas originales al "universo"
-                    animateMainCardsOutUniverse(card);
 
-                    // 3. Ocultar el grid original visualmente y mostrar el content-area
+                    // 2. Animar la salida de las demás tarjetas originales
+                    animateMainCardsOutSubtle(card);
+
+                    // 3. Ocultar el grid original visualmente
                     setTimeout(() => {
                         deviceGrid.classList.add('hidden-grid'); // Oculta el grid original
-                        card.style.display = 'none'; // Ocultar la tarjeta seleccionada después de su animación
+                    }, 500);
 
-                        contentArea.classList.remove('hidden');
-                        contentArea.classList.add('visible');
-
-                        // Mostrar el contenido del paso a paso correcto
-                        stepContents.forEach(content => {
-                            content.classList.remove('active');
-                            content.classList.add('hidden');
-                        });
-                        const targetStepContent = document.querySelector(`.${deviceType}-steps`);
-                        if (targetStepContent) {
-                            targetStepContent.classList.remove('hidden');
-                            targetStepContent.classList.add('active');
-                        }
-
-                        // Mostrar el mensaje y el grid de "demás dispositivos"
-                        otherDevicesMessage.classList.remove('hidden');
-                        otherDevicesMessage.classList.add('visible');
-                        otherDevicesGrid.classList.add('visible');
-
-                        const filteredClones = Array.from(clonedDeviceCards).filter(c => c.dataset.device !== deviceType);
+                    // 4. Animar la transformación de la tarjeta a content-area
+                    setTimeout(() => {
+                        card.classList.add('fade-out-scale'); // La tarjeta se desvanece y encoge
                         
-                        // Ajustar las clases del grid para el centrado de 3 y 2
-                        otherDevicesGrid.classList.remove('five-items', 'two-items');
-                        if (filteredClones.length === 5) {
-                            otherDevicesGrid.classList.add('five-items');
-                        } else if (filteredClones.length === 2) { // Ejemplo para si solo quedan 2
-                             otherDevicesGrid.classList.add('two-items');
-                        }
-                        
-                        // Asegurarse de que los clones que no están seleccionados sean visibles (display: flex)
-                        clonedDeviceCards.forEach(cdc => {
-                            if (cdc.dataset.device === deviceType) {
-                                cdc.classList.add('hidden'); 
-                            } else {
-                                cdc.classList.remove('hidden'); 
+                        // Después de que la tarjeta desaparece, el content-area se expande
+                        setTimeout(() => {
+                            card.style.display = 'none'; // Ocultar la tarjeta original después de su animación
+                            
+                            // Restaurar estilos del content-area para que se expanda a su tamaño normal
+                            contentArea.style.position = ''; // Volver a relative
+                            contentArea.style.top = '';
+                            contentArea.style.left = '';
+                            contentArea.style.width = '';
+                            contentArea.style.height = '';
+                            contentArea.style.padding = ''; // Volver al padding normal
+                            contentArea.style.borderRadius = ''; // Volver al border-radius normal
+
+                            contentArea.classList.add('visible'); // El content-area crece a su tamaño normal
+
+                            // Mostrar el contenido del paso a paso correcto
+                            stepContents.forEach(content => {
+                                content.classList.remove('active');
+                                content.classList.add('hidden');
+                            });
+                            const targetStepContent = document.querySelector(`.${deviceType}-steps`);
+                            if (targetStepContent) {
+                                targetStepContent.classList.remove('hidden');
+                                targetStepContent.classList.add('active');
                             }
-                        });
 
-                        // Animar la entrada de las tarjetas clonadas
-                        animateCardsIn(filteredClones, 100, 100);
+                            // Mostrar el mensaje y el grid de "demás dispositivos"
+                            otherDevicesMessage.classList.remove('hidden');
+                            otherDevicesMessage.classList.add('visible');
+                            otherDevicesGrid.classList.add('visible');
 
-                        document.body.style.pointerEvents = 'auto'; // Habilitar interacciones globales
-                        
-                    }, 1200); // Retraso total para la explosión y salida de otras tarjetas
+                            const filteredClones = Array.from(clonedDeviceCards).filter(c => c.dataset.device !== deviceType);
+                            
+                            // Ajustar las clases del grid para el centrado de 3 y 2
+                            otherDevicesGrid.classList.remove('five-items', 'two-items');
+                            if (filteredClones.length === 5) {
+                                otherDevicesGrid.classList.add('five-items');
+                            } else if (filteredClones.length === 2) { 
+                                 otherDevicesGrid.classList.add('two-items');
+                            }
+                            
+                            // Asegurarse de que los clones que no están seleccionados sean visibles (display: flex)
+                            clonedDeviceCards.forEach(cdc => {
+                                if (cdc.dataset.device === deviceType) {
+                                    cdc.classList.add('hidden'); 
+                                } else {
+                                    cdc.classList.remove('hidden'); 
+                                }
+                            });
+
+                            // Animar la entrada de las tarjetas clonadas
+                            animateCardsIn(filteredClones, 100, 100);
+
+                            document.body.style.pointerEvents = 'auto'; // Habilitar interacciones globales
+                            
+                        }, 400); // Duración de la animación fade-out-scale
+                    }, 600); // Retraso total para la salida de otras tarjetas y el inicio de la transformación
                 });
             });
 
@@ -791,6 +776,18 @@
 
                 contentArea.classList.remove('visible');
                 contentArea.classList.add('hidden');
+                // Asegurarse de resetear los estilos inline del contentArea
+                contentArea.style.position = '';
+                contentArea.style.top = '';
+                contentArea.style.left = '';
+                contentArea.style.width = '';
+                contentArea.style.height = '';
+                contentArea.style.padding = '';
+                contentArea.style.borderRadius = '';
+                contentArea.style.opacity = '';
+                contentArea.style.transform = '';
+
+
                 otherDevicesMessage.classList.remove('visible');
                 otherDevicesMessage.classList.add('hidden');
                 otherDevicesGrid.classList.remove('visible', 'five-items', 'two-items'); // Limpiar clases de grid
@@ -810,7 +807,7 @@
                 });
 
                 deviceCards.forEach(card => {
-                    card.classList.remove('selected', 'animate-out-universe', 'exploding'); // Limpiar nuevas clases
+                    card.classList.remove('selected-transform', 'fade-out-scale', 'animate-out-subtle'); // Limpiar nuevas clases
                     card.style.position = '';
                     card.style.top = '';
                     card.style.left = '';
@@ -835,7 +832,7 @@
 
                 setTimeout(() => {
                     document.body.style.pointerEvents = 'auto';
-                }, 1500); // Un poco más de tiempo para que todo se reinicie
+                }, 1500); 
             });
 
             // Manejo de clic en las tarjetas "pequeñas" de la parte de abajo
