@@ -1,163 +1,165 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tutorial IPTV</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guía Activación MultiTV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      background: url('tutorial-iptv-bg.png') no-repeat center center fixed;
-      background-size: cover;
-      padding: 2rem;
-      color: #fff;
+      font-family: 'Inter', sans-serif;
+      background: url('https://yourdomain.com/fondo.png') center/cover no-repeat;
+      backdrop-filter: blur(3px);
+      color: #222;
     }
 
-    h1 {
+    header {
+      background: #0066e0;
+      color: white;
       text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 2rem;
-      text-shadow: 1px 1px 3px #000;
+      padding: 2rem 1rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+    }
+
+    .wrapper {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1rem;
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(5px);
+      background: rgba(255, 255, 255, 0.9);
       border-radius: 1rem;
       margin-bottom: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
     .card-header {
+      padding: 1rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
-      cursor: pointer;
-      background: transparent;
-      border: none;
-      font-size: 1.2rem;
-      font-weight: bold;
-      width: 100%;
+      background: white;
     }
 
     .card-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      padding: 0 1rem;
+    }
+
+    .card-content.open {
       padding: 1rem;
-      color: #333;
-      display: none;
-      animation: fadeIn 0.3s ease-in-out;
+      max-height: 500px;
     }
 
-    .card-content.show {
-      display: block;
+    .card-content p {
+      margin: 0.3rem 0;
     }
 
-    .example-note {
+    .example {
       font-style: italic;
       font-size: 0.9rem;
       color: #555;
       margin-bottom: 0.5rem;
     }
 
-    .arrow {
-      transition: transform 0.3s;
+    .icon {
+      transition: transform 0.3s ease;
     }
 
-    .arrow.rotate {
+    .rotate {
       transform: rotate(180deg);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <h1>Tutorial IPTV</h1>
+<header>
+  <h1>Guía Completa de Activación MultiTV</h1>
+  <p>Configura tu cuenta fácilmente en todos tus dispositivos</p>
+</header>
 
-  <div id="tutorial-container"></div>
+<div class="wrapper">
 
-  <script>
-    const tutorialData = [
-      {
-        name: "Android",
-        steps: [
-          "Abre la aplicación IPTV Smarters Pro.",
-          "Selecciona 'Agregar nuevo usuario'.",
-          "Elige 'Iniciar sesión con Xtream Codes API'.",
-          "Introduce el nombre de usuario, contraseña y URL del servidor proporcionado.",
-          "Haz clic en 'Agregar usuario'."
-        ]
-      },
-      {
-        name: "iPhone",
-        steps: [
-          "Descarga IPTV Smarters desde la App Store.",
-          "Abre la app y selecciona 'Agregar nuevo usuario'.",
-          "Selecciona 'Iniciar sesión con Xtream Codes API'.",
-          "Ingresa los datos de acceso proporcionados.",
-          "Pulsa en 'Agregar usuario'."
-        ]
-      },
-      {
-        name: "Windows",
-        steps: [
-          "Descarga IPTV Smarters para Windows desde el sitio oficial.",
-          "Instala y abre la aplicación.",
-          "Selecciona 'Agregar nuevo usuario'.",
-          "Elige 'Iniciar sesión con Xtream Codes API'.",
-          "Introduce el nombre de usuario, contraseña y URL del servidor.",
-          "Haz clic en 'Agregar usuario'."
-        ]
-      }
-    ];
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      Android
+      <span class="icon">▼</span>
+    </div>
+    <div class="card-content">
+      <p class="example">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
+      <p>1. Abre la aplicación IPTV Smarters Pro.</p>
+      <p>2. Selecciona 'Agregar nuevo usuario'.</p>
+      <p>3. Elige 'Iniciar sesión con Xtream Codes API'.</p>
+      <p>4. Introduce el nombre de usuario, contraseña y URL del servidor proporcionado.</p>
+      <p>5. Haz clic en 'Agregar usuario'.</p>
+    </div>
+  </div>
 
-    const container = document.getElementById("tutorial-container");
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      iOS (iPhone & iPad)
+      <span class="icon">▼</span>
+    </div>
+    <div class="card-content">
+      <p class="example">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
+      <p>1. Descarga IPTV Smarters desde la App Store.</p>
+      <p>2. Abre la app y selecciona 'Agregar nuevo usuario'.</p>
+      <p>3. Selecciona 'Iniciar sesión con Xtream Codes API'.</p>
+      <p>4. Ingresa los datos de acceso proporcionados.</p>
+      <p>5. Pulsa en 'Agregar usuario'.</p>
+    </div>
+  </div>
 
-    tutorialData.forEach(device => {
-      const card = document.createElement("div");
-      card.className = "card";
+  <div class="card">
+    <div class="card-header" onclick="toggleCard(this)">
+      Windows
+      <span class="icon">▼</span>
+    </div>
+    <div class="card-content">
+      <p class="example">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
+      <p>1. Descarga IPTV Smarters para Windows desde el sitio oficial.</p>
+      <p>2. Instala y abre la aplicación.</p>
+      <p>3. Selecciona 'Agregar nuevo usuario'.</p>
+      <p>4. Elige 'Iniciar sesión con Xtream Codes API'.</p>
+      <p>5. Introduce el nombre de usuario, contraseña y URL del servidor.</p>
+      <p>6. Haz clic en 'Agregar usuario'.</p>
+    </div>
+  </div>
 
-      const header = document.createElement("button");
-      header.className = "card-header";
+</div>
 
-      const title = document.createElement("span");
-      title.textContent = device.name;
+<script>
+  function toggleCard(header) {
+    const content = header.nextElementSibling;
+    const icon = header.querySelector('.icon');
+    const isOpen = content.classList.contains('open');
 
-      const arrow = document.createElement("span");
-      arrow.innerHTML = "▼";
-      arrow.className = "arrow";
+    document.querySelectorAll('.card-content').forEach(c => c.classList.remove('open'));
+    document.querySelectorAll('.icon').forEach(i => i.classList.remove('rotate'));
 
-      header.appendChild(title);
-      header.appendChild(arrow);
+    if (!isOpen) {
+      content.classList.add('open');
+      icon.classList.add('rotate');
+    }
+  }
+</script>
 
-      const content = document.createElement("div");
-      content.className = "card-content";
-
-      const example = document.createElement("p");
-      example.className = "example-note";
-      example.textContent = "Esto es un ejemplo de cómo se verá el contenido paso a paso.";
-      content.appendChild(example);
-
-      device.steps.forEach((step, index) => {
-        const p = document.createElement("p");
-        p.textContent = `${index + 1}. ${step}`;
-        content.appendChild(p);
-      });
-
-      header.addEventListener("click", () => {
-        const isShown = content.classList.toggle("show");
-        arrow.classList.toggle("rotate", isShown);
-      });
-
-      card.appendChild(header);
-      card.appendChild(content);
-      container.appendChild(card);
-    });
-  </script>
 </body>
 </html>
