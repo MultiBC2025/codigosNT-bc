@@ -1,150 +1,82 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tutorial de Activación IPTV</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(120deg, #1e1e2f, #282c34);
-      color: #ffffff;
-      text-align: center;
-      overflow-x: hidden;
-    }
-    .container {
-      padding: 50px 20px;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    .title {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      animation: fadeIn 2s ease;
-    }
-    .subtitle {
-      font-size: 1.3rem;
-      color: #a0a0a0;
-      margin-bottom: 30px;
-      animation: fadeInUp 2s ease;
-    }
-    .platforms {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-bottom: 40px;
-    }
-    .platform {
-      flex: 1 1 200px;
-      background: #333;
-      border-radius: 12px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-    }
-    .platform:hover {
-      transform: scale(1.05);
-      background: #444;
-    }
-    .platform h3 {
-      margin-top: 10px;
-    }
-    .tutorial {
-      display: none;
-      text-align: left;
-      background: #222;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
-      animation: slideDown 0.5s ease-out;
-    }
-    .active .tutorial {
-      display: block;
-    }
-    .platforms.hidden {
-      opacity: 0.2;
-      pointer-events: none;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes slideDown {
-      from { max-height: 0; opacity: 0; }
-      to { max-height: 500px; opacity: 1; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1 class="title">¡Bienvenido al Tutorial de Activación IPTV!</h1>
-    <p class="subtitle">Selecciona tu dispositivo para ver los pasos de activación:</p>
-    <div id="platforms" class="platforms">
-      <div class="platform" onclick="showTutorial(this, 'android')">
-        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_u4yrau.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>Android</h3>
-      </div>
-      <div class="platform" onclick="showTutorial(this, 'ios')">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_rqyoaexr.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>iOS</h3>
-      </div>
-      <div class="platform" onclick="showTutorial(this, 'windows')">
-        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_4kx2q32n.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>Windows</h3>
-      </div>
-      <div class="platform" onclick="showTutorial(this, 'androidtv')">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_touohxv0.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>Android TV</h3>
-      </div>
-      <div class="platform" onclick="showTutorial(this, 'googletv')">
-        <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_3vbOcw.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>Google TV</h3>
-      </div>
-      <div class="platform" onclick="showTutorial(this, 'tv')">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>TV</h3>
-      </div>
-      <div class="platform" onclick="showTutorial(this, 'roku')">
-        <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_hvwfywya.json" background="transparent" speed="1" style="width: 80px; height: 80px; margin: auto;" loop autoplay></lottie-player>
-        <h3>Roku</h3>
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion } from "framer-motion";
+
+const tutorialData = [
+  {
+    name: "Android",
+    steps: [
+      "Abre la aplicación IPTV Smarters Pro.",
+      "Selecciona 'Agregar nuevo usuario'.",
+      "Elige 'Iniciar sesión con Xtream Codes API'.",
+      "Introduce el nombre de usuario, contraseña y URL del servidor proporcionado.",
+      "Haz clic en 'Agregar usuario'."
+    ]
+  },
+  {
+    name: "iPhone",
+    steps: [
+      "Descarga IPTV Smarters desde la App Store.",
+      "Abre la app y selecciona 'Agregar nuevo usuario'.",
+      "Selecciona 'Iniciar sesión con Xtream Codes API'.",
+      "Ingresa los datos de acceso proporcionados.",
+      "Pulsa en 'Agregar usuario'."
+    ]
+  },
+  {
+    name: "Windows",
+    steps: [
+      "Descarga IPTV Smarters para Windows desde el sitio oficial.",
+      "Instala y abre la aplicación.",
+      "Selecciona 'Agregar nuevo usuario'.",
+      "Elige 'Iniciar sesión con Xtream Codes API'.",
+      "Introduce el nombre de usuario, contraseña y URL del servidor.",
+      "Haz clic en 'Agregar usuario'."
+    ]
+  }
+];
+
+export default function TutorialIPTV() {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  const toggle = (name: string) => {
+    setExpanded(expanded === name ? null : name);
+  };
+
+  return (
+    <div className="min-h-screen bg-cover bg-center p-4" style={{ backgroundImage: "url('/tutorial-iptv-bg.png')" }}>
+      <h1 className="text-3xl font-bold mb-6 text-center text-white drop-shadow-md">Tutorial IPTV</h1>
+
+      <div className="grid gap-4 max-w-2xl mx-auto">
+        {tutorialData.map((device) => (
+          <Card key={device.name} className="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl">
+            <Button
+              variant="ghost"
+              className="flex justify-between items-center w-full text-lg font-semibold p-4"
+              onClick={() => toggle(device.name)}
+            >
+              {device.name}
+              {expanded === device.name ? <ChevronUp /> : <ChevronDown />}
+            </Button>
+            {expanded === device.name && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <CardContent className="p-4 space-y-2 text-gray-800">
+                  <p className="italic text-sm text-gray-600">Esto es un ejemplo de cómo se verá el contenido paso a paso.</p>
+                  {device.steps.map((step, index) => (
+                    <p key={index} className="text-base">{index + 1}. {step}</p>
+                  ))}
+                </CardContent>
+              </motion.div>
+            )}
+          </Card>
+        ))}
       </div>
     </div>
-
-    <div id="tutorial-container"></div>
-  </div>
-
-  <script>
-    const tutorials = {
-      android: '<div class="tutorial"><h2>Activar IPTV en Android</h2><ol><li>Descarga la app IPTV Smarters desde Google Play.</li><li>Abre la app y selecciona "Login con Xtream Codes API".</li><li>Ingresa los datos proporcionados: usuario, contraseña y URL.</li><li>¡Listo! Disfruta del servicio.</li></ol></div>',
-      ios: '<div class="tutorial"><h2>Activar IPTV en iOS</h2><ol><li>Descarga IPTV Smarters desde la App Store.</li><li>Abre la app y selecciona "Login con Xtream Codes API".</li><li>Ingresa usuario, contraseña y URL.</li><li>¡Listo!</li></ol></div>',
-      windows: '<div class="tutorial"><h2>Activar IPTV en Windows</h2><ol><li>Descarga el programa IPTV Smarters para PC desde la web oficial.</li><li>Instálalo y ábrelo.</li><li>Coloca usuario, contraseña y URL Xtream.</li></ol></div>',
-      androidtv: '<div class="tutorial"><h2>Activar IPTV en Android TV</h2><ol><li>Abre Play Store en tu Android TV.</li><li>Busca IPTV Smarters Pro.</li><li>Instala y abre la app, ingresa los datos Xtream.</li></ol></div>',
-      googletv: '<div class="tutorial"><h2>Activar IPTV en Google TV</h2><ol><li>Desde Google TV, busca IPTV Smarters.</li><li>Instala la app.</li><li>Ingresa usuario, contraseña y URL.</li></ol></div>',
-      tv: '<div class="tutorial"><h2>Activar IPTV en TV</h2><p>Para televisores sin Android TV o Google TV, se recomienda usar un TV Box o Roku.</p></div>',
-      roku: '<div class="tutorial"><h2>Activar IPTV en Roku</h2><p>Instala una app compatible como "IPTV Purple" mediante screen mirroring o código de canal privado si disponible.</p></div>',
-    };
-
-    function showTutorial(element, key) {
-      const all = document.querySelectorAll('.platform');
-      all.forEach(el => el.classList.remove('active'));
-      element.classList.add('active');
-      document.getElementById('platforms').classList.add('hidden');
-      document.getElementById('tutorial-container').innerHTML = tutorials[key] + '<br><button onclick="resetTutorial()">Volver</button>';
-    }
-
-    function resetTutorial() {
-      document.getElementById('tutorial-container').innerHTML = '';
-      document.getElementById('platforms').classList.remove('hidden');
-    }
-  </script>
-</body>
-</html>
+  );
+}
