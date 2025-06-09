@@ -60,18 +60,27 @@
     .list button {
       margin-bottom: 0.5rem;
     }
+
+    #portalURL {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <div class="login-box" id="loginBox">
     <h2>Iniciar sesión IPTV</h2>
-    <select id="portal">
+    <select id="portalSelect" onchange="showPortalURL()">
       <option value="">-- Seleccionar Portal --</option>
-      <option value="http://demo.example.com:8080">Portal Demo</option>
-      <option value="http://tuportal.iptv.com:80">Tu Portal IPTV</option>
+      <option value="http://odenfull.co:2086">Oden Full</option>
+      <option value="http://moshertv.xyz:8080">MosherTV</option>
+      <option value="http://miportaliptv.com:80">Mi Portal IPTV</option>
     </select>
-    <input type="text" id="username" placeholder="Usuario">
-    <input type="password" id="password" placeholder="Contraseña">
+    <div id="portalURL"></div>
+    <input type="text" id="username" placeholder="Usuario (Ej: fullcord6546)">
+    <input type="password" id="password" placeholder="Contraseña (Ej: full48a69f85sa)">
     <button onclick="login()">Ingresar</button>
   </div>
 
@@ -88,14 +97,22 @@
 
   <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
   <script>
+    const portalSelect = document.getElementById("portalSelect");
+    const portalURLDisplay = document.getElementById("portalURL");
+
     let portalUrl = "";
     let user = "";
     let pass = "";
 
+    function showPortalURL() {
+      portalUrl = portalSelect.value;
+      portalURLDisplay.innerHTML = portalUrl ? `URL: <strong>${portalUrl}</strong>` : "";
+    }
+
     function login() {
-      portalUrl = document.getElementById("portal").value;
       user = document.getElementById("username").value;
       pass = document.getElementById("password").value;
+      portalUrl = portalSelect.value;
 
       if (!portalUrl || !user || !pass) {
         alert("Por favor llena todos los campos.");
