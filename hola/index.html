@@ -1,9 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Hola Mundo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IPTV Player</title>
+  <link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      color: #333;
+    }
+
+    .login-box, .content-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .list {
+      margin-top: 1rem;
+    }
+
+    .list button {
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
 <body>
-    <h1>Hola, mundo</h1>
+  <div class="login-box" id="loginBox">
+    <h2>Iniciar sesión IPTV</h2>
+    <select id="portal">
+      <option value="">-- Seleccionar Portal --</option>
+      <option value="http://demo.example.com:8080">Portal Demo</option>
+      <option value="http://tuportal.iptv.com:80">Tu Portal IPTV</option>
+    </select>
+    <input type="text" id="username" placeholder="Usuario">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Ingresar</button>
+  </div>
+
+  <div class="content-box hidden" id="contentBox">
+    <h2>Bienvenido IPTV</h2>
+    <div>
+      <button onclick="loadSection('live')">TV en Vivo</button>
+      <button onclick="loadSection('movie')">Películas</button>
+      <button onclick="loadSection('series')">Series</button>
+    </div>
+    <div class="list" id="listArea"></div>
+    <video id="player" class="video-js vjs-default-skin hidden" controls preload="auto" width="100%" height="360"></video>
+  </div>
+
+  <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+  <script>
+    let portalUrl = "";
+    let user = "";
+    let pass = "";
+
+    function login() {
+      portalUrl = document.getElementById("portal").value;
+      user = document.getElementById("username").value;
+      pass = document.getElementById("password").value;
+
+      if (!portalUrl || !user || !pass) {
+        alert("Por favor llena todos los campos.");
+        return;
+      }
+
+      fetch(`${portalUrl}/player_api.php?username=${user}&password=${pass}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.user_info && data.user_info.status === "Active") {
+            document.getElementById("loginBox").classList.add("hidden");
+            document.getElementById("contentBox").classList.remove("hidden");
+          } else {
+            alert("Credenciales incorrectas o cuenta inactiva.");
+          }
+        }).catch(() => {
+          alert("No se pudo conectar al portal.");
+        });
+    }
+
+    function loadSection(type) {
+      let action = type === "live" ? "get_live_streams" : type === "movie" ? "get_vod_streams" : "get_series";
+      fetch(`${portalUrl}/player_api.php?username=${user}&password=${pass}&action=${action}`)
+        .then(res => res.json())
+        .then(data => {
+          let list = document.getElementById("listArea");
+          list.innerHTML = "";
+          data.slice(0, 50).forEach(item => {
+            let btn = document.createElement("button");
+            btn.textContent = item.name;
+            btn.onclick = () => playStream(type, item.stream_id);
+            list.appendChild(btn);
+          });
+        });
+    }
+
+    function playStream(type, streamId) {
+      let extension = type === "movie" ? "mp4" : "ts";
+      let videoUrl = `${portalUrl}/live/${user}/${pass}/${streamId}.${extension}`;
+      let player = document.getElementById("player");
+      player.classList.remove("hidden");
+      videojs("player").src({ type: "application/x-mpegURL", src: videoUrl });
+      videojs("player").play();
+    }
+  </script>
 </body>
 </html>
