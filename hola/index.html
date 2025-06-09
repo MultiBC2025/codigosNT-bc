@@ -42,7 +42,8 @@
             font-size: 3em;
             color: #333;
             letter-spacing: 2px;
-            /* Animación controlada por JS */
+            opacity: 0; /* Oculto inicialmente para animación */
+            transform: translateY(-20px); /* Ligeramente arriba para animación */
         }
 
         /* Contenedor principal */
@@ -84,12 +85,14 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            /* Transición base que puede ser sobreescrita por clases de animación específicas */
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             position: relative;
             z-index: 1;
+            /* Esto es crucial: las tarjetas NO deben tener opacidad 0 o display none por defecto */
+            /* opacity: 0; /* QUITAMOS ESTO */
+            /* transform: translateY(-20px); /* QUITAMOS ESTO */
         }
 
         .device-card i {
@@ -147,19 +150,21 @@
         .device-card[data-device="roku"].animate-out { transform: translateY(100vh); }
         .device-card[data-device="tvs"].animate-out { transform: translate(100vw, 100vh); }
 
-        /* Clases de posición inicial para las animaciones de entrada (sin transición) */
-        .device-card.initial-top-left { transform: translate(-100vw, -100vh); opacity: 0; transition: none; }
-        .device-card.initial-top { transform: translateY(-100vh); opacity: 0; transition: none; }
-        .device-card.initial-top-right { transform: translate(100vw, -100vh); opacity: 0; transition: none; }
-        .device-card.initial-bottom-left { transform: translate(-100vw, 100vh); opacity: 0; transition: none; }
-        .device-card.initial-bottom { transform: translateY(100vh); opacity: 0; transition: none; }
-        .device-card.initial-bottom-right { transform: translate(100vw, 100vh); opacity: 0; transition: none; }
+        /* Clases de posición inicial para las animaciones de entrada */
+        /* Estas clases establecen la posición de inicio y opacidad 0 */
+        .device-card.initial-top-left { transform: translate(-100vw, -100vh); opacity: 0; }
+        .device-card.initial-top { transform: translateY(-100vh); opacity: 0; }
+        .device-card.initial-top-right { transform: translate(100vw, -100vh); opacity: 0; }
+        .device-card.initial-bottom-left { transform: translate(-100vw, 100vh); opacity: 0; }
+        .device-card.initial-bottom { transform: translateY(100vh); opacity: 0; }
+        .device-card.initial-bottom-right { transform: translate(100vw, 100vh); opacity: 0; }
 
         /* Clase para la animación de entrada (a la posición final) */
         .device-card.animate-in {
             opacity: 1;
             transform: translate(0,0);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Habilitar transición */
+            /* Importante: la transición solo se aplica cuando animate-in está presente */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
 
 
@@ -248,9 +253,7 @@
             font-size: 0.9em;
             height: 100px;
             justify-content: space-around;
-            opacity: 0; /* Inicialmente ocultas para animar su aparición */
-            transform: translate(0,0); /* Base para las animaciones de entrada */
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            /* Aquí sí se controla la opacidad y transformación por las clases `start-` y `animate-in` */
         }
         .device-card.small i {
             font-size: 2.2em;
@@ -260,14 +263,13 @@
             font-size: 0.9em;
         }
 
-        /* Animaciones de entrada para las tarjetas small (SIMÉTRICAS a las de salida de las originales) */
-        /* Estas son las posiciones de inicio para la animación */
-        .device-card.small.start-top-left { transform: translate(-100vw, -100vh); opacity: 0; transition: none; }
-        .device-card.small.start-top { transform: translateY(-100vh); opacity: 0; transition: none; }
-        .device-card.small.start-top-right { transform: translate(100vw, -100vh); opacity: 0; transition: none; }
-        .device-card.small.start-bottom-left { transform: translate(-100vw, 100vh); opacity: 0; transition: none; }
-        .device-card.small.start-bottom { transform: translateY(100vh); opacity: 0; transition: none; }
-        .device-card.small.start-bottom-right { transform: translate(100vw, 100vh); opacity: 0; transition: none; }
+        /* Animaciones de entrada para las tarjetas small */
+        .device-card.small.start-top-left { transform: translate(-100vw, -100vh); opacity: 0; }
+        .device-card.small.start-top { transform: translateY(-100vh); opacity: 0; }
+        .device-card.small.start-top-right { transform: translate(100vw, -100vh); opacity: 0; }
+        .device-card.small.start-bottom-left { transform: translate(-100vw, 100vh); opacity: 0; }
+        .device-card.small.start-bottom { transform: translateY(100vh); opacity: 0; }
+        .device-card.small.start-bottom-right { transform: translate(100vw, 100vh); opacity: 0; }
 
         /* Clase para la posición final animada para tarjetas small */
         .device-card.small.animate-in {
@@ -587,37 +589,37 @@
             // --- Funciones de Animación ---
 
             // Función para animar la entrada de las tarjetas (originales o clones)
-            const animateCardsIn = (cardsToAnimate, delayPerCard = 100, initialDelay = 0, isInitialLoad = false) => {
+            const animateCardsIn = (cardsToAnimate, delayPerCard = 100, initialDelay = 0) => {
                 const animationDirections = [
-                    'top-left', 'top', 'top-right', // Para primera fila o grupo
-                    'bottom-left', 'bottom', 'bottom-right' // Para segunda fila o grupo
+                    'top-left', 'top', 'top-right',
+                    'bottom-left', 'bottom', 'bottom-right'
                 ];
                 
                 cardsToAnimate.forEach((card, index) => {
-                    // 1. Limpiar clases de animación y transiciones previas
+                    // Primero, eliminar TODAS las clases de animación y estilos que puedan interferir
                     card.classList.remove('animate-in', 
                                         'initial-top-left', 'initial-top', 'initial-top-right',
                                         'initial-bottom-left', 'initial-bottom', 'initial-bottom-right',
                                         'start-top-left', 'start-top', 'start-top-right',
                                         'start-bottom-left', 'start-bottom', 'start-bottom-right');
-                    card.style.opacity = '0'; // Asegura que comience oculto
-                    card.style.transform = ''; // Resetea transform para que la clase de dirección lo defina
-                    card.style.transition = 'none'; // Deshabilita la transición para aplicar la posición inicial instantáneamente
-                    card.style.pointerEvents = 'none'; // Deshabilita clics durante la animación de entrada
+                    card.style.opacity = ''; // Limpiar estilo inline de opacidad
+                    card.style.transform = ''; // Limpiar estilo inline de transform
+                    card.style.transition = 'none'; // Desactivar transiciones para establecer la posición inicial instantáneamente
+                    card.style.pointerEvents = 'none'; // Deshabilitar clics durante la animación
 
-                    // 2. Aplicar la clase de dirección inicial
-                    let directionClass = '';
-                    if (isInitialLoad) {
-                        directionClass = `initial-${animationDirections[index % animationDirections.length]}`;
-                    } else {
-                        directionClass = `start-${animationDirections[index % animationDirections.length]}`;
-                    }
+                    // Determinar la clase de dirección según si es una tarjeta original o una clonada
+                    const directionClassPrefix = card.classList.contains('small') ? 'start' : 'initial';
+                    const directionClass = `${directionClassPrefix}-${animationDirections[index % animationDirections.length]}`;
+                    
+                    // Aplicar la clase de dirección que contiene el transform y opacity: 0
                     card.classList.add(directionClass);
 
-                    // 3. Disparar la animación después de un pequeño retraso
+                    // Forzar un reflow para asegurar que el navegador "vea" la posición inicial
+                    // Esto es crucial para que la transición se aplique correctamente después.
+                    card.offsetWidth; 
+
+                    // Disparar la animación después de un pequeño retraso
                     setTimeout(() => {
-                        // Forzar un reflow para asegurar que el navegador "vea" la posición inicial
-                        card.offsetWidth; 
                         card.classList.add('animate-in'); // Añade la clase que activa la transición a la posición final
                         card.style.pointerEvents = 'auto'; // Habilita clics una vez que la animación comienza
                     }, initialDelay + (index * delayPerCard));
@@ -626,21 +628,10 @@
 
             // Función para animar la salida de las tarjetas originales
             const animateOriginalCardsOut = (selectedCard) => {
-                const animationOutClasses = {
-                    'android': 'translate(-100vw, -100vh)',
-                    'ios': 'translateY(-100vh)',
-                    'windows': 'translate(100vw, -100vh)',
-                    'android-tv': 'translate(-100vw, 100vh)',
-                    'roku': 'translateY(100vh)',
-                    'tvs': 'translate(100vw, 100vh)'
-                };
-
                 deviceCards.forEach(dc => {
                     if (dc !== selectedCard) {
-                        dc.classList.add('animate-out'); // Aplica animación de salida
-                        dc.style.transform = animationOutClasses[dc.dataset.device]; // Establece la dirección de salida
+                        dc.classList.add('animate-out'); // Aplica animación de salida (CSS ya define transform y opacity)
                         dc.style.pointerEvents = 'none'; // Deshabilita clics mientras se van
-                        dc.style.opacity = '0'; // Desvanece
                     }
                 });
             };
@@ -651,9 +642,7 @@
             clonedDeviceCards.forEach(card => card.classList.add('hidden'));
 
             // 1. Animación inicial al cargar la página para el título
-            mainTitle.style.opacity = '0';
-            mainTitle.style.transform = 'translateY(-20px)';
-            
+            // Los estilos iniciales ya están en el CSS del h1, solo activamos la transición.
             setTimeout(() => {
                 mainTitle.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
                 mainTitle.style.opacity = '1';
@@ -661,10 +650,11 @@
             }, 100);
 
             // 2. Animación inicial al cargar la página para las tarjetas originales
-            // Llamar a animateCardsIn directamente, ella maneja el estado inicial y la animación.
+            // Llamar a animateCardsIn directamente; ella maneja el estado inicial y la animación.
             setTimeout(() => {
-                animateCardsIn(deviceCards, 150, 0, true); // initialDelay 0, es el retraso total de 500ms el que importa
+                animateCardsIn(deviceCards, 150, 0); 
             }, 500); // Retraso total para que las tarjetas animen su entrada después del título
+
 
             // Event listener para las tarjetas principales
             deviceCards.forEach(card => {
@@ -726,7 +716,7 @@
                         });
 
                         // Animar la entrada de las tarjetas clonadas
-                        animateCardsIn(filteredClones, 100, 100, false); // No es carga inicial
+                        animateCardsIn(filteredClones, 100, 100);
 
                         document.body.style.pointerEvents = 'auto';
 
@@ -746,12 +736,12 @@
 
                 clonedDeviceCards.forEach(cdc => {
                     cdc.classList.add('hidden');
-                    // Resetear todas las clases de animación de los clones
+                    // Limpiar clases de animación y estilos de los clones
                     cdc.classList.remove('animate-in', 'start-top-left', 'start-top', 'start-top-right',
                                         'start-bottom-left', 'start-bottom', 'start-bottom-right');
                     cdc.style.opacity = '';
                     cdc.style.transform = '';
-                    cdc.style.transition = ''; // Restaurar la transición por defecto si es necesario
+                    cdc.style.transition = ''; 
                 });
                 stepContents.forEach(content => {
                     content.classList.remove('active');
@@ -773,16 +763,17 @@
                     card.style.backgroundColor = '';
                     card.style.display = 'flex'; // Asegura que vuelvan a ser flex
                     card.style.pointerEvents = 'auto'; // Habilitar clics
-                    card.style.opacity = '0'; // Asegura que se oculten para la re-animación
+                    // NO resetear opacity a 0 aquí, la función animateCardsIn lo manejará
+                    // card.style.opacity = '0';
                 });
 
                 deviceGrid.classList.remove('hidden-grid');
 
                 // Re-animar la entrada de las tarjetas originales
-                // El `animateCardsIn` se encargará de aplicar las clases de posición inicial y luego animar.
+                // animateCardsIn se encargará de aplicar las clases de posición inicial y luego animar.
                 setTimeout(() => {
-                    animateCardsIn(deviceCards, 150, 0, true);
-                }, 100); // Pequeño retraso para que la pantalla se "limpie" antes de la re-entrada
+                    animateCardsIn(deviceCards, 150, 0);
+                }, 100); 
 
                 setTimeout(() => {
                     document.body.style.pointerEvents = 'auto';
@@ -832,7 +823,6 @@
 
                         const filteredClones = Array.from(clonedDeviceCards).filter(c => c.dataset.device !== deviceType);
                         
-                        // Ajustar el grid para 5 elementos
                         if (filteredClones.length === 5) {
                             otherDevicesGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
                         } else {
@@ -849,7 +839,7 @@
                             }
                         });
 
-                        animateCardsIn(filteredClones, 100, 100, false); // No es carga inicial
+                        animateCardsIn(filteredClones, 100, 100);
 
                         document.body.style.pointerEvents = 'auto';
 
