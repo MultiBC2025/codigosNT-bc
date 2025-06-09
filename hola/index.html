@@ -47,7 +47,7 @@
 
         @keyframes fadeInDown {
             from {
-                opacity: 0;
+                opacity: 0; /* Aquí sí dejamos opacity para que el título aparezca */
                 transform: translateY(-20px);
             }
             to {
@@ -76,14 +76,13 @@
             gap: 20px;
             width: 100%;
             max-width: 900px;
-            opacity: 0; /* Inicialmente oculto para la animación del grid */
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            /* Eliminamos opacity: 0 aquí */
+            transform: translateY(20px); /* Ligeramente desplazado hacia abajo inicialmente */
+            transition: transform 0.5s ease-out; /* Solo transiciona el transform */
         }
 
         .device-grid.animate-in {
-            opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0); /* Vuelve a su posición original */
         }
 
         /* Tarjeta de dispositivo */
@@ -105,30 +104,30 @@
             overflow: hidden; /* Para asegurar que las animaciones internas se queden dentro */
         }
 
-        /* Ojo: los estilos iniciales de opacidad y transform de i y span deben estar aquí */
+        /* Ojo: los estilos iniciales de transform de i y span */
         .device-card i {
             font-size: 3.5em;
             color: #555;
             margin-bottom: 15px;
-            opacity: 0; /* Estado inicial para la animación */
-            transform: translateX(-20px); /* Estado inicial para la animación */
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Transición para la animación */
+            /* Eliminamos opacity: 0 aquí */
+            transform: translateX(-20px); /* Estado inicial para la animación (desplazado) */
+            transition: transform 0.4s ease-out; /* Solo transiciona el transform */
         }
 
         .device-card span {
             font-size: 1.3em;
             font-weight: 600;
             color: #333;
-            opacity: 0; /* Estado inicial para la animación */
-            transform: translateX(20px); /* Estado inicial para la animación */
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Transición para la animación */
+            /* Eliminamos opacity: 0 aquí */
+            transform: translateX(20px); /* Estado inicial para la animación (desplazado) */
+            transition: transform 0.4s ease-out; /* Solo transiciona el transform */
         }
 
         /* Clase para animar la entrada de nombre e icono */
         .device-card.name-animate-in i,
-        .device.card.name-animate-in span {
-            opacity: 1;
-            transform: translateX(0);
+        .device-card.name-animate-in span {
+            /* Eliminamos opacity: 1 aquí */
+            transform: translateX(0); /* Vuelve a su posición original */
         }
 
         .device-card:hover {
@@ -139,6 +138,7 @@
 
         /* Animación para las tarjetas no seleccionadas al salir */
         .device-card.animate-out {
+            /* Mantenemos opacity para la salida, ya que la idea es que desaparezcan */
             opacity: 0;
             transform: scale(0.8) translateX(50px); /* Salen hacia la derecha y se encogen */
             transition: transform 0.4s ease-in, opacity 0.4s ease-in;
@@ -164,8 +164,8 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+            0% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1.3); }
         }
 
         /* Área de contenido de los pasos */
@@ -177,7 +177,7 @@
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            opacity: 0; /* Inicialmente oculto */
+            opacity: 0; /* Mantenemos opacity para la entrada del contenido, ya que aparece después */
             z-index: 50;
             text-align: center;
             position: relative;
@@ -230,7 +230,7 @@
             width: 100%;
             max-width: 900px;
             justify-content: center;
-            opacity: 0; /* Inicialmente oculto */
+            opacity: 0; /* Mantenemos opacity para la entrada de este grid */
             transform: translateY(50px); /* Empezar desde abajo */
             transition: opacity 0.5s ease-out 0.6s, transform 0.5s ease-out 0.6s; /* Retraso para que aparezca después del contenido */
         }
@@ -247,7 +247,7 @@
             font-size: 0.9em;
             height: 100px; /* Altura fija para consistencia */
             justify-content: space-around;
-            opacity: 0; /* Inicialmente oculto para la animación de subida */
+            opacity: 0; /* Mantenemos opacity para la entrada de estas tarjetas */
             transform: translateY(30px); /* Empezar desde abajo */
             transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Animación individual de cada tarjeta pequeña */
             overflow: hidden; /* Asegurar que el contenido interno no se desborde */
@@ -256,15 +256,14 @@
         .device-card.small i {
             font-size: 2.2em;
             margin-bottom: 5px;
-            opacity: 1; /* Asegurar que sean visibles al ser pequeñas */
-            transform: translateX(0); /* Asegurar que no tengan transformaciones residuales */
-            transition: none; /* Desactivar transición para los elementos internos en la versión small, ya que la animación es de la tarjeta completa */
+            /* Eliminamos opacity: 1 y transform: translateX(0) para que herede de la tarjeta.
+               La animación de entrada de 'small' es de la tarjeta completa. */
+            transition: none; /* Desactivar transición para los elementos internos en la versión small */
         }
 
         .device-card.small span {
             font-size: 0.9em;
-            opacity: 1; /* Asegurar que sean visibles al ser pequeñas */
-            transform: translateX(0); /* Asegurar que no tengan transformaciones residuales */
+            /* Eliminamos opacity: 1 y transform: translateX(0) para que herede de la tarjeta. */
             transition: none; /* Desactivar transición para los elementos internos en la versión small */
         }
 
@@ -450,18 +449,16 @@
             let currentlySelectedDevice = null;
 
             // Función para preparar las tarjetas para la animación de entrada
-            // Esto incluye resetear sus estilos de opacidad y transform
+            // Esto incluye resetear sus estilos de transform
             function resetCardForAnimation(card) {
                 card.classList.remove('name-animate-in'); // Asegurarse de que no tenga la clase activa
                 const icon = card.querySelector('i');
                 const span = card.querySelector('span');
                 if (icon) {
-                    icon.style.opacity = '0';
-                    icon.style.transform = 'translateX(-20px)';
+                    icon.style.transform = 'translateX(-20px)'; // Desplazado para la animación
                 }
                 if (span) {
-                    span.style.opacity = '0';
-                    span.style.transform = 'translateX(20px)';
+                    span.style.transform = 'translateX(20px)'; // Desplazado para la animación
                 }
                 // Forzar un reflow para que los estilos de reset se apliquen antes de la animación
                 void card.offsetWidth;
@@ -469,16 +466,16 @@
 
             // Función para iniciar la animación de entrada de las tarjetas y sus nombres
             function animateInitialCards() {
-                // Primero, resetear todas las tarjetas para que estén listas para la animación
+                // Primero, resetear todas las tarjetas para que estén listas para la animación de transform
                 deviceCards.forEach(resetCardForAnimation);
 
                 // Asegurarse de que el grid esté visible y sin la clase animate-in para poder añadirla
                 deviceGrid.style.display = 'grid';
                 deviceGrid.classList.remove('animate-in');
                 void deviceGrid.offsetWidth; // Forzar reflow del grid
-                deviceGrid.classList.add('animate-in');
+                deviceGrid.classList.add('animate-in'); // Esto dispara la animación del grid
 
-                // Luego, animar cada tarjeta individualmente
+                // Luego, animar cada tarjeta individualmente (sus iconos y nombres)
                 deviceCards.forEach((card, index) => {
                     setTimeout(() => {
                         card.classList.add('name-animate-in'); // Añadir la clase para animar los iconos y nombres
@@ -501,11 +498,11 @@
                     card.style.transform = '';
                     card.style.zIndex = '';
                     card.style.backgroundColor = ''; // Restaura el color de fondo
-                    card.style.opacity = '1'; // Asegurar visibilidad
+                    // No restauramos opacity aquí, ya que queremos que siempre sean visibles
                     card.style.pointerEvents = 'auto'; // Habilitar clics
                 });
 
-                // Ocultar contenido y otras tarjetas
+                // Ocultar contenido y otras tarjetas (estas sí se ocultan con opacity si no están visibles)
                 contentArea.classList.remove('show', 'slide-from-center');
                 otherDevicesGrid.classList.remove('show');
                 otherDevicesGrid.innerHTML = ''; // Limpiar el grid de otros dispositivos
@@ -558,28 +555,26 @@
                     card.classList.remove('animate-out');
                     resetCardForAnimation(card); // Asegurar que los iconos y nombres estén listos para animar si son seleccionados
                     
-                    card.style.opacity = '1';
+                    // No restauramos opacity aquí
                     card.style.pointerEvents = 'auto';
-                    card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.3s ease'; /* Asegurar transiciones para que el reseteo sea suave */
+                    card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease'; /* Asegurar transiciones para que el reseteo sea suave */
                 });
 
                 // Aplicar estilos a la nueva tarjeta seleccionada
                 selectedCardElement.classList.add('selected-center');
                 selectedCardElement.classList.add('loading'); // Inicia el efecto de carga
-                // Asegurarse de que el icono y el span de la tarjeta seleccionada estén visibles inmediatamente
+                // Asegurarse de que el icono y el span de la tarjeta seleccionada estén en su posición final
                 const selectedIcon = selectedCardElement.querySelector('i');
                 const selectedSpan = selectedCardElement.querySelector('span');
                 if (selectedIcon) {
-                    selectedIcon.style.opacity = '1';
                     selectedIcon.style.transform = 'translateX(0)';
                 }
                 if (selectedSpan) {
-                    selectedSpan.style.opacity = '1';
                     selectedSpan.style.transform = 'translateX(0)';
                 }
 
 
-                // Animar el resto de tarjetas para que salgan
+                // Animar el resto de tarjetas para que salgan (estas SÍ usarán opacity para desaparecer)
                 deviceCards.forEach(otherCard => {
                     if (otherCard !== selectedCardElement) {
                         otherCard.classList.add('animate-out');
@@ -620,15 +615,13 @@
                                 clonedCard.classList.remove('animate-out', 'name-animate-in'); // Limpiar clases de animación anteriores
                                 clonedCard.classList.add('small'); // Aplicar estilo de tarjeta pequeña
 
-                                // Asegurarse de que los iconos y nombres clonados estén visibles
+                                // Asegurarse de que los iconos y nombres clonados estén en su posición final
                                 const clonedIcon = clonedCard.querySelector('i');
                                 const clonedSpan = clonedCard.querySelector('span');
                                 if (clonedIcon) {
-                                    clonedIcon.style.opacity = '1';
                                     clonedIcon.style.transform = 'translateX(0)';
                                 }
                                 if (clonedSpan) {
-                                    clonedSpan.style.opacity = '1';
                                     clonedSpan.style.transform = 'translateX(0)';
                                 }
 
@@ -650,14 +643,14 @@
                                 });
                                 otherDevicesGrid.appendChild(clonedCard);
 
-                                // Animar la entrada de las tarjetas pequeñas una por una
+                                // Animar la entrada de las tarjetas pequeñas una por una (estas SÍ usan opacity para su entrada)
                                 setTimeout(() => {
                                     clonedCard.classList.add('animate-up');
                                 }, delay);
                                 delay += 100; // Incrementa el retraso para el efecto escalonado
                             }
                         });
-                        // Mostrar el grid de "otros dispositivos"
+                        // Mostrar el grid de "otros dispositivos" (este SÍ usa opacity para su entrada)
                         otherDevicesGrid.classList.add('show');
 
                     }, 800); // Retraso mayor para que el contenido se asiente antes de que aparezcan las otras tarjetas
