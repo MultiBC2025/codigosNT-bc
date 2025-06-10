@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -48,6 +50,10 @@
             letter-spacing: 2px;
             animation: fadeInDown 1s ease-out; /* Animación de carga inicial del título */
         }
+        .main-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.12);
+        }
 
         /* Contenedor principal */
         .container {
@@ -57,9 +63,61 @@
             align-items: center;
             padding: 20px;
             max-width: 1200px;
-            margin: 5 auto;
+            margin: 0 auto;
             width: 100%;
             box-sizing: border-box;
+            text-align: center;
+        }
+        
+        .flist-enca {
+            list-style: none;
+            padding: 5;
+            margin: 0px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 60px;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            color: white;
+            padding: 1px 1px;
+            border-radius: 19px;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+             background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            color: #ff3402;
+            font-size: 1.1em;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+        }
+        
+        .flist-enca li:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .flist-enca li i {
+            color: #ff3402;
+            font-size: 1.1em;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+        }
+        
+        .note-important {
+            background: linear-gradient(135deg, #fff3e0 0%, #fffd5c 100%);
+            border-left: 3px solid #007bff;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .note-important:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.12);
         }
 
         /* Grid de dispositivos inicial */
@@ -81,10 +139,12 @@
 
         /* Tarjeta de dispositivo */
         .device-card {
+            font-size: 30px; /* Aumenta según lo necesites */
+            font-weight: bold;
             background-color: #ffffff;
             border: 2px solid #333;
             border-radius: 15px;
-            padding: 30px 20px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -140,6 +200,161 @@
             transition: transform 0.4s ease-in, opacity 0.4s ease-in;
             pointer-events: none; /* Deshabilitar clics durante la animación de salida */
         }
+        
+        /*--------------------- RECURSOS BOTONES Y DISEÑOS -------------------*/
+        
+        
+        .step1 {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-left: 20px;
+            position: relative;
+            opacity: 1;
+            transform: translateY(20px);
+            animation: slideDown 0.3s forwards;
+            animation-delay: calc(var(--step-delay) * 0.1s);
+            display: flex;
+            flex-direction: column;
+            
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            color: #002147; /* azul marino */
+        }
+
+
+       
+                
+        .step {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-left: 20px;
+            position: relative;
+            opacity: 1;
+            transform: translateY(20px);
+            animation: slideDown 0.3s forwards;
+            animation-delay: calc(var(--step-delay) * 0.1s);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            background: #00ff59;
+            color: #000000 !important;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,123,255,0.2);
+            z-index: 1;
+        }
+        
+        .step h3 {
+            color: #8f0000;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            padding-top: 4px;
+        }
+        
+        .step:nth-child(1) { --step-delay: 1; }
+        .step:nth-child(2) { --step-delay: 2; }
+        .step:nth-child(3) { --step-delay: 3; }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #bfffb9 0%, #b9fffc 100%);
+            border-radius: 30px;
+            text-decoration: none;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: bold;
+            color: #000000 !important;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .credential-box {
+            background: #f2c7ff;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+        
+        .credential-line {
+            margin: 5px 0;
+        }
+        
+        .credential-line span {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .step-content1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .step-text {
+            flex: 1;
+            min-width: 250px;
+            text-align: left;
+        }
+        
+        .step-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-start;
+            min-width: 200px;
+        }
+        
+        .app-list {
+            list-style: none;
+            margin: 15px 0;
+            padding-left: 0;
+        }
+
+        .app-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-tag {
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+        }
+
+
+/*--------------------- FIN RECURSOS BOTONES Y DISEÑOS -----------------*/
+
 
         /* ------------------ OVERLAY DE CARGA GLOBAL ------------------ */
         #globalLoadingOverlay {
@@ -172,15 +387,46 @@
         }
 
         #globalLoadingIcon {
-            font-size: 6em; /* Tamaño grande para el icono */
+            font-size: 6em;
             margin-bottom: 20px;
-            animation: spin 1.5s linear infinite; /* Animación de spinner */
+            /* Opción A: Solo agrandar y achicar */
+            /* animation: pulseIcon 1.5s ease-in-out infinite; */
+            /* Opción B: Girar Y agrandar/achicar */
+            animation: pulseScale 0.5s linear infinite, pulseIcon 1.5s ease-in-out infinite;
         }
 
         #globalLoadingMessage {
             font-size: 2em;
             font-weight: bold;
+            color: white;
+            display: flex; /* Para centrar el grupo de letras */
+            justify-content: center;
+            align-items: center;
+            animation: pulseScale 0.5s linear infinite, pulseIcon 1.5s ease-in-out infinite;
         }
+        
+        
+        .google-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            height: 100px;
+            margin-top: 50px;
+        }
+        
+        .dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulseScaleGoogle 1.2s ease-in-out infinite;
+        }
+        
+        .dot.blue   { background-color: #4285F4; animation-delay: 0s;   }
+        .dot.red    { background-color: #EA4335; animation-delay: 0.1s; }
+        .dot.yellow { background-color: #FBBC05; animation-delay: 0.2s; }
+        .dot.green  { background-color: #34A853; animation-delay: 0.3s; }
+        
         /* ------------------ FIN OVERLAY DE CARGA GLOBAL ------------------ */
 
 
@@ -231,8 +477,8 @@
         /* Grid para los "demás dispositivos" que aparecen abajo */
         .other-devices-grid {
             display: flex;
-            flex-direction: row; /* Apila el h3 y el wrapper de tarjetas */
-            align-items: center; /* Centra horizontalmente */
+            flex-direction: column; /* Apila h3 arriba y tarjetas abajo */
+            align-items: center;     /* Centra todo horizontalmente */
             gap: 15px; /* Espacio entre el título y el wrapper */
             margin-top: 30px;
             width: 100%;
@@ -251,7 +497,7 @@
         /* Contenedor de las tarjetas clonadas */
         .other-devices-cards-wrapper {
             display: flex;
-            flex-wrap: wrap; /* Permite que las tarjetas se envuelvan */
+            flex-wrap: wrap;        /* Que se acomoden si no caben en una fila */
             justify-content: center; /* Centra las tarjetas dentro de este wrapper */
             gap: 15px; /* Espacio entre las tarjetas pequeñas */
             width: 100%; /* Ocupa todo el ancho disponible */
@@ -299,47 +545,10 @@
             align-items: center;
             flex-wrap: wrap;
             margin-top: auto; /* Empuja el footer hacia abajo */
-            border-top: 4px solid #333;
+            border-top: 2px solid #333;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-            border-radius: 100px 100px 0 0;
-            z-index: 50;
-        }
-        
-        .flist-enca {
-            list-style: none;
-            padding: 5;
-            margin: 0px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 60px;
-            justify-content: center;
-            display: flex;
-            align-items: center;
-            gap: 60px;
-            color: white;
-            padding: 1px 1px;
-            border-radius: 19px;
-            font-size: 0.9em;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
-             background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-            color: #ff3402;
-            font-size: 1.1em;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
-        }
-        
-        .note-important {
-            background: linear-gradient(135deg, #fff3e0 0%, #fffd5c 100%);
-            border-left: 3px solid #007bff;
-            padding: 1.2rem;
-            margin: 1.5rem 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
-            transition: all 0.3s ease;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,123,255,0.12);
+            border-radius: 50px 50px 0 0;
+            z-index: 10;
         }
 
         .footer-text {
@@ -352,15 +561,6 @@
               transform: translateY(20px);
           }
           
-          .container1 {
-                padding: 10px;
-                max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-            }
-          
           .fade-in {
               opacity: 0;
                 transform: translateY(20px);
@@ -368,6 +568,22 @@
         }
 
         /* ------------------ KEYFRAMES DE ANIMACIÓN ------------------ */
+        /* NUEVA ANIMACIÓN: EFECTO OLA/PULSO */
+        @keyframes pulseScale {
+        0% { transform: scale(1); } /* Tamaño original */
+        50% { transform: scale(1.2); } /* Se agranda un 20% */
+        100% { transform: scale(1); } /* Vuelve al tamaño original */
+    }
+    
+        @keyframes pulseScaleGoogle {
+            0%, 100% {
+                transform: scale(1) translateY(0);
+            }
+            50% {
+                transform: scale(1.15) translateY(-8px);
+            }
+        }
+        
         @keyframes fadeInUp {
         to {
          opacity: 1;
@@ -486,14 +702,16 @@
     </style>
 </head>
 <body>
-
+ 
+ <!--/*--------- Start - Title and Heading --------- */-->
     <header class="main-header"> 
-        <h1>Guía Completa de Activación Mosher IPTV</h1>
+        <h1>Guía Completa de Activación de Mosher TV</h1>
     </header>
+
     <div class="header">
         <div class="container">
             <h1 style="font-size: 2.0em;">MultiEntretenimiento BC</h1>
-            <p style="font-size: 1.0em;">Configura tu cuenta fácilmente en todos tus dispositivos y disfruta de tu contenido al instante.</p>
+            <p style="font-size: 1.5em;">Configura tu cuenta fácilmente en todos tus dispositivos y disfruta de tu contenido al instante.</p>
             
             
                 <ul class="flist-enca">
@@ -501,18 +719,20 @@
                 <li><i class="fas fa-check-circle"></i> Peliculas</li>
                 <li><i class="fas fa-check-circle"></i> Series</li>
             </ul>
-        
+        <div class="note-important" style="font-size: 1.2em;">
+            <strong>Recomendación:</strong> Sigue atentamente estos pasos para una activación exitosa de tu cuenta.
+        </div>
             
         </div>
     </div>
     
+    <!--/*--------- End - Title and Heading --------- */-->
+    
+    
+     <!--/*---------  Start DIV Body --------- */-->
+
+    <!--/*--------- Start - Card - Devices --------- */-->
  <div class="container">
-        <div class="note-important" style="font-size: 1.2em;">
-            <strong>Recomendación:</strong> Sigue atentamente estos pasos para una activación exitosa de tu cuenta.
-        </div>
-        
-        
-    <div class="container">
         <div class="device-grid" id="deviceGrid">
             <div class="device-card" data-device="android">
                 <i class="fab fa-android"></i>
@@ -540,62 +760,189 @@
             </div>
         </div>
 
+    <!--/*--------- End - Card - Devices --------- */-->
+
+
+    <!--/*--------- Start - In devices --------- */-->
+    
+             <!--/*--------- Start - Android Device --------- */-->
+                       
         <div class="content-area" id="contentArea">
             <div id="android-steps" class="step-content">
                 <h2>Guía para Android</h2>
-                <p><strong>Paso 1:</strong> Descarga la aplicación desde nuestra página oficial o Play Store.</p>
-                <p><strong>Paso 2:</strong> Abre la aplicación e ingresa tus credenciales.</p>
-                <p><strong>Paso 3:</strong> ¡Disfruta de todo el contenido!</p>
+                
+                <div class="step">
+    <div class="step-number">1</div>
+    <h3>Multi TV</h3>
+    <a href="https://apps.multiplataforma.co/MultiTV.apk" class="btn" target="_blank" >
+      <i class="fas fa-download"></i> Descargar APP
+    </a>
+    <ol>
+      <li>Instala la aplicación</li>
+      <li>Abre y pulsa el botón "+ Add Playlist"</li>
+      <li>Ingresa tus datos</li>
+      <div class="credential-box">
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+      </div>
+      <li>Presiona Enter</li>
+    </ol>
+  </div>
+
+  <div class="step">
+    <div class="step-number">2</div>
+    <h3>Stream Player</h3>
+    <a href="https://play.google.com/store/apps/details?id=com.digitalseva.iptvplayer" class="btn" target="_blank">
+      <i class="fab fa-google-play"></i> Descarga Play Store
+    </a>
+    <ol>
+      <li>Descarga e instala la app</li>
+      <li>Selecciona "Login with new user"</li>
+      <li>Ingresa tus credenciales</li>
+      <div class="credential-box">
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+        <div class="credential-line"><span>Servidor:</span> https://multiplataforma.pro</div>
+      </div>
+      <li>Presiona Login</li>
+    </ol>
+  </div>
+
+  <div class="step">
+    <div class="step-number">3</div>
+    <h3>Otras aplicaciones recomendadas:</h3>
+    
+    <div class="step1">
+    <ul class="app-list">
+      <li>IPTV SMARTERS PRO <a href="https://www.iptvsmarters.com/iptv-smarters-4.0.5.apk" class="btn" target="_blank" >
+      <i class="fas fa-download"></i>Descarga Gratis</a></li>
+      
+      <li>9Xtream <a href="https://play.google.com/store/apps/details?id=com.divergentftb.xtreamplayeranddownloader" class="btn" target="_blank">
+      <i class="fab fa-google-play"></i> Descarga Gratis</a></li>
+      <li>Reel IPTV Player <a href="https://play.google.com/store/apps/details?id=iptvplayer.m3ustream" class="btn" target="_blank" >
+      <i class="fas fa-download"></i>Descarga Gratis</a></li>
+      
+      <li>IboPlayer Pro <a href="https://www.iboplayer.com/app_downloads/ibop.apk" class="btn" target="_blank" >
+      <i class="fas fa-download"></i>Descarga De pago</a></li>
+    </ul>
+  </div>
             </div>
+            </div>
+            
+            
+              <!--/*--------- End - Android Device --------- */-->
+
+
+              <!--/*--------- Start - iOS Device --------- */-->
+
+            
             <div id="ios-steps" class="step-content">
                 <h2>Guía para iOS</h2>
                 <p><strong>Paso 1:</strong> Dirígete a la App Store y busca "MultiEntretenimiento BC".</p>
                 <p><strong>Paso 2:</strong> Instala la aplicación y ábrela.</p>
                 <p><strong>Paso 3:</strong> Inicia sesión y explora nuestro catálogo.</p>
             </div>
+            
+              <!--/*--------- End - iOS Device ------------------- */-->
+              
+              <!--/*--------- Start - SmartTV Device --------- */-->
+
+
             <div id="smarttv-steps" class="step-content">
                 <h2>Guía para Smart TV</h2>
                 <p><strong>Paso 1:</strong> Accede a la tienda de aplicaciones de tu Smart TV (Samsung, LG, etc.).</p>
                 <p><strong>Paso 2:</strong> Busca y descarga "MultiEntretenimiento BC".</p>
                 <p><strong>Paso 3:</strong> Abre la app, inicia sesión y prepárate para ver.</p>
             </div>
+            
+              <!--/*--------- End - SmartTV Device --------- */-->
+
+              <!--/*---------  Start - Windows PC - Device --------- */-->
+
+
             <div id="pc-steps" class="step-content">
                 <h2>Guía para PC</h2>
                 <p><strong>Paso 1:</strong> Visita nuestra página web y descarga la versión de escritorio.</p>
                 <p><strong>Paso 2:</strong> Instala el programa siguiendo las instrucciones.</p>
                 <p><strong>Paso 3:</strong> Ejecuta la aplicación, ingresa tus datos y comienza a disfrutar.</p>
             </div>
+            
+              <!--/*--------- End - Windows PC Device --------- */-->
+
+              <!--/*--------- Start - FireStick Device --------- */-->
+
             <div id="firestick-steps" class="step-content">
                 <h2>Guía para Firestick</h2>
                 <p><strong>Paso 1:</strong> Desde la pantalla de inicio de tu Firestick, ve a "Buscar".</p>
                 <p><strong>Paso 2:</strong> Escribe "MultiEntretenimiento BC" y selecciona la app.</p>
                 <p><strong>Paso 3:</strong> Haz clic en "Obtener" o "Descargar", luego abre e inicia sesión.</p>
             </div>
+            
+              <!--/*--------- End - FireStick Device --------- */-->
+
+              <!--/*--------- Start - Roku Device --------- */-->
+
             <div id="rokutv-steps" class="step-content">
                 <h2>Guía para Roku TV</h2>
                 <p><strong>Paso 1:</strong> En tu Roku, ve a "Canales de Streaming" o "Channel Store".</p>
                 <p><strong>Paso 2:</strong> Busca "MultiEntretenimiento BC" y añade el canal.</p>
                 <p><strong>Paso 3:</strong> Una vez añadido, abre el canal e inicia sesión para ver contenido.</p>
             </div>
+            
+              <!--/*--------- End - Roku Device --------- */-->
+
         </div>
+        
+    <!--/*--------- End - In devices ------------------- */-->
+    
+     <!--/*--------- Start - Others Devices within the stepper --------- */-->
+
 
         <div class="other-devices-grid" id="otherDevicesGrid">
             <h3>Otros dispositivos que podrían interesarte:</h3>
             <div class="other-devices-cards-wrapper">
                 </div>
         </div>
+        
+     <!--/*--------- End - Others Devices within the steeper  --------- */-->
+
     </div>
+    
+     <!--/*--------- End DIV Body  --------- */-->
+
+     <!--/*--------- Main Footer Copyrigth  --------- */-->
 
     <footer class="main-footer">
         <span class="footer-text">&copy; 2025 MultiEntretenimiento BC. Todos los derechos reservados.</span>
     </footer>
 
-    <div id="globalLoadingOverlay">
+     <!--/*--------- Main Footer Copyrigth  --------- */-->
+
+
+                  <!--/*--------- Loading Text, Icon and Google  --------- */-->
+
+   <div id="globalLoadingOverlay">
+    <div class="loading-content">
+        <i id="globalLoadingIcon" class="fas"></i> </div>
+        
         <div class="loading-content">
-            <i id="globalLoadingIcon" class="fas"></i>
-            <div id="globalLoadingMessage">Cargando...</div> 
-        </div>
+            <p id="globalLoadingMessage">Cargando...</p>
+            
+        <div class="google-loader">
+    <div class="dot blue"></div>
+    <div class="dot red"></div>
+    <div class="dot yellow"></div>
+    <div class="dot green"></div>
     </div>
+</div>
+</div>
+
+                    <!--/*--------- Loading Text, Icon and Google  --------- */-->
+
+     <!--/*--------- Start Script  --------- */-->
+     
+              <!--/*--------- Start DOMContent Entrance Animation  --------- */-->
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -705,106 +1052,117 @@
             // Asignar el evento click al header para resetear la página
             mainHeader.addEventListener('click', resetState);
 
-            // Función para manejar la selección de un dispositivo
-            function handleDeviceSelection(selectedCardElement) {
-                const deviceData = selectedCardElement.dataset.device;
+             // Función para manejar la selección de un dispositivo
+        function handleDeviceSelection(selectedCardElement) {
+            const deviceData = selectedCardElement.dataset.device;
 
-                if (currentlySelectedDevice === deviceData) {
-                    return; // Evita animar si ya está seleccionado
+            if (currentlySelectedDevice === deviceData) {
+                return; // Evita animar si ya está seleccionado
+            }
+
+            currentlySelectedDevice = deviceData;
+
+            // Ocultar y limpiar áreas de contenido y otros dispositivos
+            document.querySelectorAll('.step-content').forEach(step => step.classList.remove('active'));
+            contentArea.classList.remove('show');
+            contentArea.removeAttribute('style');
+
+            // --- CAMBIO CLAVE AQUÍ: LIMPIAR SOLO EL CONTENEDOR DE LAS TARJETAS CLONADAS ---
+            otherDevicesCardsWrapper.innerHTML = ''; // Limpia las tarjetas anteriores del wrapper
+            otherDevicesGrid.classList.remove('show');
+            otherDevicesGrid.removeAttribute('style');
+
+            // 1. Animar salida de TODAS las tarjetas en el grid original
+            deviceCards.forEach(card => {
+                card.classList.add('animate-out');
+            });
+
+            // 2. Después de que las tarjetas se hayan animado para salir, ocultar el deviceGrid y mostrar el cargador global
+            setTimeout(() => {
+                deviceGrid.style.display = 'none'; // Oculta el grid completo de tarjetas
+
+                // Prepara y muestra el overlay de carga global
+                const selectedIconElement = selectedCardElement.querySelector('i');
+                if (selectedIconElement) {
+                    globalLoadingIcon.className = selectedIconElement.className;
+                }
+                globalLoadingMessage.textContent = 'Cargando...';
+                globalLoadingOverlay.classList.add('show');
+
+            }, 500); // Dale tiempo a la animación 'animate-out' (0.4s en tu CSS, + un poco de margen)
+
+            // 3. Simular la carga y luego mostrar el contenido principal
+            setTimeout(() => {
+                globalLoadingOverlay.classList.remove('show'); // Ocultar el overlay de carga
+
+                const stepContentId = `${deviceData}-steps`;
+                const activeStepContent = document.getElementById(stepContentId);
+
+                if (activeStepContent) {
+                    activeStepContent.classList.add('active');
+                    contentArea.classList.remove('show');
+                    void contentArea.offsetWidth; // Forzar reflow para que la animación se reproduzca
+                    setTimeout(() => {
+                        contentArea.classList.add('show');
+                    }, 50); // Pequeño retraso para que la animación de entrada del contenido se vea
                 }
 
-                currentlySelectedDevice = deviceData;
-
-                // Ocultar y limpiar áreas de contenido y otros dispositivos
-                document.querySelectorAll('.step-content').forEach(step => step.classList.remove('active'));
-                contentArea.classList.remove('show'); // Mantener slide-from-center para re-animación
-                contentArea.removeAttribute('style'); // Limpiar estilos inline
-                
-                otherDevicesGrid.innerHTML = '<h3>Otros dispositivos que podrían interesarte:</h3>'; // Restaurar título
-                otherDevicesGrid.classList.remove('show');
-                otherDevicesGrid.removeAttribute('style'); // Limpiar estilos inline
-
-                // 1. Animar salida de TODAS las tarjetas en el grid original
-                deviceCards.forEach(card => {
-                    card.classList.add('animate-out');
-                });
-
-                // 2. Después de que las tarjetas se hayan animado para salir, ocultar el deviceGrid y mostrar el cargador global
+                // Generar y animar el grid de otros dispositivos
                 setTimeout(() => {
-                    deviceGrid.style.display = 'none'; // Oculta el grid completo de tarjetas
- 
-                    // Prepara y muestra el overlay de carga global
-                    const selectedIconElement = selectedCardElement.querySelector('i');
-                    if (selectedIconElement) {
-                        // Copia todas las clases del icono (ej. "fab fa-android")
-                        globalLoadingIcon.className = selectedIconElement.className; 
-                    }
-                    globalLoadingMessage.textContent = 'Cargando...';
-                    globalLoadingOverlay.classList.add('show'); // Muestra el overlay de carga
-                    
-                }, 500); // Dale tiempo a la animación 'animate-out' (0.4s en tu CSS, + un poco de margen)
+                    let delay = 0;
+                    // Usamos deviceCards (la NodeList original) para clonar
+                    deviceCards.forEach((otherCard) => {
+                        if (otherCard.dataset.device !== deviceData) {
+                            const clonedCard = otherCard.cloneNode(true);
+                            // Eliminar clases de estado previas de la tarjeta original
+                            clonedCard.classList.remove('animate-out', 'name-animate-in', 'selected-center', 'loading');
+                            clonedCard.classList.add('small');
 
-                // 3. Simular la carga y luego mostrar el contenido principal
-                setTimeout(() => {
-                    globalLoadingOverlay.classList.remove('show'); // Ocultar el overlay de carga
-
-                    const stepContentId = `${deviceData}-steps`;
-                    const activeStepContent = document.getElementById(stepContentId);
-
-                    if (activeStepContent) {
-                        activeStepContent.classList.add('active');
-                        // Para re-animar contentArea, lo removemos y lo volvemos a añadir
-                        contentArea.classList.remove('show');
-                        contentArea.classList.add('slide-from-center'); // Esta clase no existe, debería ser 'show' si solo quieres la animación definida.
-                                                                        // Si quieres una animación diferente, necesitas definir .slide-from-center
-                        setTimeout(() => {
-                            contentArea.classList.add('show');
-                        }, 50); // Pequeño retraso para que la animación de entrada del contenido se vea
-                    }
-
-                    // Generar y animar el grid de otros dispositivos
-                    setTimeout(() => {
-                        let delay = 0;
-                        // Usamos deviceCards (la NodeList original) para clonar
-                        deviceCards.forEach((otherCard) => { 
-                            if (otherCard.dataset.device !== deviceData) {
-                                const clonedCard = otherCard.cloneNode(true); 
-                                // Eliminar clases de estado previas de la tarjeta original
-                                clonedCard.classList.remove('animate-out', 'name-animate-in', 'selected-center', 'loading'); 
-                                clonedCard.classList.add('small'); 
-
-                                // Asegurar que el icono y el nombre estén visibles en las tarjetas pequeñas clonadas
-                                const clonedIcon = clonedCard.querySelector('i');
-                                const clonedSpan = clonedCard.querySelector('span');
-                                if (clonedIcon) { clonedIcon.removeAttribute('style'); clonedIcon.style.opacity = '1'; clonedIcon.style.transform = 'translateX(0)'; } 
-                                if (clonedSpan) { clonedSpan.removeAttribute('style'); clonedSpan.style.opacity = '1'; clonedSpan.style.transform = 'translateX(0)'; } 
-
-                                // Remover el mensaje de carga si se clonó por error
-                                const clonedLoadingMessage = clonedCard.querySelector('.loading-message');
-                                if (clonedLoadingMessage) {
-                                    clonedLoadingMessage.remove();
-                                }
-
-                                clonedCard.addEventListener('click', function() {
-                                    const originalCard = document.querySelector(`.device-card[data-device="${this.dataset.device}"]`);
-                                    if (originalCard) {
-                                        handleDeviceSelection(originalCard);
-                                    }
-                                });
-                                otherDevicesGrid.appendChild(clonedCard);
-
-                                // Animación escalonada para las tarjetas pequeñas
-                                setTimeout(() => {
-                                    clonedCard.classList.add('animate-up');
-                                }, delay);
-                                delay += 100; 
+                            // Asegurar que el icono y el nombre estén visibles en las tarjetas pequeñas clonadas
+                            const clonedIcon = clonedCard.querySelector('i');
+                            const clonedSpan = clonedCard.querySelector('span');
+                            // Limpiar estilos inline residuales y asegurar opacidad 1 para small cards
+                            if (clonedIcon) {
+                                clonedIcon.removeAttribute('style');
+                                clonedIcon.style.opacity = '1';
+                                clonedIcon.style.transform = 'translateX(0)';
                             }
-                        });
-                        otherDevicesGrid.classList.add('show'); // Mostrar el grid de otros dispositivos
+                            if (clonedSpan) {
+                                clonedSpan.removeAttribute('style');
+                                clonedSpan.style.opacity = '1';
+                                clonedSpan.style.transform = 'translateX(0)';
+                            }
 
-                    }, 800); // Retraso para que aparezca después del contenido principal
-                }, 1500); // Duración total de la "carga" (500ms de animate-out + 3000ms de simulación de carga)
-            }
+                            // Remover el mensaje de carga si se clonó por error
+                            const clonedLoadingMessage = clonedCard.querySelector('.loading-message');
+                            if (clonedLoadingMessage) {
+                                clonedLoadingMessage.remove();
+                            }
+
+                            clonedCard.addEventListener('click', function() {
+                                const originalCard = document.querySelector(`.device-card[data-device="${this.dataset.device}"]`);
+                                if (originalCard) {
+                                    handleDeviceSelection(originalCard);
+                                }
+                            });
+                            // --- CAMBIO CLAVE AQUÍ: AÑADIR AL WRAPPER, NO AL GRID PRINCIPAL ---
+                            otherDevicesCardsWrapper.appendChild(clonedCard); // Añadir al wrapper
+
+                            // --- ESTA LÍNEA ES LA QUE COMENTASTE Y YA NO DEBE EXISTIR ---
+                            // otherDevicesGrid.appendChild(document.querySelector('h3'));
+
+                            // Animación escalonada para las tarjetas pequeñas
+                            setTimeout(() => {
+                                clonedCard.classList.add('animate-up');
+                            }, delay);
+                            delay += 100;
+                        }
+                    });
+                    otherDevicesGrid.classList.add('show'); // Mostrar el grid de otros dispositivos
+
+                }, 800); // Retraso para que aparezca después del contenido principal
+            }, 2500); // Duración total de la "carga" (500ms de animate-out + 1000ms de simulación de carga)
+        }
 
             // Asignar el evento click a cada tarjeta de dispositivo
             deviceCards.forEach(card => {
@@ -819,6 +1177,10 @@
                 animateInitialCards(); // Anima las tarjetas
             }, 300); // Retraso inicial para que la página cargue un poco antes de las animaciones
         }); 
+        
+        
+        <!--/*--------- End DOMContent Entrance Animation  --------- */-->
+
         
         window.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.card-container .card');
