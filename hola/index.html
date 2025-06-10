@@ -57,7 +57,7 @@
             align-items: center;
             padding: 20px;
             max-width: 1200px;
-            margin: 0 auto;
+            margin: 5 auto;
             width: 100%;
             box-sizing: border-box;
         }
@@ -299,10 +299,47 @@
             align-items: center;
             flex-wrap: wrap;
             margin-top: auto; /* Empuja el footer hacia abajo */
-            border-top: 2px solid #333;
+            border-top: 4px solid #333;
             box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-            border-radius: 50px 50px 0 0;
-            z-index: 10;
+            border-radius: 100px 100px 0 0;
+            z-index: 50;
+        }
+        
+        .flist-enca {
+            list-style: none;
+            padding: 5;
+            margin: 0px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 60px;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            color: white;
+            padding: 1px 1px;
+            border-radius: 19px;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+             background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            color: #ff3402;
+            font-size: 1.1em;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+        }
+        
+        .note-important {
+            background: linear-gradient(135deg, #fff3e0 0%, #fffd5c 100%);
+            border-left: 3px solid #007bff;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+            transition: all 0.3s ease;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,123,255,0.12);
         }
 
         .footer-text {
@@ -314,6 +351,15 @@
               opacity: 0;
               transform: translateY(20px);
           }
+          
+          .container1 {
+                padding: 10px;
+                max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            }
           
           .fade-in {
               opacity: 0;
@@ -442,9 +488,30 @@
 <body>
 
     <header class="main-header"> 
-        <h1>MultiEntretenimiento BC</h1>
+        <h1>Guía Completa de Activación Mosher IPTV</h1>
     </header>
-
+    <div class="header">
+        <div class="container">
+            <h1 style="font-size: 2.0em;">MultiEntretenimiento BC</h1>
+            <p style="font-size: 1.0em;">Configura tu cuenta fácilmente en todos tus dispositivos y disfruta de tu contenido al instante.</p>
+            
+            
+                <ul class="flist-enca">
+                <li><i class="fas fa-check-circle"></i> Televisión en Vivo</li>
+                <li><i class="fas fa-check-circle"></i> Peliculas</li>
+                <li><i class="fas fa-check-circle"></i> Series</li>
+            </ul>
+        
+            
+        </div>
+    </div>
+    
+ <div class="container">
+        <div class="note-important" style="font-size: 1.2em;">
+            <strong>Recomendación:</strong> Sigue atentamente estos pasos para una activación exitosa de tu cuenta.
+        </div>
+        
+        
     <div class="container">
         <div class="device-grid" id="deviceGrid">
             <div class="device-card" data-device="android">
