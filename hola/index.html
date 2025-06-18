@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MultiEntretenimiento BC - Guía de Dispositivos</title>
+    <title>Guía de IPTV - MultiEntretenimiento BC</title>
+    <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -13,10 +14,17 @@
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <style>
-        /* Estilos Generales */
-        body {
+    
+    /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE ICONOS Y FONDO
+        -------------------------------------------------------------
+        */
+        
+         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             background-color: #f0f2f5;
@@ -24,7 +32,218 @@
             flex-direction: column;
             min-height: 100vh;
             overflow-x: hidden; /* Evitar scroll horizontal durante animaciones */
-        }
+            margin: 0;
+      background: linear-gradient(135deg,
+        #1a0a33,
+        #0a1f44,
+        #007bff,
+        #8a2be2,
+        #00ffff,
+        #ff007f,
+        #00ff00,
+        #ff0000,
+        #ffa500
+      );
+      background-size: 500% 500%;
+      animation: gradientAnimation 120s ease infinite;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Fondo aclarado al 40% */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 0%; }
+      25% { background-position: 50% 100%; }
+      50% { background-position: 100% 0%; }
+      75% { background-position: 0% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    .background-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .icon {
+      position: absolute;
+      font-size: 2em;
+      animation: combinedFloatAndMove var(--animation-duration, 35s) infinite linear;
+      opacity: 0;
+      color: white !important;
+    }
+
+    .icon-tv-a { top: 8%; left: 0%; font-size: 3em; --animation-duration: 40s; animation-delay: -0s; }
+    .icon-wifi-a { top: 12%; right: 0%; font-size: 2.5em; --animation-duration: 43s; animation-delay: -5s; }
+    .icon-gamepad-a { top: 20%; left: 0%; font-size: 3.5em; --animation-duration: 37s; animation-delay: -10s; }
+    .icon-play-a { top: 15%; right: 0%; font-size: 4em; --animation-duration: 45s; animation-delay: -15s; }
+    .icon-android-a { top: 5%; left: 0%; font-size: 2.8em; --animation-duration: 42s; animation-delay: -20s; }
+    .icon-apple-a { top: 25%; right: 0%; font-size: 3.2em; --animation-duration: 47s; animation-delay: -25s; }
+    .icon-windows-a { top: 30%; left: 0%; font-size: 3.8em; --animation-duration: 39s; animation-delay: -30s; }
+
+    .icon-samsung-tv-b { top: 40%; right: 0%; font-size: 3.1em; --animation-duration: 41s; animation-delay: -35s; }
+    .icon-lg-mobile-b { top: 35%; left: 0%; font-size: 2.9em; --animation-duration: 44s; animation-delay: -40s; }
+    .icon-desktop-b { top: 45%; right: 0%; font-size: 3.4em; --animation-duration: 38s; animation-delay: -45s; }
+    .icon-mobile-b { top: 55%; left: 0%; font-size: 2.7em; --animation-duration: 36s; animation-delay: -50s; }
+    .icon-laptop-b { top: 50%; right: 0%; font-size: 3.6em; --animation-duration: 46s; animation-delay: -55s; }
+
+    .icon-tv-c { bottom: 10%; left: 0%; font-size: 2.8em; --animation-duration: 39s; animation-delay: -60s; }
+    .icon-wifi-c { bottom: 5%; right: 0%; font-size: 2.2em; --animation-duration: 35s; animation-delay: -65s; }
+    .icon-gamepad-c { bottom: 20%; left: 0%; font-size: 3em; --animation-duration: 42s; animation-delay: -70s; }
+    .icon-play-c { bottom: 15%; right: 0%; font-size: 3.6em; --animation-duration: 44s; animation-delay: -75s; }
+    .icon-android-c { bottom: 25%; left: 0%; font-size: 2.8em; --animation-duration: 41s; animation-delay: -80s; }
+    .icon-apple-c { bottom: 30%; right: 0%; font-size: 3.2em; --animation-duration: 45s; animation-delay: -85s; }
+    .icon-windows-c { bottom: 0%; left: 0%; font-size: 3.8em; --animation-duration: 40s; animation-delay: -90s; }
+
+    .icon-tablet-d { top: 65%; right: 0%; font-size: 3em; --animation-duration: 43s; animation-delay: -95s; }
+    .icon-headphones-d { top: 70%; left: 0%; font-size: 2.5em; --animation-duration: 37s; animation-delay: -100s; }
+    .icon-cloud-d { bottom: 45%; left: 0%; font-size: 3.3em; --animation-duration: 48s; animation-delay: -105s; }
+    .icon-server-d { top: 80%; right: 0%; font-size: 2.9em; --animation-duration: 42s; animation-delay: -110s; }
+    .icon-mobile-e { top: 75%; right: 0%; font-size: 2.7em; --animation-duration: 35s; animation-delay: -115s; }
+    .icon-tv-e { bottom: 55%; left: 0%; font-size: 3.1em; --animation-duration: 44s; animation-delay: -120s; }
+    .icon-gamepad-e { top: 90%; left: 0%; font-size: 3.4em; --animation-duration: 41s; animation-delay: -125s; }
+    .icon-play-e { bottom: 60%; right: 0%; font-size: 3.9em; --animation-duration: 46s; animation-delay: -130s; }
+
+    @keyframes combinedFloatAndMove {
+      0% { transform: translateX(-120vw) translateY(0); opacity: 0; }
+      5% { opacity: 0.18; }
+      40% { color: rgba(255, 255, 255, 0.45); opacity: 0.45; }
+      50% { transform: translateX(0vw) translateY(10px); color: rgba(255, 255, 255, 0.55); opacity: 0.55; }
+      60% { color: rgba(255, 255, 255, 0.45); opacity: 0.45; }
+      95% { opacity: 0.18; }
+      100% { transform: translateX(120vw) translateY(0); opacity: 0; }
+    }
+        
+        
+        
+        
+    /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE ICONOS Y FONDO
+        -------------------------------------------------------------
+        */
+        
+        
+    /* Boton de progreso hacia arriba y de inicio */
+    
+    /* Botón de scroll */
+    #scrollTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 9999;
+      transition: transform 0.3s ease;
+    }
+
+    #scrollTopBtn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Aro de progreso */
+    #scrollProgress {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 70%;
+      background: conic-gradient(#000000 var(--scroll, 0%), #cecece 0%);
+      mask: radial-gradient(farthest-side, transparent 40%, black 71%);
+      -webkit-mask: radial-gradient(farthest-side, transparent 90%, black 71%);
+      box-shadow: 0 0 5px #00ffe099;
+    }
+
+    /* Flecha animada */
+    .arrow-up {
+      width: 17px;
+      height: 17px;
+      border-left: 2px solid #000000;
+      border-top: 2px solid #000000;
+      transform: rotate(45deg);
+      z-index: 1;
+      animation: pulse 1.5s infinite ease-in-out;
+      border: 10%;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; transform: scale(1) rotate(45deg); }
+      50% { opacity: 1; transform: scale(1.2) rotate(45deg); }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .boton-inicio {
+  position: fixed;
+  bottom: 100px; /* justo encima del botón subir */
+  right: 35px;
+  border: none;
+  border-radius: 100px;
+  font-size: 40px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  
+}
+
+.boton-inicio:hover {
+  color: #fff;
+  transform: scale(1.1); /* Agranda al pasar el mouse */
+}
+
+    
+    /* Boton de progeso hacia arriba y de inicio */
+    
+    .progress-wrap::after {
+    position: absolute;
+    content: '\f176';
+    font-family: "Font Awesome 5 Pro";
+    text-align: center;
+    line-height: 46px;
+    font-size: 20px;
+    color: #042e50;
+    left: 0;
+    top: 0;
+    height: 46px;
+    width: 46px;
+    cursor: pointer;
+    display: block;
+    z-index: 1;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+
+    
+        /* Estilos Generales */
+       
 
         /* Header */
         .main-header {
@@ -554,7 +773,7 @@
         /* Footer */
         .main-footer {
             background-color: #ffffff;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -564,11 +783,12 @@
             box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
             border-radius: 50px 50px 0 0;
             z-index: 10;
+            width: 100%
         }
 
         .footer-text {
             color: #555;
-            font-size: 0.9em;
+            font-size: 1em;
         }
         /* para aplicar animación escalonada */
         .card-container .card {
@@ -724,7 +944,10 @@
         }
     </style>
 </head>
+
 <body>
+ 
+ 
  
  <!--/*--------- Start - Title and Heading --------- */-->
     <header class="main-header"> 
@@ -1139,7 +1362,7 @@
     <!--/*--------- 9xTream --------- */-->
 
   <div class="step">
-           <div class="step-number">2</div>
+           <div class="step-number">3</div>
         <h3>Instalación de 9Xtream</h3>
         
         <ol>
@@ -1176,7 +1399,7 @@
     <!--/*--------- Mas Apps --------- */-->
 
   <div class="step">
-    <div class="step-number">5</div>
+    <div class="step-number">4</div>
     <h3>Otras aplicaciones que puedes buscar en la tienda de aplicaciones de tu tv:</h3>
     
     <div class="step1">
@@ -1698,5 +1921,73 @@
     });
   });     
     </script>  
+    
+ <!--/*--------- Animacion Iconos  --------- */-->
+  
+    
+    
+    <div class="background-elements">
+    <i class="fas fa-tv icon icon-tv-a"></i>
+    <i class="fas fa-wifi icon icon-wifi-a"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-a"></i>
+    <i class="fas fa-play-circle icon icon-play-a"></i>
+
+    <i class="fab fa-android icon icon-android-a"></i>
+    <i class="fab fa-apple icon icon-apple-a"></i>
+    <i class="fab fa-windows icon icon-windows-a"></i>
+    <i class="fas fa-tv icon icon-samsung-tv-b"></i>
+    <i class="fas fa-mobile-alt icon icon-lg-mobile-b"></i>
+    <i class="fas fa-desktop icon icon-desktop-b"></i>
+    <i class="fas fa-mobile-alt icon icon-mobile-b"></i>
+    <i class="fas fa-laptop-code icon icon-laptop-b"></i>
+    <i class="fas fa-tv icon icon-tv-c"></i>
+    <i class="fas fa-wifi icon icon-wifi-c"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-c"></i>
+    <i class="fas fa-play-circle icon icon-play-c"></i>
+    <i class="fab fa-android icon icon-android-c"></i>
+    <i class="fab fa-apple icon icon-apple-c"></i>
+    <i class="fab fa-windows icon icon-windows-c"></i>
+    <i class="fas fa-tablet-alt icon icon-tablet-d"></i>
+    <i class="fas fa-headphones-alt icon icon-headphones-d"></i>
+    <i class="fas fa-cloud icon icon-cloud-d"></i>
+    <i class="fas fa-server icon icon-server-d"></i>
+    <i class="fas fa-mobile-alt icon icon-mobile-e"></i>
+    <i class="fas fa-tv icon icon-tv-e"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-e"></i>
+    <i class="fas fa-play-circle icon icon-play-e"></i>
+  </div>
+ <!--/*--------- Animacion Iconos  --------- */-->
+
+
+ <!--/*--------- Boton Progreso  --------- */-->
+
+<!-- Botón flotante -->
+  <button id="scrollTopBtn">
+    <div id="scrollProgress"></div>
+    <div class="arrow-up"></div>
+  </button>
+
+  <script>
+    const btn = document.getElementById("scrollTopBtn");
+    const progress = document.getElementById("scrollProgress");
+
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const percent = (scrollTop / scrollHeight) * 100;
+
+      btn.style.display = scrollTop > 100 ? "flex" : "none";
+      progress.style.setProperty('--scroll', `${percent}%`);
+    });
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+<a href="https://multibc2025.github.io/codigosNT-bc/historial.html" class="boton-inicio" target="_blank">🏠</a>
+
+ <!--/*--------- Boton Progreso  --------- */-->
+
 </body>
 </html>
