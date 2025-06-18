@@ -383,11 +383,10 @@
         /* Grid de dispositivos inicial */
         .device-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
             width: 100%;
             max-width: 900px;
-            
             opacity: 0; /* Inicialmente oculto para la animación */
             transform: translateY(20px);
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
