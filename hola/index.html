@@ -15,12 +15,13 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
 
     <style>
     
     /*
         -------------------------------------------------------------
-        ESTILOS INDIVIDUALES DE ICONOS Y FONDO
+        ESTILOS INDIVIDUALES DE ICONOS Y FONDO INICIO
         -------------------------------------------------------------
         */
         
@@ -136,12 +137,12 @@
         
     /*
         -------------------------------------------------------------
-        ESTILOS INDIVIDUALES DE ICONOS Y FONDO
+        ESTILOS INDIVIDUALES DE ICONOS Y FIN
         -------------------------------------------------------------
         */
         
         
-    /* Boton de progreso hacia arriba y de inicio */
+    /* Boton de progreso hacia arriba y de inicio INICIO */
     
     /* Botón de scroll */
     #scrollTopBtn {
@@ -178,21 +179,25 @@
     }
 
     /* Flecha animada */
-    .arrow-up {
-      width: 17px;
-      height: 17px;
-      border-left: 2px solid #000000;
-      border-top: 2px solid #000000;
-      transform: rotate(45deg);
-      z-index: 1;
-      animation: pulse 1.5s infinite ease-in-out;
-      border: 10%;
-    }
+    
+/* Envoltorio para mantener la rotación */
+.arrow-wrapper {
+  transform: rotate(45deg); /* Apunta hacia arriba */
+}
 
-    @keyframes pulse {
-      0%, 100% { opacity: 0.5; transform: scale(1) rotate(45deg); }
-      50% { opacity: 1; transform: scale(1.2) rotate(45deg); }
-    }
+/* Flecha en sí (ya no se rota aquí) */
+.arrow-up {
+  width: 14px;
+  height: 14px;
+  border-left: 3px solid #000;
+  border-top: 3px solid #000;
+  animation: pulseArrow 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseArrow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
 
     html {
       scroll-behavior: smooth;
@@ -215,11 +220,15 @@
 
 .boton-inicio:hover {
   color: #fff;
-  transform: scale(1.1); /* Agranda al pasar el mouse */
+  transform: scale(1.05); /* Agranda al pasar el mouse */
+  animation: pulse 0.9s ease-in-out;
+  color: #333;
+  text-shadow: 0 0 10px #6cff00;
+
 }
 
     
-    /* Boton de progeso hacia arriba y de inicio */
+    /* Boton de progeso hacia arriba y de inicio FIN */
     
     .progress-wrap::after {
     position: absolute;
@@ -258,6 +267,7 @@
             cursor: pointer;
             z-index: 10;
             margin: 0;
+            width: 100vw;
             color: #333;
             letter-spacing: 2px;
             animation: fadeInDown 1s ease-out; /* Animación de carga inicial del título */
@@ -274,6 +284,36 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,123,255,0.12);
         }
+        
+        .title-box, .description-box {
+    border: 2px solid #000;
+    display: inline-block;
+    padding: 12px 24px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+
+  .title-box {
+    font-size: 2.2em;
+    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    background-color: rgba(0, 255, 200, 0.2); /* verde agua neón con opacidad 20% */
+    color: #000;
+  }
+
+  .description-box {
+    font-size: 1.3em;
+    font-family: 'Arial', sans-serif;
+    background-color: rgba(100, 150, 255, 0.2); /* azul suave con opacidad */
+    color: #000;
+  }
+
+  .title-box:hover,
+  .description-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
 
         /* Contenedor principal */
         .container {
@@ -343,10 +383,11 @@
         /* Grid de dispositivos inicial */
         .device-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 20px;
             width: 100%;
             max-width: 900px;
+            
             opacity: 0; /* Inicialmente oculto para la animación */
             transform: translateY(20px);
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
@@ -377,6 +418,7 @@
             z-index: 1;
             overflow: hidden;
             height: 180px; /* Mantén esto si quieres una altura uniforme, ajusta si es necesario */
+            
         }
 
         /* ICONO Y SPAN DENTRO DE LA TARJETA:
@@ -411,6 +453,23 @@
             transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
             border-color: #007bff;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+        }
+        
+                .device-card:hover i {
+          animation: pulse 0.9s ease-in-out;
+          color: #333;
+          text-shadow: 0 0 10px #2aff00;
+        }
+        
+        .device-card:hover span {
+          animation: pulse 0.9s ease-in-out;
+          color: #333;
+          text-shadow: 0 0 10px #6cff00;
         }
 
         /* Animación para las tarjetas no seleccionadas al salir */
@@ -492,6 +551,9 @@
         .step:nth-child(1) { --step-delay: 1; }
         .step:nth-child(2) { --step-delay: 2; }
         .step:nth-child(3) { --step-delay: 3; }
+        
+        
+        
         
         .btn {
             display: inline-flex;
@@ -842,7 +904,7 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
+            0% { transform: rotate(deg); }
             100% { transform: rotate(360deg); }
         }
 
@@ -954,23 +1016,36 @@
         <h1>Guía Completa de Activación de Mosher TV</h1>
     </header>
 
-    <div class="header">
-        <div class="container">
-            <h1 style="font-size: 2.0em;">MultiEntretenimiento BC</h1>
-            <p style="font-size: 1.5em;">Configura tu cuenta fácilmente en todos tus dispositivos y disfruta de tu contenido al instante.</p>
-            
-            
-                <ul class="flist-enca">
-                <li><i class="fas fa-check-circle"></i> Televisión en Vivo</li>
-                <li><i class="fas fa-check-circle"></i> Peliculas</li>
-                <li><i class="fas fa-check-circle"></i> Series</li>
-            </ul>
-        <div class="note-important" style="font-size: 1.2em;">
-            <strong>Recomendación:</strong> Sigue atentamente estos pasos para una activación exitosa de tu cuenta.
-        </div>
-            
-        </div>
+<div class="header">
+  <div class="container" style="text-align: center; padding: 20px 10px; color: #000;">
+
+    <h1 class="title-box">
+      MultiEntretenimiento BC
+    </h1>
+    
+    <p class="description-box">
+      Configura tu cuenta fácilmente en todos tus dispositivos<br>
+      y disfruta de tu contenido al instante.
+    </p>
+
+    <ul class="flist-enca" style="list-style: none; padding: 0; font-size: 1.2em; margin-bottom: 20px;">
+      <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Televisión en Vivo
+      </li>
+      <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Películas
+      </li>
+      <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Series
+      </li>
+    </ul>
+
+    <div class="note-important" style="font-size: 1.2em;">
+      <strong>Recomendación:</strong> Sigue atentamente estos pasos para una activación exitosa de tu cuenta.
     </div>
+
+  </div>
+</div>
     
     <!--/*--------- End - Title and Heading --------- */-->
     
@@ -1140,9 +1215,21 @@
   
       <!--/*--------- Nota --------- */-->
 
-  <h7> 🔔 Nota: Algunas apps de reproducción pueden pedir 💰 pago mensual o mostrar anuncios 📢. Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.
-👉 Nuestro servidor sí es pago mensual, pero te permite ver en múltiples dispositivos 📱💻📺.
-🎯 Para una mejor experiencia, te recomendamos usar apps gratis y sin pagos obligatorios como: IPTV Smarters, 9xtream o MosherTV  </h7> 
+<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
+
+<p>
+  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
+  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
+</p>
+
+<p>
+  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
+</p>
+
+<p>
+  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
+  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
+</p>
             
             </div>
             </div>
@@ -1274,8 +1361,18 @@
   
       <!--/*--------- Nota --------- */-->
 
-  <h7> 🔔 Nota: Algunas apps de reproducción pueden pedir 💰 pago mensual o mostrar anuncios 📢. Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.
-👉 Nuestro servidor sí es pago mensual, pero te permite ver en múltiples dispositivos 📱💻📺.  </h7>
+<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
+
+<p>
+  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
+  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
+</p>
+
+<p>
+  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
+</p>
+
+
             </div>
             </div>
             
@@ -1416,13 +1513,21 @@
   
       <!--/*--------- Nota --------- */-->
 
-  <h7> 🔔📌 Nota importante
+<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
 
-🔍 Algunas aplicaciones pueden no estar disponibles en todos los modelos de televisores. Te recomendamos buscar una por una hasta encontrar la que sea compatible con tu TV y permita agregar tu lista.
+<p>
+  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
+  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
+</p>
 
-💸 Si una aplicación muestra anuncios o solicita un pago mensual, esto es decisión del desarrollador de la app, no tiene relación con nuestro servidor.
+<p>
+  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
+</p>
 
-📶 Nuestro servicio solo cubre el acceso al contenido mediante el servidor, no incluye el funcionamiento ni cobros de terceros por el uso de las aplicaciones.  </h7> 
+<p>
+  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
+  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
+</p>
             </div>
             </div>
             
@@ -1538,9 +1643,21 @@
   
       <!--/*--------- Nota --------- */-->
 
-  <h7> 🔔 Nota: Algunas apps de reproducción pueden pedir 💰 pago mensual o mostrar anuncios 📢. Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.
-👉 Nuestro servidor sí es pago mensual, pero te permite ver en múltiples dispositivos 📱💻📺.
-🎯 Para una mejor experiencia, te recomendamos usar apps gratis y sin pagos obligatorios como: IPTV Smarters, 9xtream o MosherTV  </h7>
+<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
+
+<p>
+  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
+  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
+</p>
+
+<p>
+  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
+</p>
+
+<p>
+  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
+  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
+</p>
             </div>
             </div>
             
@@ -1962,9 +2079,11 @@
  <!--/*--------- Boton Progreso  --------- */-->
 
 <!-- Botón flotante -->
-  <button id="scrollTopBtn">
-    <div id="scrollProgress"></div>
+<button id="scrollTopBtn">
+  <div id="scrollProgress"></div>
+  <div class="arrow-wrapper">
     <div class="arrow-up"></div>
+  </div>
   </button>
 
   <script>
