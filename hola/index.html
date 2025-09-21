@@ -142,6 +142,261 @@
         */
         
         
+         /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE CHAT BOT FAQ
+        -------------------------------------------------------------
+        */
+        
+    /* Burbuja flotante */
+        .chat-bubble {
+            position: fixed;
+            bottom: 30px;
+            width: 70px;
+            height: 70px;
+            left: 20px;
+            border-radius: 50%;
+            border: 2px solid #3a50ff;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 2000;
+            transition: 0.3s;
+        }
+        .chat-bubble:hover {
+            background: #3a50ff;
+            color: #fff;
+        }
+        
+        /* Robot flotante (la nueva burbuja del chat) */
+        .robot-container {
+            position: relative;
+            cursor: pointer;
+            width: 60px; /* Ancho ajustado para solo el robot */
+            height: 60px; /* Altura ajustada para solo el robot */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .robot {
+            width: 60px;
+            height: 60px;
+            position: fixed;
+            bottom: 30px;
+            width: 70px;
+            height: 70px;
+            left: 20px;
+            border-radius: 50%;
+            border: 2px solid #3a50ff;
+            background-image: url('https://icons.veryicon.com/png/o/cartoon/bicolor-icon/robot-9.png'); /* <--- Aquí va la URL de tu SVG */
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: scaleX(-1);
+            animation: floatAnimation 3s ease-in-out infinite;
+        }
+
+        /* La leyenda del robot (ahora oculta) */
+        .robot-message {
+            background-color: #fff;
+            color: #3a50ff;
+            border: 2px solid #3a50ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            left: 0%;
+            bottom: 80px;
+            transform: translateX(-50%) scaleX(-1); /* AÑADIDO: Vuelve a invertir el texto */
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 2002;
+        }
+    
+    /* Regla para mostrar el mensaje cuando se pasa el cursor sobre el contenedor del robot */
+    .robot-container:hover .robot-message {
+        opacity: 1;
+        visibility: visible;
+    }
+
+        @keyframes floatAnimation {
+            0% { transform: scaleX(-1) translateY(0px); }
+            50% { transform: scaleX(-1) translateY(-10px); }
+            100% { transform: scaleX(-1) translateY(0px); }
+        }
+
+        /* Ventana de chat */
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            width: 380px;
+            height: 500px;
+            
+            /* El borde degradado y un radio ligeramente mayor */
+            border: 3px solid transparent;
+            border-radius: 18px;
+            border-image: linear-gradient(to right, red, blue, purple) 1;
+            
+            display: none;
+            z-index: 2001;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            overflow: hidden; /* Esto es clave para que el contenido no se desborde del borde */
+        }
+
+        /* Contenedor interno para el fondo blanco y el flujo de contenido */
+        .chat-inner-content {
+            background: #fff;
+            border-radius: 15px; /* Aquí va el radio para el fondo blanco */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Para que el contenido interno respete el radio */
+        }
+
+        /* Header */
+        .chat-header {
+            background: #FFF;
+            color: #0D0D0D;
+            font-weight: bold;
+            padding: 12px;
+            border-bottom: 2px solid #2c3ecc;
+            text-align: left;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Radio superior para que se ajuste perfectamente */
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .close-btn {
+            background: #fff;
+            color: #3a50ff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .close-btn:hover {
+            background: #FFFF3A;
+            color: #0D0D0D;
+        }
+
+        /* Buscador */
+        .search-container {
+            position: relative;
+            padding: 8px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 35px 10px 35px;
+            border-radius: 20px;
+            border: 2px solid #3a50ff;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .search-icon {
+            left: 15px;
+        }
+
+        .clear-icon {
+            right: 15px;
+            display: none;
+        }
+
+        /* Lista sugerencias */
+        .suggestions {
+            margin-top: 5px;
+            border: 2px solid #3a50ff;
+            border-radius: 8px;
+            max-height: 120px;
+            overflow-y: auto;
+            display: none;
+            padding: 0;
+            list-style: none;
+        }
+
+        .suggestions li {
+            padding: 6px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestions li:hover {
+            background: #f5f5f5;
+        }
+
+        /* Cuerpo del chat */
+        .chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 14px;
+            background: #fafafa;
+        }
+
+        /* Mensaje usuario */
+        .user-msg {
+            background: #F7FF63;
+            text color:#000000;
+            padding: 8px 12px;
+            border-radius: 12px 12px 0 12px;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%;
+            float: right;
+            clear: both;
+        }
+
+        /* Mensaje bot */
+        .bot-msg {
+            background: #C9FFA8;
+            padding: 8px 12px;
+            border-radius: 12px 12px 12px 0;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%;
+            float: left;
+            clear: both;
+        }
+    
+    
+     /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE CHAT BOT FAQ
+        -------------------------------------------------------------
+        */
+    
     /* Boton de progreso hacia arriba y de inicio INICIO */
     
     /* Botón de scroll */
@@ -2106,6 +2361,124 @@
 <a href="https://multibc2025.github.io/codigosNT-bc/historial.html" rel="noopener noreferrer" class="boton-inicio" >🏠</a>
 
  <!--/*--------- Boton Progreso  --------- */-->
+
+
+ <!--/*--------- Chat Bot Inicio  --------- */-->
+
+<div class="chat-widget-container" id="chatBubble">
+    <div class="robot-container">
+        <div class="robot" id="robot">
+        <div class="robot-message" id="robot-message">¿Necesitas ayuda?</div>
+    </div>
+</div>
+</div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-inner-content">
+            <div class="chat-header">
+                🤖 Soy MultiBot, estoy para ayudarte
+                <button class="close-btn" id="closeChat">✖</button>
+            </div>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="search" placeholder="¿Cómo podemos ayudarte?">
+                    <span class="icon search-icon">🔍</span>
+                    <span class="icon clear-icon" id="clearBtn">✖</span>
+                </div>
+                <ul class="suggestions" id="suggestions"></ul>
+            </div>
+            <div class="chat-body" id="chatBody">
+    <p>👋 Bienvenido, soy MultiBot, escribe tu duda arriba y con gusto te ayudaré.</p>
+
+    <!-- Mensaje de soporte al final -->
+    <div class="bot-msg" style="background:#2FFF00; color:#0D0D0D; border-radius:12px 12px 12px 0; margin-top:10px;">
+        📱 No encuentras tu problema? Contacta al soporte aquí: 
+        <a href="https://wa.me/573503938788" target="_blank" style="color:#0D0D0D font-weight:bold; text-decoration:underline;">
+            WhatsApp +57 3503938788
+        </a>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <script>
+        const chatBubble = document.getElementById("chatBubble");
+        const chatWindow = document.getElementById("chatWindow");
+        const closeChat = document.getElementById("closeChat");
+        const search = document.getElementById("search");
+        const suggestions = document.getElementById("suggestions");
+        const clearBtn = document.getElementById("clearBtn");
+        const chatBody = document.getElementById("chatBody");
+
+        const data = {
+            "¿Cuántos dispositivos puedo usar?": "Depende del plan: Básico (1), Estándar (2), Premium (4).",
+            "Error de Netflix C7361-1253": "Este error ocurre en Chrome. Solución: limpia caché y actualiza navegador.",
+            "Error de Netflix C7701-1003": "Este error está relacionado con Widevine. Reinstala o habilita el módulo.",
+            "Problemas de inicio de sesión": "Verifica correo y contraseña. Si olvidaste la contraseña, usa 'Recuperar cuenta'.",
+            "Cómo cambiar la contraseña": "En Configuración > Seguridad > Cambiar contraseña.",
+            "Configurar control parental": "Ve a tu cuenta > Configuración > Control parental."
+        };
+
+        let timeout = null;
+
+        // Abrir chat
+        chatBubble.addEventListener("click", () => {
+            chatWindow.style.display = "flex";
+            chatBubble.style.display = "none";
+        });
+
+        // Cerrar chat
+        closeChat.addEventListener("click", () => {
+            chatWindow.style.display = "none";
+            chatBubble.style.display = "flex";
+        });
+
+        // Buscar
+        search.addEventListener("input", function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const value = this.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (value) {
+                    clearBtn.style.display = "block";
+                    const filtered = Object.keys(data).filter(item =>
+                        item.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(value)
+                    );
+                    suggestions.innerHTML = filtered.map(item => `<li>${item}</li>`).join("");
+                    suggestions.style.display = filtered.length ? "block" : "none";
+                } else {
+                    suggestions.style.display = "none";
+                    clearBtn.style.display = "none";
+                }
+            }, 400);
+        });
+
+        // Selección sugerencia
+        suggestions.addEventListener("click", e => {
+            if (e.target.tagName === "LI") {
+                const pregunta = e.target.textContent;
+                const respuesta = data[pregunta] || "No encontré información.";
+                
+                // Mostrar en chat
+                chatBody.innerHTML += `<div class="user-msg">❓ ${pregunta}</div>`;
+                chatBody.innerHTML += `<div class="bot-msg">💡 ${respuesta}</div>`;
+                
+                search.value = "";
+                suggestions.style.display = "none";
+                clearBtn.style.display = "none";
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        });
+
+        // Botón borrar
+        clearBtn.addEventListener("click", () => {
+            search.value = "";
+            suggestions.style.display = "none";
+            clearBtn.style.display = "none";
+        });
+    </script>
+    
+     <!--/*--------- Chat Bot Fin  --------- */-->
+
 
 </body>
 </html>
