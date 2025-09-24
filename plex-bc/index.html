@@ -35,6 +35,25 @@
       height: 100%;
     }
     
+            .btn-youtube {
+          background-color: #e50914; 
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          font-size: 18px;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+          
+          /* AÑADIR ESTO: Permite que margin-top y margin-bottom funcionen */
+          display: inline-block; 
+          
+          /* Ahora este margen funcionará correctamente: */
+          margin: 20px 0; 
+        }
+        .btn-youtube:hover {
+          background-color: #b20710;
+        }
     /*
         -------------------------------------------------------------
         ESTILOS INDIVIDUALES DE ICONOS Y FONDO INICIO
@@ -655,7 +674,7 @@
         /* Grid de dispositivos inicial */
         .device-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
             width: 100%;
             max-width: 900px;
@@ -1345,14 +1364,7 @@
                 <i class="fas fa-desktop"></i>
                 <span>PC</span>
             </div>
-            <div class="device-card" data-device="firestick">
-                <i class="fab fa-amazon"></i>
-                <span>Firestick</span>
-            </div>
-            <div class="device-card" data-device="rokutv">
-                <i class="fas fa-video"></i>
-                <span>Roku TV</span>
-            </div>
+           
         </div>
 
     <!--/*--------- End - Card - Devices --------- */-->
@@ -1368,9 +1380,9 @@
             <div id="android-steps" class="step-content">
                 <h2>Guía para Android</h2>
                 
-                <div class="step">
+                
  <!--/*--------- APK Plex Android --------- */-->
-     
+     <div class="step">
     <div class="step-number">1</div>
     <h3>APK Plex Android</h3>
     <a href="https://drive.google.com/file/d/1w5h48m28BSwX_Ins6ynNk-ZYk46vAlLv/view" class="btn" target="_blank" >
@@ -1392,7 +1404,26 @@
       <div class="important-note" style="background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%); border-left: 3px solid #ff6b35; padding: 1.2rem; margin: 1.5rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(255,107,53,0.08);"><strong>⚠️ ADVERTENCIA IMPORTANTE:</strong> Si la aplicación te solicita descargar la versión más reciente, selecciona <strong>"NO"</strong> y cierra la aplicación. Luego vuelve a abrirla para continuar con la configuración.</div>
     </ol>
   </div>
-
+  
+   <div class="step">
+    <div class="step-number">2</div>
+    <h3>Plex Android TV</h3>
+    
+      <h5>Codigo para la app Downloader: 4052082</h5>
+    <ol>
+      <li>Abre Google Play, buscas "PLEX" e instala</li>
+      <li>Abres y te diriges a SignIn o Login</li>
+      <li><a href="https://plex.tv/link" target="_blank">Ingresa a plex.tv/link</a></li>
+      <li>Escribir el codigo que dió el Televisor en el celular (Código alfanumérico de 4 caracteres) </li>
+      <li>Inicia sesion en Login o SignIn con los datos de la cuenta</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Correo:</span> [El correo envíado]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+      </div>
+      <li>Presiona Login o SignIn</li>
+      <li>Ve al Televisor y ya quedó listo </li>
+    </ol>
+  </div>
     
   
 
@@ -1467,7 +1498,7 @@
         <h3>Activación del Servicio</h3>
         <ol>
           <li>Abres y te diriges a SignIn o Login</li>
-      <li>Ingresa a plex.tv/link</li>
+      <li><a href="https://plex.tv/link" target="_blank">Ingresa a plex.tv/link</a></li>
       <li>Escribir el codigo que dió el Televisor en el celular (Código alfanumérico de 4 caracteres) </li>
       <li>Inicia sesion en Login o SignIn con los datos de la cuenta</li>
       <div class="credential-box">
@@ -1486,7 +1517,9 @@
     <div class="section">
     <h2>🔗 Vincular PLEX a tu TV: Instrucciones paso a paso</h2>
     <div class="content">
-      <h3>Video tutorial</h3>
+      <h3>Video tutorial</h3>  
+      
+      <a class="btn-youtube" href="https://www.youtube.com/watch?v=vgaWlwbC3sE" target="_blank" rel="noopener">Abrir en YouTube</a>
 
       <!-- Cambia el src por la versión normal o por la "nocookie" (privacy-enhanced) -->
       <div class="video-container">
@@ -1498,14 +1531,17 @@
         </iframe>
       </div>
 
-      <a class="open-btn" href="https://www.youtube.com/watch?v=vgaWlwbC3sE" target="_blank" rel="noopener">Abrir en YouTube</a>
+        
+      
     </div>
+ 
   </div>
 
   <div class="section">
     <h2>⚠️ Soluciones a Errores Comunes PLEX</h2>
     <div class="content">
       <h3>Error: "Ha ocurrido un error al intentar reproducir este video"</h3>
+      <a class="btn-youtube" href="https://www.youtube.com/watch?v=EeboPZuLGjM" target="_blank" rel="noopener">Abrir en YouTube</a>
 
       <div class="video-container">
         <iframe src="https://www.youtube.com/embed/EeboPZuLGjM" 
@@ -1516,53 +1552,13 @@
     
       </div>
 
-      <a class="open-btn" href="https://www.youtube.com/watch?v=EeboPZuLGjM" target="_blank" rel="noopener">Abrir en YouTube</a>
-    </div>
-    
-    
-    
-    
-  </div>
-
-    <!--/*--------- Mas Apps --------- */-->
-
-  <div class="step">
-    <div class="step-number">4</div>
-    <h3>Otras aplicaciones que puedes buscar en la tienda de aplicaciones de tu tv:</h3>
-    
-    <div class="step1">
-    <ul class="app-list">
-      <li>Smarter Pro </li>
-      <li>Smarter Player Lite </li>
-      <li>Dev Iptv Pro </li>
-      <li>Xciptv Player </li>
-      <li>SSIptv </li>
-      <li>Iptv Pro Stream Player </li>
       
-    </ul>
+    </div>
+
   </div>
-  
-      <!--/*--------- Nota --------- */-->
+  </div>
 
-<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
-
-<p>
-  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
-  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
-</p>
-
-<p>
-  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
-</p>
-
-<p>
-  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
-  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
-</p>
-            </div>
-            </div>
-            
-              <!--/*--------- End - SmartTV Device --------- */-->
+    
 
               <!--/*---------  Start - Windows PC - Device --------- */-->
 
@@ -1571,205 +1567,60 @@
                 <h2>Guía para PC - Windows</h2>
                 <div class="step">
                    
-    <!--/*--------- IPTV Smarters --------- */-->
+    <!--/*--------- Plex Download APP Deskto --------- */-->
      
     <div class="step-number">1</div>
-    <h3>Iptv Smarters</h3>
-    <a href="https://www.iptvsmarters.com/download?download=windows_app" class="btn" target="_blank" >
-      <i class="fas fa-download"></i> Descargar ejecutable de Windows 7/8/10/11</a>
-      
-          <a href="https://apps.microsoft.com/detail/9p0xnf0jhwbv?hl=es-ES&gl=CO" class="btn" target="_blank" >
-      <i class="fab fa-windows"></i> Descarga en la tienda de Microsoft (Windows 10/11)</a>
-      
+    <h3>PLEX - Descarga App</h3>
+   
+     
+      <a href="https://apps.multiplataforma.co/plex/Plex_Multiplataforma.exe" class="btn" target="_blank" download>
+                    <i class="fas fa-download"></i> Descargar ejecutable de Windows 7/8/10/11
+                </a>
+                
+        <div class="important-note" style="background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%); border-left: 3px solid #ff6b35; padding: 1.2rem; margin: 1.5rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(255,107,53,0.08);"><strong>⚠️ ADVERTENCIA IMPORTANTE:</strong> Si la aplicación te solicita descargar la versión más reciente, selecciona <strong>"NO"</strong> y cierra la aplicación. Luego vuelve a abrirla para continuar con la configuración.</div>
+     
      
     <ol>
-      <li>Descarga, Instala y abres la aplicación</li>
-      <li>Seleccionas "XTREAM"</li>
-      <li>Abres y pulsa el botón "+" Add Playlist"</li>
-      <li>Ingresa tus datos</li>
+      <li>Instala la aplicación</li>
+      <li>Abres y te diriges a SignIn o Login</li>
+      <li>Conectarse con correo electronico (No ingresar con cuenta Google, Apple o Facebook)</li>
+      <li>Escribir los datos de acceso de la cuenta</li>
       <div class="credential-box">
-         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
-        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+         <div class="credential-line"><span>Correo:</span> [El correo envíado]</div>
         <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
-        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
       </div>
-      <li>Presiona Enter o Login</li>
-    </ol>
+      <li>Presiona Login o SignIn</li>
   </div>
 
-    <!--/*--------- IPTV Stream Player Official --------- */-->
-
-  <div class="step">
-    <div class="step-number">2</div> 
-    <h3>IPTV Stream Player Official</h3>
-    <a href="https://apps.microsoft.com/detail/9p90zh32k649?hl=es-ES&gl=CO" class="btn" target="_blank">
-      <i class="fab fa-windows"></i> Descarga en la tienda de Microsoft (Windows 10/11)</a>
-    <ol>
-      <li>Descarga, Instala y abres la aplicación</li>
-      <li>Selecciona "Login with new user"</li>
-      <li>Ingresa tus credenciales</li>
-      <div class="credential-box">
-         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
-        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
-        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
-        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
-      </div>
-      <li>Presiona Login</li>
-    </ol>
-  </div>
-  
-  <div class="step">
-      
-    <!--/*--------- Ibo Player Pro --------- */-->
-
-    <div class="step-number">3</div>
-    <h3>Ibo Player Pro</h3>
-    <a href="https://apps.microsoft.com/detail/9msnk97xpvrk?hl=es-ES&gl=CO" class="btn" target="_blank">
-      <i class="fab fa-windows"></i> Descarga en la tienda de Microsoft (Windows 10/11)</a>
-      
-      
-
-    <ol>
-      <li>Descarga y abres la app</li>
-      <li>Selecciona "Login with new user"</li>
-      <li>Ingresa tus credenciales</li>
-      <div class="credential-box">
-         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
-        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
-        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
-        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
-      </div>
-      <li>Presiona Login</li>
-    </ol>
-  </div>
+    
   
     <!--/*--------- Web Browser Player --------- */-->
 
   <div class="step">
-    <div class="step-number">4</div>
-    <h3>Web Browser Player - IPTV Smarters Pro</h3>
-    <a href="http://webtv.iptvsmarters.com/index.php?adduser" class="btn" target="_blank">
-      <i class="fas fa-globe"></i> Abre una pagina web
+    <div class="step-number">2</div>
+    <h3>Web Browser Player - Plex TV</h3>
+    <a href="https://plex.tv/web/tv/opera" class="btn" target="_blank">
+      <i class="fas fa-globe"></i> Abre pagina web
     </a>
           <h5>Reproduce contenido en el navegador sin necesidad de descargar ninguna aplicacion</h5>
 
     <ol>
-      <li>Selecciona "Login with new user" o "Login XTREAM"</li>
-      <li>Ingresa tus credenciales</li>
+      <li><a href="https://plex.tv/link" target="_blank">Ingresa a plex.tv/link</a></li>
+      <li>Escribir el codigo que dió el Televisor en el celular (Código alfanumérico de 4 caracteres) </li>
+      <li>Inicia sesion en Login o SignIn con los datos de la cuenta</li>
       <div class="credential-box">
-         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
-        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+         <div class="credential-line"><span>Correo:</span> [El correo envíado]</div>
         <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
-        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
       </div>
-      <li>Presiona Login</li>
+      <li>Presiona Login o SignIn</li>
+      <li>Ve al navegador y ya quedó listo </li>
     </ol>
   </div>
+  </div>
 
+</div>
+ 
 
-    <!--/*--------- Mas Apps --------- */-->
-
-  <div class="step">
-
-  
-      <!--/*--------- Nota --------- */-->
-
-<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
-
-<p>
-  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
-  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
-</p>
-
-<p>
-  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
-</p>
-
-<p>
-  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
-  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
-</p>
-            </div>
-            </div>
-            
-              <!--/*--------- End - Windows PC Device --------- */-->
-
-              <!--/*--------- Start - FireStick Device --------- */-->
-
-            <div id="firestick-steps" class="step-content">
-                <h2>Guía para Firestick</h2>
-                
-                <p><strong>Paso 1:</strong> Asegúrate de estar conectado a internet. Luego, sigue estos pasos:</p>
-                <p><strong>Paso 2:</strong> Ve a Configuración ⇒ Mi FIRE TV ⇒ Opciones de desarrollador. Asegúrate de que la opción "Apps de orígenes desconocidos" esté activada.</p>
-                
-                
-                <p><strong>A veces, las Opciones de desarrollador están ocultas. Solo debes ir a la sección Acerca de en la configuración y presionar el botón OK del control remoto siete veces sobre el primer elemento de la lista para activar el menú oculto.</strong></p>
-                
-                
-                <p><strong>Paso 3:</strong> Abre la aplicación Downloader</p>
-                
-                <p><strong>Si no tienes la aplicación Downloader, instálala primero desde la AppStore. Hemos mostrado el ícono de la app arriba y fue desarrollada por AFTnews.com</strong> </p>
-                
-                
-                <p><strong>Paso 4:</strong> y escribe la siguiente URL:</p>
-                
-                <div style="border: 1px solid #000; border-radius: 15px; padding: 10px; text-align: left; max-width: 650px; background: #f8f9fa;">
-        <strong class="pb text-success" style="font-size:1.5rem; display: block;"> 
-          <a href="https://firetv.9xtream.net/v45.apk" style="text-decoration: none; color: #28a745;">https://firetv.9xtream.net/v45.apk</a>
-        </strong>
-        O
-        <strong class="pb text-success" style="font-size:1.5rem; display: block;"> 
-          <a href="https://9xtream.net/downloads/9xtream45.apk" style="text-decoration: none; color: #28a745;">https://9xtream.net/downloads/9xtream45.apk</a>
-        </strong>
-        <hr style="border-top: 1px solid #000; margin: 5px 0; opacity: 0.3">
-        <span style="display: block; font-size: 1rem; color: #6c757d;">Versión 45.0.0 | Actualizado: 25 de marzo de 2025, 12:00 AM</span>
-      </div>
-      
-                <p><strong>Paso 5:</strong> Haz clic en el botón "Go".</p>
-                <p><strong>Paso 6:</strong> Sigue las instrucciones en pantalla.</p>
-                <p><strong>Paso 7:</strong> Después de que finalice la descarga, podrás encontrar el archivo .APK en la aplicación Downloader. Haz clic sobre él para instalar 9Xtream.</p>
-                <p><strong>Paso 8:</strong> ingresar los datos de acceso</p>
-                
-                
-        <h3>Activación del Servicio</h3>
-        <ol>
-      <li>Selecciona "Login with new user" o "Login XTREAM"</li>
-      <li>Ingresa tus credenciales</li>
-      <div class="credential-box">
-         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
-        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
-        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
-        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
-      </div>
-      <li>Presiona Login y a disfrutar del servicio</li>
-    </ol>
-                
-                
-        <blockquote class="sidenote">
-    <p><strong>Nota:</strong> Si ambos enlaces fallan y/o aparece un error de "Análisis del paquete", intenta nuevamente. Si el problema persiste, descarga el archivo APK en tu teléfono o PC, <a href="https://youtu.be/sK-R2KpI_Tw?t=64" target="_blank">transfiérelo a tu FireTV</a> e instálalo manualmente.</p>
-  </blockquote>
-  
-            </div>
-            
-              <!--/*--------- End - FireStick Device --------- */-->
-
-              <!--/*--------- Start - Roku Device --------- */-->
-
-            <div id="rokutv-steps" class="step-content">
-                <h2>Guía para Roku TV</h2>
-                <ul class="app-list">
-                    <li>Rivolut Player <span class="app-tag">De pago</span></li>
-                    <li>IboPro <span class="app-tag">De pago</span></li>
-                    <li>IboPlayer Pro <span class="app-tag">De pago</span></li>
-                </ul>
-                <div class="important-note">
-                    Las aplicaciones ofrecen una prueba gratuita de 7 días. La licencia puede ser anual o de por vida. No incluye el servicio de IPTV.
-                </div>
-            </div>
-            
-              <!--/*--------- End - Roku Device --------- */-->
-
-        </div>
         
     <!--/*--------- End - In devices ------------------- */-->
     
