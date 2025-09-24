@@ -1,0 +1,2261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de PLEX - MultiEntretenimiento BC</title>
+    <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+
+    <style>
+    
+     /* Contenedor responsive para iframes (16:9) */
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
+      max-width: 100%;
+    }
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
+    /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE ICONOS Y FONDO INICIO
+        -------------------------------------------------------------
+        */
+        
+         body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Evitar scroll horizontal durante animaciones */
+            margin: 0;
+      background: linear-gradient(135deg,
+        #1a0a33,
+        #0a1f44,
+        #007bff,
+        #8a2be2,
+        #00ffff,
+        #ff007f,
+        #00ff00,
+        #ff0000,
+        #ffa500
+      );
+      background-size: 500% 500%;
+      animation: gradientAnimation 120s ease infinite;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Fondo aclarado al 40% */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 0%; }
+      25% { background-position: 50% 100%; }
+      50% { background-position: 100% 0%; }
+      75% { background-position: 0% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    .background-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .icon {
+      position: absolute;
+      font-size: 2em;
+      animation: combinedFloatAndMove var(--animation-duration, 35s) infinite linear;
+      opacity: 0;
+      color: white !important;
+    }
+
+    .icon-tv-a { top: 8%; left: 0%; font-size: 3em; --animation-duration: 40s; animation-delay: -0s; }
+    .icon-wifi-a { top: 12%; right: 0%; font-size: 2.5em; --animation-duration: 43s; animation-delay: -5s; }
+    .icon-gamepad-a { top: 20%; left: 0%; font-size: 3.5em; --animation-duration: 37s; animation-delay: -10s; }
+    .icon-play-a { top: 15%; right: 0%; font-size: 4em; --animation-duration: 45s; animation-delay: -15s; }
+    .icon-android-a { top: 5%; left: 0%; font-size: 2.8em; --animation-duration: 42s; animation-delay: -20s; }
+    .icon-apple-a { top: 25%; right: 0%; font-size: 3.2em; --animation-duration: 47s; animation-delay: -25s; }
+    .icon-windows-a { top: 30%; left: 0%; font-size: 3.8em; --animation-duration: 39s; animation-delay: -30s; }
+
+    .icon-samsung-tv-b { top: 40%; right: 0%; font-size: 3.1em; --animation-duration: 41s; animation-delay: -35s; }
+    .icon-lg-mobile-b { top: 35%; left: 0%; font-size: 2.9em; --animation-duration: 44s; animation-delay: -40s; }
+    .icon-desktop-b { top: 45%; right: 0%; font-size: 3.4em; --animation-duration: 38s; animation-delay: -45s; }
+    .icon-mobile-b { top: 55%; left: 0%; font-size: 2.7em; --animation-duration: 36s; animation-delay: -50s; }
+    .icon-laptop-b { top: 50%; right: 0%; font-size: 3.6em; --animation-duration: 46s; animation-delay: -55s; }
+
+    .icon-tv-c { bottom: 10%; left: 0%; font-size: 2.8em; --animation-duration: 39s; animation-delay: -60s; }
+    .icon-wifi-c { bottom: 5%; right: 0%; font-size: 2.2em; --animation-duration: 35s; animation-delay: -65s; }
+    .icon-gamepad-c { bottom: 20%; left: 0%; font-size: 3em; --animation-duration: 42s; animation-delay: -70s; }
+    .icon-play-c { bottom: 15%; right: 0%; font-size: 3.6em; --animation-duration: 44s; animation-delay: -75s; }
+    .icon-android-c { bottom: 25%; left: 0%; font-size: 2.8em; --animation-duration: 41s; animation-delay: -80s; }
+    .icon-apple-c { bottom: 30%; right: 0%; font-size: 3.2em; --animation-duration: 45s; animation-delay: -85s; }
+    .icon-windows-c { bottom: 0%; left: 0%; font-size: 3.8em; --animation-duration: 40s; animation-delay: -90s; }
+
+    .icon-tablet-d { top: 65%; right: 0%; font-size: 3em; --animation-duration: 43s; animation-delay: -95s; }
+    .icon-headphones-d { top: 70%; left: 0%; font-size: 2.5em; --animation-duration: 37s; animation-delay: -100s; }
+    .icon-cloud-d { bottom: 45%; left: 0%; font-size: 3.3em; --animation-duration: 48s; animation-delay: -105s; }
+    .icon-server-d { top: 80%; right: 0%; font-size: 2.9em; --animation-duration: 42s; animation-delay: -110s; }
+    .icon-mobile-e { top: 75%; right: 0%; font-size: 2.7em; --animation-duration: 35s; animation-delay: -115s; }
+    .icon-tv-e { bottom: 55%; left: 0%; font-size: 3.1em; --animation-duration: 44s; animation-delay: -120s; }
+    .icon-gamepad-e { top: 90%; left: 0%; font-size: 3.4em; --animation-duration: 41s; animation-delay: -125s; }
+    .icon-play-e { bottom: 60%; right: 0%; font-size: 3.9em; --animation-duration: 46s; animation-delay: -130s; }
+
+    @keyframes combinedFloatAndMove {
+      0% { transform: translateX(-120vw) translateY(0); opacity: 0; }
+      5% { opacity: 0.18; }
+      40% { color: rgba(255, 255, 255, 0.45); opacity: 0.45; }
+      50% { transform: translateX(0vw) translateY(10px); color: rgba(255, 255, 255, 0.55); opacity: 0.55; }
+      60% { color: rgba(255, 255, 255, 0.45); opacity: 0.45; }
+      95% { opacity: 0.18; }
+      100% { transform: translateX(120vw) translateY(0); opacity: 0; }
+    }
+        
+        
+        
+        
+    /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE ICONOS Y FIN
+        -------------------------------------------------------------
+        */
+        
+        
+         /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE CHAT BOT FAQ
+        -------------------------------------------------------------
+        */
+        
+    /* Burbuja flotante */
+        .chat-bubble {
+            position: fixed;
+            bottom: 30px;
+            width: 70px;
+            height: 70px;
+            left: 20px;
+            border-radius: 50%;
+            border: 2px solid #3a50ff;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            z-index: 2000;
+            transition: 0.3s;
+        }
+        .chat-bubble:hover {
+            background: #3a50ff;
+            color: #fff;
+        }
+        
+        /* Robot flotante (la nueva burbuja del chat) */
+        .robot-container {
+            position: relative;
+            cursor: pointer;
+            width: 60px; /* Ancho ajustado para solo el robot */
+            height: 60px; /* Altura ajustada para solo el robot */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .robot {
+            width: 60px;
+            height: 60px;
+            position: fixed;
+            bottom: 30px;
+            width: 70px;
+            height: 70px;
+            left: 20px;
+            border-radius: 50%;
+            border: 2px solid #3a50ff;
+            background-image: url('https://icons.veryicon.com/png/o/cartoon/bicolor-icon/robot-9.png'); /* <--- Aquí va la URL de tu SVG */
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: scaleX(-1);
+            animation: floatAnimation 3s ease-in-out infinite;
+        }
+
+        /* La leyenda del robot (ahora oculta) */
+        .robot-message {
+            background-color: #fff;
+            color: #3a50ff;
+            border: 2px solid #3a50ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            left: 0%;
+            bottom: 80px;
+            transform: translateX(-50%) scaleX(-1); /* AÑADIDO: Vuelve a invertir el texto */
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 2002;
+        }
+    
+    /* Regla para mostrar el mensaje cuando se pasa el cursor sobre el contenedor del robot */
+    .robot-container:hover .robot-message {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+
+        @keyframes floatAnimation {
+            0% { transform: scaleX(-1) translateY(0px); }
+            50% { transform: scaleX(-1) translateY(-10px); }
+            100% { transform: scaleX(-1) translateY(0px); }
+        }
+
+        /* Ventana de chat */
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            left: 20px;
+            width: 380px;
+            height: 500px;
+            
+            /* El borde degradado y un radio ligeramente mayor */
+            border: 3px solid transparent;
+            border-radius: 18px;
+            border-image: linear-gradient(to right, red, blue, purple) 1;
+            
+            display: none;
+            z-index: 2001;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            overflow: hidden; /* Esto es clave para que el contenido no se desborde del borde */
+        }
+
+        /* Contenedor interno para el fondo blanco y el flujo de contenido */
+        .chat-inner-content {
+            background: #fff;
+            border-radius: 15px; /* Aquí va el radio para el fondo blanco */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Para que el contenido interno respete el radio */
+        }
+
+        /* Header */
+        .chat-header {
+            background: #FFF;
+            color: #0D0D0D;
+            font-weight: bold;
+            padding: 12px;
+            border-bottom: 2px solid #2c3ecc;
+            text-align: left;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* Radio superior para que se ajuste perfectamente */
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .close-btn {
+            background: #fff;
+            color: #3a50ff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .close-btn:hover {
+            background: #FFFF3A;
+            color: #0D0D0D;
+        }
+
+        /* Buscador */
+        .search-container {
+            position: relative;
+            padding: 8px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 35px 10px 35px;
+            border-radius: 20px;
+            border: 2px solid #3a50ff;
+            outline: none;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .Search-icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .search-icon {
+            left: 15px;
+        }
+
+        .clear-icon {
+            right: 15px;
+            display: none;
+        }
+
+        /* Lista sugerencias */
+        .suggestions {
+            margin-top: 5px;
+            border: 2px solid #3a50ff;
+            border-radius: 8px;
+            max-height: 120px;
+            overflow-y: auto;
+            display: none;
+            padding: 0;
+            list-style: none;
+        }
+
+        .suggestions li {
+            padding: 6px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestions li:hover {
+            background: #f5f5f5;
+        }
+
+        /* Cuerpo del chat */
+        .chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 14px;
+            background: #fafafa;
+        }
+
+        /* Mensaje usuario */
+        .user-msg {
+            background: #F7FF63;
+            text color:#000000;
+            padding: 8px 12px;
+            border-radius: 12px 12px 0 12px;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%;
+            float: right;
+            clear: both;
+        }
+
+        /* Mensaje bot */
+        .bot-msg {
+            background: #C9FFA8;
+            padding: 8px 12px;
+            border-radius: 12px 12px 12px 0;
+            margin: 5px 0;
+            display: inline-block;
+            max-width: 80%;
+            float: left;
+            clear: both;
+        }
+    
+    
+     /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE CHAT BOT FAQ
+        -------------------------------------------------------------
+        */
+    
+    /* Boton de progreso hacia arriba y de inicio INICIO */
+    
+    /* Botón de scroll */
+    #scrollTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 9999;
+      transition: transform 0.3s ease;
+    }
+
+    #scrollTopBtn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Aro de progreso */
+    #scrollProgress {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 70%;
+      background: conic-gradient(#000000 var(--scroll, 0%), #cecece 0%);
+      mask: radial-gradient(farthest-side, transparent 40%, black 71%);
+      -webkit-mask: radial-gradient(farthest-side, transparent 90%, black 71%);
+      box-shadow: 0 0 5px #00ffe099;
+    }
+
+    /* Flecha animada */
+    
+/* Envoltorio para mantener la rotación */
+.arrow-wrapper {
+  transform: rotate(45deg); /* Apunta hacia arriba */
+}
+
+/* Flecha en sí (ya no se rota aquí) */
+.arrow-up {
+  width: 14px;
+  height: 14px;
+  border-left: 3px solid #000;
+  border-top: 3px solid #000;
+  animation: pulseArrow 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseArrow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .boton-inicio {
+  position: fixed;
+  bottom: 100px; /* justo encima del botón subir */
+  right: 35px;
+  border: none;
+  border-radius: 100px;
+  font-size: 40px;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  
+}
+
+.boton-inicio:hover {
+  color: #fff;
+  transform: scale(1.05); /* Agranda al pasar el mouse */
+  animation: pulse 0.9s ease-in-out;
+  color: #333;
+  text-shadow: 0 0 10px #6cff00;
+
+}
+
+    
+    /* Boton de progeso hacia arriba y de inicio FIN */
+    
+    .progress-wrap::after {
+    position: absolute;
+    content: '\f176';
+    font-family: "Font Awesome 5 Pro";
+    text-align: center;
+    line-height: 46px;
+    font-size: 20px;
+    color: #042e50;
+    left: 0;
+    top: 0;
+    height: 46px;
+    width: 46px;
+    cursor: pointer;
+    display: block;
+    z-index: 1;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+}
+
+
+    
+        /* Estilos Generales */
+       
+
+        /* Header */
+        .main-header {
+            background-color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            border-radius: 0 0 50px 50px;
+            cursor: pointer;
+            z-index: 10;
+            margin: 0;
+            width: 100vw;
+            color: #333;
+            letter-spacing: 2px;
+            animation: fadeInDown 1s ease-out; /* Animación de carga inicial del título */
+        }
+
+        .main-header h1 {
+            margin: 0;
+            font-size: 3em;
+            color: #333;
+            letter-spacing: 2px;
+            animation: fadeInDown 1s ease-out; /* Animación de carga inicial del título */
+        }
+        .main-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.12);
+        }
+        
+        .title-box, .description-box {
+    border: 2px solid #000;
+    display: inline-block;
+    padding: 12px 24px;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+
+  .title-box {
+    font-size: 2.2em;
+    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    background-color: rgba(255, 255, 0, 0.2); /* amarillo con opacidad 20% */
+    color: #000;
+  }
+
+  .description-box {
+    font-size: 1.3em;
+    font-family: 'Arial', sans-serif;
+    background-color: rgba(255, 182, 193, 0.2); /* rosado suave con opacidad 20% */
+    color: #000;
+  }
+
+  .title-box:hover,
+  .description-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+
+        /* Contenedor principal */
+        .container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        
+        .flist-enca {
+            list-style: none;
+            padding: 5;
+            margin: 0px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 60px;
+            justify-content: center;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            color: white;
+            padding: 1px 1px;
+            border-radius: 19px;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+             background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            color: #ff3402;
+            font-size: 1.1em;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+        }
+        
+        .flist-enca li:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .flist-enca li i {
+            color: #ff3402;
+            font-size: 1.1em;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.1));
+        }
+        
+        .note-important {
+            background: linear-gradient(135deg, rgba(200, 255, 200, 0.5) 0%, rgba(0, 255, 0, 0.5) 100%);
+            border-left: 3px solid #007bff;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .note-important:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.12);
+        }
+
+        /* Grid de dispositivos inicial */
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            opacity: 0; /* Inicialmente oculto para la animación */
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .device-grid.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tarjeta de dispositivo */
+        .device-card {
+            font-size: 30px; /* Aumenta según lo necesites */
+            font-weight: bold;
+            background-color: #ffffff;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            height: 180px; /* Mantén esto si quieres una altura uniforme, ajusta si es necesario */
+            
+        }
+
+        /* ICONO Y SPAN DENTRO DE LA TARJETA:
+           **¡Cambiado para que opacity sea 1 por defecto y la animación sea solo por transform!**
+        */
+        .device-card i {
+            font-size: 3.5em;
+            color: #555;
+            margin-bottom: 15px;
+            opacity: 0; /* <-- Establecido a 1 por defecto */
+            transform: translateX(-20px); /* <-- Todavía con un transform inicial para animación */
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        } 
+
+        .device-card span {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            opacity: 0; /* <-- Establecido a 1 por defecto */
+            transform: translateX(20px); /* <-- Todavía con un transform inicial para animación */
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        /* Clase para animar la entrada de nombre e icono - ESTOS SÍ PERMANECEN */
+        .device-card.name-animate-in i,
+        .device-card.name-animate-in span {
+            opacity: 1; /* Asegurarse de que sigan en 1 */
+            transform: translateX(0); /* Vuelve a la posición original */
+        }
+
+        .device-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border-color: #007bff;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.2); }
+        }
+        
+                .device-card:hover i {
+          animation: pulse 0.9s ease-in-out;
+          color: #333;
+          text-shadow: 0 0 10px #2aff00;
+        }
+        
+        .device-card:hover span {
+          animation: pulse 0.9s ease-in-out;
+          color: #333;
+          text-shadow: 0 0 10px #6cff00;
+        }
+
+        /* Animación para las tarjetas no seleccionadas al salir */
+        .device-card.animate-out {
+            opacity: 0 !important; /* Forzar ocultamiento */
+            transform: scale(0.8) translateY(50px) !important; /* Salen hacia abajo y se encogen */
+            transition: transform 0.4s ease-in, opacity 0.4s ease-in;
+            pointer-events: none; /* Deshabilitar clics durante la animación de salida */
+        }
+        
+        /*--------------------- RECURSOS BOTONES Y DISEÑOS -------------------*/
+        
+        
+        .step1 {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-left: 20px;
+            position: relative;
+            opacity: 1;
+            transform: translateY(20px);
+            animation: slideDown 0.3s forwards;
+            animation-delay: calc(var(--step-delay) * 0.1s);
+            display: flex;
+            flex-direction: column;
+            
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            color: #002147; /* azul marino */
+        }
+
+
+       
+                
+        .step {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-left: 20px;
+            position: relative;
+            opacity: 1;
+            transform: translateY(20px);
+            animation: slideDown 0.3s forwards;
+            animation-delay: calc(var(--step-delay) * 0.1s);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            background: #00ff59;
+            color: #000000 !important;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,123,255,0.2);
+            z-index: 1;
+        }
+        
+        .step h3 {
+            color: #518d05;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            padding-top: 4px;
+        }
+        
+        .step-content h6 {
+            color: #b03413;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            padding-top: 4px;
+        }
+        
+        .step:nth-child(1) { --step-delay: 1; }
+        .step:nth-child(2) { --step-delay: 2; }
+        .step:nth-child(3) { --step-delay: 3; }
+        
+        
+        
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #bfffb9 0%, #b9fffc 100%);
+            border-radius: 30px;
+            text-decoration: none;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: bold;
+            color: #000000 !important;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .credential-box {
+            background: #f2c7ff;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+        
+        .credential-line {
+            margin: 5px 0;
+        }
+        
+        .credential-line span {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .step-content1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .step-text {
+            flex: 1;
+            min-width: 250px;
+            text-align: left;
+        }
+        
+        .step-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-start;
+            min-width: 200px;
+        }
+        
+        .app-list {
+            list-style: none;
+            margin: 15px 0;
+            padding-left: 0;
+        }
+
+        .app-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-tag {
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: #ffff84;
+            color: #000000;
+        }
+
+
+/*--------------------- FIN RECURSOS BOTONES Y DISEÑOS -----------------*/
+
+
+        /* ------------------ OVERLAY DE CARGA GLOBAL ------------------ */
+        #globalLoadingOverlay {
+            position: fixed; /* Ocupa toda la ventana */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Fondo oscuro */
+            display: flex; /* Para centrar el contenido */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000; /* Asegúrate de que esté por encima de todo */
+            opacity: 0; /* Inicialmente oculto */
+            visibility: hidden; /* No ocupa espacio ni es interactuable */
+            transition: opacity 0.5s ease, visibility 0.5s ease; /* Transición suave */
+        }
+
+        #globalLoadingOverlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white; /* Color del texto y el icono */
+        }
+
+        #globalLoadingIcon {
+            font-size: 6em;
+            margin-bottom: 20px;
+            /* Opción A: Solo agrandar y achicar */
+            /* animation: pulseIcon 1.5s ease-in-out infinite; */
+            /* Opción B: Girar Y agrandar/achicar */
+            animation: pulseScale 0.5s linear infinite, pulseIcon 1.5s ease-in-out infinite;
+        }
+
+        #globalLoadingMessage {
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            display: flex; /* Para centrar el grupo de letras */
+            justify-content: center;
+            align-items: center;
+            animation: pulseScale 0.5s linear infinite, pulseIcon 1.5s ease-in-out infinite;
+        }
+        
+        
+        .google-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            height: 100px;
+            margin-top: 50px;
+        }
+        
+        .dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            animation: pulseScaleGoogle 1.2s ease-in-out infinite;
+        }
+        
+        .dot.blue   { background-color: #4285F4; animation-delay: 0s;   }
+        .dot.red    { background-color: #EA4335; animation-delay: 0.1s; }
+        .dot.yellow { background-color: #FBBC05; animation-delay: 0.2s; }
+        .dot.green  { background-color: #34A853; animation-delay: 0.3s; }
+        
+        /* ------------------ FIN OVERLAY DE CARGA GLOBAL ------------------ */
+
+
+        /* Área de contenido de los pasos */
+        .content-area {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            opacity: 0; /* Inicialmente oculto */
+            z-index: 50;
+            text-align: center;
+            position: relative;
+            /* Animación de entrada para el contenido (desde el centro hacia abajo) */
+            transform: translateY(50%) scale(0.8); /* Empezar desde abajo y pequeño */
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+        }
+
+        .content-area.show {
+            transform: translateY(0) scale(1); /* Terminar en la posición original y tamaño */
+            opacity: 1;
+        }
+
+        .step-content {
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+            animation: fadeIn 0.8s ease-out; /* Animación de fade-in para el contenido de pasos */
+        }
+
+        .step-content h2 {
+            color: #007bff;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        
+        .step-content h5 {
+            color: #2cb9bb;
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .step-content p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Grid para los "demás dispositivos" que aparecen abajo */
+        .other-devices-grid {
+            display: flex;
+            flex-direction: column; /* Apila h3 arriba y tarjetas abajo */
+            align-items: center;     /* Centra todo horizontalmente */
+            gap: 15px; /* Espacio entre el título y el wrapper */
+            margin-top: 30px;
+            width: 100%;
+            text-align: center;
+            max-width: 900px;
+            opacity: 0; /* Inicialmente oculto */
+            transform: translateY(50px); /* Empezar desde abajo */
+            transition: opacity 0.5s ease-out 0.6s, transform 0.5s ease-out 0.6s; /* Retraso para que aparezca después del contenido */
+        }
+
+        .other-devices-grid.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Contenedor de las tarjetas clonadas */
+        .other-devices-cards-wrapper {
+            display: flex;
+            flex-wrap: wrap;        /* Que se acomoden si no caben en una fila */
+            justify-content: center; /* Centra las tarjetas dentro de este wrapper */
+            gap: 15px; /* Espacio entre las tarjetas pequeñas */
+            width: 100%; /* Ocupa todo el ancho disponible */
+        }
+
+        /* Estilo para las tarjetas pequeñas/reubicadas en el footer */
+        .device-card.small {
+            padding: 20px 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            height: 100px; /* Altura fija para consistencia */
+            justify-content: space-around;
+            opacity: 0; /* Inicialmente oculto para la animación de subida */
+            transform: translateY(30px); /* Empezar desde abajo */
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Animación individual de cada tarjeta pequeña */
+            overflow: hidden; /* Asegurar que el contenido interno no se desborde */
+            width: 120px; /* Ancho fijo para consistencia */
+            box-sizing: border-box; /* Incluir padding y borde en el ancho/alto */
+        }
+
+        .device-card.small i {
+            font-size: 2.2em;
+            margin-bottom: 5px;
+            opacity: 1; /* Asegurar que sean visibles al ser pequeñas */
+            transform: translateX(0); /* Asegurar que no tengan transformaciones residuales */
+        }
+
+        .device-card.small span {
+            font-size: 0.9em;
+            opacity: 1; /* Asegurar que sean visibles al ser pequeñas */
+            transform: translateX(0); /* Asegurar que no tengan transformaciones residuales */
+        }
+
+        .device-card.small.animate-up {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: #ffffff;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            border-top: 2px solid #333;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            border-radius: 50px 50px 0 0;
+            z-index: 10;
+            width: 100%
+        }
+
+        .footer-text {
+            color: #555;
+            font-size: 1em;
+        }
+        /* para aplicar animación escalonada */
+        .card-container .card {
+              opacity: 0;
+              transform: translateY(20px);
+          }
+          
+          .fade-in {
+              opacity: 0;
+                transform: translateY(20px);
+                animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* ------------------ KEYFRAMES DE ANIMACIÓN ------------------ */
+        /* NUEVA ANIMACIÓN: EFECTO OLA/PULSO */
+        @keyframes pulseScale {
+        0% { transform: scale(1); } /* Tamaño original */
+        50% { transform: scale(1.2); } /* Se agranda un 20% */
+        100% { transform: scale(1); } /* Vuelve al tamaño original */
+    }
+    
+        @keyframes pulseScaleGoogle {
+            0%, 100% {
+                transform: scale(1) translateY(0);
+            }
+            50% {
+                transform: scale(1.15) translateY(-8px);
+            }
+        }
+        
+        @keyframes fadeInUp {
+        to {
+         opacity: 1;
+         transform: translateY(0);
+            }
+        } 
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Media Queries para Responsividad */
+        @media (max-width: 768px) {
+            .main-header h1 {
+                font-size: 2em;
+            }
+
+            .device-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .other-devices-grid {
+                /* Con flex, se adaptarán automáticamente, pero puedes forzar 2 columnas si lo prefieres */
+                /* grid-template-columns: repeat(2, 1fr); */
+            }
+
+            .device-card {
+                padding: 20px 10px;
+                height: 150px; /* Ajusta altura para pantallas más pequeñas */
+            }
+
+            .device-card i {
+                font-size: 2.5em;
+            }
+
+            .device-card span {
+                font-size: 1em;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .step-content h2 {
+                font-size: 1.5em;
+            }
+            
+            .step-content h6 {
+                font-size: 1em;
+            }
+            
+            .step-content h5 {
+                font-size: 1em;
+            }
+
+            .step-content p {
+                font-size: 1em;
+            }
+
+            .device-card.small {
+                width: 100px;
+                height: 90px;
+            }
+            .device-card.small i {
+                font-size: 1.8em;
+            }
+            .device-card.small span {
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-header h1 {
+                font-size: 1.5em;
+            }
+            .device-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .other-devices-grid {
+                /* Con flex, se adaptarán automáticamente, pero puedes forzar 1 columna si lo prefieres */
+                /* grid-template-columns: 1fr; */
+            }
+
+            .device-card {
+                padding: 15px;
+                height: 120px; /* Ajusta altura para móviles */
+            }
+
+            .device-card i {
+                font-size: 2em;
+            }
+
+            .device-card span {
+                font-size: 0.9em;
+            }
+            .device-card.small {
+                width: 90px;
+                height: 80px;
+            }
+            .device-card.small i {
+                font-size: 1.5em;
+            }
+            .device-card.small span {
+                font-size: 0.7em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+ 
+ 
+ 
+ <!--/*--------- Start - Title and Heading --------- */-->
+    <header class="main-header"> 
+        <h1>Guía Completa de Activación de PLEX</h1>
+    </header>
+
+<div class="header">
+  <div class="container" style="text-align: center; padding: 20px 10px; color: #000;">
+
+    <h1 class="title-box">
+      MultiEntretenimiento BC
+    </h1>
+    
+    <p class="description-box">
+      Configura tu cuenta fácilmente en todos tus dispositivos<br>
+      y disfruta de tu contenido al instante.
+    </p>
+
+    <ul class="flist-enca" style="list-style: none; padding: 0; font-size: 1.2em; margin-bottom: 20px;">
+           <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Películas
+      </li>
+      <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Series
+      </li>
+      <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Documentales
+      </li>
+      <li class="hover-item" style="margin: 8px 0; transition: transform 0.3s;">
+        <i class="fas fa-check-circle" style="color: #b04629;"></i> Estrenos
+      </li>
+    </ul>
+
+    <div class="note-important" style="font-size: 1.2em;">
+      <strong>Recomendación:</strong> Sigue atentamente estos pasos para una activación exitosa de tu cuenta.
+    </div>
+
+  </div>
+</div>
+    
+    <!--/*--------- End - Title and Heading --------- */-->
+    
+    
+     <!--/*---------  Start DIV Body --------- */-->
+
+    <!--/*--------- Start - Card - Devices --------- */-->
+ <div class="container">
+        <div class="device-grid" id="deviceGrid">
+            <div class="device-card" data-device="android">
+                <i class="fab fa-android"></i>
+                <span>Android</span>
+            </div>
+            <div class="device-card" data-device="ios">
+                <i class="fab fa-apple"></i>
+                <span>iOS</span>
+            </div>
+            <div class="device-card" data-device="smarttv">
+                <i class="fas fa-tv"></i>
+                <span>Smart TV</span>
+            </div>
+            <div class="device-card" data-device="pc">
+                <i class="fas fa-desktop"></i>
+                <span>PC</span>
+            </div>
+            <div class="device-card" data-device="firestick">
+                <i class="fab fa-amazon"></i>
+                <span>Firestick</span>
+            </div>
+            <div class="device-card" data-device="rokutv">
+                <i class="fas fa-video"></i>
+                <span>Roku TV</span>
+            </div>
+        </div>
+
+    <!--/*--------- End - Card - Devices --------- */-->
+
+
+    <!--/*--------- Start - In devices --------- */-->
+    
+             <!--/*--------- Start - In devices --------- */-->
+    
+             <!--/*--------- Start - Android Device --------- */-->
+                       
+        <div class="content-area" id="contentArea">
+            <div id="android-steps" class="step-content">
+                <h2>Guía para Android</h2>
+                
+                <div class="step">
+ <!--/*--------- APK Plex Android --------- */-->
+     
+    <div class="step-number">1</div>
+    <h3>APK Plex Android</h3>
+    <a href="https://drive.google.com/file/d/1w5h48m28BSwX_Ins6ynNk-ZYk46vAlLv/view" class="btn" target="_blank" >
+      <i class="fas fa-download"></i> Descargar APK con Google Drive</a>
+      <a href="https://www.mediafire.com/file/0vicl9fwargxfuj/Plex.apk/file" class="btn" target="_blank" >
+      <i class="fas fa-download"></i> Descargar APK con Mediafire</a>
+      <h5>Codigo para la app Downloader: 4052082</h5>
+    <ol>
+      <li>Instala la aplicación</li>
+      <li>Abres y te diriges a SignIn o Login</li>
+      <li>Conectarse con correo electronico (No ingresar con cuenta Google, Apple o Facebook)</li>
+      <li>Escribir los datos de acceso de la cuenta</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Correo:</span> [El correo envíado]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+      </div>
+      <li>Presiona Login o SignIn</li>
+      
+      <div class="important-note" style="background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%); border-left: 3px solid #ff6b35; padding: 1.2rem; margin: 1.5rem 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(255,107,53,0.08);"><strong>⚠️ ADVERTENCIA IMPORTANTE:</strong> Si la aplicación te solicita descargar la versión más reciente, selecciona <strong>"NO"</strong> y cierra la aplicación. Luego vuelve a abrirla para continuar con la configuración.</div>
+    </ol>
+  </div>
+
+    
+  
+
+            
+           
+            </div>
+            
+            
+              <!--/*--------- End - Android Device --------- */-->
+
+
+               <!--/*--------- Start - iOS Device --------- */-->
+
+            
+            <div id="ios-steps" class="step-content">
+                <h2>Guía para iOS</h2>
+                <h6>PLEX está disponible en la App Store y es compatible con iPhone, iPad y Apple TV (tvOS).</h6>    
+                    
+    <div class="step">
+
+    <!--/*--------- Plex iOS --------- */-->
+     
+    <div class="step-number">1</div>
+    <h3>Plex iOS</h3>
+    <a href="https://apps.apple.com/es/app/plex-tv-y-noticias-en-vivo/id383457673" class="btn" target="_blank" >
+      <i class="fab fa-apple"></i> Descargar en la App Store</a>
+      
+    <ol>
+      <li>Instala la aplicación</li>
+      <li>Abres y te diriges a SignIn o Login</li>
+      <li>Conectarse con correo electronico (No ingresar con cuenta Google, Apple o Facebook)</li>
+      <li>Escribir los datos de acceso de la cuenta</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Correo:</span> [El correo envíado]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+      </div>
+      <li>Presiona Login o SignIn</li>
+      
+   
+    </ol>
+  </div>
+            </div>
+            
+              <!--/*--------- End - iOS Device ------------------- */-->
+              
+              <!--/*--------- Start - SmartTV Device --------- */-->
+
+
+            <div id="smarttv-steps" class="step-content">
+                <h2>Guía para Smart TV</h2>
+                <h6>Para Televisores Samsung, LG y algunos otros SmartTv.</h6>    
+                    
+                    <div class="step">
+                   
+    <!--/*--------- Plex TV --------- */-->
+     
+        <div class="step-number">1</div>
+        <h3>Instalación de PLEX Smarters</h3>
+        
+        <ol>
+          <li>Abre la tienda de aplicaciones en tu dispositivo Samsung, LG, o cualquier Smart Tv).</li>
+          <li>Busca “PLEX”.</li>
+          <li>Selecciona la aplicación correcta e instálala.</li>
+          <li>Una vez instalada, ábrela desde el menú de aplicaciones.</li>
+        </ol>
+        
+        <div style="text-align:center; margin: 20px 0;">
+  <img src="https://m.media-amazon.com/images/I/91oP1PxcmcL.png" 
+       alt="IPTV Smarters Logo" style="max-width:200px; height:auto;">
+</div>
+        
+        <h3>Activación del Servicio</h3>
+        <ol>
+          <li>Abres y te diriges a SignIn o Login</li>
+      <li>Ingresa a plex.tv/link</li>
+      <li>Escribir el codigo que dió el Televisor en el celular (Código alfanumérico de 4 caracteres) </li>
+      <li>Inicia sesion en Login o SignIn con los datos de la cuenta</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Correo:</span> [El correo envíado]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+      </div>
+      <li>Presiona Login o SignIn</li>
+      <li>Ve al Televisor y ya quedó listo </li>
+      
+      
+</div>
+
+
+
+
+    <div class="section">
+    <h2>🔗 Vincular PLEX a tu TV: Instrucciones paso a paso</h2>
+    <div class="content">
+      <h3>Video tutorial</h3>
+
+      <!-- Cambia el src por la versión normal o por la "nocookie" (privacy-enhanced) -->
+      <div class="video-container">
+        <!-- Privacy-enhanced: youtube-nocookie.com -->
+        <iframe src="https://www.youtube.com/embed/vgaWlwbC3sE" 
+                title="Vincular PLEX a tu TV" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
+      </div>
+
+      <a class="open-btn" href="https://www.youtube.com/watch?v=vgaWlwbC3sE" target="_blank" rel="noopener">Abrir en YouTube</a>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>⚠️ Soluciones a Errores Comunes PLEX</h2>
+    <div class="content">
+      <h3>Error: "Ha ocurrido un error al intentar reproducir este video"</h3>
+
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/EeboPZuLGjM" 
+                title='Soluciones PLEX' 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+        </iframe>
+    
+      </div>
+
+      <a class="open-btn" href="https://www.youtube.com/watch?v=EeboPZuLGjM" target="_blank" rel="noopener">Abrir en YouTube</a>
+    </div>
+    
+    
+    
+    
+  </div>
+
+    <!--/*--------- Mas Apps --------- */-->
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <h3>Otras aplicaciones que puedes buscar en la tienda de aplicaciones de tu tv:</h3>
+    
+    <div class="step1">
+    <ul class="app-list">
+      <li>Smarter Pro </li>
+      <li>Smarter Player Lite </li>
+      <li>Dev Iptv Pro </li>
+      <li>Xciptv Player </li>
+      <li>SSIptv </li>
+      <li>Iptv Pro Stream Player </li>
+      
+    </ul>
+  </div>
+  
+      <!--/*--------- Nota --------- */-->
+
+<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
+
+<p>
+  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
+  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
+</p>
+
+<p>
+  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
+</p>
+
+<p>
+  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
+  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
+</p>
+            </div>
+            </div>
+            
+              <!--/*--------- End - SmartTV Device --------- */-->
+
+              <!--/*---------  Start - Windows PC - Device --------- */-->
+
+
+            <div id="pc-steps" class="step-content">
+                <h2>Guía para PC - Windows</h2>
+                <div class="step">
+                   
+    <!--/*--------- IPTV Smarters --------- */-->
+     
+    <div class="step-number">1</div>
+    <h3>Iptv Smarters</h3>
+    <a href="https://www.iptvsmarters.com/download?download=windows_app" class="btn" target="_blank" >
+      <i class="fas fa-download"></i> Descargar ejecutable de Windows 7/8/10/11</a>
+      
+          <a href="https://apps.microsoft.com/detail/9p0xnf0jhwbv?hl=es-ES&gl=CO" class="btn" target="_blank" >
+      <i class="fab fa-windows"></i> Descarga en la tienda de Microsoft (Windows 10/11)</a>
+      
+     
+    <ol>
+      <li>Descarga, Instala y abres la aplicación</li>
+      <li>Seleccionas "XTREAM"</li>
+      <li>Abres y pulsa el botón "+" Add Playlist"</li>
+      <li>Ingresa tus datos</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
+      </div>
+      <li>Presiona Enter o Login</li>
+    </ol>
+  </div>
+
+    <!--/*--------- IPTV Stream Player Official --------- */-->
+
+  <div class="step">
+    <div class="step-number">2</div> 
+    <h3>IPTV Stream Player Official</h3>
+    <a href="https://apps.microsoft.com/detail/9p90zh32k649?hl=es-ES&gl=CO" class="btn" target="_blank">
+      <i class="fab fa-windows"></i> Descarga en la tienda de Microsoft (Windows 10/11)</a>
+    <ol>
+      <li>Descarga, Instala y abres la aplicación</li>
+      <li>Selecciona "Login with new user"</li>
+      <li>Ingresa tus credenciales</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
+      </div>
+      <li>Presiona Login</li>
+    </ol>
+  </div>
+  
+  <div class="step">
+      
+    <!--/*--------- Ibo Player Pro --------- */-->
+
+    <div class="step-number">3</div>
+    <h3>Ibo Player Pro</h3>
+    <a href="https://apps.microsoft.com/detail/9msnk97xpvrk?hl=es-ES&gl=CO" class="btn" target="_blank">
+      <i class="fab fa-windows"></i> Descarga en la tienda de Microsoft (Windows 10/11)</a>
+      
+      
+
+    <ol>
+      <li>Descarga y abres la app</li>
+      <li>Selecciona "Login with new user"</li>
+      <li>Ingresa tus credenciales</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
+      </div>
+      <li>Presiona Login</li>
+    </ol>
+  </div>
+  
+    <!--/*--------- Web Browser Player --------- */-->
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <h3>Web Browser Player - IPTV Smarters Pro</h3>
+    <a href="http://webtv.iptvsmarters.com/index.php?adduser" class="btn" target="_blank">
+      <i class="fas fa-globe"></i> Abre una pagina web
+    </a>
+          <h5>Reproduce contenido en el navegador sin necesidad de descargar ninguna aplicacion</h5>
+
+    <ol>
+      <li>Selecciona "Login with new user" o "Login XTREAM"</li>
+      <li>Ingresa tus credenciales</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
+      </div>
+      <li>Presiona Login</li>
+    </ol>
+  </div>
+
+
+    <!--/*--------- Mas Apps --------- */-->
+
+  <div class="step">
+
+  
+      <!--/*--------- Nota --------- */-->
+
+<h3 style="color: #166281; margin-top: 0;">🔔 Nota Importante</h3>
+
+<p>
+  Algunas apps de reproducción pueden pedir 💰 <strong>pago mensual</strong> o mostrar anuncios 📢.<br>
+  <em>Esto lo ponen directamente los desarrolladores de cada app, no tiene nada que ver con nuestro servidor.</em>
+</p>
+
+<p>
+  👉 <strong>Nuestro servidor</strong> sí es <strong>pago mensual</strong>, pero te permite ver en <strong>múltiples dispositivos</strong> 📱💻📺.
+</p>
+
+<p>
+  🎯 Para una mejor experiencia, te recomendamos usar apps <strong>gratis y sin pagos obligatorios</strong> como:<br>
+  <span style="color: #4ade80;">IPTV Smarters</span>, <span style="color: #926916;">9xtream</span> o <span style="color: #60a5fa;">MosherTV</span>.
+</p>
+            </div>
+            </div>
+            
+              <!--/*--------- End - Windows PC Device --------- */-->
+
+              <!--/*--------- Start - FireStick Device --------- */-->
+
+            <div id="firestick-steps" class="step-content">
+                <h2>Guía para Firestick</h2>
+                
+                <p><strong>Paso 1:</strong> Asegúrate de estar conectado a internet. Luego, sigue estos pasos:</p>
+                <p><strong>Paso 2:</strong> Ve a Configuración ⇒ Mi FIRE TV ⇒ Opciones de desarrollador. Asegúrate de que la opción "Apps de orígenes desconocidos" esté activada.</p>
+                
+                
+                <p><strong>A veces, las Opciones de desarrollador están ocultas. Solo debes ir a la sección Acerca de en la configuración y presionar el botón OK del control remoto siete veces sobre el primer elemento de la lista para activar el menú oculto.</strong></p>
+                
+                
+                <p><strong>Paso 3:</strong> Abre la aplicación Downloader</p>
+                
+                <p><strong>Si no tienes la aplicación Downloader, instálala primero desde la AppStore. Hemos mostrado el ícono de la app arriba y fue desarrollada por AFTnews.com</strong> </p>
+                
+                
+                <p><strong>Paso 4:</strong> y escribe la siguiente URL:</p>
+                
+                <div style="border: 1px solid #000; border-radius: 15px; padding: 10px; text-align: left; max-width: 650px; background: #f8f9fa;">
+        <strong class="pb text-success" style="font-size:1.5rem; display: block;"> 
+          <a href="https://firetv.9xtream.net/v45.apk" style="text-decoration: none; color: #28a745;">https://firetv.9xtream.net/v45.apk</a>
+        </strong>
+        O
+        <strong class="pb text-success" style="font-size:1.5rem; display: block;"> 
+          <a href="https://9xtream.net/downloads/9xtream45.apk" style="text-decoration: none; color: #28a745;">https://9xtream.net/downloads/9xtream45.apk</a>
+        </strong>
+        <hr style="border-top: 1px solid #000; margin: 5px 0; opacity: 0.3">
+        <span style="display: block; font-size: 1rem; color: #6c757d;">Versión 45.0.0 | Actualizado: 25 de marzo de 2025, 12:00 AM</span>
+      </div>
+      
+                <p><strong>Paso 5:</strong> Haz clic en el botón "Go".</p>
+                <p><strong>Paso 6:</strong> Sigue las instrucciones en pantalla.</p>
+                <p><strong>Paso 7:</strong> Después de que finalice la descarga, podrás encontrar el archivo .APK en la aplicación Downloader. Haz clic sobre él para instalar 9Xtream.</p>
+                <p><strong>Paso 8:</strong> ingresar los datos de acceso</p>
+                
+                
+        <h3>Activación del Servicio</h3>
+        <ol>
+      <li>Selecciona "Login with new user" o "Login XTREAM"</li>
+      <li>Ingresa tus credenciales</li>
+      <div class="credential-box">
+         <div class="credential-line"><span>Nombre de Lista:</span> [Lo que quieras ingresar]</div>
+        <div class="credential-line"><span>Usuario:</span> [Tu usuario]</div>
+        <div class="credential-line"><span>Contraseña:</span> [Tu contraseña]</div>
+        <div class="credential-line"><span>URL:</span> [La URL enviada]</div>
+      </div>
+      <li>Presiona Login y a disfrutar del servicio</li>
+    </ol>
+                
+                
+        <blockquote class="sidenote">
+    <p><strong>Nota:</strong> Si ambos enlaces fallan y/o aparece un error de "Análisis del paquete", intenta nuevamente. Si el problema persiste, descarga el archivo APK en tu teléfono o PC, <a href="https://youtu.be/sK-R2KpI_Tw?t=64" target="_blank">transfiérelo a tu FireTV</a> e instálalo manualmente.</p>
+  </blockquote>
+  
+            </div>
+            
+              <!--/*--------- End - FireStick Device --------- */-->
+
+              <!--/*--------- Start - Roku Device --------- */-->
+
+            <div id="rokutv-steps" class="step-content">
+                <h2>Guía para Roku TV</h2>
+                <ul class="app-list">
+                    <li>Rivolut Player <span class="app-tag">De pago</span></li>
+                    <li>IboPro <span class="app-tag">De pago</span></li>
+                    <li>IboPlayer Pro <span class="app-tag">De pago</span></li>
+                </ul>
+                <div class="important-note">
+                    Las aplicaciones ofrecen una prueba gratuita de 7 días. La licencia puede ser anual o de por vida. No incluye el servicio de IPTV.
+                </div>
+            </div>
+            
+              <!--/*--------- End - Roku Device --------- */-->
+
+        </div>
+        
+    <!--/*--------- End - In devices ------------------- */-->
+    
+     <!--/*--------- Start - Others Devices within the stepper --------- */-->
+
+
+        <div class="other-devices-grid" id="otherDevicesGrid">
+            <h3>Otros dispositivos que podrían interesarte:</h3>
+            <div class="other-devices-cards-wrapper">
+                </div>
+        </div>
+        
+     <!--/*--------- End - Others Devices within the steeper  --------- */-->
+
+    </div>
+    
+     <!--/*--------- End DIV Body  --------- */-->
+
+     <!--/*--------- Main Footer Copyrigth  --------- */-->
+
+    <footer class="main-footer">
+        <span class="footer-text">&copy; 2025 MultiEntretenimiento BC. Todos los derechos reservados.</span>
+    </footer>
+
+     <!--/*--------- Main Footer Copyrigth  --------- */-->
+
+
+                  <!--/*--------- Loading Text, Icon and Google  --------- */-->
+
+   <div id="globalLoadingOverlay">
+    <div class="loading-content">
+        <i id="globalLoadingIcon" class="fas"></i> </div>
+        
+        <div class="loading-content">
+            <p id="globalLoadingMessage">Cargando...</p>
+            
+        <div class="google-loader">
+    <div class="dot blue"></div>
+    <div class="dot red"></div>
+    <div class="dot yellow"></div>
+    <div class="dot green"></div>
+    </div>
+</div>
+</div>
+
+                    <!--/*--------- Loading Text, Icon and Google  --------- */-->
+
+     <!--/*--------- Start Script  --------- */-->
+     
+              <!--/*--------- Start DOMContent Entrance Animation  --------- */-->
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const deviceCards = document.querySelectorAll('.device-card');
+            const deviceGrid = document.getElementById('deviceGrid');
+            const contentArea = document.getElementById('contentArea');
+            const otherDevicesGrid = document.getElementById('otherDevicesGrid');
+            const mainHeader = document.querySelector('.main-header');  
+            const mainHeaderH1 = mainHeader.querySelector('h1');
+            const otherDevicesCardsWrapper = otherDevicesGrid.querySelector('.other-devices-cards-wrapper');
+
+            // NUEVOS ELEMENTOS DEL OVERLAY DE CARGA GLOBAL
+            const globalLoadingOverlay = document.getElementById('globalLoadingOverlay');
+            const globalLoadingIcon = document.getElementById('globalLoadingIcon');
+            const globalLoadingMessage = document.getElementById('globalLoadingMessage');
+
+            let currentlySelectedDevice = null;
+
+            // Función para preparar las tarjetas para la animación de entrada
+            function resetCardForAnimation(card) {
+                
+                card.classList.remove('name-animate-in'); // Asegurarse de que no tenga la clase activa
+                const icon = card.querySelector('i');
+                const span = card.querySelector('span');
+                if (icon) {
+                    
+                    icon.style.transform = 'translateX(-20px)'; // Desplazado para la animación
+                }
+                if (span) {
+                    span.style.opacity = '0'; // <-- Asegúrate de agregar esta línea
+                    span.style.transform = 'translateX(20px)'; // Desplazado para la animación
+                }
+                // Forzar un reflow para que los estilos de reset se apliquen antes de la animación
+                void card.offsetWidth; 
+            }
+ 
+
+            // Función para iniciar la animación de entrada de las tarjetas y sus nombres
+            function animateInitialCards() {
+                deviceGrid.style.display = 'grid';
+                deviceGrid.classList.remove('animate-in');
+                
+                deviceGrid.style.opacity = '1'; 
+                deviceGrid.style.transform = 'translateY(20px)';
+    
+                void deviceGrid.offsetWidth; // Forzar reflow del grid
+                
+                
+                deviceGrid.classList.add('animate-in'); // Esto dispara la animación del grid
+                deviceCards.forEach((card, index) => { 
+                    
+                    setTimeout(() => {
+                        card.classList.add('name-animate-in'); // Añadir la clase para animar los iconos y nombres
+                    }, 100 * index + 100); // Pequeño retraso para un efecto escalonado y después de la animación del grid
+                    
+                });  
+                
+            }
+             
+            // Animación inicial al cargar la página
+            setTimeout(animateInitialCards, 500); // Retraso para que el header aparezca primero 
+
+
+            // Función para resetear y re-ejecutar la animación del título (h1)
+            function animateHeaderTitle() {
+                mainHeaderH1.style.animation = 'none'; // Eliminar la animación actual
+                void mainHeaderH1.offsetWidth; // Forzar reflow para registrar el cambio
+                mainHeaderH1.style.animation = 'fadeInDown 1s ease-out'; // Volver a aplicar la animación
+            }
+
+            // Función para resetear el estado inicial de toda la página
+            function resetState() { 
+    currentlySelectedDevice = null;
+
+    // Eliminar clases de animación de todas las tarjetas
+    deviceCards.forEach(card => {
+        card.classList.remove('selected-center', 'loading', 'animate-out', 'name-animate-in', 'small', 'animate-up');
+        card.style.position = '';
+        card.style.top = '';
+        card.style.left = '';
+        card.style.transform = '';
+        card.style.zIndex = '';
+        card.style.backgroundColor = '';
+        card.style.pointerEvents = 'auto';
+    });
+
+    // Limpiar contenido y otros dispositivos
+    contentArea.classList.remove('show', 'slide-from-center');
+    otherDevicesGrid.classList.remove('name-animate-in', 'show');
+    otherDevicesGrid.innerHTML = '';
+    document.querySelectorAll('.step-content').forEach(step => step.classList.remove('active'));
+
+    // Mostrar el grid de dispositivos nuevamente
+    deviceGrid.style.display = 'grid';
+    deviceGrid.style.opacity = '1';
+    deviceGrid.style.transform = 'translateY(20px)';
+
+    // Forzar reflow
+    void deviceGrid.offsetWidth;
+
+    // Animar título y tarjetas como al cargar
+    animateHeaderTitle();
+    animateInitialCards();
+}
+ 
+
+            // Asignar el evento click al header para resetear la página
+            mainHeader.addEventListener('click', resetState);
+
+             // Función para manejar la selección de un dispositivo
+        function handleDeviceSelection(selectedCardElement) {
+            const deviceData = selectedCardElement.dataset.device;
+
+            if (currentlySelectedDevice === deviceData) {
+                return; // Evita animar si ya está seleccionado
+            }
+
+            currentlySelectedDevice = deviceData;
+
+            // Ocultar y limpiar áreas de contenido y otros dispositivos
+            document.querySelectorAll('.step-content').forEach(step => step.classList.remove('active'));
+            contentArea.classList.remove('show');
+            contentArea.removeAttribute('style');
+
+            // --- CAMBIO CLAVE AQUÍ: LIMPIAR SOLO EL CONTENEDOR DE LAS TARJETAS CLONADAS ---
+            otherDevicesCardsWrapper.innerHTML = ''; // Limpia las tarjetas anteriores del wrapper
+            otherDevicesGrid.classList.remove('show');
+            otherDevicesGrid.removeAttribute('style');
+
+            // 1. Animar salida de TODAS las tarjetas en el grid original
+            deviceCards.forEach(card => {
+                card.classList.add('animate-out');
+            });
+
+            // 2. Después de que las tarjetas se hayan animado para salir, ocultar el deviceGrid y mostrar el cargador global
+            setTimeout(() => {
+                deviceGrid.style.display = 'none'; // Oculta el grid completo de tarjetas
+
+                // Prepara y muestra el overlay de carga global
+                const selectedIconElement = selectedCardElement.querySelector('i');
+                if (selectedIconElement) {
+                    globalLoadingIcon.className = selectedIconElement.className;
+                }
+                globalLoadingMessage.textContent = 'Cargando...';
+                globalLoadingOverlay.classList.add('show');
+
+            }, 500); // Dale tiempo a la animación 'animate-out' (0.4s en tu CSS, + un poco de margen)
+
+            // 3. Simular la carga y luego mostrar el contenido principal
+            setTimeout(() => {
+                globalLoadingOverlay.classList.remove('show'); // Ocultar el overlay de carga
+
+                const stepContentId = `${deviceData}-steps`;
+                const activeStepContent = document.getElementById(stepContentId);
+
+                if (activeStepContent) {
+                    activeStepContent.classList.add('active');
+                    contentArea.classList.remove('show');
+                    void contentArea.offsetWidth; // Forzar reflow para que la animación se reproduzca
+                    setTimeout(() => {
+                        contentArea.classList.add('show');
+                    }, 50); // Pequeño retraso para que la animación de entrada del contenido se vea
+                }
+
+                // Generar y animar el grid de otros dispositivos
+                setTimeout(() => {
+                    let delay = 0;
+                    // Usamos deviceCards (la NodeList original) para clonar
+                    deviceCards.forEach((otherCard) => {
+                        if (otherCard.dataset.device !== deviceData) {
+                            const clonedCard = otherCard.cloneNode(true);
+                            // Eliminar clases de estado previas de la tarjeta original
+                            clonedCard.classList.remove('animate-out', 'name-animate-in', 'selected-center', 'loading');
+                            clonedCard.classList.add('small');
+
+                            // Asegurar que el icono y el nombre estén visibles en las tarjetas pequeñas clonadas
+                            const clonedIcon = clonedCard.querySelector('i');
+                            const clonedSpan = clonedCard.querySelector('span');
+                            // Limpiar estilos inline residuales y asegurar opacidad 1 para small cards
+                            if (clonedIcon) {
+                                clonedIcon.removeAttribute('style');
+                                clonedIcon.style.opacity = '1';
+                                clonedIcon.style.transform = 'translateX(0)';
+                            }
+                            if (clonedSpan) {
+                                clonedSpan.removeAttribute('style');
+                                clonedSpan.style.opacity = '1';
+                                clonedSpan.style.transform = 'translateX(0)';
+                            }
+
+                            // Remover el mensaje de carga si se clonó por error
+                            const clonedLoadingMessage = clonedCard.querySelector('.loading-message');
+                            if (clonedLoadingMessage) {
+                                clonedLoadingMessage.remove();
+                            }
+
+                            clonedCard.addEventListener('click', function() {
+                                const originalCard = document.querySelector(`.device-card[data-device="${this.dataset.device}"]`);
+                                if (originalCard) {
+                                    handleDeviceSelection(originalCard);
+                                }
+                            });
+                            // --- CAMBIO CLAVE AQUÍ: AÑADIR AL WRAPPER, NO AL GRID PRINCIPAL ---
+                            otherDevicesCardsWrapper.appendChild(clonedCard); // Añadir al wrapper
+
+                            // --- ESTA LÍNEA ES LA QUE COMENTASTE Y YA NO DEBE EXISTIR ---
+                            // otherDevicesGrid.appendChild(document.querySelector('h3'));
+
+                            // Animación escalonada para las tarjetas pequeñas
+                            setTimeout(() => {
+                                clonedCard.classList.add('animate-up');
+                            }, delay);
+                            delay += 100;
+                        }
+                    });
+                    otherDevicesGrid.classList.add('show'); // Mostrar el grid de otros dispositivos
+
+                }, 800); // Retraso para que aparezca después del contenido principal
+            }, 2500); // Duración total de la "carga" (500ms de animate-out + 1000ms de simulación de carga)
+        }
+
+            // Asignar el evento click a cada tarjeta de dispositivo
+            deviceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    handleDeviceSelection(this);
+                });
+            });
+            
+            // Animación inicial al cargar la página
+            setTimeout(() => {
+                animateHeaderTitle(); // Anima el título
+                animateInitialCards(); // Anima las tarjetas
+            }, 300); // Retraso inicial para que la página cargue un poco antes de las animaciones
+        }); 
+        
+        
+        <!--/*--------- End DOMContent Entrance Animation  --------- */-->
+
+        
+        window.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.card-container .card');
+    cards.forEach((card, i) => {
+      setTimeout(() => {
+        card.classList.add('fade-in');
+      }, i * 100); // 100ms de diferencia entre cada tarjeta
+    });
+  });     
+    </script>  
+    
+ <!--/*--------- Animacion Iconos  --------- */-->
+  
+    
+    
+    <div class="background-elements">
+    <i class="fas fa-tv icon icon-tv-a"></i>
+    <i class="fas fa-wifi icon icon-wifi-a"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-a"></i>
+    <i class="fas fa-play-circle icon icon-play-a"></i>
+
+    <i class="fab fa-android icon icon-android-a"></i>
+    <i class="fab fa-apple icon icon-apple-a"></i>
+    <i class="fab fa-windows icon icon-windows-a"></i>
+    <i class="fas fa-tv icon icon-samsung-tv-b"></i>
+    <i class="fas fa-mobile-alt icon icon-lg-mobile-b"></i>
+    <i class="fas fa-desktop icon icon-desktop-b"></i>
+    <i class="fas fa-mobile-alt icon icon-mobile-b"></i>
+    <i class="fas fa-laptop-code icon icon-laptop-b"></i>
+    <i class="fas fa-tv icon icon-tv-c"></i>
+    <i class="fas fa-wifi icon icon-wifi-c"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-c"></i>
+    <i class="fas fa-play-circle icon icon-play-c"></i>
+    <i class="fab fa-android icon icon-android-c"></i>
+    <i class="fab fa-apple icon icon-apple-c"></i>
+    <i class="fab fa-windows icon icon-windows-c"></i>
+    <i class="fas fa-tablet-alt icon icon-tablet-d"></i>
+    <i class="fas fa-headphones-alt icon icon-headphones-d"></i>
+    <i class="fas fa-cloud icon icon-cloud-d"></i>
+    <i class="fas fa-server icon icon-server-d"></i>
+    <i class="fas fa-mobile-alt icon icon-mobile-e"></i>
+    <i class="fas fa-tv icon icon-tv-e"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-e"></i>
+    <i class="fas fa-play-circle icon icon-play-e"></i>
+  </div>
+ <!--/*--------- Animacion Iconos  --------- */-->
+
+
+ <!--/*--------- Boton Progreso  --------- */-->
+
+<!-- Botón flotante -->
+<button id="scrollTopBtn">
+  <div id="scrollProgress"></div>
+  <div class="arrow-wrapper">
+    <div class="arrow-up"></div>
+  </div>
+  </button>
+
+  <script>
+    const btn = document.getElementById("scrollTopBtn");
+    const progress = document.getElementById("scrollProgress");
+
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const percent = (scrollTop / scrollHeight) * 100;
+
+      btn.style.display = scrollTop > 100 ? "flex" : "none";
+      progress.style.setProperty('--scroll', `${percent}%`);
+    });
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+<a href="https://multibc2025.github.io/codigosNT-bc/historial.html" rel="noopener noreferrer" class="boton-inicio" >🏠</a>
+
+ <!--/*--------- Boton Progreso  --------- */-->
+
+
+ <!--/*--------- Chat Bot Inicio  --------- */-->
+
+<div class="chat-widget-container" id="chatBubble">
+    <div class="robot-container">
+        <div class="robot" id="robot">
+        <div class="robot-message" id="robot-message">¿Necesitas ayuda?</div>
+    </div>
+</div>
+</div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-inner-content">
+            <div class="chat-header">
+                🤖 Soy MultiBot, estoy para ayudarte
+                <button class="close-btn" id="closeChat">✖</button>
+            </div>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="search" placeholder="¿Cómo podemos ayudarte?">
+                    <span class="Search-icon search-icon">🔍</span>
+                    <span class="Search-icon clear-icon" id="clearBtn">✖</span>
+                </div>
+                <ul class="suggestions" id="suggestions"></ul>
+            </div>
+            <div class="chat-body" id="chatBody">
+    <p>👋 Bienvenido, soy MultiBot, escribe tu duda arriba y con gusto te ayudaré.</p>
+
+    <!-- Mensaje de soporte al final -->
+    <div class="bot-msg" style="background:#2FFF00; color:#0D0D0D; border-radius:12px 12px 12px 0; margin-top:10px;">
+        📱 No encuentras tu problema? Contacta al soporte aquí: 
+        <a href="https://wa.me/573503938788" target="_blank" style="color:#0D0D0D font-weight:bold; text-decoration:underline;">
+            WhatsApp +57 3503938788
+        </a>
+    </div>
+</div>
+        </div>
+    </div>
+
+    <script>
+        const chatBubble = document.getElementById("chatBubble");
+        const chatWindow = document.getElementById("chatWindow");
+        const closeChat = document.getElementById("closeChat");
+        const search = document.getElementById("search");
+        const suggestions = document.getElementById("suggestions");
+        const clearBtn = document.getElementById("clearBtn");
+        const chatBody = document.getElementById("chatBody");
+
+        const data = {
+            "¿Cuántos dispositivos puedo usar?": "Depende del plan: Básico (1), Estándar (2), Premium (4).",
+            "Error de Netflix C7361-1253": "Este error ocurre en Chrome. Solución: limpia caché y actualiza navegador.",
+            "Error de Netflix C7701-1003": "Este error está relacionado con Widevine. Reinstala o habilita el módulo.",
+            "Problemas de inicio de sesión": "Verifica correo y contraseña. Si olvidaste la contraseña, usa 'Recuperar cuenta'.",
+            "Cómo cambiar la contraseña": "En Configuración > Seguridad > Cambiar contraseña.",
+            "Configurar control parental": "Ve a tu cuenta > Configuración > Control parental."
+        };
+
+        let timeout = null;
+
+        // Abrir chat
+        chatBubble.addEventListener("click", () => {
+            chatWindow.style.display = "flex";
+            chatBubble.style.display = "none";
+        });
+
+        // Cerrar chat
+        closeChat.addEventListener("click", () => {
+            chatWindow.style.display = "none";
+            chatBubble.style.display = "flex";
+        });
+
+        // Buscar
+        search.addEventListener("input", function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const value = this.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (value) {
+                    clearBtn.style.display = "block";
+                    const filtered = Object.keys(data).filter(item =>
+                        item.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(value)
+                    );
+                    suggestions.innerHTML = filtered.map(item => `<li>${item}</li>`).join("");
+                    suggestions.style.display = filtered.length ? "block" : "none";
+                } else {
+                    suggestions.style.display = "none";
+                    clearBtn.style.display = "none";
+                }
+            }, 400);
+        });
+
+        // Selección sugerencia
+        suggestions.addEventListener("click", e => {
+            if (e.target.tagName === "LI") {
+                const pregunta = e.target.textContent;
+                const respuesta = data[pregunta] || "No encontré información.";
+                
+                // Mostrar en chat
+                chatBody.innerHTML += `<div class="user-msg">❓ ${pregunta}</div>`;
+                chatBody.innerHTML += `<div class="bot-msg">💡 ${respuesta}</div>`;
+                
+                search.value = "";
+                suggestions.style.display = "none";
+                clearBtn.style.display = "none";
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        });
+
+        // Botón borrar
+        clearBtn.addEventListener("click", () => {
+            search.value = "";
+            suggestions.style.display = "none";
+            clearBtn.style.display = "none";
+        });
+    </script>
+    
+     <!--/*--------- Chat Bot Fin  --------- */-->
+
+
+</body>
+</html>
