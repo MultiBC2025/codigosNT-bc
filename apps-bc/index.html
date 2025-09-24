@@ -1,0 +1,608 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía MultiEntretenimientoBC</title>
+    <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.95); }
+            to { transform: scale(1); }
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes floatingBubbles {
+            0% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-15px) translateX(5px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.7; }
+        }
+
+        body {
+            background-size: cover;
+            color: #333;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%),
+                radial-gradient(circle at top right, rgba(255,107,53,0.1) 0%, transparent 50%),
+                radial-gradient(circle at bottom left, rgba(255,143,107,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE ICONOS Y FONDO INICIO
+        -------------------------------------------------------------
+        */
+        
+         body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Evitar scroll horizontal durante animaciones */
+            margin: 0;
+      background: linear-gradient(135deg,
+        #1a0a33,
+        #0a1f44,
+        #007bff,
+        #8a2be2,
+        #00ffff,
+        #ff007f,
+        #00ff00,
+        #ff0000,
+        #ffa500
+      );
+      background-size: 500% 500%;
+      animation: gradientAnimation 120s ease infinite;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      z-index: 0;
+    }
+
+    /* Fondo aclarado al 40% */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: -1;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 0%; }
+      25% { background-position: 50% 100%; }
+      50% { background-position: 100% 0%; }
+      75% { background-position: 0% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    .background-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .icon {
+      position: absolute;
+      font-size: 2em;
+      animation: combinedFloatAndMove var(--animation-duration, 35s) infinite linear;
+      opacity: 0;
+      color: white !important;
+    }
+
+    .icon-tv-a { top: 8%; left: 0%; font-size: 3em; --animation-duration: 40s; animation-delay: -0s; }
+    .icon-wifi-a { top: 12%; right: 0%; font-size: 2.5em; --animation-duration: 43s; animation-delay: -5s; }
+    .icon-gamepad-a { top: 20%; left: 0%; font-size: 3.5em; --animation-duration: 37s; animation-delay: -10s; }
+    .icon-play-a { top: 15%; right: 0%; font-size: 4em; --animation-duration: 45s; animation-delay: -15s; }
+    .icon-android-a { top: 5%; left: 0%; font-size: 2.8em; --animation-duration: 42s; animation-delay: -20s; }
+    .icon-apple-a { top: 25%; right: 0%; font-size: 3.2em; --animation-duration: 47s; animation-delay: -25s; }
+    .icon-windows-a { top: 30%; left: 0%; font-size: 3.8em; --animation-duration: 39s; animation-delay: -30s; }
+
+    .icon-samsung-tv-b { top: 40%; right: 0%; font-size: 3.1em; --animation-duration: 41s; animation-delay: -35s; }
+    .icon-lg-mobile-b { top: 35%; left: 0%; font-size: 2.9em; --animation-duration: 44s; animation-delay: -40s; }
+    .icon-desktop-b { top: 45%; right: 0%; font-size: 3.4em; --animation-duration: 38s; animation-delay: -45s; }
+    .icon-mobile-b { top: 55%; left: 0%; font-size: 2.7em; --animation-duration: 36s; animation-delay: -50s; }
+    .icon-laptop-b { top: 50%; right: 0%; font-size: 3.6em; --animation-duration: 46s; animation-delay: -55s; }
+
+    .icon-tv-c { bottom: 10%; left: 0%; font-size: 2.8em; --animation-duration: 39s; animation-delay: -60s; }
+    .icon-wifi-c { bottom: 5%; right: 0%; font-size: 2.2em; --animation-duration: 35s; animation-delay: -65s; }
+    .icon-gamepad-c { bottom: 20%; left: 0%; font-size: 3em; --animation-duration: 42s; animation-delay: -70s; }
+    .icon-play-c { bottom: 15%; right: 0%; font-size: 3.6em; --animation-duration: 44s; animation-delay: -75s; }
+    .icon-android-c { bottom: 25%; left: 0%; font-size: 2.8em; --animation-duration: 41s; animation-delay: -80s; }
+    .icon-apple-c { bottom: 30%; right: 0%; font-size: 3.2em; --animation-duration: 45s; animation-delay: -85s; }
+    .icon-windows-c { bottom: 0%; left: 0%; font-size: 3.8em; --animation-duration: 40s; animation-delay: -90s; }
+
+    .icon-tablet-d { top: 65%; right: 0%; font-size: 3em; --animation-duration: 43s; animation-delay: -95s; }
+    .icon-headphones-d { top: 70%; left: 0%; font-size: 2.5em; --animation-duration: 37s; animation-delay: -100s; }
+    .icon-cloud-d { bottom: 45%; left: 0%; font-size: 3.3em; --animation-duration: 48s; animation-delay: -105s; }
+    .icon-server-d { top: 80%; right: 0%; font-size: 2.9em; --animation-duration: 42s; animation-delay: -110s; }
+    .icon-mobile-e { top: 75%; right: 0%; font-size: 2.7em; --animation-duration: 35s; animation-delay: -115s; }
+    .icon-tv-e { bottom: 55%; left: 0%; font-size: 3.1em; --animation-duration: 44s; animation-delay: -120s; }
+    .icon-gamepad-e { top: 90%; left: 0%; font-size: 3.4em; --animation-duration: 41s; animation-delay: -125s; }
+    .icon-play-e { bottom: 60%; right: 0%; font-size: 3.9em; --animation-duration: 46s; animation-delay: -130s; }
+
+    @keyframes combinedFloatAndMove {
+      0% { transform: translateX(-120vw) translateY(0); opacity: 0; }
+      5% { opacity: 0.18; }
+      40% { color: rgba(255, 255, 255, 0.45); opacity: 0.45; }
+      50% { transform: translateX(0vw) translateY(10px); color: rgba(255, 255, 255, 0.55); opacity: 0.55; }
+      60% { color: rgba(255, 255, 255, 0.45); opacity: 0.45; }
+      95% { opacity: 0.18; }
+      100% { transform: translateX(120vw) translateY(0); opacity: 0; }
+    }
+        
+        
+        
+        
+    /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE ICONOS Y FIN
+        -------------------------------------------------------------
+        */
+        
+        
+
+        .glow-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255,107,53,0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        .floating-element {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 107, 53, 0.03);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            animation: floatingBubbles 8s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { top: 20%; right: 20%; animation-delay: -2s; }
+        .floating-element:nth-child(3) { bottom: 30%; left: 30%; animation-delay: -4s; }
+        .floating-element:nth-child(4) { bottom: 10%; right: 10%; animation-delay: -6s; }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header {
+    text-align: center;
+    padding: 2px 2px;
+    
+    /* CAMBIO 1: Degradado cálido (Oro, Ocre, Bronce) */
+    background: linear-gradient(135deg, #a87932 0%, #d4aa5d 50%, #f7dc8d 100%); 
+    
+    color: #0D0D0D; /* Cambiamos a texto oscuro para un mejor contraste sobre el fondo dorado */
+    margin-bottom: 50px;
+    border-radius: 30px;
+    position: relative;
+    animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* CAMBIO 2: Sombra ajustada al nuevo color (tonos marrones/dorados) */
+    box-shadow: 
+        0 10px 40px rgba(168, 121, 50, 0.4),
+        0 0 0 1px rgba(255,255,255,0.3), /* Borde interior más visible */
+        inset 0 1px 0 rgba(255,255,255,0.4);
+        
+    width: 100%;
+    max-width: 900px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.1);
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        /* Mantenemos los destellos blancos sutiles */
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    
+    /* CAMBIO 3: Hacemos el círculo giratorio de color blanco más brillante para que NO se pierda */
+    background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    
+    animation: rotate 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+        .header h1 {
+    font-size: 3.8em;
+    margin-bottom: 20px;
+    
+    /* CAMBIO: Color de texto a un marrón oscuro/carbón */
+    color: #0d0d0d;
+    
+    /* REEMPLAZA EL TEXT-SHADOW ANTERIOR con este: Borde blanco del texto */
+    text-shadow: 
+        -1px -1px 0 #FFFFFF,  /* Arriba-izquierda */
+         1px -1px 0 #FFFFFF,  /* Arriba-derecha */
+        -1px  1px 0 #FFFFFF,  /* Abajo-izquierda */
+         1px  1px 0 #FFFFFF,  /* Abajo-derecha */
+         /* Opcional: Puedes añadir una sombra oscura debajo del borde blanco para darle más profundidad */
+         2px 2px 4px rgba(0,0,0,0.4); 
+         
+    animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+/* Estilos para Subtítulo */
+.header .subtitle {
+    font-size: 2em;
+    opacity: 100;
+    
+    /* CAMBIO: Color de texto a un marrón oscuro/carbón */
+    color: #fff;
+    
+    /* REEMPLAZA O MODIFICA EL TEXT-SHADOW ANTERIOR: Borde blanco del texto */
+    text-shadow: 
+        -1px -1px 0 #0A0673,
+         1px -1px 0 #0A0673,
+        -1px  1px 0 #0A0673,
+         1px  1px 0 #0A0673,
+         /* Opcional: Sombra oscura debajo del borde blanco para mejor lectura */
+         1px 1px 2px rgba(0,0,0,0.3);
+         
+    animation: fadeIn 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .app-card:hover::before {
+            left: 100%;
+        }
+
+        .app-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(255,107,53,0.2);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .app-icon {
+            font-size: 4em;
+            margin-bottom: 25px;
+            display: block;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        
+
+        .app-title {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            text-align: center;
+        }
+
+        
+
+        .app-description {
+            opacity: 0.8;
+            line-height: 1.6;
+            font-size: 1.1em;
+            transition: opacity 0.3s ease;
+            text-align: center;
+        }
+
+        .app-card:hover .app-description {
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 40px 30px;
+                border-radius: 25px;
+                margin-bottom: 30px;
+            }
+            
+            .header h1 {
+                font-size: 2.8em;
+                margin-bottom: 15px;
+            }
+            
+            .header .subtitle {
+                font-size: 1.2em;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 13fr;
+                gap: 20px;
+            }
+            
+            .app-card {
+                padding: 25px;
+            }
+            
+            .container {
+                padding: 20px 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+                margin-bottom: 12px;
+            }
+            
+            .header .subtitle {
+                font-size: 1.1em;
+            }
+            
+            .app-icon {
+                font-size: 3em;
+            }
+            
+            .app-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="glow-overlay"></div>
+    
+    <!-- Elementos flotantes -->
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Aplicaciones MultiEntretenimiento BC</h1>
+            <p class="subtitle"style="font-weight: bold" >Guías de configuración para cada una de las aplicaciones</p>
+        </div>
+        
+        <div class="apps-grid">
+            <a href="https://multibc2025.github.io/codigosNT-bc/plex-bc/" class="app-card">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Plex_vector_logo.svg" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 9em; height: 4em;">
+        <div style="color: #8F7532;" class="app-title">PLEX</div>
+        </a>
+            
+            <a href="https://multibc2025.github.io/codigosNT-bc/netflix-bc/" class="app-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Netflix_2015_N_logo.svg/551px-Netflix_2015_N_logo.svg.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 2.9em; height: 4em;">
+                <div style="color: #BD2C11;" class="app-title">Netflix</div>
+            </a>
+            
+            <a href="https://multibc2025.github.io/codigosNT-bc/iptv-bc/" class="app-card">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 19em; height: 7em;">
+                <div style="color: #2534B0;" class="app-title">Mosher IPTV</div>
+            </a>
+            
+            
+            
+            
+            
+            
+            <a href="iptv/" class="app-card">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 19em; height: 7em;">
+                <div style="color: #ff6600;" class="app-title">1</div>
+            </a>
+            
+            <a href="iptv/" class="app-card">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 19em; height: 7em;">
+                <div style="color: #ff6600;" class="app-title">1</div>
+            </a>
+            
+            <a href="iptv/" class="app-card">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 19em; height: 7em;">
+                <div style="color: #ff6600;" class="app-title">1</div>
+            </a>
+            
+            <a href="iptv/" class="app-card">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 19em; height: 7em;">
+                <div style="color: #ff6600;" class="app-title">1</div>
+            </a>
+            
+            <a href="iptv/" class="app-card">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
+         alt="Logo de Netflix" 
+         class="app-icon-img" 
+         style="width: 19em; height: 7em;">
+                <div style="color: #ff6600;" class="app-title">1</div>
+            </a>
+            
+        </div>
+    </div>
+
+
+
+<!--/*--------- Animacion Iconos  --------- */-->
+  
+    
+    
+    <div class="background-elements">
+    <i class="fas fa-tv icon icon-tv-a"></i>
+    <i class="fas fa-wifi icon icon-wifi-a"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-a"></i>
+    <i class="fas fa-play-circle icon icon-play-a"></i>
+    <i class="fab fa-netflix"></i>
+    <i class="fab fa-android icon icon-android-a"></i>
+    <i class="fab fa-apple icon icon-apple-a"></i>
+    <i class="fab fa-windows icon icon-windows-a"></i>
+    <i class="fas fa-tv icon icon-samsung-tv-b"></i>
+    <i class="fas fa-mobile-alt icon icon-lg-mobile-b"></i>
+    <i class="fas fa-desktop icon icon-desktop-b"></i>
+    <i class="fas fa-mobile-alt icon icon-mobile-b"></i>
+    <i class="fas fa-laptop-code icon icon-laptop-b"></i>
+    <i class="fas fa-tv icon icon-tv-c"></i>
+    <i class="fas fa-wifi icon icon-wifi-c"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-c"></i>
+    <i class="fas fa-play-circle icon icon-play-c"></i>
+    <i class="fab fa-android icon icon-android-c"></i>
+    <i class="fab fa-apple icon icon-apple-c"></i>
+    <i class="fab fa-windows icon icon-windows-c"></i>
+    <i class="fas fa-tablet-alt icon icon-tablet-d"></i>
+    <i class="fas fa-headphones-alt icon icon-headphones-d"></i>
+    <i class="fas fa-cloud icon icon-cloud-d"></i>
+    <i class="fas fa-server icon icon-server-d"></i>
+    <i class="fas fa-mobile-alt icon icon-mobile-e"></i>
+    <i class="fas fa-tv icon icon-tv-e"></i>
+    <i class="fas fa-gamepad icon icon-gamepad-e"></i>
+    <i class="fas fa-play-circle icon icon-play-e"></i>
+    <i class="fab fa-netflix"></i>
+  </div>
+ <!--/*--------- Animacion Iconos  --------- */-->
+ 
+</body>
+</html>
+</html>
