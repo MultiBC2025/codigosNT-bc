@@ -1093,6 +1093,7 @@
             padding: 10px;
             display: flex;
             justify-content: space-around;
+            position: absolute; /* siempre al fondo */
             align-items: center;
             flex-wrap: wrap;
             margin-top: auto; /* Empuja el footer hacia abajo */
@@ -2015,8 +2016,15 @@
      <!--/*--------- Main Footer Copyrigth  --------- */-->
 
     <footer class="main-footer">
-        <span class="footer-text">&copy; 2025 MultiEntretenimiento BC. Todos los derechos reservados.</span>
-    </footer>
+    <p>
+      &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong>.  
+      Todos los derechos reservados.
+    </p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
      <!--/*--------- Main Footer Copyrigth  --------- */-->
 
