@@ -206,9 +206,20 @@
 
     </div>
 
-    <footer>
-        ©2025 - Copyright Variedades y MultiEntretenimiento BC 2025
-    </footer>
+    <!--/*--------- Main Footer Copyrigth  --------- */-->
+
+    <footer class="main-footer">
+    <p>
+      &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong>.  
+      Todos los derechos reservados.
+    </p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+     <!--/*--------- Main Footer Copyrigth  --------- */-->
 
     <script>
         // Configura los feeds RSS
@@ -224,13 +235,13 @@
 
 
 
-        // Función para cargar los correos
+       // Función para cargar los correos
 async function cargarCorreos(feedUrl) {
     try {
-                const proxyUrl = 'https://api.allorigins.win/get?url=';
-                const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-                const data = await response.json();
-                const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
+        const proxyUrl = 'https://api.allorigins.win/get?url=';
+        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+        const data = await response.json();
+        const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
 
         const items = rssData.querySelectorAll('item');
         let html = '';
@@ -258,20 +269,32 @@ async function cargarCorreos(feedUrl) {
     }
 }
 
-        // Función para buscar el correo
-        function buscarCorreo() {
-            const searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
-
-            if (rssFeeds[searchQuery]) {
-                cargarCorreos(rssFeeds[searchQuery]);
-            } else {
-                document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
-            }
-        }
-
-        function abrirExternamente() {
+// 🔍 Función para buscar el correo
+function buscarCorreo() {
     const input = document.getElementById('searchInput').value.trim().toLowerCase();
-    const feedUrl = rssFeeds[input];
+
+    // Normalizamos las claves de rssFeeds
+    const normalizadoFeeds = {};
+    for (let key in rssFeeds) {
+        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+    }
+
+    if (normalizadoFeeds[input]) {
+        cargarCorreos(normalizadoFeeds[input]);
+    } else {
+        document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
+    }
+}
+
+function abrirExternamente() {
+    const input = document.getElementById('searchInput').value.trim().toLowerCase();
+
+    const normalizadoFeeds = {};
+    for (let key in rssFeeds) {
+        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+    }
+
+    const feedUrl = normalizadoFeeds[input];
 
     if (!feedUrl) {
         document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
@@ -284,20 +307,24 @@ async function cargarCorreos(feedUrl) {
     }
 }
 
-        // Función para verificar si la tecla Enter fue presionada
-        function checkEnter(event) {
-            if (event.key === 'Enter') {
-                buscarCorreo();
-            }
-        }
-    </script>
+// ✅ Verificar si la tecla Enter fue presionada
+function checkEnter(event) {
+    if (event.key === 'Enter') {
+        buscarCorreo();
+    }
+}
 
-    <script>
 let intervaloBusqueda; // Variable global para guardar el intervalo
 
 function buscarCorreo() {
     const input = document.getElementById('searchInput').value.trim().toLowerCase();
-    const feedUrl = rssFeeds[input];
+
+    const normalizadoFeeds = {};
+    for (let key in rssFeeds) {
+        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+    }
+
+    const feedUrl = normalizadoFeeds[input];
 
     if (!feedUrl) {
         document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
@@ -310,11 +337,12 @@ function buscarCorreo() {
     // Limpiar intervalos anteriores si los hay
     clearInterval(intervaloBusqueda);
 
-    // Ejecutar cada segundo (300 ms)
+    // Ejecutar cada 300 ms
     intervaloBusqueda = setInterval(() => {
         cargarCorreos(feedUrl);
     }, 300);
 }
+
 </script>
 
 </body>
