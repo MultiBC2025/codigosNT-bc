@@ -1123,11 +1123,14 @@
         }
 
         /* Footer */
+        
+        
         .main-footer {
             background-color: #ffffff;
             padding: 10px;
             display: flex;
             justify-content: space-around;
+            position: absolute; /* siempre al fondo */
             align-items: center;
             flex-wrap: wrap;
             margin-top: auto; /* Empuja el footer hacia abajo */
@@ -1135,7 +1138,9 @@
             box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
             border-radius: 50px 50px 0 0;
             z-index: 10;
-            width: 100%
+            width: 100%;
+            bottom: 0;                   /* al borde inferior */
+          left: 0;
         }
 
         .footer-text {
@@ -1642,8 +1647,15 @@
      <!--/*--------- Main Footer Copyrigth  --------- */-->
 
     <footer class="main-footer">
-        <span class="footer-text">&copy; 2025 MultiEntretenimiento BC. Todos los derechos reservados.</span>
-    </footer>
+    <p>
+      &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong>.  
+      Todos los derechos reservados.
+    </p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
      <!--/*--------- Main Footer Copyrigth  --------- */-->
 
