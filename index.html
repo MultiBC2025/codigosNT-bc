@@ -252,16 +252,6 @@ async function cargarCorreos(feedUrl) {
             const description = item.querySelector('description').textContent;
             const date = item.querySelector('pubDate').textContent;
             
-            // Fecha en GMT
-            const dateGMT = item.querySelector('pubDate').textContent;
-            const fecha = new Date(dateGMT);
-
-            // ✅ Convertir a hora local Bogotá (GMT-5)
-            const date = fecha.toLocaleString("es-CO", { 
-    timeZone: "America/Bogota",
-    dateStyle: "full",   // 🔥 ahora formato largo
-    timeStyle: "long"    // 🔥 hora larga
-});
 
             html += `
                 <div class="correo-item" onclick="window.open('${link}', '_blank')">
