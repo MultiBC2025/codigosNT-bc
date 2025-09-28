@@ -131,37 +131,187 @@
 
 
         .whatsapp-button {
-        position: fixed;
-        bottom: 20px;
-        left: 20px;
-        background-color: #1a76a3;
-        padding: 15px;
-        border-radius: 50%;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
+        width: 60px;
+            height: 60px;
+            position: fixed;
+            bottom: 30px;
+            width: 70px;
+            height: 70px;
+            left: 20px;
+            border-radius: 50%;
+            border: 2px solid #3a50ff;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1024px-WhatsApp.svg.png'); /* <--- Aquí va la URL de tu SVG */
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: scaleX(-1);
+            animation: floatAnimation 3s ease-in-out infinite;
+        }
+    
 
     .whatsapp-button:hover {
-        background-color: #45c2ff;
+        background-color: #FFFFFF;
     }
 
     .whatsapp-button img {
         width: 50px;
         height: 50px;
     }
+    
+     /* La leyenda del robot (ahora oculta) */
+        .wpp-message {
+            background-color: #fff;
+            color: #3a50ff;
+            border: 2px solid #3a50ff;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            position: absolute;
+            left: 0%;
+            bottom: 80px;
+            transform: translateX(10%) scaleX(1); /* AÑADIDO: Vuelve a invertir el texto */
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 2002;
+        }
+        
+        /* Regla para mostrar el mensaje cuando se pasa el cursor sobre el contenedor del robot */
+    .whatsapp-button:hover .robot-message {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    @keyframes floatAnimation {
+            0% { transform: scaleX(1) translateY(0px); }
+            50% { transform: scaleX(1) translateY(-10px); }
+            100% { transform: scaleX(1) translateY(0px); }
+        }
+    
+    
+    .whatsapp-widget-container:hover .wpp-message {
+    opacity: 1;
+    visibility: visible;
+}
 
 
 
+        /* Boton de progreso hacia arriba y de inicio INICIO */
+    
+    /* Botón de scroll */
+    #scrollTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 9999;
+      transition: transform 0.3s ease;
+    }
 
+    #scrollTopBtn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Aro de progreso */
+    #scrollProgress {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 70%;
+      background: conic-gradient(#000000 var(--scroll, 0%), #cecece 0%);
+      mask: radial-gradient(farthest-side, transparent 40%, black 71%);
+      -webkit-mask: radial-gradient(farthest-side, transparent 90%, black 71%);
+      box-shadow: 0 0 5px #00ffe099;
+    }
+    
+        /* Flecha animada */
+            
+        /* Envoltorio para mantener la rotación */
+        .arrow-wrapper {
+          transform: rotate(45deg); /* Apunta hacia arriba */
+        }
+        
+        /* Flecha en sí (ya no se rota aquí) */
+        .arrow-up {
+          width: 14px;
+          height: 14px;
+          border-left: 3px solid #000;
+          border-top: 3px solid #000;
+          animation: pulseArrow 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes pulseArrow {
+          0%, 100% { transform: scale(1); opacity: 0.7; }
+          50% { transform: scale(1.2); opacity: 1; }
+        }
+        
+            html {
+              scroll-behavior: smooth;
+            }
+            
+            
         
     </style>
 </head>
 <body>
+    
+    
+     <!--/*--------- WhatsApp Boton Inicio  --------- */-->
 
-<a href="https://wa.me/573503938788?text=Hola,%20tengo%20un%20problema%20con%20mi%20correo.%20Agradecería%20su%20ayuda%20para%20solucionarlo.%20Gracias." class="whatsapp-button" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1024px-WhatsApp.svg.png" alt="WhatsApp" style="width: 50px; height: 50px;"/>
-</a>
+<div class="whatsapp-widget-container">
+    <div class="wpp-message">¿Necesitas ayuda? Contactanos al WhatsApp</div>
+    
+    <a href="https://wa.me/573503938788?text=Hola,%20tengo%20un%20problema%20con%20mi%20correo.%20Agradecería%20su%20ayuda%20para%20solucionarlo.%20Gracias." 
+       class="whatsapp-button" target="_blank">
+        
+    </a>
+</div>
+
+
+     <!--/*--------- WhatsApp Boton Fin  --------- */-->
+     
+     <!--/*--------- Boton Progreso  --------- */-->
+
+<!-- Botón flotante -->
+<button id="scrollTopBtn">
+  <div id="scrollProgress"></div>
+  <div class="arrow-wrapper">
+    <div class="arrow-up"></div>
+  </div>
+  </button>
+
+  <script>
+    const btn = document.getElementById("scrollTopBtn");
+    const progress = document.getElementById("scrollProgress");
+
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const percent = (scrollTop / scrollHeight) * 100;
+
+      btn.style.display = scrollTop > 100 ? "flex" : "none";
+      progress.style.setProperty('--scroll', `${percent}%`);
+    });
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+
+
+ <!--/*--------- Boton Progreso  --------- */-->
+
 
     <header>
         <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="Logo MultiBC">
