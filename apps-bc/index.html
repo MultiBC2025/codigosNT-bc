@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -438,7 +437,7 @@
             
             .apps-grid {
                 grid-template-columns: 13fr;
-                gap: 20px;
+                gap: 10px;
             }
             
             .app-card {
@@ -473,6 +472,101 @@
                 font-size: 1.5em;
             }
         }
+        
+        .main-footer {
+            background-color: #ffffff;
+            text-align: center;
+            padding: 5px 0;
+            display: flex;
+            justify-content: space-around;
+            position: absolute; /* siempre al fondo */
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            border-top: 2px solid #333;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            border-radius: 50px 50px 0 0;
+            z-index: 100;
+            width: 100%;
+            bottom: 0;                   /* al borde inferior */
+          left: 0;
+        }
+
+        .footer-text {
+            color: #555;
+            font-size: 5em;
+        }
+        
+        
+        /*
+        -------------------------------------------------------------
+        ESTILOS INDIVIDUALES DE CHAT BOT FAQ
+        -------------------------------------------------------------
+        */
+    
+    /* Boton de progreso hacia arriba y de inicio INICIO */
+    
+    /* Botón de scroll */
+    #scrollTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 9999;
+      transition: transform 0.3s ease;
+    }
+
+    #scrollTopBtn:hover {
+      transform: scale(1.1);
+    }
+
+    /* Aro de progreso */
+    #scrollProgress {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 70%;
+      background: conic-gradient(#000000 var(--scroll, 0%), #cecece 0%);
+      mask: radial-gradient(farthest-side, transparent 40%, black 71%);
+      -webkit-mask: radial-gradient(farthest-side, transparent 90%, black 71%);
+      box-shadow: 0 0 5px #00ffe099;
+    }
+
+    /* Flecha animada */
+    
+/* Envoltorio para mantener la rotación */
+.arrow-wrapper {
+  transform: rotate(45deg); /* Apunta hacia arriba */
+}
+
+/* Flecha en sí (ya no se rota aquí) */
+.arrow-up {
+  width: 14px;
+  height: 14px;
+  border-left: 3px solid #000;
+  border-top: 3px solid #000;
+  animation: pulseArrow 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseArrow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    
+    
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -493,26 +587,17 @@
         
         <div class="apps-grid">
             <a href="https://multibc2025.github.io/codigosNT-bc/plex-bc/" class="app-card">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Plex_vector_logo.svg" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 9em; height: 4em;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/Plex_vector_logo.svg" alt="Logo de Netflix" class="app-icon-img" style="width: 9em; height: 4em;">
         <div style="color: #8F7532;" class="app-title">PLEX</div>
         </a>
             
             <a href="https://multibc2025.github.io/codigosNT-bc/netflix-bc/" class="app-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Netflix_2015_N_logo.svg/551px-Netflix_2015_N_logo.svg.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 2.9em; height: 4em;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Netflix_2015_N_logo.svg/551px-Netflix_2015_N_logo.svg.png" alt="Logo de Netflix" class="app-icon-img" style="width: 2.9em; height: 4em;">
                 <div style="color: #BD2C11;" class="app-title">Netflix</div>
             </a>
             
             <a href="https://multibc2025.github.io/codigosNT-bc/iptv-bc/" class="app-card">
-                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 19em; height: 7em;">
+                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" alt="Logo de Netflix" class="app-icon-img" style="width: 19em; height: 7em;">
                 <div style="color: #2534B0;" class="app-title">Mosher IPTV</div>
             </a>
             
@@ -521,48 +606,37 @@
             
             
             
-            <a href="iptv/" class="app-card">
-                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 19em; height: 7em;">
-                <div style="color: #ff6600;" class="app-title">1</div>
+            <a href="https://multibc2025.github.io/codigosNT-bc/vix-bc/" class="app-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/ViX_Logo.svg/2560px-ViX_Logo.svg.png" alt="Logo de Netflix" class="app-icon-img" style="width: 11em; height: 4em;">
+                <div style="color: #D4B000;" class="app-title">VIX</div>
             </a>
             
-            <a href="iptv/" class="app-card">
-                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 19em; height: 7em;">
-                <div style="color: #ff6600;" class="app-title">1</div>
+            <a href="https://multibc2025.github.io/codigosNT-bc/disneyplus-bc/" class="app-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg" alt="Logo de Netflix" class="app-icon-img" style="width: 19em; height: 7em;">
+                <div style="color: #11A2BD;" class="app-title">Disney Plus</div>
             </a>
             
-            <a href="iptv/" class="app-card">
-                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 19em; height: 7em;">
-                <div style="color: #ff6600;" class="app-title">1</div>
+            <a href="https://multibc2025.github.io/codigosNT-bc/crunchyroll-bc/" class="app-card">
+                <img src="https://cdn.worldvectorlogo.com/logos/crunchyroll-1.svg" alt="Logo de Netflix" class="app-icon-img" style="width: 15em; height: 6em;">
+                <div style="color: #848704;" class="app-title">Crunchyroll</div>
             </a>
             
-            <a href="iptv/" class="app-card">
-                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 19em; height: 7em;">
-                <div style="color: #ff6600;" class="app-title">1</div>
+            <a href="https://multibc2025.github.io/codigosNT-bc/paramountplus-bc/" class="app-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Paramount%2B_logo.svg" alt="Logo de Netflix" class="app-icon-img" style="width: 14em; height: 7em;">
+                <div style="color: #406DBD;" class="app-title">Paramount Plus</div>
             </a>
             
-            <a href="iptv/" class="app-card">
-                <img src="https://luzuriagacastro.com/wp-content/uploads/2021/06/IPTV-2.png" 
-         alt="Logo de Netflix" 
-         class="app-icon-img" 
-         style="width: 19em; height: 7em;">
-                <div style="color: #ff6600;" class="app-title">1</div>
+            <a href="https://multibc2025.github.io/codigosNT-bc/primevideo-bc/" class="app-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" alt="Logo de Netflix" class="app-icon-img" style="width: 15em; height: 7em;">
+                <div style="color: #185CDB;" class="app-title">Prime Video</div>
+            </a>
+            
+            <a href="https://multibc2025.github.io/codigosNT-bc/hbomax-bc/" class="app-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/81/HBO_Max_Logo_%28October_2019%29.svg" alt="Logo de Netflix" class="app-icon-img" style="width: 15em; height: 6em;">
+                <div style="color: #010166;" class="app-title">HBO MAX</div>
             </a>
             
         </div>
-    </div>
 
 
 
@@ -602,6 +676,54 @@
     <i class="fab fa-netflix"></i>
   </div>
  <!--/*--------- Animacion Iconos  --------- */-->
+ 
+ 
+  <!--/*--------- Boton Progreso  --------- */-->
+
+<!-- Botón flotante -->
+<button id="scrollTopBtn">
+  <div id="scrollProgress"></div>
+  <div class="arrow-wrapper">
+    <div class="arrow-up"></div>
+  </div>
+  </button>
+
+  <script>
+    const btn = document.getElementById("scrollTopBtn");
+    const progress = document.getElementById("scrollProgress");
+
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const percent = (scrollTop / scrollHeight) * 100;
+
+      btn.style.display = scrollTop > 100 ? "flex" : "none";
+      progress.style.setProperty('--scroll', `${percent}%`);
+    });
+
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+
+ <!--/*--------- Boton Progreso  --------- */-->
+ 
+ 
+ <!--/*--------- Main Footer Copyrigth  --------- */-->
+
+    <footer class="main-footer">
+    <p>
+      &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong>.  
+      Todos los derechos reservados.
+    </p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+     <!--/*--------- Main Footer Copyrigth  --------- */-->
  
 </body>
 </html>
