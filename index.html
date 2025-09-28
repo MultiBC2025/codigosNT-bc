@@ -237,124 +237,94 @@
 
 
        // Función para cargar los correos
-async function cargarCorreos(feedUrl) {
-    try {
-        const proxyUrl = 'https://api.allorigins.win/get?url=';
-        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
-        const data = await response.json();
-        const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
+    async function cargarCorreos(feedUrl) {
+        try {
+            const proxyUrl = 'https://api.allorigins.win/get?url=';
+            const response = await fetch(proxyUrl + encodeURIComponent(feedUrl));
+            const data = await response.json();
+            const rssData = new DOMParser().parseFromString(data.contents, 'application/xml');
 
-        const items = rssData.querySelectorAll('item');
-        let html = '';
+            const items = rssData.querySelectorAll('item');
+            let html = '';
 
-        items.forEach(item => {
-            const title = item.querySelector('title').textContent;
-            const link = item.querySelector('link').textContent;
-            const description = item.querySelector('description').textContent;
-            const date = item.querySelector('pubDate').textContent;
+            items.forEach(item => {
+                const title = item.querySelector('title').textContent;
+                const link = item.querySelector('link').textContent;
+                
+                // 1. Lógica para mostrar las primeras 5 líneas de la descripción
+                const fullDescription = item.querySelector('description').textContent;
+                const lines = fullDescription.split('\n');
+                const limitedDescription = lines.slice(0, 5).join('<br>');
 
-            // Fecha en GMT
+                // 2. Procesamiento y formateo de la fecha (GMT a hora de Colombia)
                 const dateGMT = item.querySelector('pubDate').textContent;
                 const fecha = new Date(dateGMT);
 
                 // ✅ Convertir a hora local Colombia (GMT-5, Hora de Bogotá)
-                const date = fecha.toLocaleString("es-CO", { 
+                // Se corrigió el error: se usa 'formattedDate' en lugar de 'date' para evitar conflictos.
+                const formattedDate = fecha.toLocaleString("es-CO", { 
                     timeZone: "America/Bogota",
                     dateStyle: "full",
                     timeStyle: "long"
                 });
 
-            html += `
-                <div class="correo-item" onclick="window.open('${link}', '_blank')">
-                    <strong>${title}</strong>
-                    <div class="fecha">${date}</div>
-                    <p>${description}</p>
-                </div>
-            `;
-        });
+                html += `<div class="correo-item" onclick="window.open('${link}', '_blank')">
+                        <strong>${title}</strong>
+                        <div class="fecha">${formattedDate}</div> 
+                        <p>${limitedDescription}</p> 
+                    </div>
+                `;
+            });
 
-        document.getElementById('rss-feed').innerHTML = html;
+            document.getElementById('rss-feed').innerHTML = html;
 
-    } catch (error) {
-        console.error('Error al cargar el feed RSS:', error);
-        document.getElementById('rss-feed').innerHTML = '<p style="color:red;">No se pudieron cargar los correos. Intenta más tarde.</p>';
-    }
-}
-
-// 🔍 Función para buscar el correo
-function buscarCorreo() {
-    const input = document.getElementById('searchInput').value.trim().toLowerCase();
-
-    // Normalizamos las claves de rssFeeds
-    const normalizadoFeeds = {};
-    for (let key in rssFeeds) {
-        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+        } catch (error) {
+            console.error('Error al cargar el feed RSS:', error);
+            document.getElementById('rss-feed').innerHTML = '<p style="color:red;">No se pudieron cargar los correos. Intenta más tarde.</p>';
+        }
     }
 
-    if (normalizadoFeeds[input]) {
-        cargarCorreos(normalizadoFeeds[input]);
-    } else {
-        document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
-    }
-}
+    function buscarCorreo() {
+        const input = document.getElementById('searchInput').value.trim().toLowerCase();
 
-function abrirExternamente() {
-    const input = document.getElementById('searchInput').value.trim().toLowerCase();
+        const normalizadoFeeds = {};
+        for (let key in rssFeeds) {
+            normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+        }
 
-    const normalizadoFeeds = {};
-    for (let key in rssFeeds) {
-        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
-    }
-
-    const feedUrl = normalizadoFeeds[input];
-
-    if (!feedUrl) {
-        document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
-        return;
+        if (normalizadoFeeds[input]) {
+            cargarCorreos(normalizadoFeeds[input]);
+        } else {
+            document.getElementById('rss-feed').innerHTML = "<p>No se encontraron correos para este correo electrónico. Intenta con un correo válido</p>";
+        }
     }
 
-    const confirmacion = confirm("Se abrirá en una nueva pestaña. Solo usar si el correo no llegó pasados los 10 minutos.");
-    if (confirmacion) {
-        window.open(feedUrl, '_blank');
-    }
-}
+    function abrirExternamente() {
+        const input = document.getElementById('searchInput').value.trim().toLowerCase();
 
-// ✅ Verificar si la tecla Enter fue presionada
-function checkEnter(event) {
-    if (event.key === 'Enter') {
-        buscarCorreo();
-    }
-}
+        const normalizadoFeeds = {};
+        for (let key in rssFeeds) {
+            normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+        }
 
-let intervaloBusqueda; // Variable global para guardar el intervalo
+        const feedUrl = normalizadoFeeds[input];
 
-function buscarCorreo() {
-    const input = document.getElementById('searchInput').value.trim().toLowerCase();
+        if (!feedUrl) {
+            document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
+            return;
+        }
 
-    const normalizadoFeeds = {};
-    for (let key in rssFeeds) {
-        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
+        const confirmacion = confirm("Se abrirá en una nueva pestaña. Solo usar si el correo no llegó pasados los 10 minutos.");
+        if (confirmacion) {
+            window.open(feedUrl, '_blank');
+        }
     }
 
-    const feedUrl = normalizadoFeeds[input];
-
-    if (!feedUrl) {
-        document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
-        return;
+    function checkEnter(event) {
+        if (event.key === 'Enter') {
+            buscarCorreo();
+        }
     }
-
-    // Llamada inicial
-    cargarCorreos(feedUrl);
-
-    // Limpiar intervalos anteriores si los hay
-    clearInterval(intervaloBusqueda);
-
-    // Ejecutar cada 300 ms
-    intervaloBusqueda = setInterval(() => {
-        cargarCorreos(feedUrl);
-    }, 300);
-}
-
 </script>
 
 </body>
