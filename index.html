@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correos Netflix - MultiBC</title
+    <title>Correos de Netflix - MultiBC</title>
     <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
     <style>
         /* General page styles */
@@ -159,57 +159,128 @@
 </head>
 <body>
 
+<a href="https://wa.me/573503938788?text=Hola,%20tengo%20un%20problema%20con%20mi%20correo.%20Agradecería%20su%20ayuda%20para%20solucionarlo.%20Gracias." 
+   class="whatsapp-button" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1024px-WhatsApp.svg.png" 
+         alt="WhatsApp" style="width: 50px; height: 50px;"/>
+</a>
+
+<header>
+    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" 
+         alt="Logo MultiBC">
+    Bandeja de Entrada de Correos de Netflix
+</header>
+
+<div class="main-container">
+
+    <!-- RSS Feed Section -->
+    <div class="search-container">
+        <h2>Busca tus correos de Netflix</h2>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix..." onkeyup="checkEnter(event)">
+            <button onclick="buscarCorreo()">Buscar Correos</button>
+            <button onclick="abrirExternamente()">Abrir Externamente</button>
+        </div>
+        <div id="rss-feed"></div>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="instructions">
+        <h3>Instrucciones</h3>
+        <p><strong>#1</strong> Ingresa la cuenta de Netflix en tu dispositivo y solicita el código desde la opción "Estoy de viaje" o "Actualizar hogar con Netflix".</p>
+        <p><strong>#2</strong> Digita el correo de tu cuenta Netflix en "Escribir Correo Aquí".</p>
+        <p><strong>#3</strong> Clic en el botón "Buscar" para obtener los correos correspondientes.</p>
+        <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
+
+        <h3>NOTA</h3>
+        <p><strong>#1</strong> Espera 2 o 8 minutos desde el envío del código y la consulta del correo.</p>
+        <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
+        <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
+
+        <h3 style="text-align: center; font-weight: bold; font-style: italic;">
+            ¿Quieres activar un servicio, como Netflix, Plex, Disney, IPTV?
+        </h3>
+        <button onclick="window.location.href='historial.html'" 
+                style="padding: 10px 15px; background-color: #FFA500; color: #000000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: block; margin: 0 auto;">
+            Haz clic aquí para abrir tutorial
+        </button>
+    </div>
+
+</div>
+
+<!--/*--------- Main Footer Copyrigth  --------- */-->
+<footer class="main-footer">
+    <p>
+      &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong>.  
+      Todos los derechos reservados.
+    </p>
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+<!--/*--------- Main Footer Copyrigth  --------- */-->
+
+<script>
+    // Configura los feeds RSS
+    const rssFeeds = {
+        "multinetflix01net+eo3jl01@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.eo3jl01&h=e69dea5c02e64164b291048657070769",
+        "multinetflix01net+ae8jm02@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.ae8jm02&h=83bbc2029bdb49bfbfbc52590f48c24b",
+        "multinetflix02net+ae3pt04@gmail.com": "https://yopmail.com/rss?login=multinetflix02net.ae3pt04&h=8ded6f0531774df583391f39f5ed8ca7",
+        "multinetflix04net+bz7lm05@gmail.com": "https://yopmail.com/rss?login=multinetflix04net.bz7lm05&h=fa8ddc6725a545baa0089d47c04e172f",
+        "multinetflix03net+uv5kc07@gmail.com": "https://yopmail.com/rss?login=multinetflix03net.uv5kc07&h=dd98ebee01194a8ea00d6715e5585d04",
+        "multinetflix05net+xk9jd03@gmail.com": "https://yopmail.com/rss?login=multinetflix05net.xk9jd03&h=ba42c687c2af46939dade4e515a13e94",
+        "multinetflix07net+md6yt08@gmail.com": "https://yopmail.com/rss?login=multinetflix07net.md6yt08&h=c0d14cd6ee5d46308f50cc0c9978874d"
+    };
+
+    <body>
+
 <a href="https://wa.me/573503938788?text=Hola,%20tengo%20un%20problema%20con%20mi%20correo.%20Agradecería%20su%20ayuda%20para%20solucionarlo.%20Gracias." class="whatsapp-button" target="_blank">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1024px-WhatsApp.svg.png" alt="WhatsApp" style="width: 50px; height: 50px;"/>
 </a>
 
-    <header>
-        <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="Logo MultiBC">
-        Bandeja de Entrada de Correos de Netflix
-    </header>
+<header>
+    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" alt="Logo MultiBC">
+    Bandeja de Entrada de Correos de Netflix
+</header>
 
-    <div class="main-container">
+<div class="main-container">
 
-        <!-- RSS Feed Section -->
+    <!-- RSS Feed Section -->
+    <div class="search-container">
+        <h2>Busca tus correos de Netflix</h2>
         <div class="search-container">
-            <h2>Busca tus correos de Netflix</h2>
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix..." onkeyup="checkEnter(event)">
-                <button onclick="buscarCorreo()">Buscar Correos</button>
-                <button onclick="abrirExternamente()">Abrir Externamente</button>
-            </div>
-            <div id="rss-feed"></div>
+            <input type="text" id="searchInput" placeholder="Escribe tu correo de Netflix..." onkeyup="checkEnter(event)">
+            <button onclick="buscarCorreo()">Buscar Correos</button>
+            <button onclick="abrirExternamente()">Abrir Externamente</button>
         </div>
-
-        <!-- Instructions Section -->
-        <div class="instructions">
-            <h3>Instrucciones</h3>
-            <p><strong>#1</strong> Ingresa la cuenta de Netflix en tu dispositivo y solicita el código desde la opción "Estoy de viaje" o "Actualizar hogar con Netflix".</p>
-            <p><strong>#2</strong> Digita el correo de tu cuenta Netflix en "Escribir Correo Aquí".</p>
-            <p><strong>#3</strong> Clic en el botón "Buscar" para obtener los correos correspondientes.</p>
-            <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
-
-            <h3>NOTA</h3>
-            <p><strong>#1</strong> Espera 2 o 8 minutos desde el envío del código y la consulta del correo.</p>
-            <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
-            <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
-
-            <h3 style="text-align: center; font-weight: bold; font-style: italic;">
-  ¿Quieres activar un servicio, como Netflix, Plex, Disney, IPTV?
-</h3>
-<button onclick="window.location.href='historial.html'" 
-        style="padding: 10px 15px; background-color: #FFA500; color: #000000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: block; margin: 0 auto;">
-  Haz clic aquí para abrir tutorial
-</button>
-        </div>
-
+        <div id="rss-feed"></div>
     </div>
 
+    <!-- Instructions Section -->
+    <div class="instructions">
+        <h3>Instrucciones</h3>
+        <p><strong>#1</strong> Ingresa la cuenta de Netflix en tu dispositivo y solicita el código desde la opción "Estoy de viaje" o "Actualizar hogar con Netflix".</p>
+        <p><strong>#2</strong> Digita el correo de tu cuenta Netflix en "Escribir Correo Aquí".</p>
+        <p><strong>#3</strong> Clic en el botón "Buscar" para obtener los correos correspondientes.</p>
+        <p><strong>#4</strong> Abre el correo correspondiente (Fíjate que coincida la fecha y hora del envío de tu código).</p>
+
+        <h3>NOTA</h3>
+        <p><strong>#1</strong> Espera 2 o 8 minutos desde el envío del código y la consulta del correo.</p>
+        <p><strong>#2</strong> Si no llega el correo con tu código, puedes enviar el código más de 1 vez debido a que Netflix a veces no envía el código.</p>
+        <p><strong>#3</strong> El uso indebido de la página o cuenta puede llevar a la cancelación total de la misma.</p>
+
+        <h3 style="text-align: center; font-weight: bold; font-style: italic;">
+            ¿Quieres activar un servicio, como Netflix, Plex, Disney, IPTV?
+        </h3>
+        <button onclick="window.location.href='historial.html'" 
+                style="padding: 10px 15px; background-color: #FFA500; color: #000000; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: block; margin: 0 auto;">
+            Haz clic aquí para abrir tutorial
+        </button>
     </div>
+</div>
 
-    <!--/*--------- Main Footer Copyrigth  --------- */-->
-
-    <footer class="main-footer">
+<footer class="main-footer">
     <p>
       &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong>.  
       Todos los derechos reservados.
@@ -220,11 +291,8 @@
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
-     <!--/*--------- Main Footer Copyrigth  --------- */-->
-
-    <script>
-        // Configura los feeds RSS
-        const rssFeeds = {
+<script>
+const rssFeeds = {
     "multinetflix01net+eo3jl01@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.eo3jl01&h=e69dea5c02e64164b291048657070769",
     "multinetflix01net+ae8jm02@gmail.com": "https://yopmail.com/rss?login=multinetflix01net.ae8jm02&h=83bbc2029bdb49bfbfbc52590f48c24b",
     "multinetflix02net+ae3pt04@gmail.com": "https://yopmail.com/rss?login=multinetflix02net.ae3pt04&h=8ded6f0531774df583391f39f5ed8ca7",
@@ -234,9 +302,7 @@
     "multinetflix07net+md6yt08@gmail.com": "https://yopmail.com/rss?login=multinetflix07net.md6yt08&h=c0d14cd6ee5d46308f50cc0c9978874d"
 };
 
-
-
-       // Función para cargar los correos
+// Función para cargar los correos
 async function cargarCorreos(feedUrl) {
     try {
         const proxyUrl = 'https://api.allorigins.win/get?url=';
@@ -251,20 +317,25 @@ async function cargarCorreos(feedUrl) {
             const title = item.querySelector('title').textContent;
             const link = item.querySelector('link').textContent;
             const description = item.querySelector('description').textContent;
-            const date = item.querySelector('pubDate').textContent;
+            const contenido = email.body.split("\n").slice(0, 3).join("<br>");
+
+            // Fecha en GMT
+            const dateGMT = item.querySelector('pubDate').textContent;
+            const fecha = new Date(dateGMT);
 
             // ✅ Convertir a hora local Bogotá (GMT-5)
             const date = fecha.toLocaleString("es-CO", { 
-            timeZone: "America/Bogota",
-            dateStyle: "full",   // 🔥 ahora formato largo
-            timeStyle: "long"    // 🔥 hora larga
-        });
+    timeZone: "America/Bogota",
+    dateStyle: "full",   // 🔥 ahora formato largo
+    timeStyle: "long"    // 🔥 hora larga
+});
 
             html += `
                 <div class="correo-item" onclick="window.open('${link}', '_blank')">
                     <strong>${title}</strong>
                     <div class="fecha">${date}</div>
-                    <p>${description}</p>
+                    <strong>${description.split('\n').slice(0,3).join('<br>')}</strong> <!-- Esta línea la cambié -->
+
                 </div>
             `;
         });
@@ -277,11 +348,9 @@ async function cargarCorreos(feedUrl) {
     }
 }
 
-// 🔍 Función para buscar el correo
 function buscarCorreo() {
     const input = document.getElementById('searchInput').value.trim().toLowerCase();
 
-    // Normalizamos las claves de rssFeeds
     const normalizadoFeeds = {};
     for (let key in rssFeeds) {
         normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
@@ -315,43 +384,19 @@ function abrirExternamente() {
     }
 }
 
-// ✅ Verificar si la tecla Enter fue presionada
 function checkEnter(event) {
     if (event.key === 'Enter') {
         buscarCorreo();
     }
 }
-
-let intervaloBusqueda; // Variable global para guardar el intervalo
-
-function buscarCorreo() {
-    const input = document.getElementById('searchInput').value.trim().toLowerCase();
-
-    const normalizadoFeeds = {};
-    for (let key in rssFeeds) {
-        normalizadoFeeds[key.trim().toLowerCase()] = rssFeeds[key];
-    }
-
-    const feedUrl = normalizadoFeeds[input];
-
-    if (!feedUrl) {
-        document.getElementById('rss-feed').innerHTML = '<p>No se encontró un feed para ese correo.</p>';
-        return;
-    }
-
-    // Llamada inicial
-    cargarCorreos(feedUrl);
-
-    // Limpiar intervalos anteriores si los hay
-    clearInterval(intervaloBusqueda);
-
-    // Ejecutar cada 300 ms
-    intervaloBusqueda = setInterval(() => {
-        cargarCorreos(feedUrl);
-    }, 300);
-}
-
 </script>
 
 </body>
+
+
+
+
+</body>
+
+
 </html>
