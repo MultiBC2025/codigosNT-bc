@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correos Netflix - MultiBC</title>
+    title>Correos de Netflix - MultiBC</title>
+    <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
     <style>
         /* General page styles */
         body {
@@ -251,7 +252,17 @@ async function cargarCorreos(feedUrl) {
             const link = item.querySelector('link').textContent;
             const description = item.querySelector('description').textContent;
             const date = item.querySelector('pubDate').textContent;
-            
+
+            // Fecha en GMT
+                const dateGMT = item.querySelector('pubDate').textContent;
+                const fecha = new Date(dateGMT);
+
+                // ✅ Convertir a hora local Colombia (GMT-5, Hora de Bogotá)
+                const date = fecha.toLocaleString("es-CO", { 
+                    timeZone: "America/Bogota",
+                    dateStyle: "full",
+                    timeStyle: "long"
+                });
 
             html += `
                 <div class="correo-item" onclick="window.open('${link}', '_blank')">
