@@ -19,9 +19,9 @@
   <hr>
 
 <h3>Crear Cliente</h3>
-<input id="c_nombre" placeholder="Nombre">
-<input id="c_telefono" placeholder="Teléfono WhatsApp">
-<button onclick="crearCliente()">Guardar Cliente</button>
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="text" id="telefono" placeholder="Teléfono WhatsApp">
+<button id="guardarCliente">Guardar Cliente</button>
 
 <hr>
 
@@ -44,10 +44,11 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc
+  import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    serverTimestamp 
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -62,6 +63,33 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+
+
+  document.getElementById("guardarCliente").addEventListener("click", async () => {
+  const nombre = document.getElementById("nombre").value.trim();
+  const telefono = document.getElementById("telefono").value.trim();
+
+  if (!nombre || !telefono) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "clientes"), {
+      nombre: nombre,
+      telefono: telefono,
+      creado: serverTimestamp()
+    });
+
+    alert("Cliente guardado correctamente ✅");
+    document.getElementById("nombre").value = "";
+    document.getElementById("telefono").value = "";
+
+  } catch (error) {
+    console.error("Error al guardar:", error);
+    alert("Error al guardar cliente ❌");
+  }
+});
 
   window.login = function () {
     const email = document.getElementById("email").value;
