@@ -16,6 +16,27 @@
 
 <div id="panel" style="display:none;">
   <h3>Bienvenido Admin</h3>
+  <hr>
+
+<h3>Crear Cliente</h3>
+<input id="c_nombre" placeholder="Nombre">
+<input id="c_telefono" placeholder="Teléfono WhatsApp">
+<button onclick="crearCliente()">Guardar Cliente</button>
+
+<hr>
+
+<h3>Crear Cuenta</h3>
+<input id="cu_telefono" placeholder="Teléfono cliente">
+<select id="cu_servicio">
+  <option>Netflix</option>
+  <option>Disney</option>
+</select>
+<input id="cu_usuario" placeholder="Usuario">
+<input id="cu_password" placeholder="Contraseña">
+<input type="date" id="cu_compra">
+<input type="date" id="cu_vencimiento">
+<button onclick="crearCuenta()">Guardar Cuenta</button>
+
   <button onclick="logout()">Cerrar sesión</button>
 </div>
 
@@ -23,8 +44,11 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8",
