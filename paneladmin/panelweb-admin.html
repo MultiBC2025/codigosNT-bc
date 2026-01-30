@@ -8,110 +8,228 @@
 
 <h2>Panel Administrador</h2>
 
+<!-- LOGIN -->
 <div id="login">
   <input type="email" id="email" placeholder="Correo admin">
   <input type="password" id="password" placeholder="Contraseña">
   <button onclick="login()">Entrar</button>
 </div>
 
+<!-- PANEL -->
 <div id="panel" style="display:none;">
   <h3>Bienvenido Admin</h3>
   <hr>
 
-<h3>Crear Cliente</h3>
-<input type="text" id="nombre" placeholder="Nombre">
-<input type="text" id="telefono" placeholder="Teléfono WhatsApp">
-<button id="guardarCliente">Guardar Cliente</button>
+  <!-- CREAR CLIENTE -->
+  <h3>Crear Cliente</h3>
+  <input type="text" id="nombre" placeholder="Nombre">
+  <input type="text" id="telefono" placeholder="Teléfono WhatsApp">
+  <button id="guardarCliente">Guardar Cliente</button>
 
-<hr>
+  <hr>
 
-<h3>Crear Cuenta</h3>
-<input id="cu_telefono" placeholder="Teléfono cliente">
-<select id="cu_servicio">
-  <option>Netflix</option>
-  <option>Disney</option>
-</select>
-<input id="cu_usuario" placeholder="Usuario">
-<input id="cu_password" placeholder="Contraseña">
-<input type="date" id="cu_compra">
-<input type="date" id="cu_vencimiento">
-<button onclick="crearCuenta()">Guardar Cuenta</button>
+  <!-- CREAR CUENTA -->
+  <h2>CREAR CUENTA</h2>
 
+  <label>Buscar cliente</label>
+  <input type="text" id="buscarCliente" placeholder="Nombre del cliente">
+  <select id="clienteSelect">
+    <option value="">Selecciona un cliente</option>
+  </select>
+
+  <hr>
+
+  <label>Tipo de cuenta</label>
+  <select id="tipoCuenta">
+    <option value="individual">Individual</option>
+    <option value="combo">Combo</option>
+  </select>
+
+  <hr>
+
+  <label>Fecha inicio</label>
+  <input type="date" id="fechaInicio">
+
+  <label>Duración (días)</label>
+  <input type="number" id="duracion" value="30">
+
+  <label>Fecha fin</label>
+  <input type="date" id="fechaFin" disabled>
+
+  <hr>
+
+  <div id="cuentasContainer"></div>
+  <button type="button" id="btnAgregar">➕ Agregar cuenta</button>
+
+  <hr>
+
+  <button onclick="guardarCuenta()">GUARDAR</button>
+  <br><br>
   <button onclick="logout()">Cerrar sesión</button>
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    serverTimestamp 
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs,
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8",
-    authDomain: "panel-cuentas-clientes.firebaseapp.com",
-    projectId: "panel-cuentas-clientes",
-    storageBucket: "panel-cuentas-clientes.firebasestorage.app",
-    messagingSenderId: "22549253490",
-    appId: "1:22549253490:web:91d6f072d759e17936e1eb"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8",
+  authDomain: "panel-cuentas-clientes.firebaseapp.com",
+  projectId: "panel-cuentas-clientes",
+  storageBucket: "panel-cuentas-clientes.firebasestorage.app",
+  messagingSenderId: "22549253490",
+  appId: "1:22549253490:web:91d6f072d759e17936e1eb"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
+/* ================= LOGIN ================= */
+window.login = function () {
+  signInWithEmailAndPassword(
+    auth,
+    email.value,
+    password.value
+  ).catch(err => alert(err.message));
+};
 
-  document.getElementById("guardarCliente").addEventListener("click", async () => {
-  const nombre = document.getElementById("nombre").value.trim();
-  const telefono = document.getElementById("telefono").value.trim();
+window.logout = function () {
+  signOut(auth);
+};
 
-  if (!nombre || !telefono) {
+onAuthStateChanged(auth, user => {
+  login.style.display = user ? "none" : "block";
+  panel.style.display = user ? "block" : "none";
+});
+
+/* ================= CLIENTES ================= */
+guardarCliente.addEventListener("click", async () => {
+  if (!nombre.value || !telefono.value) {
     alert("Completa todos los campos");
     return;
   }
 
-  try {
-    await addDoc(collection(db, "clientes"), {
-      nombre: nombre,
-      telefono: telefono,
-      creado: serverTimestamp()
-    });
+  await addDoc(collection(db, "clientes"), {
+    nombre: nombre.value,
+    telefono: telefono.value,
+    creado: serverTimestamp()
+  });
 
-    alert("Cliente guardado correctamente ✅");
-    document.getElementById("nombre").value = "";
-    document.getElementById("telefono").value = "";
-
-  } catch (error) {
-    console.error("Error al guardar:", error);
-    alert("Error al guardar cliente ❌");
-  }
+  nombre.value = "";
+  telefono.value = "";
+  alert("Cliente guardado ✅");
+  cargarClientes();
 });
 
-  window.login = function () {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+/* ================= BUSCAR CLIENTES ================= */
+let clientesCache = [];
 
-    signInWithEmailAndPassword(auth, email, password)
-      .catch(err => alert("Error: " + err.message));
+async function cargarClientes() {
+  clienteSelect.innerHTML = '<option value="">Selecciona un cliente</option>';
+  const snap = await getDocs(collection(db, "clientes"));
+  clientesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+cargarClientes();
+
+buscarCliente.addEventListener("input", () => {
+  const texto = buscarCliente.value.toLowerCase();
+  clienteSelect.innerHTML = '<option value="">Selecciona un cliente</option>';
+
+  clientesCache
+    .filter(c => c.nombre.toLowerCase().includes(texto))
+    .forEach(c => {
+      const o = document.createElement("option");
+      o.value = c.id;
+      o.textContent = `${c.nombre} – ${c.telefono}`;
+      clienteSelect.appendChild(o);
+    });
+});
+
+/* ================= CUENTAS ================= */
+const hoy = new Date().toISOString().split("T")[0];
+fechaInicio.value = hoy;
+
+function calcularFechaFin() {
+  const f = new Date(fechaInicio.value);
+  f.setDate(f.getDate() + Number(duracion.value));
+  fechaFin.value = f.toISOString().split("T")[0];
+}
+fechaInicio.onchange = calcularFechaFin;
+duracion.onchange = calcularFechaFin;
+calcularFechaFin();
+
+tipoCuenta.onchange = resetCuentas;
+btnAgregar.onclick = agregarCuenta;
+
+function resetCuentas() {
+  cuentasContainer.innerHTML = "";
+  agregarCuenta();
+}
+
+function agregarCuenta() {
+  const div = document.createElement("div");
+  div.className = "cuenta";
+  div.innerHTML = `
+    <hr>
+    <select class="plataforma">
+      <option>Netflix</option>
+      <option>Disney Plus</option>
+      <option>Prime Video</option>
+      <option>HBO Max</option>
+    </select>
+    <input class="usuario" placeholder="Correo / Usuario">
+    <input class="password" placeholder="Contraseña">
+    <input class="perfil" placeholder="Perfil">
+    <input class="pin" placeholder="PIN">
+  `;
+  cuentasContainer.appendChild(div);
+  btnAgregar.style.display = tipoCuenta.value === "individual" ? "none" : "block";
+}
+resetCuentas();
+
+/* ================= GUARDAR CUENTA ================= */
+window.guardarCuenta = async function () {
+  if (!clienteSelect.value) {
+    alert("Selecciona un cliente");
+    return;
   }
 
-  window.logout = function () {
-    signOut(auth);
-  }
-
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      document.getElementById("login").style.display = "none";
-      document.getElementById("panel").style.display = "block";
-    } else {
-      document.getElementById("login").style.display = "block";
-      document.getElementById("panel").style.display = "none";
-    }
+  const cuentas = [];
+  document.querySelectorAll(".cuenta").forEach(c => {
+    cuentas.push({
+      plataforma: c.querySelector(".plataforma").value,
+      usuario: c.querySelector(".usuario").value,
+      password: c.querySelector(".password").value,
+      perfil: c.querySelector(".perfil").value,
+      pin: c.querySelector(".pin").value
+    });
   });
+
+  await addDoc(collection(db, "cuentas"), {
+    clienteId: clienteSelect.value,
+    tipo: tipoCuenta.value,
+    fechaInicio: fechaInicio.value,
+    fechaFin: fechaFin.value,
+    cuentas,
+    creado: serverTimestamp()
+  });
+
+  alert("Cuenta guardada ✅");
+};
 </script>
 
 </body>
