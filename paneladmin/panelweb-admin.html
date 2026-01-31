@@ -1,236 +1,516 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Panel Admin</title>
+<meta charset="UTF-8">
+<title>Panel Administrativo - Premium</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<style>
+    body{margin:0;font-family:'Segoe UI', sans-serif;background:#f4f6f8}
+    #login,#panel{display:none}
+    .sidebar{width:230px;background:#1e1e2f;height:100vh;position:fixed;color:#fff;z-index: 1000;}
+    .sidebar h2{text-align:center;padding:15px; border-bottom: 1px solid #333; font-size: 1.1em;}
+    .sidebar button{width:100%;padding:14px;border:none;background:none;color:#fff;cursor:pointer;text-align:left;padding-left:20px;transition: 0.3s;}
+    .sidebar button:hover{background:#3d3d5c}
+    .content{margin-left:230px;padding:20px}
+    input,select{padding:10px; margin: 4px; border: 1px solid #ccc; border-radius: 6px;}
+    .section{background:#fff;padding:20px;margin-bottom:25px;border:1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+    table{width:100%; border-collapse:collapse; font-size:13px; background: #fff; margin-bottom: 20px;}
+    th,td{border:1px solid #ddd; padding:12px; text-align:center; position: relative;}
+    th.sortable { cursor: pointer; background: #ececf6; transition: 0.2s; user-select: none; }
+    th.sortable:hover { background: #dcdce9; color: #007bff; }
+    
+    .service-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #000;
+        color: #fff;
+        font-weight: bold;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        margin-right: 10px;
+        font-size: 11px;
+    }
+
+    .row-finalizada-color { background-color: #e8daff !important; color: #512da8 !important; border-left: 5px solid #673ab7; }
+    .row-selected-renew { background-color: #cfe2ff !important; border: 2px solid #0d6efd !important; }
+    .row-vencido { background-color: #ffdce0 !important; color: #af0808; }
+    .row-proximo { background-color: #fff3cd !important; color: #856404; }
+    .row-activo { background-color: #d4edda !important; color: #155724; }
+    
+    .status-vencido { font-weight: bold; color: #dc3545; }
+    .status-proximo { font-weight: bold; color: #856404; }
+    .status-activo { font-weight: bold; color: #28a745; }
+
+    .badge-service { display: inline-block; padding: 8px 14px; border-radius: 6px; font-size: 14px; margin: 5px; font-weight: bold; color: #fff; cursor: help; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .bg-vencido { background: #dc3545; }
+    .bg-proximo { background: #ffc107; color: #000; }
+    .bg-activo { background: #28a745; }
+    
+    .save-btn{background:#007bff;color:#fff;border:none;padding:10px 20px;cursor:pointer; border-radius: 4px; font-weight:bold;}
+    .edit-btn { background:#ffc107; color:#000; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; margin-right: 8px; width: 40px; height: 38px; }
+    .delete-btn { background:#dc3545; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; width: 40px; height: 38px; }
+    .renew-btn { background:#28a745; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; width: 40px; height: 38px; margin-left: 5px; }
+    
+    .reset-btn{background:#6c757d; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:10px;}
+    .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #007bff; border-radius: 8px; box-sizing: border-box;}
+
+    /* Admin Perfiles Estilos Actualizados */
+    .input-locked { border: none; background: transparent; text-align: center; width: 100%; cursor: default; pointer-events: none; font-weight: bold; }
+    .input-editable { border: 1px solid #007bff !important; background: #fff !important; cursor: text !important; pointer-events: auto !important; }
+    
+    /* Colores Celdas Perfiles */
+    .celda-perfil { position: relative; transition: 0.3s; color: #fff; font-weight: bold; min-width: 85px; height: 50px; cursor: crosshair; }
+    .p-verde { background-color: #28a745 !important; }
+    .p-amarillo { background-color: #ffc107 !important; color: #000 !important; }
+    .p-rojo { background-color: #dc3545 !important; }
+    .p-libre { background-color: #f8f9fa !important; color: #ccc !important; font-weight: normal; }
+
+    /* Nuevo Tooltip Flotante Global */
+    #tooltip-flotante {
+        position: fixed;
+        display: none;
+        background: #1e1e2f;
+        color: #fff;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        z-index: 9999;
+        pointer-events: none;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        border: 1px solid #3d3d5c;
+        line-height: 1.5;
+    }
+    
+    
+</style>
 </head>
 <body>
 
-<h2>Panel Administrador</h2>
+<div id="tooltip-flotante"></div>
 
-<!-- LOGIN -->
 <div id="login">
-  <input type="email" id="email" placeholder="Correo admin">
-  <input type="password" id="password" placeholder="Contraseña">
-  <button onclick="login()">Entrar</button>
+    <div style="padding:100px; text-align:center;">
+        <h2>🔐 Acceso al Sistema</h2>
+        <input id="email" type="email" placeholder="Correo"><br>
+        <input id="password" type="password" placeholder="Contraseña"><br>
+        <button class="save-btn" onclick="loginUser()">Entrar al Panel</button>
+    </div>
 </div>
 
-<!-- PANEL -->
-<div id="panel" style="display:none;">
-  <h3>Bienvenido Admin</h3>
-  <hr>
+<div id="panel">
+    <div class="sidebar">
+        <h2>🚀 Mi Panel</h2>
+        <button onclick="mostrar('clientes')">👤 Gestión Clientes</button>
+        <button onclick="mostrar('cuentas')">🔑 Asignar Cuentas</button>
+        <button onclick="mostrar('seccionVentas')">💰 Ventas (Historial)</button>
+        <button onclick="mostrar('seccionVencimientos')">📅 Vencimientos</button>
+        <button onclick="mostrar('adminCuentas')">⚙️ Admin. Perfiles</button>
+        <button onclick="logout()">🚪 Cerrar sesión</button>
+    </div>
 
-  <!-- CREAR CLIENTE -->
-  <h3>Crear Cliente</h3>
-  <input type="text" id="nombre" placeholder="Nombre">
-  <input type="text" id="telefono" placeholder="Teléfono WhatsApp">
-  <button id="guardarCliente">Guardar Cliente</button>
+    <div class="content">
 
-  <hr>
-
-  <!-- CREAR CUENTA -->
-  <h2>CREAR CUENTA</h2>
-
-  <label>Buscar cliente</label>
-  <input type="text" id="buscarCliente" placeholder="Nombre del cliente">
-  <select id="clienteSelect">
-    <option value="">Selecciona un cliente</option>
-  </select>
-
-  <hr>
-
-  <label>Tipo de cuenta</label>
-  <select id="tipoCuenta">
-    <option value="individual">Individual</option>
-    <option value="combo">Combo</option>
-  </select>
-
-  <hr>
-
-  <label>Fecha inicio</label>
-  <input type="date" id="fechaInicio">
-
-  <label>Duración (días)</label>
-  <input type="number" id="duracion" value="30">
-
-  <label>Fecha fin</label>
-  <input type="date" id="fechaFin" disabled>
-
-  <hr>
-
-  <div id="cuentasContainer"></div>
-  <button type="button" id="btnAgregar">➕ Agregar cuenta</button>
-
-  <hr>
-
-  <button onclick="guardarCuenta()">GUARDAR</button>
-  <br><br>
-  <button onclick="logout()">Cerrar sesión</button>
+<div id="clientes">
+    <h3>👤 Gestión de Clientes</h3>
+    <div class="section">
+        <h4 id="formTitle">✨ Registrar Nuevo Cliente</h4>
+        <input id="c_id_hidden" type="hidden">
+        <input id="c_nombre" placeholder="Nombre Completo" style="width: 250px;">
+        <select id="c_codigo">
+            <option value="+57">+57</option><option value="+58">+58</option><option value="+52">+52</option><option value="+1">+1</option><option value="+34">+34</option>
+        </select>
+        <input id="c_whatsapp" placeholder="WhatsApp">
+        <button class="save-btn" id="btnGuardar" onclick="guardarCliente()">Guardar Cliente</button>
+        <button class="save-btn" id="btnCancel" style="display:none; background:#6c757d;" onclick="cancelarEdicion()">Cancelar</button>
+    </div>
+    <div class="section">
+        <input type="text" id="filtroCliente" class="search-input" placeholder="🔍 Filtrar por nombre o servicio..." onkeyup="filtrarTablaClientes()">
+        <table id="tablaMaestraClientes">
+            <thead>
+                <tr>
+                    <th class="sortable" onclick="ordenarTabla('nombre')">Nombre Cliente ↑↓</th>
+                    <th>WhatsApp</th>
+                    <th class="sortable" onclick="ordenarTabla('servicios')">Servicios ↑↓</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="bodyClientes"></tbody>
+        </table>
+    </div>
 </div>
 
-<script type="module">
-/* ================= FIREBASE ================= */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  onAuthStateChanged, 
-  signOut 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  getDocs,
-  serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<div id="cuentas" style="display:none">
+    <h3>🔑 Asignar Nueva Suscripción</h3>
+    <div class="section">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="position: relative; width: 100%;">
+                <label><b>1. Buscar Cliente (Nombre o Teléfono):</b></label><br>
+                <input type="text" id="inputBuscarCliente" autocomplete="off" style="width:100%" placeholder="Escribe nombre o número..." onclick="buscarClienteHibrido()" onkeyup="buscarClienteHibrido()">
+                <div id="listaSugerencias" style="position: absolute; background: white; border: 1px solid #ccc; width: 100%; z-index: 2000; max-height: 250px; overflow-y: auto; display: none;"></div>
+                <input type="hidden" id="clienteIdSeleccionado">
+                <p id="txtElegido" style="font-size:12px; color:green; font-weight:bold;"></p>
+            </div>
+            <div>
+                <label><b>2. Tipo de Compra:</b></label><br>
+                <select id="tipoCompra" style="width:100%" onchange="cambiarModoCompra()">
+                    <option value="individual">Individual</option>
+                    <option value="combo">Combo / Lote Multiperfil</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px;">
+            <div><label>Fecha Inicio:</label><input type="date" id="fechaInicio" style="width:90%" onchange="calcularFechaFin()"></div>
+            <div><label>Días:</label><select id="dias" style="width:90%" onchange="calcularFechaFin()"><option value="30">30 Días</option><option value="60">60 Días</option><option value="90">90 Días</option></select></div>
+            <div><label>Vence:</label><input type="date" id="fechaFin" style="width:90%" readonly></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+            <div><label>Método de Pago:</label><select id="metodoPago" style="width:100%"><option value="Transferencia">Transferencia</option><option value="Efectivo">Efectivo</option><option value="Pago Móvil">Pago Móvil</option></select></div>
+            <div><label>Valor Total:</label><input type="number" id="valorPago" style="width:90%" placeholder="$ 0.00"></div>
+        </div>
+        <hr>
+        <div id="plataformas"></div>
+        <button id="btnMasPlat" class="save-btn" style="background:#28a745; display:none;" onclick="agregarPlataforma()">➕ Otra Plataforma/Perfil</button><br><br>
+        <button class="save-btn" style="width:100%; padding:15px;" onclick="guardarCuentas()">Finalizar y Guardar Venta</button>
+        <button class="reset-btn" style="width:100%;" onclick="confirmarReinicioForm()">🧹 Reiniciar Formulario</button>
+    </div>
+</div>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8",
-  authDomain: "panel-cuentas-clientes.firebaseapp.com",
-  projectId: "panel-cuentas-clientes",
-  storageBucket: "panel-cuentas-clientes.firebasestorage.app",
-  messagingSenderId: "22549253490",
-  appId: "1:22549253490:web:91d6f072d759e17936e1eb"
-};
+<div id="seccionVentas" style="display:none">
+    <h3>💰 Historial Global de Ventas</h3>
+    <div class="section">
+        <input type="text" id="busquedaHistorial" class="search-input" placeholder="🔍 Buscar por nombre..." onkeyup="filtrarHistorialVentas()">
+        <table id="tablaVentasGlobal">
+            <thead style="background: #1e1e2f; color: white;">
+                <tr>
+                    <th style="min-width: 120px;">Registro (Fecha/Hora)</th>
+                    <th>Cliente</th>
+                    <th>Producto</th>
+                    <th>Pago</th>
+                    <th>Acceso Detallado</th>
+                    <th>Vence</th>
+                    <th>Días</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="bodyVentasHistorial"></tbody>
+        </table>
+    </div>
+</div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+<div id="seccionVencimientos" style="display:none">
+    <h3>📅 Control de Vencimientos</h3>
+    <div class="section" style="border-left:8px solid #ffc107">
+        <h4>⚠️ Próximas (0-5 días)</h4>
+        <table id="tablaProximas"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="bodyProximas"></tbody></table>
+    </div>
+    <div class="section" style="border-left:8px solid #dc3545">
+        <h4>❌ Vencidas</h4>
+        <table id="tablaVencidas"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="bodyVencidas"></tbody></table>
+    </div>
+    <div class="section" style="border-left:8px solid #28a745">
+        <h4>✅ Vigentes</h4>
+        <table id="tablaVigentes"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="bodyVigentes"></tbody></table>
+    </div>
+</div>
 
-/* ================= LOGIN ================= */
-window.login = function () {
-  signInWithEmailAndPassword(
-    auth,
-    email.value,
-    password.value
-  ).catch(err => alert(err.message));
-};
+<div id="adminCuentas" style="display:none">
+    <h3>⚙️ Administrador de Perfiles Base</h3>
+    
+    <div class="section" style="border-top: 5px solid #e50914;">
+        <h4>📺 Netflix (5 Perfiles)</h4>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Correo</th><th>Contraseña</th>
+                        <th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th>
+                        <th style="width: 130px;">Modificado</th><th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaNetflixBody"></tbody>
+            </table>
+        </div>
+        <button class="save-btn" style="background:#e50914;" onclick="abrirModalNuevaCuenta('Netflix')">➕ Añadir Cuenta Netflix</button>
+    </div>
 
-window.logout = function () {
-  signOut(auth);
-};
+    <div class="section" style="border-top: 5px solid #006e99;">
+        <h4>🎬 Disney (7 Perfiles)</h4>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Correo</th><th>Contraseña</th>
+                        <th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th><th>P6</th><th>P7</th>
+                        <th style="width: 130px;">Modificado</th><th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaDisneyBody"></tbody>
+            </table>
+        </div>
+        <button class="save-btn" style="background:#006e99;" onclick="abrirModalNuevaCuenta('Disney')">➕ Añadir Disney</button>
+    </div>
 
-onAuthStateChanged(auth, user => {
-  login.style.display = user ? "none" : "block";
-  panel.style.display = user ? "block" : "none";
+    <div class="section" style="border-top: 5px solid #5822b4;">
+        <h4>💜 HBO Max (5 Perfiles)</h4>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Correo</th><th>Contraseña</th>
+                        <th>P1</th><th>P2</th><th>P3</th><th>P4</th><th>P5</th>
+                        <th style="width: 130px;">Modificado</th><th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHBOBody"></tbody>
+            </table>
+        </div>
+        <button class="save-btn" style="background:#5822b4;" onclick="abrirModalNuevaCuenta('HBO Max')">➕ Añadir HBO</button>
+    </div>
+</div>
+
+    </div>
+</div>
+
+<script>
+const firebaseConfig={ apiKey:"AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8", authDomain:"panel-cuentas-clientes.firebaseapp.com", projectId:"panel-cuentas-clientes" };
+firebase.initializeApp(firebaseConfig);
+const db=firebase.firestore(); const auth=firebase.auth();
+
+let listaSuscripcionesGlobal = [];
+let listaClientesLocal = [];
+let idFilaSeleccionadaAzul = null; 
+const hoy = new Date(); hoy.setHours(0,0,0,0);
+const tooltip = document.getElementById('tooltip-flotante');
+
+auth.onAuthStateChanged(u=>{
+    if(u){ 
+        login.style.display="none"; panel.style.display="block"; 
+        const ahora = new Date(); const offset = ahora.getTimezoneOffset() * 60000;
+        fechaInicio.value = (new Date(ahora - offset)).toISOString().split("T")[0];
+        actualizarTodo();
+    }
+    else{ login.style.display="block"; panel.style.display="none"; }
 });
 
-/* ================= CLIENTES ================= */
-guardarCliente.addEventListener("click", async () => {
-  if (!nombre.value || !telefono.value) {
-    alert("Completa todos los campos");
-    return;
-  }
-
-  await addDoc(collection(db, "clientes"), {
-    nombre: nombre.value,
-    telefono: telefono.value,
-    creado: serverTimestamp()
-  });
-
-  nombre.value = "";
-  telefono.value = "";
-  alert("Cliente guardado ✅");
-  cargarClientes();
-});
-
-/* ================= BUSCAR CLIENTES ================= */
-let clientesCache = [];
-
-async function cargarClientes() {
-  clienteSelect.innerHTML = '<option value="">Selecciona un cliente</option>';
-  const snap = await getDocs(collection(db, "clientes"));
-  clientesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+async function actualizarTodo() {
+    const snap = await db.collection("cuentas").get();
+    listaSuscripcionesGlobal = [];
+    snap.forEach(doc => { listaSuscripcionesGlobal.push({id: doc.id, ...doc.data()}); });
+    cargarClientes(); 
+    cargarAdminPerfiles();
 }
-cargarClientes();
 
-buscarCliente.addEventListener("input", () => {
-  const texto = buscarCliente.value.toLowerCase();
-  clienteSelect.innerHTML = '<option value="">Selecciona un cliente</option>';
+// FUNCIONES DE CLIENTES Y VENTAS
+function cargarVentasVencimientos(){
+    bodyVencidas.innerHTML = ""; bodyProximas.innerHTML = ""; bodyVigentes.innerHTML = "";
+    document.getElementById("bodyVentasHistorial").innerHTML = "";
+    const gruposVencimiento = {};
+    const gruposHistorial = {}; 
 
-  clientesCache
-    .filter(c => c.nombre.toLowerCase().includes(texto))
-    .forEach(c => {
-      const o = document.createElement("option");
-      o.value = c.id;
-      o.textContent = `${c.nombre} – ${c.telefono}`;
-      clienteSelect.appendChild(o);
+    listaSuscripcionesGlobal.forEach(d => {
+        const batchKey = `${d.clienteId}_${d.fechaRegistro || 0}`;
+        if (!gruposVencimiento[batchKey]) {
+            gruposVencimiento[batchKey] = { 
+                ...d, 
+                serviciosTexto: [d.plataforma],
+                detalles: [`<b>${d.plataforma}</b>: ${d.correo} (P:${d.perfil_etiqueta} PIN:${d.pin})`],
+                ids: [d.id],
+                dataRenew: [{ plat: d.plataforma, correo: d.correo, clave: d.clave, perfil: d.perfil, pin: d.pin }]
+            };
+        } else {
+            gruposVencimiento[batchKey].serviciosTexto.push(d.plataforma);
+            gruposVencimiento[batchKey].detalles.push(`<b>${d.plataforma}</b>: ${d.correo} (P:${d.perfil_etiqueta} PIN:${d.pin})`);
+            gruposVencimiento[batchKey].ids.push(d.id);
+            gruposVencimiento[batchKey].dataRenew.push({ plat: d.plataforma, correo: d.correo, clave: d.clave, perfil: d.perfil, pin: d.pin });
+        }
+
+        const historialKey = `${d.clienteId}_${d.fechaRegistro}`;
+        if (!gruposHistorial[historialKey]) {
+            gruposHistorial[historialKey] = {
+                ...d,
+                plataformasCojuntas: [d.plataforma],
+                valorTotal: parseFloat(d.valor || 0),
+                detallesFull: [`<div style="margin-bottom:8px;"><b>📺 ${d.plataforma}</b><br>📧 ${d.correo}<br>🔑 ${d.clave}<br>👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}</div>`],
+                idsParaEliminar: [d.id] 
+            };
+        } else {
+            gruposHistorial[historialKey].plataformasCojuntas.push(d.plataforma);
+            gruposHistorial[historialKey].valorTotal += parseFloat(d.valor || 0);
+            gruposHistorial[historialKey].detallesFull.push(`<div style="margin-bottom:8px;"><b>📺 ${d.plataforma}</b><br>📧 ${d.correo}<br>🔑 ${d.clave}<br>👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}</div>`);
+            gruposHistorial[historialKey].idsParaEliminar.push(d.id);
+        }
     });
-});
 
-/* ================= CUENTAS ================= */
-const hoy = new Date().toISOString().split("T")[0];
-fechaInicio.value = hoy;
+    Object.values(gruposVencimiento).sort((a,b) => (b.fechaRegistro || 0) - (a.fechaRegistro || 0)).forEach(g => {
+        const diff = Math.ceil((new Date(g.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24));
+        const nomC = listaClientesLocal.find(c => c.id === g.clienteId)?.nombre || "---";
+        let colorClase = diff < 0 ? "status-vencido" : (diff <= 5 ? "status-proximo" : "status-activo");
+        let rowId = `fila-${g.clienteId}-${g.fechaRegistro}`;
+        let clasePersistente = (g.marcado_renovado === true) ? "row-finalizada-color" : "";
+        let claseAzul = (idFilaSeleccionadaAzul === rowId) ? "row-selected-renew" : "";
 
-function calcularFechaFin() {
-  const f = new Date(fechaInicio.value);
-  f.setDate(f.getDate() + Number(duracion.value));
-  fechaFin.value = f.toISOString().split("T")[0];
-}
-fechaInicio.onchange = calcularFechaFin;
-duracion.onchange = calcularFechaFin;
-calcularFechaFin();
-
-tipoCuenta.onchange = resetCuentas;
-btnAgregar.onclick = agregarCuenta;
-
-function resetCuentas() {
-  cuentasContainer.innerHTML = "";
-  agregarCuenta();
-}
-
-function agregarCuenta() {
-  const div = document.createElement("div");
-  div.className = "cuenta";
-  div.innerHTML = `
-    <hr>
-    <select class="plataforma">
-      <option>Netflix</option>
-      <option>Disney Plus</option>
-      <option>Prime Video</option>
-      <option>HBO Max</option>
-    </select>
-    <input class="usuario" placeholder="Correo / Usuario">
-    <input class="password" placeholder="Contraseña">
-    <input class="perfil" placeholder="Perfil">
-    <input class="pin" placeholder="PIN">
-  `;
-  cuentasContainer.appendChild(div);
-  btnAgregar.style.display = tipoCuenta.value === "individual" ? "none" : "block";
-}
-resetCuentas();
-
-/* ================= GUARDAR CUENTA ================= */
-window.guardarCuenta = async function () {
-  if (!clienteSelect.value) {
-    alert("Selecciona un cliente");
-    return;
-  }
-
-  const cuentas = [];
-  document.querySelectorAll(".cuenta").forEach(c => {
-    cuentas.push({
-      plataforma: c.querySelector(".plataforma").value,
-      usuario: c.querySelector(".usuario").value,
-      password: c.querySelector(".password").value,
-      perfil: c.querySelector(".perfil").value,
-      pin: c.querySelector(".pin").value
+        let row = `<tr id="${rowId}" class="${clasePersistente} ${claseAzul}">
+            <td><b>${nomC}</b></td><td>${g.serviciosTexto.join(", ")}</td><td><small>I:${g.inicio}<br>F:${g.fin}</small></td><td>${g.detalles.join("<br>")}</td><td><span class="${colorClase}">${diff}d</span></td>
+            <td><button class="renew-btn" onclick='cargarLoteParaRenovar(${JSON.stringify(g.clienteId)}, ${JSON.stringify(g.dataRenew)}, "${rowId}", ${JSON.stringify(g.ids)})'>🔄</button></td>
+        </tr>`;
+        if(diff < 0) bodyVencidas.innerHTML += row; else if(diff <= 5) bodyProximas.innerHTML += row; else bodyVigentes.innerHTML += row;
     });
-  });
 
-  await addDoc(collection(db, "cuentas"), {
-    clienteId: clienteSelect.value,
-    tipo: tipoCuenta.value,
-    fechaInicio: fechaInicio.value,
-    fechaFin: fechaFin.value,
-    cuentas,
-    creado: serverTimestamp()
-  });
+    Object.values(gruposHistorial).sort((a,b)=> (b.fechaRegistro||0)-(a.fechaRegistro||0)).forEach(d => {
+        const nomC = listaClientesLocal.find(c => c.id === d.clienteId)?.nombre || "---";
+        const diff = Math.ceil((new Date(d.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24));
+        let rowColorClass = diff < 0 ? "row-vencido" : (diff <= 5 ? "row-proximo" : "row-activo");
+        let fechaFull = "---";
+        if(d.fechaRegistro) {
+            const dateObj = new Date(d.fechaRegistro);
+            fechaFull = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} <br> <small>${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}</small>`;
+        }
+        document.getElementById("bodyVentasHistorial").innerHTML += `<tr class="${rowColorClass}"><td style="font-size:11px;">${fechaFull}</td><td><b>${nomC}</b></td><td>${d.plataformasCojuntas.join("<br>")}</td><td style="color:#28a745; font-weight:bold;">$${d.valorTotal.toFixed(2)}<br><small style="color:gray;">(${d.metodoPago || 'S/M'})</small></td><td style="text-align:left; font-size:11px;">${d.detallesFull.join("<hr style='margin:5px 0; border:0; border-top:1px dashed #ccc'>")}</td><td>${d.fin}</td><td><b>${diff}d</b></td><td><button class="delete-btn" onclick="eliminarLoteHistorial('${d.idsParaEliminar.join(',')}')">🗑️</button></td></tr>`;
+    });
+}
 
-  alert("Cuenta guardada ✅");
-};
+async function eliminarLoteHistorial(idsString) { if(confirm("¿Eliminar este registro de venta completo?")) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id => batch.delete(db.collection("cuentas").doc(id))); await batch.commit(); actualizarTodo(); } }
+async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id => { const ref = db.collection("cuentas").doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
+function renderizarTablaClientes(){ bodyClientes.innerHTML=""; listaClientesLocal.sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(c=>{ let hServ=""; c.servsData.forEach(ser=>{ const diff=Math.ceil((new Date(ser.fin+"T12:00:00")-hoy)/(1000*60*60*24)); if(diff<=-3) return; let cl=diff<0?"bg-vencido":(diff<=5?"bg-proximo":"bg-activo"); hServ+=`<span class="badge-service ${cl}">${ser.plataforma}</span>`; }); bodyClientes.innerHTML+=`<tr><td style="text-align:left; padding-left:15px;"><span class="service-count">${c.cantServiciosActivos}</span><b>${c.nombre}</b></td><td>📞 ${c.whatsapp}</td><td>${hServ}</td><td><button class="edit-btn" onclick="prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')">✏️</button><button class="delete-btn" onclick="eliminarCliente('${c.id}')">🗑️</button></td></tr>`; }); }
+function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = "✏️ Editando Cliente"; btnGuardar.innerText = "Actualizar Cliente"; btnCancel.style.display = "inline-block"; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(" "); if (partes.length > 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
+function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + " " + c_whatsapp.value }; if(!data.nombre || !c_whatsapp.value) return alert("Completa los datos"); if(id) { db.collection("clientes").doc(id).update(data).then(() => { alert("Cliente actualizado"); cancelarEdicion(); actualizarTodo(); }).catch(e => alert("Error: " + e.message)); } else { db.collection("clientes").add(data).then(() => { c_nombre.value = ""; c_whatsapp.value = ""; actualizarTodo(); }); } }
+function cancelarEdicion(){ c_id_hidden.value=""; c_nombre.value=""; c_whatsapp.value=""; formTitle.innerText="✨ Registrar Nuevo Cliente"; btnGuardar.innerText="Guardar Cliente"; btnCancel.style.display="none"; }
+function cargarLoteParaRenovar(cliId, items, rowId, listaIds) { marcarComoRenovadoEnBD(listaIds, rowId); document.querySelectorAll('tr').forEach(r => r.classList.remove('row-selected-renew')); if(rowId) { const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-selected-renew'); idFilaSeleccionadaAzul = rowId; } mostrar('cuentas'); const cliente = listaClientesLocal.find(c => c.id === cliId); clienteIdSeleccionado.value = cliId; inputBuscarCliente.value = cliente.nombre; txtElegido.innerText = `✅ Renovando Lote de ${cliente.nombre}`; tipoCompra.value = items.length > 1 ? "combo" : "individual"; document.getElementById("btnMasPlat").style.display = items.length > 1 ? "inline-block" : "none"; plataformas.innerHTML = ""; items.forEach(it => { const div = document.createElement("div"); div.className = "fila-plataforma"; div.style = "margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;"; div.innerHTML = `<select class="tipo"><option value="${it.plat}">${it.plat}</option></select> <span class="cont-correo"><select class="correo-select"><option value="${it.clave}">${it.correo}</option></select></span> <span class="cont-clave"><input class="clave" value="${it.clave}" readonly style="width:80px"></span> <div class="bloque-perfiles" style="display:inline-block"><div class="item-perfil"><span class="cont-perfil"><select class="perfil-select"><option value="${it.perfil}">${it.perfil}</option></select></span> <span class="cont-pin"><input class="pin" value="${it.pin}" style="width:50px" readonly></span></div></div>`; plataformas.appendChild(div); }); }
+async function filtrarCuentas(sel) { const p = sel.value; if(!p) return; const f = sel.parentElement; const snap = await db.collection("cuentas_base").where("plataforma", "==", p).get(); let ops = '<option value="">Cuenta...</option>'; snap.forEach(doc => { const d = doc.data(); ops += `<option value="${d.clave}">${d.correo}</option>`; }); f.querySelector(".cont-correo").innerHTML = `<select class="correo-select" onchange="validarDisponibilidad(this)">${ops}</select>`; f.querySelector(".cont-clave").innerHTML = `<input class="clave" readonly style="width:80px">`; f.querySelector(".bloque-perfiles").innerHTML = `<div class="item-perfil"><span class="cont-perfil"></span><span class="cont-pin"></span><button class="add-perfil-btn" onclick="crearNuevaFilaPerfil(this)">+</button></div>`; if(clienteIdSeleccionado.value) { const yaTiene = listaSuscripcionesGlobal.find(s => s.clienteId === clienteIdSeleccionado.value && s.plataforma === p); if(yaTiene) { const selCorreo = f.querySelector(".correo-select"); for(let i=0; i<selCorreo.options.length; i++) { if(selCorreo.options[i].text === yaTiene.correo) { selCorreo.selectedIndex = i; validarDisponibilidad(selCorreo); break; } } } } }
+function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(".cont-perfil"); it.querySelector(".cont-pin").innerHTML = `<input class="pin" style="width:50px" readonly>`; contP.innerHTML = `<select class="perfil-select" onchange="actualizarPin(this)"><option value="">P...</option></select>`; const selP = contP.querySelector(".perfil-select"); const max = plat === "Disney" ? 7 : 5; const miPerfilPrevio = listaSuscripcionesGlobal.find(s => s.clienteId === cId && s.correo === corr && s.plataforma === plat); const ocup = listaSuscripcionesGlobal.filter(s => s.correo === corr && s.plataforma === plat && new Date(s.fin+"T12:00:00") >= hoy); for(let i=1; i<=max; i++) { const o = ocup.find(x => parseInt(x.perfil) === i); const opt = document.createElement("option"); opt.value = i; if(o) { opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '(Ocup)'}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miPerfilPrevio) { selP.value = miPerfilPrevio.perfil; actualizarPin(selP); } }
+function actualizarPin(sel) { const it = sel.closest(".item-perfil"); const val = parseInt(sel.value); it.querySelector(".pin").value = isNaN(val) ? "" : 1000 + val; }
+function guardarCuentas(){ if(!clienteIdSeleccionado.value) return alert("Selecciona cliente"); const marca = Date.now(); let promesas = []; document.querySelectorAll(".fila-plataforma").forEach(f => { const cSel = f.querySelector(".correo-select"); if(!cSel || !cSel.value) return; const plat = f.querySelector(".tipo").value; const correo = cSel.options[cSel.selectedIndex].text; const clave = f.querySelector(".clave").value; f.querySelectorAll(".item-perfil").forEach(it => { const p = it.querySelector(".perfil-select").value; if(!p) return; promesas.push(db.collection("cuentas").add({ clienteId: clienteIdSeleccionado.value, plataforma: plat, correo: correo, clave: clave, perfil: p, perfil_etiqueta: `${p}. ${inputBuscarCliente.value}`, pin: it.querySelector(".pin").value, inicio: fechaInicio.value, fin: fechaFin.value, metodoPago: metodoPago.value, valor: valorPago.value, fechaRegistro: marca })); }); }); Promise.all(promesas).then(() => { alert("Guardado"); idFilaSeleccionadaAzul = null; reiniciarFormVentas(); actualizarTodo(); }); }
+function buscarClienteHibrido(){ const txt=inputBuscarCliente.value.toLowerCase(); listaSugerencias.innerHTML=""; const filtrados=listaClientesLocal.filter(c=>c.nombre.toLowerCase().includes(txt) || c.whatsapp.includes(txt)); if(filtrados.length>0){ filtrados.forEach(c=>{ const div=document.createElement("div"); div.className="sugerencia-item"; div.style="padding:10px; cursor:pointer; border-bottom:1px solid #eee"; div.innerHTML=`👤 <b>${c.nombre}</b> <span style="float:right; color:gray; font-size:11px;">${c.whatsapp}</span>`; div.onclick=()=>{ clienteIdSeleccionado.value=c.id; inputBuscarCliente.value=c.nombre; txtElegido.innerText=`✅ Seleccionado: ${c.nombre} (${c.whatsapp})`; listaSugerencias.style.display="none"; }; listaSugerencias.appendChild(div); }); listaSugerencias.style.display="block"; } else { listaSugerencias.style.display="none"; } }
+function confirmarReinicioForm() { if(confirm("¿Limpiar formulario?")) reiniciarFormVentas(); }
+function reiniciarFormVentas() { plataformas.innerHTML = ""; inputBuscarCliente.value = ""; clienteIdSeleccionado.value = ""; txtElegido.innerText = ""; valorPago.value = ""; metodoPago.value = "Transferencia"; tipoCompra.value = "individual"; cambiarModoCompra(); }
+function validarDisponibilidad(sel){ const f=sel.parentElement.parentElement; f.querySelector(".clave").value=sel.value; f.querySelectorAll(".item-perfil").forEach(it=>renderizarSelectPerfil(it, f.querySelector(".tipo").value, sel.options[sel.selectedIndex].text)); }
+function crearNuevaFilaPerfil(btn){ const bloque=btn.closest(".bloque-perfiles"); const divExtra=document.createElement("div"); divExtra.className="item-perfil extra-perfil"; divExtra.innerHTML=`<span class="cont-perfil"></span><span class="cont-pin"></span><button class="delete-btn" style="padding:4px 8px; margin-left:5px" onclick="this.parentElement.remove()">x</button>`; bloque.appendChild(divExtra); renderizarSelectPerfil(divExtra, btn.closest(".fila-plataforma").querySelector(".tipo").value, btn.closest(".fila-plataforma").querySelector(".correo-select").options[btn.closest(".fila-plataforma").querySelector(".correo-select").selectedIndex].text); }
+function cargarClientes(){ db.collection("clientes").get().then(s=>{ listaClientesLocal=[]; s.forEach(d=>{ const c=d.data(); const servs=listaSuscripcionesGlobal.filter(s=>s.clienteId===d.id); const activos=servs.filter(ser=>Math.ceil((new Date(ser.fin+"T12:00:00")-hoy)/(1000*60*60*24))>-3).length; listaClientesLocal.push({id:d.id,...c,cantServiciosActivos:activos,servsData:servs}); }); renderizarTablaClientes(); cargarVentasVencimientos(); }); }
+function cambiarModoCompra(){ plataformas.innerHTML=""; document.getElementById("btnMasPlat").style.display=tipoCompra.value==="combo"?"inline-block":"none"; agregarPlataforma(); calcularFechaFin(); }
+function calcularFechaFin(){ if(!fechaInicio.value) return; const f=new Date(fechaInicio.value+"T12:00:00"); f.setDate(f.getDate()+Number(dias.value)); fechaFin.value=f.toISOString().split("T")[0]; }
+function agregarPlataforma(){ const div=document.createElement("div"); div.className="fila-plataforma"; div.style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;"; div.innerHTML=`<select class="tipo" onchange="filtrarCuentas(this)"><option value="">Plataforma...</option><option value="Netflix">Netflix</option><option value="Disney">Disney</option></select> <span class="cont-correo"></span><span class="cont-clave"></span><div class="bloque-perfiles" style="display:inline-block"></div>`; plataformas.appendChild(div); }
+function mostrar(id){ document.querySelectorAll(".content>div").forEach(d=>d.style.display="none"); document.getElementById(id).style.display="block"; }
+function loginUser(){ auth.signInWithEmailAndPassword(email.value,password.value).catch(e=>alert(e.message)); }
+function logout(){ auth.signOut(); }
+function eliminarCliente(id){ if(confirm("¿Eliminar?")) db.collection("clientes").doc(id).delete().then(()=>actualizarTodo()); }
+function filtrarTablaClientes(){ const bus=filtroCliente.value.toLowerCase(); const filas=bodyClientes.getElementsByTagName("tr"); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?"":"none"; }
+function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase(); const filas=document.getElementById("bodyVentasHistorial").getElementsByTagName("tr"); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?"":"none"; }
+
+// --- LÓGICA DE ADMIN PERFILES (ACTUALIZADO CON SEMÁFORO Y TOOLTIP FLOTANTE) ---
+
+async function cargarAdminPerfiles() {
+    const tablas = { 'Netflix': document.getElementById("tablaNetflixBody"), 'Disney': document.getElementById("tablaDisneyBody"), 'HBO Max': document.getElementById("tablaHBOBody") };
+    Object.values(tablas).forEach(t => { if(t) t.innerHTML = ""; });
+
+    const snap = await db.collection("cuentas_base").get();
+    snap.forEach(doc => {
+        const d = doc.data();
+        const id = doc.id;
+        const body = tablas[d.plataforma];
+        if (!body) return;
+
+        let numPerfiles = d.plataforma === 'Disney' ? 7 : 5;
+        let celdasPerfiles = "";
+
+        for (let i = 1; i <= numPerfiles; i++) {
+            const asignado = listaSuscripcionesGlobal.find(s => 
+                s.correo === d.correo && s.plataforma === d.plataforma && 
+                parseInt(s.perfil) === i && new Date(s.fin + "T12:00:00") >= hoy
+            );
+
+            let colorClase = "p-libre";
+            let nombreMostrar = "Libre";
+            let datosData = "";
+
+            if(asignado) {
+                const cli = listaClientesLocal.find(c => c.id === asignado.clienteId);
+                const diff = Math.ceil((new Date(asignado.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24));
+                nombreMostrar = cli ? cli.nombre : "Asignado";
+
+                if (diff > 5) colorClase = "p-verde";
+                else if (diff >= 0) colorClase = "p-amarillo";
+                else colorClase = "p-rojo";
+
+                datosData = `data-info="📅 <b>Inicio:</b> ${asignado.inicio}<br>🚩 <b>Fin:</b> ${asignado.fin}<br>⏳ <b>Faltan:</b> ${diff} días"`;
+            }
+
+            celdasPerfiles += `
+                <td class="celda-perfil ${colorClase}" ${datosData} 
+                    onmousemove="mostrarTooltip(event)" 
+                    onmouseleave="ocultarTooltip()">
+                    <small>P${i}</small><br>
+                    <div style="font-size:10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nombreMostrar}</div>
+                </td>`;
+        }
+
+        const fechaMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString([], {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '---';
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td><input type="text" value="${d.correo}" id="edit-cor-${id}" class="input-locked"></td>
+            <td><input type="text" value="${d.clave}" id="edit-cla-${id}" class="input-locked"></td>
+            ${celdasPerfiles}
+            <td style="font-size:11px; color:gray;">${fechaMod}</td>
+            <td id="td-accion-${id}">
+                <button class="edit-btn" onclick="habilitarEdicionFila('${id}')">✏️</button>
+                <button class="delete-btn" onclick="eliminarCuentaBase('${id}')">🗑️</button>
+            </td>
+        `;
+        body.appendChild(row);
+    });
+}
+
+function mostrarTooltip(e) {
+    const info = e.currentTarget.getAttribute('data-info');
+    if (info) {
+        tooltip.innerHTML = info;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX + 15) + 'px';
+        tooltip.style.top = (e.clientY + 15) + 'px';
+    }
+}
+
+function ocultarTooltip() { tooltip.style.display = 'none'; }
+
+function habilitarEdicionFila(id) {
+    const inputCor = document.getElementById(`edit-cor-${id}`);
+    const inputCla = document.getElementById(`edit-cla-${id}`);
+    const tdAccion = document.getElementById(`td-accion-${id}`);
+    inputCor.classList.add('input-editable');
+    inputCla.classList.add('input-editable');
+    tdAccion.innerHTML = `
+        <button class="save-btn" style="background:#28a745; margin-right:5px;" onclick="actualizarCuentaBase('${id}')">💾</button>
+        <button class="delete-btn" style="background:#6c757d;" onclick="cargarAdminPerfiles()">X</button>
+    `;
+}
+
+async function actualizarCuentaBase(id) {
+    const nuevoCorreo = document.getElementById(`edit-cor-${id}`).value;
+    const nuevaClave = document.getElementById(`edit-cla-${id}`).value;
+    await db.collection("cuentas_base").doc(id).update({ correo: nuevoCorreo, clave: nuevaClave, ultimaModificacion: Date.now() });
+    alert("Cuenta actualizada.");
+    actualizarTodo();
+}
+
+async function eliminarCuentaBase(id) {
+    if (confirm("¿Eliminar esta cuenta base?")) {
+        await db.collection("cuentas_base").doc(id).delete();
+        actualizarTodo();
+    }
+}
+
+function abrirModalNuevaCuenta(plat) {
+    const correo = prompt(`Correo para ${plat}:`);
+    if (!correo) return;
+    const clave = prompt(`Clave:`);
+    db.collection("cuentas_base").add({ plataforma: plat, correo: correo, clave: clave, ultimaModificacion: Date.now() }).then(() => actualizarTodo());
+}
 </script>
-
 </body>
 </html>
