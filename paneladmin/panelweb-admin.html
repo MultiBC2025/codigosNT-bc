@@ -23,6 +23,114 @@
     th.sortable { cursor: pointer; background: #ececf6; transition: 0.2s; user-select: none; }
     th.sortable:hover { background: #dcdce9; color: #007bff; }
     
+    
+    /* =========================
+   📱 RESPONSIVE CELULAR
+   ========================= */
+@media (max-width: 768px) {
+
+    body {
+        font-size: 14px;
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .sidebar h2 {
+        width: 100%;
+        text-align: center;
+        font-size: 1rem;
+    }
+
+    .sidebar button {
+        flex: 1 1 50%;
+        text-align: center;
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    /* --- CONTENIDO --- */
+    .content {
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    h3 {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    h4 {
+        font-size: 14px;
+    }
+
+    /* --- FORMULARIOS --- */
+    input, select, button {
+        width: 100% !important;
+        margin: 6px 0;
+        font-size: 14px;
+    }
+
+    .section {
+        padding: 12px;
+    }
+
+    /* --- GRID A UNA COLUMNA --- */
+    div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* --- TABLAS --- */
+    table {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    /* --- BOTONES DE ACCIÓN --- */
+    .edit-btn,
+    .delete-btn,
+    .renew-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 16px;
+    }
+
+    /* --- BADGES / PERFILES --- */
+    .badge-service {
+        font-size: 12px;
+        padding: 6px 10px;
+        margin: 3px;
+    }
+
+    .celda-perfil {
+        min-width: 70px;
+        height: 45px;
+        font-size: 13px;
+    }
+
+    /* --- TOOLTIP --- */
+    #tooltip-flotante {
+        font-size: 11px;
+        max-width: 90vw;
+    }
+}
+
+    
     .service-count {
         display: inline-flex;
         align-items: center;
@@ -47,7 +155,7 @@
     .status-proximo { font-weight: bold; color: #856404; }
     .status-activo { font-weight: bold; color: #28a745; }
 
-    .badge-service { display: inline-block; padding: 8px 14px; border-radius: 6px; font-size: 14px; margin: 5px; font-weight: bold; color: #fff; cursor: help; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .badge-service { display: inline-block; padding: 8px 14px; border-radius: 6px; font-size: 14px; margin: 5px; font-weight: bold; color: #fff; cursor: default; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .bg-vencido { background: #dc3545; }
     .bg-proximo { background: #ffc107; color: #000; }
     .bg-activo { background: #28a745; }
@@ -55,23 +163,45 @@
     .save-btn{background:#007bff;color:#fff;border:none;padding:10px 20px;cursor:pointer; border-radius: 4px; font-weight:bold;}
     .edit-btn { background:#ffc107; color:#000; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; margin-right: 8px; width: 40px; height: 38px; }
     .delete-btn { background:#dc3545; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; width: 40px; height: 38px; }
-    .renew-btn { background:#28a745; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; width: 40px; height: 38px; margin-left: 5px; }
+    .renew-btn { background:#ED9785; color:#fff; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size: 14px; width: 40px; height: 38px; margin-left: 5px; }
     
     .reset-btn{background:#6c757d; color:#fff; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:10px;}
     .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #007bff; border-radius: 8px; box-sizing: border-box;}
 
-    /* Admin Perfiles Estilos Actualizados */
     .input-locked { border: none; background: transparent; text-align: center; width: 100%; cursor: default; pointer-events: none; font-weight: bold; }
     .input-editable { border: 1px solid #007bff !important; background: #fff !important; cursor: text !important; pointer-events: auto !important; }
     
-    /* Colores Celdas Perfiles */
-    .celda-perfil { position: relative; transition: 0.3s; color: #fff; font-weight: bold; min-width: 85px; height: 50px; cursor: crosshair; }
-    .p-verde { background-color: #28a745 !important; }
-    .p-amarillo { background-color: #ffc107 !important; color: #000 !important; }
-    .p-rojo { background-color: #dc3545 !important; }
-    .p-libre { background-color: #f8f9fa !important; color: #ccc !important; font-weight: normal; }
+    .celda-perfil { position: relative; transition: 0.3s; color: #000 !important; font-weight: bold; min-width: 85px; height: 50px; cursor: crosshair; }
+    
+    
+    .p-verde {
+    background-color: #28a745 !important;
+    color: #000 !important;              /* TEXTO NEGRO */
+    font-size: 15px;                     /* UN POCO MÁS GRANDE */
+    font-weight: normal;
+}
 
-    /* Nuevo Tooltip Flotante Global */
+.p-amarillo {
+    background-color: #ffc107 !important;
+    color: #000 !important;              /* TEXTO NEGRO */
+    font-size: 15px;
+    font-weight: normal;
+}
+
+.p-rojo {
+    background-color: #dc3545 !important;
+    color: #fff !important;              /* TEXTO BLANCO */
+    font-size: 15px;
+    font-weight: normal;
+}
+
+.p-libre {
+    background-color: #f8f9fa !important;
+    color: #000 !important;
+    font-size: 15px;
+    font-weight: normal;
+}
+
     #tooltip-flotante {
         position: fixed;
         display: none;
@@ -86,8 +216,7 @@
         border: 1px solid #3d3d5c;
         line-height: 1.5;
     }
-    
-    
+    .btn-ws-table { text-decoration: none; font-size: 16px; margin-left: 8px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -207,15 +336,15 @@
     <h3>📅 Control de Vencimientos</h3>
     <div class="section" style="border-left:8px solid #ffc107">
         <h4>⚠️ Próximas (0-5 días)</h4>
-        <table id="tablaProximas"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="bodyProximas"></tbody></table>
+        <table id="tablaProximas"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Renovación</th></tr></thead><tbody id="bodyProximas"></tbody></table>
     </div>
     <div class="section" style="border-left:8px solid #dc3545">
         <h4>❌ Vencidas</h4>
-        <table id="tablaVencidas"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="bodyVencidas"></tbody></table>
+        <table id="tablaVencidas"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Renovación</th></tr></thead><tbody id="bodyVencidas"></tbody></table>
     </div>
     <div class="section" style="border-left:8px solid #28a745">
         <h4>✅ Vigentes</h4>
-        <table id="tablaVigentes"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="bodyVigentes"></tbody></table>
+        <table id="tablaVigentes"><thead><tr><th>Cliente</th><th>Servicio(s)</th><th>Fechas</th><th>Acceso Detallado</th><th>Estado</th></tr></thead><tbody id="bodyVigentes"></tbody></table>
     </div>
 </div>
 
@@ -286,6 +415,14 @@ let listaSuscripcionesGlobal = [];
 let listaClientesLocal = [];
 let idFilaSeleccionadaAzul = null; 
 const hoy = new Date(); hoy.setHours(0,0,0,0);
+function formatearDiasTexto(diff) {
+    if (diff > 2) return "Vence en " + Math.abs(diff) + "d";
+    if (diff === 0) return "Vence Hoy";
+    if (diff === 1) return "Vence Mañana";
+    if (diff === -1) return "Venció Ayer";
+    if (diff < -1) return "Venció hace " + Math.abs(diff) + "d";
+    return diff + "d";
+}
 const tooltip = document.getElementById('tooltip-flotante');
 
 auth.onAuthStateChanged(u=>{
@@ -306,7 +443,6 @@ async function actualizarTodo() {
     cargarAdminPerfiles();
 }
 
-// FUNCIONES DE CLIENTES Y VENTAS
 function cargarVentasVencimientos(){
     bodyVencidas.innerHTML = ""; bodyProximas.innerHTML = ""; bodyVigentes.innerHTML = "";
     document.getElementById("bodyVentasHistorial").innerHTML = "";
@@ -348,40 +484,153 @@ function cargarVentasVencimientos(){
     });
 
     Object.values(gruposVencimiento).sort((a,b) => (b.fechaRegistro || 0) - (a.fechaRegistro || 0)).forEach(g => {
-        const diff = Math.ceil((new Date(g.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24));
-        const nomC = listaClientesLocal.find(c => c.id === g.clienteId)?.nombre || "---";
-        let colorClase = diff < 0 ? "status-vencido" : (diff <= 5 ? "status-proximo" : "status-activo");
-        let rowId = `fila-${g.clienteId}-${g.fechaRegistro}`;
-        let clasePersistente = (g.marcado_renovado === true) ? "row-finalizada-color" : "";
-        let claseAzul = (idFilaSeleccionadaAzul === rowId) ? "row-selected-renew" : "";
+    // --- LÓGICA DE DÍAS (MES COMERCIAL 30D) ---
+    const partesFin = g.fin.split('-');
+    const fechaVenceObj = new Date(partesFin[0], partesFin[1] - 1, partesFin[2]);
+    fechaVenceObj.setHours(0, 0, 0, 0);
 
-        let row = `<tr id="${rowId}" class="${clasePersistente} ${claseAzul}">
-            <td><b>${nomC}</b></td><td>${g.serviciosTexto.join(", ")}</td><td><small>I:${g.inicio}<br>F:${g.fin}</small></td><td>${g.detalles.join("<br>")}</td><td><span class="${colorClase}">${diff}d</span></td>
-            <td><button class="renew-btn" onclick='cargarLoteParaRenovar(${JSON.stringify(g.clienteId)}, ${JSON.stringify(g.dataRenew)}, "${rowId}", ${JSON.stringify(g.ids)})'>🔄</button></td>
-        </tr>`;
-        if(diff < 0) bodyVencidas.innerHTML += row; else if(diff <= 5) bodyProximas.innerHTML += row; else bodyVigentes.innerHTML += row;
-    });
+    const hoyLocal = new Date();
+    hoyLocal.setHours(0, 0, 0, 0);
+
+    // Cálculo real
+    let diff = Math.round((fechaVenceObj - hoyLocal) / 86400000);
+
+    // AJUSTE PARA FEBRERO/MESES CORTOS: 
+    // Si se compró hoy y la fecha de fin es el próximo mes, forzamos 30d
+    const partesInicio = g.inicio.split('-');
+    const fechaInicioObj = new Date(partesInicio[0], partesInicio[1] - 1, partesInicio[2]);
+    fechaInicioObj.setHours(0,0,0,0);
+
+    if (fechaInicioObj.getTime() === hoyLocal.getTime() && diff > 0 && diff < 31) {
+        diff = 30; 
+    }
+
+    const clienteObj = listaClientesLocal.find(c => c.id === g.clienteId);
+    const nomC = clienteObj?.nombre || "---";
+    const telC = clienteObj?.whatsapp || "";
+
+    let colorClase = diff < 0 ? "status-vencido" : (diff <= 5 ? "status-proximo" : "status-activo");
+    let rowId = `fila-${g.clienteId}-${g.fechaRegistro}`;
+    let clasePersistente = (g.marcado_renovado === true) ? "row-finalizada-color" : "";
+    let claseAzul = (idFilaSeleccionadaAzul === rowId) ? "row-selected-renew" : "";
+
+    // --- LÓGICA DE COMUNICACIÓN (WHATSAPP) ---
+    const ahoraMomento = new Date();
+    const diasSemana = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+    const diaNombreVence = diasSemana[fechaVenceObj.getDay()];
+    const fechaVenceFormato = g.fin.split('-').reverse().join('-'); 
+    const horaActual = ahoraMomento.getHours().toString().padStart(2, '0') + ":" + ahoraMomento.getMinutes().toString().padStart(2, '0');
+
+    let btnWhatsapp = "";
+    let btnRenovar = "";
+
+    if (diff <= 5) {
+        let textoEstado = "";
+        let palabraFinaliza = "finaliza";
+        const serviciosChat = g.serviciosTexto.join(" + ");
+
+        if (diff < 0) {
+            palabraFinaliza = "Finalizo";
+            const dAbs = Math.abs(diff);
+            textoEstado = "*Ya vencio hace " + dAbs + " " + (dAbs === 1 ? "dia" : "dias") + "*";
+        } else {
+            textoEstado = "*" + (diff === 0 ? "vence hoy mismo" : (diff === 1 ? "vence mañana" : "vence en " + diff + " dias")) + "*";
+        }
+
+        let cuerpoTxt = "Hola *_" + nomC + "_* (̶◉͛‿◉̶), Cómo estas?.\n\n" +
+            "Para informarte que tu Servicio de *" + serviciosChat + "*  " + textoEstado + "\n" +
+            "웃 El día *" + diaNombreVence + "* *" + fechaVenceFormato + "* " + palabraFinaliza + " el servicio. \n\n" +
+            "✍(◔◡◔)   Porfa confirma si deseas renovar nuevamente el servicio con nosotros --\n" +
+            "Quedamos muy atentos a tu mensaje de respuesta.\n\n" +
+            "Mensaje enviado el dia *" + diasSemana[ahoraMomento.getDay()] + "*, *" + ahoraMomento.toLocaleDateString() + "* a las *" + horaActual + "*.\n" +
+            "*Somos MultiEntretenimiento BC ʕ•́ᴥ•̀ʔっ, El mejor entretenimiento para todos*";
+
+        let soloNumeros = telC.replace(/\D/g, ''); 
+        if (soloNumeros) {
+            btnWhatsapp = `<a href="https://wa.me/${soloNumeros}?text=${encodeURIComponent(cuerpoTxt)}" target="_blank" class="btn-ws-table">🟢</a>`;
+        }
+        btnRenovar = `<button class="renew-btn" onclick='cargarLoteParaRenovar(${JSON.stringify(g.clienteId)}, ${JSON.stringify(g.dataRenew)}, "${rowId}", ${JSON.stringify(g.ids)})'>✔</button>`;
+    }
+
+    // --- FILA FINAL ---
+    let row = `<tr id="${rowId}" class="${clasePersistente} ${claseAzul}">
+        <td><b>${nomC}</b> ${btnWhatsapp}</td>
+        <td>${g.serviciosTexto.join(", ")}</td>
+        <td><small>I:${g.inicio}<br>F:${g.fin}</small></td>
+        <td>${g.detalles.join("<br>")}</td>
+        <td><span class="${colorClase}">${formatearDiasTexto(diff)}</span></td>
+        <td>${btnRenovar}</td>
+    </tr>`;
+    
+    if(diff < 0) bodyVencidas.innerHTML += row; else if(diff <= 5) bodyProximas.innerHTML += row; else bodyVigentes.innerHTML += row;
+});
 
     Object.values(gruposHistorial).sort((a,b)=> (b.fechaRegistro||0)-(a.fechaRegistro||0)).forEach(d => {
         const nomC = listaClientesLocal.find(c => c.id === d.clienteId)?.nombre || "---";
-        const diff = Math.ceil((new Date(d.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24));
+        const diff = Math.ceil((new Date(d.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24))-1;
         let rowColorClass = diff < 0 ? "row-vencido" : (diff <= 5 ? "row-proximo" : "row-activo");
         let fechaFull = "---";
         if(d.fechaRegistro) {
             const dateObj = new Date(d.fechaRegistro);
             fechaFull = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} <br> <small>${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}</small>`;
         }
-        document.getElementById("bodyVentasHistorial").innerHTML += `<tr class="${rowColorClass}"><td style="font-size:11px;">${fechaFull}</td><td><b>${nomC}</b></td><td>${d.plataformasCojuntas.join("<br>")}</td><td style="color:#28a745; font-weight:bold;">$${d.valorTotal.toFixed(2)}<br><small style="color:gray;">(${d.metodoPago || 'S/M'})</small></td><td style="text-align:left; font-size:11px;">${d.detallesFull.join("<hr style='margin:5px 0; border:0; border-top:1px dashed #ccc'>")}</td><td>${d.fin}</td><td><b>${diff}d</b></td><td><button class="delete-btn" onclick="eliminarLoteHistorial('${d.idsParaEliminar.join(',')}')">🗑️</button></td></tr>`;
+        document.getElementById("bodyVentasHistorial").innerHTML += `<tr class="${rowColorClass}"><td style="font-size:11px;">${fechaFull}</td><td><b>${nomC}</b></td><td>${d.plataformasCojuntas.join("<br>")}</td><td style="color:#28a745; font-weight:bold;">$${d.valorTotal.toFixed(2)}<br><small style="color:gray;">(${d.metodoPago || 'S/M'})</small></td><td style="text-align:left; font-size:11px;">${d.detallesFull.join("<hr style='margin:5px 0; border:0; border-top:1px dashed #ccc'>")}</td><td>${d.fin}</td><td><b>${formatearDiasTexto(diff)}</b></td><td><button class="delete-btn" onclick="eliminarLoteHistorial('${d.idsParaEliminar.join(',')}')">🗑️</button></td></tr>`;
     });
 }
 
 async function eliminarLoteHistorial(idsString) { if(confirm("¿Eliminar este registro de venta completo?")) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id => batch.delete(db.collection("cuentas").doc(id))); await batch.commit(); actualizarTodo(); } }
 async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id => { const ref = db.collection("cuentas").doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
-function renderizarTablaClientes(){ bodyClientes.innerHTML=""; listaClientesLocal.sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(c=>{ let hServ=""; c.servsData.forEach(ser=>{ const diff=Math.ceil((new Date(ser.fin+"T12:00:00")-hoy)/(1000*60*60*24)); if(diff<=-3) return; let cl=diff<0?"bg-vencido":(diff<=5?"bg-proximo":"bg-activo"); hServ+=`<span class="badge-service ${cl}">${ser.plataforma}</span>`; }); bodyClientes.innerHTML+=`<tr><td style="text-align:left; padding-left:15px;"><span class="service-count">${c.cantServiciosActivos}</span><b>${c.nombre}</b></td><td>📞 ${c.whatsapp}</td><td>${hServ}</td><td><button class="edit-btn" onclick="prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')">✏️</button><button class="delete-btn" onclick="eliminarCliente('${c.id}')">🗑️</button></td></tr>`; }); }
+
+function renderizarTablaClientes(){ 
+    bodyClientes.innerHTML=""; 
+    listaClientesLocal.sort((a,b)=>a.nombre.localeCompare(b.nombre)).forEach(c=>{ 
+        let hServ=""; 
+        c.servsData.forEach(ser=>{ 
+            const diff = Math.ceil((new Date(ser.fin+"T12:00:00")-hoy)/(1000*60*60*24))-1; 
+            if(diff <= -5) return; 
+
+            let cl = diff < 0 ? "bg-vencido" : (diff <= 5 ? "bg-proximo" : "bg-activo");
+            
+            const infoTooltip = `
+                <b>📺 ${ser.plataforma}</b><br>
+                📧 ${ser.correo}<br>
+                🔑 ${ser.clave}<br>
+                👤 Perfil: ${ser.perfil}<br>
+                📌 PIN: ${ser.pin}<br>
+                📅 Inicio: ${ser.inicio}<br>
+                🚩 Fin: ${ser.fin}<br>
+                ⏳ Faltan: ${diff} días
+            `;
+
+            hServ += `
+                <span class="badge-service ${cl}" 
+                      data-info='${infoTooltip}' 
+                      onmousemove="mostrarTooltip(event)" 
+                      onmouseleave="ocultarTooltip()">
+                      ${ser.plataforma} (${diff}d)
+                </span>`; 
+        }); 
+
+        bodyClientes.innerHTML += `
+            <tr>
+                <td style="text-align:left; padding-left:15px;">
+                    <span class="service-count">${c.cantServiciosActivos}</span>
+                    <b>${c.nombre}</b>
+                </td>
+                <td>📞 ${c.whatsapp}</td>
+                <td>${hServ}</td>
+                <td>
+                    <button class="edit-btn" onclick="prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')">✏️</button>
+                    <button class="delete-btn" onclick="eliminarCliente('${c.id}')">🗑️</button>
+                </td>
+            </tr>`; 
+    }); 
+}
+
 function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = "✏️ Editando Cliente"; btnGuardar.innerText = "Actualizar Cliente"; btnCancel.style.display = "inline-block"; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(" "); if (partes.length > 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
 function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + " " + c_whatsapp.value }; if(!data.nombre || !c_whatsapp.value) return alert("Completa los datos"); if(id) { db.collection("clientes").doc(id).update(data).then(() => { alert("Cliente actualizado"); cancelarEdicion(); actualizarTodo(); }).catch(e => alert("Error: " + e.message)); } else { db.collection("clientes").add(data).then(() => { c_nombre.value = ""; c_whatsapp.value = ""; actualizarTodo(); }); } }
 function cancelarEdicion(){ c_id_hidden.value=""; c_nombre.value=""; c_whatsapp.value=""; formTitle.innerText="✨ Registrar Nuevo Cliente"; btnGuardar.innerText="Guardar Cliente"; btnCancel.style.display="none"; }
-function cargarLoteParaRenovar(cliId, items, rowId, listaIds) { marcarComoRenovadoEnBD(listaIds, rowId); document.querySelectorAll('tr').forEach(r => r.classList.remove('row-selected-renew')); if(rowId) { const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-selected-renew'); idFilaSeleccionadaAzul = rowId; } mostrar('cuentas'); const cliente = listaClientesLocal.find(c => c.id === cliId); clienteIdSeleccionado.value = cliId; inputBuscarCliente.value = cliente.nombre; txtElegido.innerText = `✅ Renovando Lote de ${cliente.nombre}`; tipoCompra.value = items.length > 1 ? "combo" : "individual"; document.getElementById("btnMasPlat").style.display = items.length > 1 ? "inline-block" : "none"; plataformas.innerHTML = ""; items.forEach(it => { const div = document.createElement("div"); div.className = "fila-plataforma"; div.style = "margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;"; div.innerHTML = `<select class="tipo"><option value="${it.plat}">${it.plat}</option></select> <span class="cont-correo"><select class="correo-select"><option value="${it.clave}">${it.correo}</option></select></span> <span class="cont-clave"><input class="clave" value="${it.clave}" readonly style="width:80px"></span> <div class="bloque-perfiles" style="display:inline-block"><div class="item-perfil"><span class="cont-perfil"><select class="perfil-select"><option value="${it.perfil}">${it.perfil}</option></select></span> <span class="cont-pin"><input class="pin" value="${it.pin}" style="width:50px" readonly></span></div></div>`; plataformas.appendChild(div); }); }
+function cargarLoteParaRenovar(cliId, items, rowId, listaIds) { marcarComoRenovadoEnBD(listaIds, rowId); document.querySelectorAll('tr').forEach(r => r.classList.remove('row-selected-renew')); if(rowId) { const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-selected-renew'); idFilaSeleccionadaAzul = rowId; } mostrar('cuentas', true); const cliente = listaClientesLocal.find(c => c.id === cliId); clienteIdSeleccionado.value = cliId; inputBuscarCliente.value = cliente.nombre; txtElegido.innerText = `✅ Renovando Lote de ${cliente.nombre}`; tipoCompra.value = items.length > 1 ? "combo" : "individual"; document.getElementById("btnMasPlat").style.display = items.length > 1 ? "inline-block" : "none"; plataformas.innerHTML = ""; items.forEach(it => { const div = document.createElement("div"); div.className = "fila-plataforma"; div.style = "margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;"; div.innerHTML = `<select class="tipo"><option value="${it.plat}">${it.plat}</option></select> <span class="cont-correo"><select class="correo-select"><option value="${it.clave}">${it.correo}</option></select></span> <span class="cont-clave"><input class="clave" value="${it.clave}" readonly style="width:80px"></span> <div class="bloque-perfiles" style="display:inline-block"><div class="item-perfil"><span class="cont-perfil"><select class="perfil-select"><option value="${it.perfil}">${it.perfil}</option></select></span> <span class="cont-pin"><input class="pin" value="${it.pin}" style="width:50px" readonly></span></div></div>`; plataformas.appendChild(div); }); }
 async function filtrarCuentas(sel) { const p = sel.value; if(!p) return; const f = sel.parentElement; const snap = await db.collection("cuentas_base").where("plataforma", "==", p).get(); let ops = '<option value="">Cuenta...</option>'; snap.forEach(doc => { const d = doc.data(); ops += `<option value="${d.clave}">${d.correo}</option>`; }); f.querySelector(".cont-correo").innerHTML = `<select class="correo-select" onchange="validarDisponibilidad(this)">${ops}</select>`; f.querySelector(".cont-clave").innerHTML = `<input class="clave" readonly style="width:80px">`; f.querySelector(".bloque-perfiles").innerHTML = `<div class="item-perfil"><span class="cont-perfil"></span><span class="cont-pin"></span><button class="add-perfil-btn" onclick="crearNuevaFilaPerfil(this)">+</button></div>`; if(clienteIdSeleccionado.value) { const yaTiene = listaSuscripcionesGlobal.find(s => s.clienteId === clienteIdSeleccionado.value && s.plataforma === p); if(yaTiene) { const selCorreo = f.querySelector(".correo-select"); for(let i=0; i<selCorreo.options.length; i++) { if(selCorreo.options[i].text === yaTiene.correo) { selCorreo.selectedIndex = i; validarDisponibilidad(selCorreo); break; } } } } }
 function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(".cont-perfil"); it.querySelector(".cont-pin").innerHTML = `<input class="pin" style="width:50px" readonly>`; contP.innerHTML = `<select class="perfil-select" onchange="actualizarPin(this)"><option value="">P...</option></select>`; const selP = contP.querySelector(".perfil-select"); const max = plat === "Disney" ? 7 : 5; const miPerfilPrevio = listaSuscripcionesGlobal.find(s => s.clienteId === cId && s.correo === corr && s.plataforma === plat); const ocup = listaSuscripcionesGlobal.filter(s => s.correo === corr && s.plataforma === plat && new Date(s.fin+"T12:00:00") >= hoy); for(let i=1; i<=max; i++) { const o = ocup.find(x => parseInt(x.perfil) === i); const opt = document.createElement("option"); opt.value = i; if(o) { opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '(Ocup)'}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miPerfilPrevio) { selP.value = miPerfilPrevio.perfil; actualizarPin(selP); } }
 function actualizarPin(sel) { const it = sel.closest(".item-perfil"); const val = parseInt(sel.value); it.querySelector(".pin").value = isNaN(val) ? "" : 1000 + val; }
@@ -395,16 +644,23 @@ function cargarClientes(){ db.collection("clientes").get().then(s=>{ listaClient
 function cambiarModoCompra(){ plataformas.innerHTML=""; document.getElementById("btnMasPlat").style.display=tipoCompra.value==="combo"?"inline-block":"none"; agregarPlataforma(); calcularFechaFin(); }
 function calcularFechaFin(){ if(!fechaInicio.value) return; const f=new Date(fechaInicio.value+"T12:00:00"); f.setDate(f.getDate()+Number(dias.value)); fechaFin.value=f.toISOString().split("T")[0]; }
 function agregarPlataforma(){ const div=document.createElement("div"); div.className="fila-plataforma"; div.style="margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;"; div.innerHTML=`<select class="tipo" onchange="filtrarCuentas(this)"><option value="">Plataforma...</option><option value="Netflix">Netflix</option><option value="Disney">Disney</option></select> <span class="cont-correo"></span><span class="cont-clave"></span><div class="bloque-perfiles" style="display:inline-block"></div>`; plataformas.appendChild(div); }
-function mostrar(id){ document.querySelectorAll(".content>div").forEach(d=>d.style.display="none"); document.getElementById(id).style.display="block"; }
+
+function mostrar(id, esRenovacion = false){ 
+    document.querySelectorAll(".content>div").forEach(d=>d.style.display="none"); 
+    document.getElementById(id).style.display="block"; 
+    if(id === 'cuentas' && !esRenovacion) {
+        reiniciarFormVentas();
+    }
+}
+
 function loginUser(){ auth.signInWithEmailAndPassword(email.value,password.value).catch(e=>alert(e.message)); }
 function logout(){ auth.signOut(); }
 function eliminarCliente(id){ if(confirm("¿Eliminar?")) db.collection("clientes").doc(id).delete().then(()=>actualizarTodo()); }
 function filtrarTablaClientes(){ const bus=filtroCliente.value.toLowerCase(); const filas=bodyClientes.getElementsByTagName("tr"); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?"":"none"; }
 function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase(); const filas=document.getElementById("bodyVentasHistorial").getElementsByTagName("tr"); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?"":"none"; }
 
-// --- LÓGICA DE ADMIN PERFILES (ACTUALIZADO CON SEMÁFORO Y TOOLTIP FLOTANTE) ---
-
 async function cargarAdminPerfiles() {
+    const hoyCol = new Date(new Date().toLocaleString("en-US", {timeZone: "America/Bogota"}).split(',')[0] + "T12:00:00");
     const tablas = { 'Netflix': document.getElementById("tablaNetflixBody"), 'Disney': document.getElementById("tablaDisneyBody"), 'HBO Max': document.getElementById("tablaHBOBody") };
     Object.values(tablas).forEach(t => { if(t) t.innerHTML = ""; });
 
@@ -420,33 +676,53 @@ async function cargarAdminPerfiles() {
 
         for (let i = 1; i <= numPerfiles; i++) {
             const asignado = listaSuscripcionesGlobal.find(s => 
-                s.correo === d.correo && s.plataforma === d.plataforma && 
-                parseInt(s.perfil) === i && new Date(s.fin + "T12:00:00") >= hoy
-            );
+    s.correo === d.correo &&
+    s.plataforma === d.plataforma &&
+    parseInt(s.perfil) === i
+);
 
             let colorClase = "p-libre";
             let nombreMostrar = "Libre";
             let datosData = "";
+            
 
-            if(asignado) {
-                const cli = listaClientesLocal.find(c => c.id === asignado.clienteId);
-                const diff = Math.ceil((new Date(asignado.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24));
-                nombreMostrar = cli ? cli.nombre : "Asignado";
+            if (asignado) {
+    // Calculamos la diferencia
+    const venceCol = new Date(asignado.fin + "T12:00:00");
+    const diff = Math.ceil((new Date(asignado.fin + "T12:00:00") - hoy) / (1000 * 60 * 60 * 24))-1;;
+    
+    // FILTRO CRÍTICO: Si es -5 o menos, lo tratamos como Libre
+    if (diff <= -7) {
+        colorClase = "p-libre";
+        nombreMostrar = "Libre";
+    } else {
+        // 4. Si es -2, -3, -4... ENTRA POR AQUÍ
+        const cli = listaClientesLocal.find(c => c.id === asignado.clienteId);
+        let nomC = cli ? cli.nombre : "Asignado";
+        let textoE = formatearDiasTexto(diff);
 
-                if (diff > 5) colorClase = "p-verde";
-                else if (diff >= 0) colorClase = "p-amarillo";
-                else colorClase = "p-rojo";
+        // Definimos color: Verde (>5), Amarillo (0-5), Rojo (-1 a -4)
+        if (diff > 5) colorClase = "p-verde";
+        else if (diff >= 0) colorClase = "p-amarillo";
+        else colorClase = "p-rojo";
 
-                datosData = `data-info="📅 <b>Inicio:</b> ${asignado.inicio}<br>🚩 <b>Fin:</b> ${asignado.fin}<br>⏳ <b>Faltan:</b> ${diff} días"`;
-            }
+        nombreMostrar = `<div style="line-height:1.1;">
+            <b style="font-size:12px; color:rgba(0,0,0,0.8);">${textoE}</b><br>
+            <span style="font-size:12px; text-transform:uppercase;">${nomC}</span>
+        </div>`;
+
+        // Aquí usamos la función de texto (Ayer, Hoy, Mañana)
+        datosData = `data-info="📅 <b>Inicio:</b> ${asignado.inicio}<br>🚩 <b>Fin:</b> ${asignado.fin}<br>⏳ <b>Estado:</b> ${formatearDiasTexto(diff)}"`;
+    }
+}
 
             celdasPerfiles += `
-                <td class="celda-perfil ${colorClase}" ${datosData} 
-                    onmousemove="mostrarTooltip(event)" 
-                    onmouseleave="ocultarTooltip()">
-                    <small>P${i}</small><br>
-                    <div style="font-size:10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nombreMostrar}</div>
-                </td>`;
+    <td class="celda-perfil ${colorClase}" ${datosData} 
+        onmousemove="mostrarTooltip(event)" 
+        onmouseleave="ocultarTooltip()">
+        <small style="font-size:15px;">P${i}</small><br>
+        ${nombreMostrar}
+    </td>`;
         }
 
         const fechaMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString([], {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '---';
