@@ -6,23 +6,115 @@
     <title>Mi Panel - MultiEntretenimiento BC</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        body { background: #f4f6f8; font-family: 'Segoe UI', sans-serif; color: #1e1e2f; }
-        .login-container { max-width: 450px; margin: 80px auto; padding: 20px; }
-        .card-auth { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; background: white; }
-        .header-logo { font-weight: bold; color: #1e1e2f; margin-bottom: 20px; font-size: 1.5rem; }
+        /* VARIABLES DE COLOR PARA MODO CLARO/OSCURO */
+        :root {
+            --bg-body: #f4f6f8;
+            --bg-card: #ffffff;
+            --text-main: #1e1e2f;
+            --text-muted: #6c757d;
+            --info-row-bg: #f8f9fa;
+            --border-color: #dee2e6; /* Gris suave para líneas */
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #f4f6f8;
+            --text-muted: #b0b0b0;
+            --info-row-bg: #2a2a2a;
+            --border-color: #444;    /* Gris oscuro para líneas en modo oscuro */
+        }
         
-        .servicio-card { border: none; border-radius: 12px; margin-bottom: 15px; transition: 0.3s; border-left: 6px solid #ccc; }
-        .vencido { border-left-color: #dc3545; background-color: #fff5f5; }
-        .proximo { border-left-color: #ffc107; background-color: #fffdf5; }
-        .activo { border-left-color: #28a745; background-color: #fafffa; }
+        /* Esto corrige el texto "Gestiona tus cuentas" y "Último pago" */
+.text-muted { 
+    color: var(--text-muted) !important; 
+}
+
+/* Esto corrige las líneas de separación entre los montos de pago */
+.border-start { 
+    border-color: var(--border-color) !important; 
+}
+
+        body { background: var(--bg-body); font-family: 'Segoe UI', sans-serif; color: var(--text-main); transition: 0.3s; }
+        .login-container { max-width: 450px; margin: 80px auto; padding: 20px; }
+        .card-auth { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 30px; background: var(--bg-card); }
+        .header-logo { font-weight: bold; color: var(--text-main); margin-bottom: 20px; font-size: 1.5rem; }
+        
+        .servicio-card { border: none; border-radius: 12px; margin-bottom: 15px; transition: 0.3s; border-left: 6px solid #ccc; background: var(--bg-card); color: var(--text-main); }
+        .vencido { border-left-color: #dc3545; }
+        .proximo { border-left-color: #ffc107; }
+        .activo { border-left-color: #28a745; }
         
         .badge-status { font-size: 0.8rem; padding: 6px 12px; border-radius: 50px; font-weight: bold; }
-        .info-row { background: #f8f9fa; border-radius: 8px; padding: 10px; margin-top: 10px; }
+        .info-row { background: var(--info-row-bg); border-radius: 8px; padding: 10px; margin-top: 10px; }
         .pin-box { background: #1e1e2f; color: white; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
-        h6.column-title { font-weight: bold; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        h6.column-title { font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; margin-top: 10px; }
+        
+        .banner-largo { width: 100%; height: 100px; background: #2c3e50; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 10px; }
+        .mini-banner { width: 100%; height: 70px; background: var(--info-row-bg); border-radius: 8px; margin-top: 15px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); border: 1px dashed #ccc; }
+
+        .btn-autogestion { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-left: 10px; border: 1px solid #0d6efd; color: #0d6efd; background: transparent; }
+        .btn-autogestion:hover { background: #0d6efd; color: white; }
+
+        /* BOTÓN DE MODO OSCURO */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .link-soporte { font-size: 0.85rem; display: block; margin-top: 15px; color: #0d6efd; text-decoration: none; }
+
+        @media (max-width: 991px) {
+            .order-mobile-1 { order: 1; }
+            .order-mobile-2 { order: 2; }
+        }
+        
+        /* Estilo para el aviso de oferta de renovación */
+.oferta-renovacion {
+    background: #fff3cd; /* Color crema llamativo */
+    border: 1px dashed #ffc107;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #856404; /* Texto café oscuro para buen contraste */
+    text-align: center;
+}
+
+[data-theme="dark"] .oferta-renovacion {
+    background: #332b00; /* Fondo oscuro amarillento */
+    border-color: #ffd700;
+    color: #ffe082;
+}
     </style>
 </head>
 <body>
+    
+    <div id="customModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+    <div style="background: var(--bg-card); color: var(--text-main); padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
+        <span onclick="cerrarModal()" style="position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted);">&times;</span>
+        <div id="modalBody"></div>
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" onclick="cerrarModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙</button>
 
 <div id="app">
     <div id="sectionLogin" class="container login-container">
@@ -31,22 +123,27 @@
             <h4 class="mb-3">Bienvenido a tu Panel</h4>
             <p class="text-muted mb-4">Ingresa tu número de WhatsApp para ver tus servicios.</p>
             <div class="input-group mb-3">
-                <span class="input-group-text bg-light">+57</span>
+                <select id="selectPais" class="form-select" style="max-width: 100px;">
+                    <option value="57" selected>+57 🇨🇴</option>
+                    <option value="58">+58 🇻🇪</option>
+                    <option value="51">+51 🇵🇪</option>
+                    <option value="52">+52 🇲🇽</option>
+                    <option value="1">+1 🇺🇸</option>
+                </select>
                 <input type="tel" id="inputTel" class="form-control form-control-lg" placeholder="3001234567">
             </div>
             <button onclick="verificarAcceso()" id="btnAcceder" class="btn btn-primary btn-lg w-100 shadow-sm">Consultar Mis Servicios</button>
+            
+            <a href="https://wa.me/573503938788?text=Hola%20MultiEntretenimiento%20BC%2C%20tengo%20problemas%20para%20ingresar%20a%20mi%20panel." target="_blank" class="link-soporte">
+                ¿Olvidaste o tienes problemas para ingresar? <b>Clic aquí</b>
+            </a>
+
+            <div class="header-logo mt-4" style="font-size: 1rem;">🚀 Variedades y Entretenimiento BC <br> El mejor entretenimiento 🍿 para todos 📱</div>
         </div>
     </div>
 
     <div id="sectionPanel" class="container mt-4" style="display: none;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 id="txtSaludo" class="mb-0">¡Hola!</h3>
-                <small class="text-muted">Estado de tus suscripciones</small>
-            </div>
-            <button onclick="location.reload()" class="btn btn-outline-secondary btn-sm">Cerrar Sesión</button>
-        </div>
-
+        <div id="panelHeader"></div>
         <div id="listaServicios" class="row"></div>
     </div>
 </div>
@@ -55,6 +152,197 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
+    // --- DATOS FAQ ---
+    const soporteData = {
+        "NETFLIX": [
+        // --- SECCIÓN 1: EL HOGAR NETFLIX (EL MÁS IMPORTANTE) ---
+        { q: "Aviso: 'Este televisor no forma parte de tu Hogar'", a: "Es el problema más común. Debes usar el botón azul de **Autogestión** que aparece aquí en tu panel. Allí obtendrás el código o el link de 'Estoy de viaje' al instante." },
+        { q: "Cómo usar el botón de Autogestión", a: "Haz clic en 'Autogestión' al lado de tu cuenta de Netflix. Sigue los pasos del siguiente video tutorial https://youtu.be/08oOPR-dbks para validar tu TV sin esperar a soporte." },
+        { q: "Código de hogar no llega al correo", a: "El sistema de autogestión de MultiEntretenimiento BC lo captura por ti. debes esperar de 2 a 5 minutos en que llegue el correo." },
+        { q: "Netflix me pide actualizar el hogar cada pocos días", a: "Netflix ahora exige una verificación del hogar para seguir usando el servicio. Esto es obligatorio por parte de Netflix, no de nosotros." },
+        { q: "Mensaje: 'Alguien de tu hogar ha pedido un código'", a: "Si no fuiste tú, otro miembro de la cuenta está validando su TV. No te preocupes, no afecta tu perfil." },
+        { q: "Error al generar código en autogestión", a: "Cierra la ventana, espera 10 segundos y vuelve a intentar. Asegúrate de tener buena conexión a internet." },
+
+        // --- SECCIÓN 2: ACCESO Y CREDENCIALES ---
+        { q: "Contraseña incorrecta", a: "Copia y pega la clave directamente desde este panel para evitar errores. Asegúrate de no incluir espacios en blanco al inicio o al final." },
+        { q: "No puedo cambiar la contraseña", a: "Según nuestros TyC, está estrictamente prohibido cambiar la clave. Si lo intentas, el sistema bloqueará tu acceso por seguridad." },
+        { q: "El correo cambió y no puedo entrar", a: "Reporta de inmediato a nuestro WhatsApp de soporte. Nosotros realizamos las actualizaciones de seguridad." },
+        { q: "Me pide un número de teléfono al entrar", a: "Dale a 'Omitir' o 'Configurar después'. Nunca agregues tu número personal a la cuenta." },
+        { q: "Olvidé mi PIN de perfil", a: "Tu PIN es fijo y está escrito aquí mismo en este panel, dentro de la caja oscura de datos de tu cuenta." },
+        { q: "PIN de perfil no funciona", a: "Verifica que estás entrando al perfil correcto (el nombre asignado en tu panel). Si el PIN cambió, avísanos por WhatsApp." },
+
+        // --- SECCIÓN 3: ERRORES TÉCNICOS Y DE RED (TODOS LOS NW Y MÁS) ---
+        { q: "Error NW-1-19", a: "Fallo de conectividad total. El dispositivo no detecta internet. Verifica el cable de red o la señal WiFi y reinicia el equipo." },
+        { q: "Error NW-2-4", a: "Problema de conexión con los servidores de Netflix. Generalmente se soluciona reiniciando el módem de internet." },
+        { q: "Error NW-2-5", a: "Uno de los más comunes. Indica que el dispositivo no puede alcanzar los servidores de Netflix. Prueba la conexión en el menú de ayuda de la app." },
+        { q: "Error NW-3-6", a: "Problema de configuración de red en el dispositivo. Si usas Smart TV, verifica que las DNS estén en automático." },
+        { q: "Error NW-4-7", a: "Los datos almacenados en el dispositivo deben refrescarse. Cierra sesión, apaga el equipo y desconéctalo de la luz por 1 minuto." },
+        { q: "Error NW-4-8", a: "Suele ocurrir en versiones antiguas de la app. Verifica en la tienda si hay una actualización pendiente para Netflix." },
+        { q: "Error NW-6-403", a: "Error de servidor. Generalmente ocurre cuando la red está muy saturada. Intenta cerrar otras apps de streaming en tu casa." },
+        { q: "Error NW-6-503", a: "El dispositivo no puede conectar por un fallo de caché. Debes ir a Configuración del sistema > Aplicaciones > Netflix > Borrar datos." },
+        { q: "Error UI-800-3 (Fallo de datos)", a: "Los datos de la app están corruptos. Selecciona 'Más detalles' en el error y luego 'Restablecer' o 'Cerrar sesión'." },
+        { q: "Error tvq-st-103", a: "El dispositivo no puede conectar porque la red está bloqueada. Si usas internet de una empresa o hotel, es posible que tengan bloqueado el streaming." },
+        { q: "Error tvq-st-141 / 145", a: "Error de comunicación. Intenta cambiar de red (por ejemplo, comparte datos desde tu celular) para descartar fallo del proveedor de internet." },
+        { q: "Error tvq-pb-101", a: "Error de reproducción. Suele arreglarse simplemente retrocediendo al menú principal e intentando reproducir el video de nuevo." },
+        { q: "Error 1001 / 10023", a: "Ocurre en dispositivos móviles. Indica que la app necesita ser reinstalada desde la Play Store o App Store." },
+        { q: "Error M7111-1331-5059", a: "Netflix detectó que estás usando un VPN o un 'Unblocker'. Desactiva cualquier extensión de este tipo en tu navegador." },
+        { q: "Error AIP-701", a: "Falla de autenticación de la cuenta. Cierra sesión completamente y vuelve a ingresar con el correo y clave que ves en este panel." },
+        { q: "Error 5.2 o 5.7 en Android", a: "Tu dispositivo no cumple con los requisitos de seguridad de Google (Widevine). Netflix no funcionará en alta definición o no abrirá." },
+        { q: "Error de 'Límite de títulos descargados'", a: "Netflix permite un máximo de 100 descargas por dispositivo. Borra películas ya vistas para poder descargar nuevas." },
+        { q: "Error de 'Demasiados dispositivos de descarga'", a: "Ocurre cuando muchos perfiles han descargado contenido. Debes esperar a que otros borren sus descargas para que el sistema te permita bajar archivos." },
+        { q: "La pantalla se queda en 25% o 99%", a: "Es un bloqueo de flujo de datos. Reinicia tu router y asegúrate de que nadie esté haciendo descargas pesadas en la misma red." },
+        { q: "No aparece el botón de 'Próximo episodio'", a: "Verifica en la configuración de tu perfil (desde la web) que la opción de 'Reproducción automática' esté activada." },
+
+        // --- SECCIÓN 4: PANTALLAS Y DISPOSITIVOS ---
+        { q: "Mensaje: 'Demasiadas personas usando la cuenta'", a: "Respeta el límite de pantallas compradas. Si compraste 1 pantalla, asegúrate de que no haya otro dispositivo tuyo usando la cuenta." },
+        { q: "Netflix se cierra solo", a: "Verifica si tu dispositivo tiene actualizaciones pendientes o si el almacenamiento está muy lleno." },
+        { q: "Cómo cerrar sesión en otros dispositivos", a: "Por seguridad de todos los clientes, esta opción solo la maneja el administrador de MultiEntretenimiento BC." },
+        { q: "Puedo usar Netflix en mi celular y mi TV?", a: "Solo si adquiriste 2 pantallas. Si compraste 1, solo puedes ver en un dispositivo a la vez." },
+        { q: "Se ve borroso o pixelado", a: "Netflix requiere al menos 5 Mbps para HD. Verifica tu velocidad en fast.com." },
+        { q: "No escucho el audio pero veo la imagen", a: "Cambia el idioma del audio en el menú de la película (por ejemplo, de 'Español 5.1' a 'Español' normal)." },
+
+        // --- SECCIÓN 5: CONFIGURACIÓN Y PERFILES ---
+        { q: "Puedo cambiar la foto de mi perfil?", a: "No. Según los TyC, no debes modificar fotos, nombres ni crear nuevos perfiles para evitar desorden en la cuenta." },
+        { q: "Aparecen perfiles nuevos o desconocidos", a: "Es normal en cuentas compartidas. Solo utiliza el perfil que te asignamos en este panel." },
+        { q: "Mi lista de favoritos desapareció", a: "Verifica que estés en tu perfil asignado. Si estás en el correcto, puede ser un error temporal de sincronización de Netflix." },
+        { q: "Cómo cambiar el tamaño de los subtítulos", a: "Debes hacerlo desde la web de Netflix en 'Aspecto de subtítulos'. No toques otros ajustes de cuenta." },
+        { q: "Poner Netflix en español", a: "Dentro del perfil, ve a Audio y Subtítulos y elige Español. Si el menú está en inglés, avísanos para cambiarlo desde la raíz." },
+        { q: "Aparece 'Contenido no disponible en tu región'", a: "Desactiva cualquier VPN o aplicación que cambie tu ubicación. Netflix solo funciona con IP local." },
+
+        // --- SECCIÓN 6: DISPOSITIVOS ESPECÍFICOS ---
+        { q: "Problemas en Smart TV antiguo", a: "Si la app no abre, intenta usar un TV Box, Chromecast o Fire Stick para actualizar la tecnología de tu TV." },
+        { q: "Netflix en PlayStation / Xbox no conecta", a: "Verifica que tu suscripción a PS Plus o Xbox Live no interfiera y que la fecha/hora de la consola sea exacta." },
+        { q: "No puedo descargar películas en mi PC", a: "La descarga solo está disponible en la app oficial de Netflix para Windows, no desde el navegador Chrome." },
+        { q: "Error al descargar en celular (Muchos dispositivos)", a: "Netflix limita las descargas a ciertos dispositivos. Si no puedes descargar, es porque otro perfil ya llenó el cupo de descargas." },
+        { q: "Mi TV se queda en el logo de Netflix", a: "Elimina la app de Netflix y vuelve a instalarla. Si no puedes eliminarla, restablece los valores de fábrica de la app." },
+
+        // --- SECCIÓN 7: FACTURACIÓN Y GARANTÍA ---
+        { q: "Mensaje: 'Tu cuenta está en pausa' o 'Problema de pago'", a: "No intentes pagar tú. Reporta esto de inmediato a nuestro WhatsApp para reactivar el servicio." },
+        { q: "Cuánto dura mi garantía?", a: "Tu garantía dura exactamente el mismo tiempo que compraste de servicio. Puedes ver la fecha de fin en este panel." },
+        { q: "Pedí reembolso y no me lo dan", a: "Según los TyC aceptados, al ser un producto digital no hay reembolsos, solo reposición del servicio bajo garantía." },
+        { q: "Mi cuenta vence hoy, ¿puedo pagar mañana?", a: "Para evitar perder tu perfil y tus listas, te recomendamos renovar 24 horas antes del vencimiento." },
+        { q: "Perdí mi garantía?", a: "La pierdes si cambias datos de la cuenta, compartes el acceso sin permiso o modificas perfiles ajenos." },
+
+        // --- SECCIÓN 8: OTROS ERRORES ---
+        { q: "Netflix pide actualización de la app", a: "Ve a la tienda de aplicaciones (PlayStore/AppStore) y actualiza. Es obligatorio para que el sistema de autogestión funcione." },
+        { q: "Aviso de 'Demasiadas descargas'", a: "Borra descargas de otros dispositivos antes de intentar bajar contenido nuevo." },
+        { q: "No me aparecen los estrenos", a: "Cierra sesión y vuelve a entrar para que el catálogo se actualice con las novedades de tu país." },
+        { q: "Error de 'Sistema incompatible'", a: "Ocurre en celulares con Root o modificaciones de sistema. Netflix requiere sistemas originales." },
+        { q: "Diferencia entre Plan Básico y Premium", a: "Nuestras cuentas suelen ser Premium 4K. Si notas baja calidad, verifica tu plan contratado con nosotros." },
+        { q: "Me sale publicidad en Netflix", a: "Netflix ha lanzado planes con anuncios. Si compraste un plan sin anuncios y te salen, avísanos para verificar tu cuenta." },
+        { q: "El video se detiene a cada rato", a: "Haz una prueba de velocidad. Si tienes menos de 10 megas estables, el video sufrirá cortes." },
+        { q: "Cómo reportar una caída rápido", a: "Toma captura del error, anota el correo de la cuenta y envíalo a nuestro WhatsApp de soporte técnico." },
+        { q: "Por qué debo usar el panel para ver mis datos?", a: "Porque aquí siempre están actualizados. Si cambiamos la clave por seguridad, la verás aquí al instante sin esperar mensajes." },
+        { q: "El botón de renovar no funciona", a: "Si el botón de WhatsApp no abre, guarda nuestro número +57 350 3938788 y escríbenos directamente con tu nombre." }
+    ],
+        "DISNEY": [
+    // --- SECCIÓN CANALES DEPORTIVOS (MOSHRETV) ---
+    { 
+        q: "⚽ ¿Por qué no puedo ver todos los canales de ESPN?", 
+        a: "Disney+ incluye contenido bajo demanda y eventos seleccionados (ESPN 3). Los canales 1, 2, 4 y Premium son de TV lineal. **Para ver TODO el deporte en vivo, adquiere MosherTV** con nosotros. ¡Pide información al WhatsApp!" 
+    },
+    { 
+        q: "🏀 ¿Por qué no aparece el partido que quiero ver?", 
+        a: "Muchos eventos son exclusivos de señales premium. En **MosherTV** tenemos señales 24/7 de todos los canales deportivos. Consulta precios en soporte." 
+    },
+
+    // --- CÓDIGOS DE ERROR OFICIALES (BASE DE DATOS REAL) ---
+    { q: "Código de error 4", a: "Problema con los datos de suscripción. Reporta este error a nuestro WhatsApp para verificar el estado de la cuenta con el proveedor." },
+    { q: "Código de error 9", a: "Problema de inicio de sesión. Verifica que el correo y clave del panel sean los actuales. No uses contraseñas guardadas antiguas." },
+    { q: "Código de error 11", a: "Contenido no disponible. El título no está en tu región o usas una IP que Disney bloquea. No uses VPN ni Proxy." },
+    { q: "Código de error 13", a: "Límite de dispositivos alcanzado. Según el Punto 2 de nuestros TyC, solo puedes usar las pantallas adquiridas. Cierra sesión en otros equipos." },
+    { q: "Código de error 14", a: "Correo o contraseña incorrectos. Revisa los datos en este panel. Recuerda que las claves suelen tener mayúsculas." },
+    { q: "Código de error 21", a: "Error de conexión. Tu dispositivo no alcanza los servidores. Reinicia tu módem y verifica tu señal WiFi." },
+    { q: "Código de error 22", a: "Restricción de edad. El perfil tiene filtro infantil. Usa el PIN **0000** en ajustes de perfil para subir la clasificación a 18+." },
+    { q: "Código de error 24", a: "Error de red/carga. Tu internet es inestable. Asegúrate de tener al menos 5 Mbps de velocidad estable." },
+    { q: "Código de error 25", a: "Error interno de Disney. Es un fallo general de la plataforma. Espera unos minutos e intenta de nuevo." },
+    { q: "Código de error 30", a: "Problema de registro del dispositivo. Disney no reconoce tu equipo. Intenta desinstalar y reinstalar la aplicación." },
+    { q: "Código de error 31", a: "Error de ubicación. La app no verifica dónde estás. Activa el GPS/Ubicación en tu dispositivo móvil." },
+    { q: "Código de error 32", a: "Error de inicio de sesión. La sesión expiró o la clave cambió. Revisa los datos vigentes en este panel de clientes." },
+    { q: "Código de error 38", a: "Ajustes de hora. La hora de tu TV o móvil no coincide con la real. Pon la 'Hora en automático' en los ajustes de tu equipo." },
+    { q: "Código de error 39", a: "Derechos de autor / HDMI. El cable HDMI no es compatible o estás grabando pantalla. Cambia el cable o el puerto de tu televisor." },
+    { q: "Código de error 41", a: "Error de reproducción. El servidor está saturado por un estreno. Intenta reproducir el video nuevamente." },
+    { q: "Código de error 42", a: "Tiempo de espera agotado. Tu internet tardó mucho en responder. Reinicia el router y acerca el dispositivo al WiFi." },
+    { q: "Código de error 43", a: "Problema de enlace. Cierra la app y vuelve a entrar. Ocurre al dejar el contenido en pausa por mucho tiempo." },
+    { q: "Código de error 73", a: "Error de ubicación/VPN. Estás usando un VPN o tu IP es extranjera. Desactiva cualquier bloqueador para usar la app en Colombia." },
+    { q: "Código de error 83", a: "Compatibilidad. El error más común. Tu navegador o sistema de TV necesita actualizarse. Usa Google Chrome en PC." },
+    { q: "Código de error 86", a: "Cuenta bloqueada. Esto pasa si se detecta actividad sospechosa o violación de TyC. Contacta a soporte técnico de inmediato." },
+    { q: "Código de error 87", a: "Error de perfil. Los datos del perfil están corruptos. Entra a otro perfil y regresa al tuyo para resetearlo." },
+    { q: "Código de error 90", a: "Fallo de hardware. Tu dispositivo es antiguo y no soporta la seguridad de Disney. Prueba en otro equipo." },
+    { q: "Código de error 1017", a: "Fallo de caché en Smart TV. Ve a ajustes de tu TV > Aplicaciones > Disney+ > Borrar caché y datos." },
+
+    // --- SECCIÓN ACCESO Y PERFILES (VINCULADO A TyC) ---
+    { q: "Me pide PIN de 4 dígitos", a: "El PIN estándar es **0000**. Según el Punto 3 de nuestros TyC, no debes modificar este PIN por ningún motivo." },
+    { q: "No me deja crear mi propio perfil", a: "Debes usar el perfil asignado. Crear o borrar perfiles viola el Punto 3 de los TyC y anula la garantía." },
+    { q: "Disney me pide un código por correo", a: "Si te pide código para entrar, escríbenos al WhatsApp. Nunca intentes cambiar el correo tú mismo." },
+    { q: "Por qué no puedo cambiar la foto de perfil?", a: "Para mantener el orden y la identificación de cada cliente en las cuentas compartidas." },
+    { q: "Mi suscripción dice 'Vencida' en la app", a: "Si en este panel aparece ACTIVA, ignora la app. Si no te deja ver, repórtalo para actualizar el método de pago." }
+],
+        "PRIME VIDEO": [
+    { q: "Registro de TV (Código de 6 letras)", a: "Abre la App en tu TV, dale a 'Registrar'. Envía el código que aparece al WhatsApp de soporte para vincularte." },
+    { q: "Código de error 1007, 1022, 1053", a: "Problema de conectividad. Tu red está bloqueando el tráfico de Amazon. Reinicia el módem y el equipo." },
+    { q: "Código de error 7031", a: "Fallo de reproducción en PC. Tu navegador no soporta el formato. Usa Google Chrome actualizado." },
+    { q: "Código de error 9074", a: "Error interno de la App. Ve a ajustes de tu Smart TV y selecciona 'Borrar datos' de la App Prime Video." },
+    { q: "Puedo comprar o alquilar películas?", a: "TERMINANTEMENTE PROHIBIDO (TyC Punto 1). Si realizas un cobro a la cuenta, el servicio se cancela sin reembolso." },
+    { q: "Me pide PIN de compra", a: "Es una seguridad nuestra para evitar cobros extra. Solo puedes ver el contenido que diga 'Incluido con Prime'." },
+    { q: "Error de 'Contenido Geobloqueado'", a: "Amazon es muy estricto con la región. No uses VPN y asegúrate de que tu cuenta de Amazon esté en la región local." },
+    { q: "Error 5004 (Error de cuenta)", a: "Hay un problema con el inicio de sesión. Revisa que no haya espacios en el correo o clave proporcionados." },
+    { q: "Error 2063 (Fallo de pago)", a: "Amazon detectó un fallo en el método de pago. Avísanos por WhatsApp para que el administrador lo solucione." },
+    { q: "Por qué aparecen perfiles desconocidos?", a: "Es una cuenta compartida. Según el Punto 3 de los TyC, solo usa tu perfil y no toques los demás." },
+    { q: "Puedo cambiar el nombre de mi perfil?", a: "No. Los nombres ayudan a identificar a cada cliente. Si lo cambias, violas los términos de uso." },
+    { q: "Error de 'Límite de dispositivos'", a: "Amazon permite pocas pantallas simultáneas. Asegúrate de cerrar la App si no la estás usando." },
+    { q: "No encuentro el idioma Español", a: "En el menú de reproducción (icono de globo), selecciona Español. Algunos títulos antiguos solo están en inglés." },
+    { q: "Cómo quito los subtítulos?", a: "Dentro del video, ve a 'Subtítulos' y selecciona 'Desactivar'. Esto no afecta a los otros perfiles." },
+    { q: "La calidad de video es baja", a: "Prime Video consume mucho internet. Necesitas al menos 15 Mbps estables para ver en 4K/UHD." },
+    { q: "Error 8020 (Fallo de descarga)", a: "Ocurre si el almacenamiento de tu celular está lleno o si hay mala señal WiFi." },
+    { q: "Aparece 'Suscripción finalizada'", a: "Ignora el mensaje si en este panel sale ACTIVA. Si no te deja reproducir, repórtalo para renovación." },
+    { q: "Puedo ver canales premium (HBO, Paramount) dentro de Prime?", a: "No. Solo está incluido el catálogo base de Amazon Prime. Otros canales tienen costo adicional." },
+    { q: "Error de 'Dispositivo no compatible'", a: "Tu equipo no soporta el estándar de encriptación de Amazon. Intenta actualizar el sistema operativo." },
+    { q: "Cómo contacto a un técnico?", a: "Si ninguno de estos pasos sirve, usa el botón de Salir e ingresa al link de WhatsApp de MultiEntretenimiento BC." }
+],
+        "MAX / HBO": [
+    { q: "Error 100 / 420", a: "Problema de conexión. Reinicia tu dispositivo y el módem. Si persiste, verifica que tu internet no tenga bloqueos de firewall." },
+    { q: "Error 321 / 450", a: "Fallo de autenticación. Revisa que los datos del panel coincidan. Intenta cerrar sesión y volver a entrar." },
+    { q: "Error de 'Suscripción Expirada'", a: "Es un error de caché de la App. Borra los datos de la aplicación en los ajustes de tu TV y vuelve a loguearte." },
+    { q: "Error 0-00-000", a: "Fallo técnico general de los servidores de Max. Debes esperar de 10 a 15 minutos a que restablezcan el servicio." },
+    { q: "Error de 'No se puede reproducir el título'", a: "Ocurre si el navegador no está actualizado. Usa Microsoft Edge o la App oficial de Max para Windows." },
+    { q: "Error: 'Demasiados dispositivos'", a: "Estás excediendo el límite de pantallas. Según el Punto 2 de los TyC, solo usa las que adquiriste." },
+    { q: "Max no está disponible en mi país", a: "Ocurre si usas VPN. Max detecta tu IP y te bloquea. Desactiva cualquier programa de cambio de ubicación." },
+    { q: "Error 135 (Problema de video)", a: "Fallo en la tasa de refresco de tu TV. Ve a los ajustes de imagen de tu televisor y pon el modo estándar." },
+    { q: "Error 905 (Fallo en la App)", a: "La aplicación de Max está desactualizada en tu PlayStore o App Store. Por favor actualízala." },
+    { q: "Error de 'Contenido Geobloqueado'", a: "Ciertos títulos solo están disponibles en EE.UU. Si estás en Colombia, asegúrate de no tener configurado el perfil en otro idioma." },
+    { q: "Me pide crear un perfil nuevo", a: "PROHIBIDO (TyC Punto 3). Usa solo el perfil que te asignamos en el panel para evitar suspensiones." },
+    { q: "Olvidé el PIN de mi perfil de Max", a: "El PIN es fijo y no se modifica. Revisa la caja de datos de tu cuenta en este panel para recordarlo." },
+    { q: "El audio se escucha pero la pantalla está negra", a: "Problema de HDCP. Tu cable HDMI no es compatible con el estándar de Max. Cambia el puerto HDMI de tu TV." },
+    { q: "Error en perfiles de niños", a: "Si entraste a un perfil Kids y no puedes salir, cierra sesión y vuelve a entrar con los datos del panel." },
+    { q: "No aparecen los subtítulos en español", a: "Durante la reproducción, dale al icono de idioma y selecciona 'Español Latino'. No cambies el idioma general de la cuenta." },
+    { q: "La App se cierra sola en Smart TV", a: "Falta de memoria en tu TV. Desinstala aplicaciones que no uses para liberar espacio." },
+    { q: "Error 'Algo salió mal'", a: "Fallo genérico. Suele arreglarse desconectando el televisor de la corriente por 30 segundos." },
+    { q: "Puedo descargar contenido?", a: "Solo en dispositivos móviles y tablets. Recuerda que las descargas ocupan espacio del plan general." },
+    { q: "Cómo renovar mi cuenta Max?", a: "Escríbenos 24 horas antes del vencimiento al WhatsApp para mantener tu mismo perfil." },
+    { q: "Por qué mi perfil tiene un PIN?", a: "Es por seguridad y privacidad entre clientes. No intentes quitarlo ni cambiarlo (TyC Punto 3)." }
+]
+    };
+
+    let platFaqSeleccionada = "";
+    
+    // --- LÓGICA DE TEMA (LUNA/SOL) ---
+    function setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        document.getElementById('themeBtn').innerText = theme === 'dark' ? '☀️' : '🌙';
+    }
+
+    function toggleTheme() {
+        const currentTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
+        setTheme(currentTheme);
+    }
+
+    // Aplicar tema guardado al cargar
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+
+    // --- CONFIGURACIÓN FIREBASE ---
     const firebaseConfig = { 
         apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8", 
         authDomain: "panel-cuentas-clientes.firebaseapp.com", 
@@ -62,6 +350,83 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+
+    const linkNetflix = "https://multibc2025.github.io/codigosNT-bc/"; 
+    const linkDisney = "https://onlinealarmkur.com/date/es/#count-days";
+    
+    // MODALES
+    function cerrarModal() { document.getElementById("customModal").style.display = "none"; }
+    function abrirModal(html) {
+        document.getElementById("modalBody").innerHTML = html;
+        document.getElementById("customModal").style.display = "flex";
+    }
+
+    function verTerminos() {
+    abrirModal(`
+        <div class="text-start">
+            <h3 class="text-center mb-4">📄 Términos y Condiciones</h3>
+            <div style="font-size: 0.9rem; line-height: 1.6;">
+                <p><b>1. Integridad:</b> Prohibido modificar correos, claves o configuraciones de la cuenta.</p>
+                <p><b>2. Dispositivos:</b> Uso limitado estrictamente a las pantallas adquiridas.</p>
+                <p><b>3. Perfiles:</b> No crear, borrar ni cambiar nombres/fotos. El PIN es fijo y no debe modificarse.</p>
+                <p><b>4. Privacidad:</b> Prohibido compartir la cuenta con terceros sin autorización.</p>
+                <p><b>5. Garantía:</b> No hay reembolsos. Solo se ofrece garantía de reemplazo ante fallas. Se entregan los dias de garantías desde el primer momento de reporte</p>
+                <hr>
+                <div class="p-3 bg-danger bg-opacity-10 border border-danger rounded">
+                    <small class="text-danger d-block fw-bold">⚠️ AVISO DE CANCELACIÓN:</small>
+                    <small class="text-muted">Violar estas reglas anula la garantía y el servicio se cancelará de inmediato sin devolución de dinero.</small>
+                </div>
+            </div>
+        </div>
+    `);
+}
+
+    function verFAQ() {
+        let botones = Object.keys(soporteData).map(p => 
+            `<button class="btn btn-sm btn-outline-primary m-1" onclick="activarSoportePlataforma('${p}')">${p}</button>`
+        ).join('');
+
+        const html = `
+            <h3>❓ Centro de Soporte</h3>
+            <p class="text-muted">Selecciona el servicio que presenta problemas:</p>
+            <div class="mb-3 d-flex flex-wrap justify-content-center">${botones}</div>
+            
+            <div id="areaFaq" style="display:none;">
+                <input type="text" id="busquedaFaq" class="form-control mb-3" placeholder="Escribe tu duda o error..." onkeyup="filtrarContenidoFaq()">
+                <div id="resultadosFaq"></div>
+            </div>
+        `;
+        abrirModal(html);
+    }
+
+    function activarSoportePlataforma(p) {
+        platFaqSeleccionada = p;
+        document.getElementById("areaFaq").style.display = "block";
+        document.getElementById("busquedaFaq").value = "";
+        document.getElementById("busquedaFaq").focus();
+        filtrarContenidoFaq();
+    }
+
+    function filtrarContenidoFaq() {
+        const query = document.getElementById("busquedaFaq").value.toLowerCase();
+        const resultadosDiv = document.getElementById("resultadosFaq");
+        const items = soporteData[platFaqSeleccionada];
+
+        let html = `<h6 class="text-primary">Soluciones para ${platFaqSeleccionada}:</h6>`;
+        const filtrados = items.filter(i => i.q.toLowerCase().includes(query) || i.a.toLowerCase().includes(query));
+
+        if(filtrados.length > 0) {
+            filtrados.forEach(i => {
+                html += `<div class="resultado-item">
+                            <b class="d-block">¿${i.q}?</b>
+                            <span class="text-muted small">${i.a}</span>
+                         </div>`;
+            });
+        } else {
+            html += `<p class="text-danger small mt-2">No encontramos resultados. Intenta con otra palabra, o contactanos al WhatsApp.</p>`;
+        }
+        resultadosDiv.innerHTML = html;
+    }
 
     function formatearDiasTexto(diff) {
         if (diff > 5) return "Vence en " + diff + "d";
@@ -76,123 +441,183 @@
         const tel = document.getElementById("inputTel").value.trim();
         if(!tel) return alert("Ingresa tu número.");
         const btn = document.getElementById("btnAcceder");
-        btn.disabled = true;
-        btn.innerText = "Buscando...";
+        btn.disabled = true; btn.innerText = "Buscando...";
 
         try {
             const snapClientes = await db.collection("clientes").get();
             let clienteEncontrado = null;
             snapClientes.forEach(doc => {
                 const c = doc.data();
-                const numBD = c.whatsapp.replace(/\D/g, '');
-                const numInput = tel.replace(/\D/g, '');
-                if(numBD.includes(numInput) && numInput.length >= 7) clienteEncontrado = { id: doc.id, ...c };
+                const numBD = (c.whatsapp || "").replace(/\D/g, '');
+                if(numBD.includes(tel) && tel.length >= 7) clienteEncontrado = { id: doc.id, ...c };
             });
 
             if(clienteEncontrado) cargarPanelCliente(clienteEncontrado);
-            else {
-                alert("Número no registrado.");
-                btn.disabled = false;
-                btn.innerText = "Consultar Mis Servicios";
-            }
-        } catch (e) { alert("Error: " + e.message); }
+            else { alert("No registrado."); btn.disabled = false; btn.innerText = "Consultar"; }
+        } catch (e) { alert("Error"); btn.disabled = false; }
     }
 
     async function cargarPanelCliente(cliente) {
         const hoyLocal = new Date();
+        const hora = hoyLocal.getHours();
         hoyLocal.setHours(0,0,0,0);
+        let momentoDia = hora < 12 ? "Buenos días" : (hora < 18 ? "Buenas tardes" : "Buenas noches");
 
         document.getElementById("sectionLogin").style.display = "none";
         document.getElementById("sectionPanel").style.display = "block";
-        document.getElementById("txtSaludo").innerText = `¡Hola, ${cliente.nombre}! 👋`;
-
-        const contenedorPrincipal = document.getElementById("listaServicios");
-        contenedorPrincipal.innerHTML = "<div class='text-center py-5'><p>Cargando servicios...</p></div>";
 
         try {
             const snapCuentas = await db.collection("cuentas").where("clienteId", "==", cliente.id).get();
-            const snapBase = await db.collection("cuentas_base").get();
-            const modsBase = {};
-            snapBase.forEach(doc => { modsBase[doc.data().correo] = doc.data().ultimaModificacion; });
-
             let servicios = [];
             snapCuentas.forEach(doc => {
                 const d = doc.data();
                 const fVenceObj = new Date(d.fin + "T12:00:00");
                 const diff = Math.ceil((fVenceObj - hoyLocal) / (1000 * 60 * 60 * 24)) - 1;
-                
-                // --- CAMBIO SOLICITADO: Ocultar si tiene más de 20 días de vencido ---
-                // Solo entran servicios activos o vencidos hasta por 20 días (diff >= -20)
-                if (diff >= -20) {
-                    servicios.push({ ...d, diff });
-                }
+                if (diff >= -20) servicios.push({ ...d, diff });
             });
 
-            const generarHTML = (s) => {
-                const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
-                const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
-                const fInicioFormat = s.inicio.split('-').reverse().join('/');
-                const fFinFormat = s.fin.split('-').reverse().join('/');
-                const tMod = modsBase[s.correo];
-                const fMod = tMod ? new Date(tMod).toLocaleString('es-CO', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : "Recientemente";
+            const pagosOrd = [...servicios].sort((a, b) => new Date(b.inicio) - new Date(a.inicio)).slice(0, 2);
+            let htmlPagos = "";
+            pagosOrd.forEach((s, idx) => {
+                const fPago = s.inicio.split('-').reverse().join('/');
+                htmlPagos += `<div class="px-3 border-start text-center">
+                <small class="text-muted d-block" style="font-size: 0.6rem;">${idx==0?'ÚLTIMO':'PENÚLTIMO'} PAGO</small>
+                <span class="fw-bold text-success" style="font-size: 0.9rem;">$${s.valor || 0}</span>
+              </div>`;
+            });
 
-                // Seguridad: Ocultar clave si venció
-                const mostrarClave = s.diff < 0 ? '<span class="text-danger fw-bold">Renueva para ver clave</span>' : s.clave;
-
-                let botonRenovacion = "";
-                if (s.diff <= 3) {
-                    const textoE = s.diff > 0 ? `Vence en ${s.diff} dias` : (s.diff === 0 ? "Vence HOY" : `Vencio hace ${Math.abs(s.diff)} dias`);
-                    const msj = encodeURIComponent(`SOLICITUD DE RENOVACION\n--------------------------\nServicio: ${s.plataforma}\nCorreo: ${s.correo}\nEstado: ${textoE}\nCliente: ${cliente.nombre}\n--------------------------\n`);
-                    botonRenovacion = `<div class="mt-3"><a href="https://wa.me/573503938788?text=${msj}" target="_blank" class="btn btn-success w-100 fw-bold shadow-sm" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a></div>`;
-                }
-
-                return `
-                <div class="card servicio-card shadow-sm ${colorClase} mb-4">
-                    <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h4 class="mb-0 text-uppercase"><b>${s.plataforma}</b></h4>
-                            <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
-                        </div>
-                        <div class="row mb-3 text-center">
-                            <div class="col-6 border-end"><small class="text-muted d-block">INICIO</small><b>${fInicioFormat}</b></div>
-                            <div class="col-6"><small class="text-muted d-block">VENCIMIENTO</small><b class="${s.diff < 0 ? 'text-danger' : ''}" style="font-size: 1.3rem;">${fFinFormat}</b></div>
-                        </div>
-                        <div class="info-row border rounded p-3 mb-3 bg-light">
-                            <p class="mb-2">📧 <b>Correo:</b> ${s.correo}</p>
-                            <p class="mb-0">🔑 <b>Clave:</b> ${mostrarClave}</p>
-                        </div>
-                        <div class="d-flex justify-content-between text-center">
-                            <div class="p-2 border rounded bg-white flex-fill me-1"><small class="text-muted d-block">PERFIL</small><b>${s.perfil}</b></div>
-                            <div class="p-2 border rounded bg-white flex-fill ms-1"><small class="text-muted d-block">PIN</small><span class="pin-box">${s.pin}</span></div>
-                        </div>
-                        ${botonRenovacion}
-                        <div class="pt-3 mt-3 border-top"><small class="text-muted" style="font-size: 0.7rem;">📌 Última modificación: ${fMod}</small></div>
+            document.getElementById("panelHeader").innerHTML = `
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                    <h4 class="mb-0">¡${momentoDia}, ${cliente.nombre}! 👋</h4>
+                    <div class="d-flex align-items-center mt-2 mt-md-0">
+                        ${htmlPagos}
+                        <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary">📄 Términos</button>
+                         <button onclick="verFAQ()" class="btn btn-sm btn-outline-info">❓ FAQ</button>
+                        <button onclick="location.reload()" class="btn btn-outline-danger btn-sm fw-bold ms-3">Salir</button>
                     </div>
-                </div>`;
-            };
+                </div>
+                <hr>
+                <div class="mb-4 text-center text-md-start">
+                    <h2 class="fw-bold mb-0">Estado de tus suscripciones</h2>
+                    <p class="text-muted">Gestiona tus cuentas y vencimientos</p>
+                </div>
+                <div class="banner-largo"><p class="mb-0 fw-bold">🚀 PUBLICIDAD: ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p></div>`;
 
-            // Ordenamiento y Columnas
+            const generarHTML = (s) => {
+    const fV = s.fin.split('-').reverse().join('/');
+    const ahoraMomento = new Date();
+    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    const horaActual = ahoraMomento.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+    
+    // 1. RESTAURACIÓN DE BOTONES DE AUTOGESTIÓN
+    const pName = s.plataforma.toUpperCase();
+    let btnLink = "";
+    // Se muestran siempre que el servicio no esté vencido (diff >= 0)
+    if(s.diff >= 0) {
+        if(pName.includes("NETFLIX")) {
+            btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+        } else if(pName.includes("DISNEY")) {
+            btnLink = `<a href="${linkDisney}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+        }
+    }
+
+    // 2. LÓGICA DE FECHAS PARA LA OFERTA
+    const fechaHoyText = ahoraMomento.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
+    const mañana = new Date();
+    mañana.setDate(ahoraMomento.getDate() + 1);
+    const fechaMañanaText = mañana.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
+
+    let textoEstado = "";
+    let palabraFinaliza = "";
+    if (s.diff > 0) {
+        textoEstado = "está próximo a vencer (falta(n) *" + s.diff + "* día(s))";
+        palabraFinaliza = "finaliza";
+    } else if (s.diff === 0) {
+        textoEstado = "*VENCE HOY mismo*";
+        palabraFinaliza = "finaliza";
+    } else {
+        textoEstado = "ya se encuentra *VENCIDO* (hace " + Math.abs(s.diff) + " días)";
+        palabraFinaliza = "finalizó";
+    }
+
+    // 3. OFERTA SOLO HOY Y MAÑANA (Sin porcentaje explícito)
+    const aplicaOferta = (s.diff === 0 || s.diff === 1);
+    let avisoOferta = "";
+    let textoOfertaWA = "";
+
+    if (aplicaOferta) {
+        const diaDeLaOferta = s.diff === 0 ? fechaHoyText : fechaMañanaText;
+        
+        avisoOferta = `
+            <div class="oferta-renovacion" style="background: #fff3cd; border: 1px dashed #ffc107; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; color: #856404; text-align: center;">
+                🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>
+                Renueva hoy <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b> en tu servicio.<br>
+                <small>*Aplica descuento en soporte de WhatsApp*</small> 🍿
+            </div>`;
+        
+        textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
+    }
+
+    let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
+                    "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
+                    "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
+                    "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
+                    "📧 *Correo:* " + s.correo + "\n" +
+                    "👤 *Perfil:* " + s.perfil + "\n" +
+                    "👤 *Cliente:* " + cliente.nombre + "\n\n" +
+                    "Deseo realizar el proceso de renovación un nuevo mes.\n" +
+                    textoOfertaWA +
+                    "Quedo a la espera de su respuesta para proceder con el pago.\n\n";
+
+    const msjWA = encodeURIComponent(cuerpoTxt);
+    
+    // Botón de WhatsApp (Se muestra si faltan 5 días o menos, o está vencido)
+    let btnWA = s.diff <= 5 ? `
+        <div class="mt-3">
+            <a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>
+            ${avisoOferta}
+        </div>` : "";
+
+    const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
+    const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
+
+    return `
+    <div class="card servicio-card shadow-sm ${colorClase} mb-3">
+        <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="mb-0 text-uppercase"><b>${s.plataforma}</b> ${btnLink}</h5>
+                <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
+            </div>
+            <div class="row text-center mb-2" style="font-size: 0.8rem;">
+                <div class="col-6 border-end">INICIO: <b>${s.inicio.split('-').reverse().join('/')}</b></div>
+                <div class="col-6">FIN: <b>${fV}</b></div>
+            </div>
+            <div class="info-row" style="font-size: 0.85rem;">
+                <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
+                <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
+                <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>
+            </div>
+            ${btnWA}
+        </div>
+    </div>`;
+};;
+
+            const vigentes = servicios.filter(s => s.diff > 5).sort((a,b) => b.diff - a.diff);
             const proximos = servicios.filter(s => s.diff >= 0 && s.diff <= 5).sort((a,b) => a.diff - b.diff);
             const vencidos = servicios.filter(s => s.diff < 0).sort((a,b) => b.diff - a.diff);
-            const vigentes = servicios.filter(s => s.diff > 5).sort((a,b) => b.fechaRegistro - a.fechaRegistro);
 
-            const colIzquierda = document.createElement("div"); colIzquierda.className = "col-lg-6";
-            const colDerecha = document.createElement("div"); colDerecha.className = "col-lg-6";
+            const colD = document.createElement("div"); colD.className = "col-lg-6 order-mobile-1";
+            const colI = document.createElement("div"); colI.className = "col-lg-6 order-mobile-2";
 
-            let htmlI = "<h6 class='column-title'>⚠️ Prioridad (Por vencer / Vencidos)</h6>";
-            proximos.forEach(s => htmlI += generarHTML(s));
-            vencidos.forEach(s => htmlI += generarHTML(s));
-            colIzquierda.innerHTML = htmlI;
+            colD.innerHTML = "<h6 class='column-title'>✅ SERVICIOS ACTIVOS</h6>" + vigentes.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Activos</div>";
+            colI.innerHTML = "<h6 class='column-title'>⚠️ PRIORIDAD / VENCIDOS</h6>" + proximos.map(generarHTML).join('') + vencidos.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Renovaciones</div>";
 
-            let htmlD = "<h6 class='column-title'>✅ Servicios Activos</h6>";
-            vigentes.forEach(s => htmlD += generarHTML(s));
-            colDerecha.innerHTML = htmlD;
+            const lista = document.getElementById("listaServicios");
+            lista.innerHTML = "";
+            lista.appendChild(colD);
+            lista.appendChild(colI);
 
-            contenedorPrincipal.innerHTML = "";
-            contenedorPrincipal.appendChild(colIzquierda);
-            contenedorPrincipal.appendChild(colDerecha);
-
-        } catch (e) { contenedorPrincipal.innerHTML = "<div class='alert alert-danger'>Error: " + e.message + "</div>"; }
+        } catch (e) { console.error(e); }
     }
 </script>
 </body>
