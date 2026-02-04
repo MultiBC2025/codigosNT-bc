@@ -14,6 +14,45 @@
 <!-- TODO TU CÓDIGO SIGUE IGUAL, NO SE TOCA -->
 &lt;/head&gt;
 &lt;body&gt;
+
+&lt;div id=&quot;modalEditarCuenta&quot; style=&quot;
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+&quot;&gt;
+
+    &lt;div style=&quot;
+        width:420px;
+        max-width:90%;
+        margin:10% auto;
+        background:#111;
+        padding:20px;
+        border-radius:8px;
+        color:#fff;
+    &quot;&gt;
+
+        &lt;h3 style=&quot;margin-top:0&quot;&gt;✏️ Editar Servicio&lt;/h3&gt;
+
+        &lt;input type=&quot;hidden&quot; id=&quot;editBaseId&quot;&gt;
+
+        &lt;label&gt;Correo / Usuario&lt;/label&gt;
+        &lt;input id=&quot;modalCorreo&quot; style=&quot;width:100%; margin-bottom:10px;&quot;&gt;
+
+        &lt;label&gt;Clave&lt;/label&gt;
+        &lt;input id=&quot;modalClave&quot; style=&quot;width:100%; margin-bottom:15px;&quot;&gt;
+
+        &lt;div style=&quot;text-align:right&quot;&gt;
+            &lt;button onclick=&quot;cerrarModalEditarCuenta()&quot; class=&quot;delete-btn&quot;&gt;Cancelar&lt;/button&gt;
+            &lt;button onclick=&quot;guardarEdicionModal()&quot; class=&quot;save-btn&quot; style=&quot;margin-left:10px;&quot;&gt;Guardar&lt;/button&gt;
+        &lt;/div&gt;
+
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
 &lt;/body&gt;
 &lt;/html&gt;   
 
@@ -478,6 +517,9 @@ const db=firebase.firestore(); const auth=firebase.auth();
 let listaSuscripcionesGlobal = [];
 let listaClientesLocal = [];
 let idFilaSeleccionadaAzul = null; 
+let idModificando = null; 
+let vencimientoOriginalParaEdicion = &quot;&quot;; 
+let fechaFinalCalculadaGarantia = &quot;&quot;;
 const hoy = new Date(); hoy.setHours(0,0,0,0);
 function formatearDiasTexto(diff) {
     if (diff &gt; 2) return &quot;Vence en &quot; + Math.abs(diff) + &quot;d&quot;;
@@ -575,7 +617,9 @@ async function cargarCuentasBase() {
                     &lt;td&gt;${d.clave}&lt;/td&gt;
                     ${perfilesHTML}
                     &lt;td&gt;
-                        &lt;button onclick=&quot;prepararEdicion('${id}')&quot; style=&quot;background:none; border:none; cursor:pointer; font-size:18px;&quot; title=&quot;Editar&quot;&gt;✏️&lt;/button&gt;
+                        &lt;button class=&quot;edit-btn&quot;
+onclick=&quot;abrirModalEditarCuenta('${id}', '${d.correo}', '${d.clave}')&quot;&gt;✏️&lt;/button&gt;
+
                         &lt;button onclick=&quot;eliminarCuentaBase('${id}')&quot; style=&quot;background:none; border:none; cursor:pointer; font-size:18px;&quot; title=&quot;Eliminar&quot;&gt;🗑️&lt;/button&gt;
                     &lt;/td&gt;
                 `;
@@ -804,6 +848,55 @@ function renderizarTablaClientes(){
     }); 
 }
 
+async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
+async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
+
+function renderizarTablaClientes(){ 
+    bodyClientes.innerHTML=&quot;&quot;; 
+    listaClientesLocal.sort((a,b)=&gt;a.nombre.localeCompare(b.nombre)).forEach(c=&gt;{ 
+        let hServ=&quot;&quot;; 
+        c.servsData.forEach(ser=&gt;{ 
+            const diff = Math.ceil((new Date(ser.fin+&quot;T12:00:00&quot;)-hoy)/(1000*60*60*24))-1; 
+            if(diff &lt;= -5) return; 
+
+            let cl = diff &lt; 0 ? &quot;bg-vencido&quot; : (diff &lt;= 5 ? &quot;bg-proximo&quot; : &quot;bg-activo&quot;);
+            
+            const infoTooltip = `
+                &lt;b&gt;📺 ${ser.plataforma}&lt;/b&gt;&lt;br&gt;
+                📧 ${ser.correo}&lt;br&gt;
+                🔑 ${ser.clave}&lt;br&gt;
+                👤 Perfil: ${ser.perfil}&lt;br&gt;
+                📌 PIN: ${ser.pin}&lt;br&gt;
+                📅 Inicio: ${ser.inicio}&lt;br&gt;
+                🚩 Fin: ${ser.fin}&lt;br&gt;
+                ⏳ Faltan: ${diff} días
+            `;
+
+            hServ += `
+                &lt;span class=&quot;badge-service ${cl}&quot; 
+                      data-info='${infoTooltip}' 
+                      onmousemove=&quot;mostrarTooltip(event)&quot; 
+                      onmouseleave=&quot;ocultarTooltip()&quot;&gt;
+                      ${ser.plataforma} (${diff}d)
+                &lt;/span&gt;`; 
+        }); 
+
+        bodyClientes.innerHTML += `
+            &lt;tr&gt;
+                &lt;td style=&quot;text-align:left; padding-left:15px;&quot;&gt;
+                    &lt;span class=&quot;service-count&quot;&gt;${c.cantServiciosActivos}&lt;/span&gt;
+                    &lt;b&gt;${c.nombre}&lt;/b&gt;
+                &lt;/td&gt;
+                &lt;td&gt;📞 ${c.whatsapp}&lt;/td&gt;
+                &lt;td&gt;${hServ}&lt;/td&gt;
+                &lt;td&gt;
+                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')&quot;&gt;✏️&lt;/button&gt;
+                    &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente('${c.id}')&quot;&gt;🗑️&lt;/button&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;`; 
+    }); 
+}
+
 
 
 function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = &quot;✏️ Editando Cliente&quot;; btnGuardar.innerText = &quot;Actualizar Cliente&quot;; btnCancel.style.display = &quot;inline-block&quot;; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(&quot; &quot;); if (partes.length &gt; 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
@@ -868,7 +961,45 @@ async function abrirEditorManualLote(idsStr) {
     alert(&quot;¡Cuenta externa actualizada!&quot;); 
     actualizarTodo(); 
 }
+async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
+    const snap = await db.collection(&quot;cuentas_base&quot;).where(&quot;plataforma&quot;, &quot;==&quot;, plataforma).get();
+    let ops = `&lt;option value=&quot;&quot;&gt;-- Selecciona Cuenta --&lt;/option&gt;`;
+    
+    snap.forEach(doc =&gt; {
+        const d = doc.data();
+        const selected = d.correo.trim() === correoActual.trim() ? &quot;selected&quot; : &quot;&quot;;
+        ops += `&lt;option value=&quot;${d.clave}&quot; ${selected}&gt;${d.correo.trim()}&lt;/option&gt;`;
+    });
 
+    filaDiv.querySelector(&quot;.cont-correo&quot;).innerHTML = `
+        &lt;select class=&quot;correo-select&quot; style=&quot;width: 250px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background: white; color: black;&quot; 
+            onchange=&quot;this.parentElement.parentElement.parentElement.querySelector('.clave').value = this.value&quot;&gt;
+            ${ops}
+        &lt;/select&gt;`;
+}
+
+function calcularNuevaFechaCompensacion(diasExtra) {
+    if (!vencimientoOriginalParaEdicion) return;
+
+    // Convertimos la fecha original (YYYY-MM-DD) a objeto Date
+    let f = vencimientoOriginalParaEdicion.split(&quot;-&quot;);
+    let fecha = new Date(f[0], f[1] - 1, f[2]);
+
+    // Sumamos los días
+    fecha.setDate(fecha.getDate() + parseInt(diasExtra || 0));
+
+    // Formateamos de nuevo a YYYY-MM-DD
+    let y = fecha.getFullYear();
+    let m = (fecha.getMonth() + 1).toString().padStart(2, &quot;0&quot;);
+    let d = fecha.getDate().toString().padStart(2, &quot;0&quot;);
+
+    fechaFinalCalculadaGarantia = `${y}-${m}-${d}`;
+
+    const info = document.getElementById(&quot;info_nueva_fecha&quot;);
+    if (info) {
+        info.innerHTML = `📅 Nueva fecha: &lt;b style=&quot;color:#27ae60&quot;&gt;${fechaFinalCalculadaGarantia}&lt;/b&gt;`;
+    }
+}
 
 async function filtrarCuentas(sel) { 
     const p = sel.value; 
@@ -934,28 +1065,103 @@ async function corregirFallaCuenta(idVenta) {
     const v = listaSuscripcionesGlobal.find(x =&gt; x.id === idVenta);
     if (!v) return;
 
-    // Bloqueo para plataformas principales
-    const principales = [&quot;Netflix&quot;, &quot;Disney&quot;, &quot;HBO Max&quot;];
-    if (principales.includes(v.plataforma)) {
-        return alert(&quot;⚠️ Las cuentas de Netflix, Disney y HBO se gestionan solo desde el Administrador de Perfiles.&quot;);
-    }
-
-    const nuevoCor = prompt(&quot;La cuenta falló. Ingrese el NUEVO CORREO / USUARIO:&quot;, v.correo);
+    const nuevoCor = prompt(&quot;NUEVO CORREO / USUARIO:&quot;, v.correo);
     if (!nuevoCor) return;
-    const nuevaCla = prompt(&quot;Ingrese la NUEVA CONTRASEÑA:&quot;, v.clave);
+    const nuevaCla = prompt(&quot;NUEVA CONTRASEÑA:&quot;, v.clave);
     if (!nuevaCla) return;
 
     try {
-        await db.collection(&quot;cuentas&quot;).doc(idVenta).update({
+        const batch = db.batch();
+        const ahora = new Date().toISOString();
+        
+        // ESTE ES EL ID ALFANUMÉRICO (El código raro de la cuenta base)
+        const idBase = v.idReferenciaBase; 
+
+        // A. Actualizar al cliente que estamos editando
+        batch.update(db.collection(&quot;suscripciones&quot;).doc(idVenta), {
             correo: nuevoCor.trim(),
             clave: nuevaCla.trim(),
-            nota: &quot;Cuenta reemplazada por falla&quot;,
-            fechaSoporte: new Date().toISOString()
+            ultimaModificacion: ahora
         });
-        alert(&quot;✅ Datos actualizados. El cliente verá las nuevas credenciales inmediatamente.&quot;);
+
+        // B. ACTUALIZACIÓN EN CASCADA
+        if (idBase) {
+            // 1. Actualizar la raíz en 'cuentas_base'
+            batch.update(db.collection(&quot;cuentas_base&quot;).doc(idBase), {
+                correo: nuevoCor.trim(),
+                clave: nuevaCla.trim(),
+                ultimaModificacion: ahora
+            });
+
+            // 2. Buscar a TODOS los clientes que tengan ese mismo ID base
+            const snapOtros = await db.collection(&quot;suscripciones&quot;)
+                .where(&quot;idReferenciaBase&quot;, &quot;==&quot;, idBase)
+                .get();
+
+            snapOtros.forEach(docOtro =&gt; {
+                if (docOtro.id !== idVenta) {
+                    batch.update(docOtro.ref, {
+                        correo: nuevoCor.trim(),
+                        clave: nuevaCla.trim(),
+                        ultimaModificacion: ahora
+                    });
+                }
+            });
+        }
+
+        await batch.commit();
+        alert(&quot;✅ Sincronización Total Completada.&quot;);
         actualizarTodo();
+
     } catch (e) {
-        alert(&quot;Error al actualizar: &quot; + e.message);
+        alert(&quot;❌ Error: &quot; + e.message);
+    }
+}
+function abrirModalEditarCuenta(id, correo, clave) {
+    document.getElementById(&quot;editBaseId&quot;).value = id;
+    document.getElementById(&quot;modalCorreo&quot;).value = correo;
+    document.getElementById(&quot;modalClave&quot;).value = clave;
+    document.getElementById(&quot;modalEditarCuenta&quot;).style.display = &quot;block&quot;;
+}
+
+function cerrarModalEditarCuenta() {
+    document.getElementById(&quot;modalEditarCuenta&quot;).style.display = &quot;none&quot;;
+}
+async function guardarEdicionModal() {
+    const id = document.getElementById(&quot;editBaseId&quot;).value;
+    const nuevoCorreo = document.getElementById(&quot;modalCorreo&quot;).value.trim();
+    const nuevaClave = document.getElementById(&quot;modalClave&quot;).value.trim();
+    const ahora = new Date().toISOString();
+
+    try {
+        // 1. Cuenta base
+        await db.collection(&quot;cuentas_base&quot;).doc(id).update({
+            correo: nuevoCorreo,
+            clave: nuevaClave,
+            ultimaModificacion: ahora
+        });
+
+        // 2. Cascada TOTAL por ID
+        const snap = await db.collection(&quot;cuentas&quot;)
+            .where(&quot;idReferenciaBase&quot;, &quot;==&quot;, id)
+            .get();
+
+        const batch = db.batch();
+        snap.forEach(doc =&gt; {
+            batch.update(doc.ref, {
+                correo: nuevoCorreo,
+                clave: nuevaClave,
+                ultimaModificacion: ahora
+            });
+        });
+        await batch.commit();
+
+        cerrarModalEditarCuenta();
+        actualizarTodo();
+        alert(&quot;✅ Servicio actualizado correctamente&quot;);
+
+    } catch (e) {
+        alert(&quot;❌ Error: &quot; + e.message);
     }
 }
 
@@ -1000,59 +1206,284 @@ async function filtrarCuentas(sel) { const p = sel.value; if (!p) return; const 
 function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(&quot;.cont-perfil&quot;); it.querySelector(&quot;.cont-pin&quot;).innerHTML = `&lt;input class=&quot;pin&quot; style=&quot;width:50px&quot; readonly&gt;`; contP.innerHTML = `&lt;select class=&quot;perfil-select&quot; onchange=&quot;actualizarPin(this)&quot;&gt;&lt;option value=&quot;&quot;&gt;P...&lt;/option&gt;&lt;/select&gt;`; const selP = contP.querySelector(&quot;.perfil-select&quot;); const max = plat === &quot;Disney&quot; ? 7 : 5; const margenVencido = new Date(hoy.getTime() - (3 * 86400000)); const ocup = listaSuscripcionesGlobal.filter(s =&gt; s.correo === corr &amp;&amp; s.plataforma.trim().toLowerCase() === plat.trim().toLowerCase() &amp;&amp; new Date(s.fin+&quot;T12:00:00&quot;) &gt;= margenVencido); const miP = ocup.find(s =&gt; s.clienteId === cId); for(let i=1; i&lt;=max; i++) { const o = ocup.find(x =&gt; parseInt(x.perfil) === i); const opt = document.createElement(&quot;option&quot;); opt.value = i; if(o) { const n = o.perfil_etiqueta ? (o.perfil_etiqueta.split('. ')[1] || 'Ocup') : 'Ocup'; const esVencidoReciente = new Date(o.fin + &quot;T12:00:00&quot;) &lt; hoy; opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '('+n+')'} ${esVencidoReciente ? '[V]' : ''}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miP) { selP.value = miP.perfil; actualizarPin(selP); } }
 
 /* --- PARTE 3: SINCRONIZACIÓN AUTOMÁTICA DE CLAVES --- */
-async function actualizarCuentaBase(idCuentaBase) {
-    const nuevoCorreo = document.getElementById(&quot;editCorreo&quot;).value.trim();
-    const nuevaClave = document.getElementById(&quot;editClave&quot;).value.trim();
 
-    try {
-        // 1. Actualizar la cuenta en el Administrador (Cuenta Base)
-        await db.collection(&quot;cuentas_base&quot;).doc(idCuentaBase).update({
-            correo: nuevoCorreo,
-            clave: nuevaClave,
-            ultimaModificacion: new Date().toISOString()
-        });
-
-        // 2. ACTUALIZACIÓN EN CASCADA (Solo para otros servicios)
-        // Buscamos todas las ventas que pertenezcan a esta cuenta base usando el ID interno
-        const snapshotVentas = await db.collection(&quot;suscripciones&quot;)
-            .where(&quot;idReferenciaBase&quot;, &quot;==&quot;, idCuentaBase)
-            .get();
-
-        if (!snapshotVentas.empty) {
-            const batch = db.batch(); // Usamos batch para actualizar todo de un solo golpe
-            
-            snapshotVentas.forEach(docVenta =&gt; {
-                const ventaRef = db.collection(&quot;suscripciones&quot;).doc(docVenta.id);
-                batch.update(ventaRef, {
-                    correo: nuevoCorreo,
-                    clave: nuevaClave
-                });
-            });
-
-            await batch.commit();
-            console.log(&quot;Se actualizaron &quot; + snapshotVentas.size + &quot; clientes asociados.&quot;);
-        }
-
-        alert(&quot;✅ Cuenta y clientes actualizados correctamente.&quot;);
-        cargarCuentasBase(); // Refrescar tabla
-    } catch (error) {
-        console.error(&quot;Error en actualización:&quot;, error);
-        alert(&quot;❌ Error al modificar: &quot; + error.message);
-    }
-}
 
 /* --- PARTE 4: UTILIDADES Y PIN REGLA --- */
 function actualizarPin(sel) { const it = sel.closest(&quot;.item-perfil&quot;); const val = parseInt(sel.value); it.querySelector(&quot;.pin&quot;).value = isNaN(val) ? &quot;&quot; : 1000 + val; }
 function validarDisponibilidad(sel){ const f=sel.parentElement.parentElement; f.querySelector(&quot;.clave&quot;).value=sel.value; f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it=&gt;renderizarSelectPerfil(it, f.querySelector(&quot;.tipo&quot;).value, sel.options[sel.selectedIndex].text)); }
 function eliminarCuentaBase(id) { if (confirm(&quot;¿Eliminar?&quot;)) { db.collection(&quot;cuentas_base&quot;).doc(id).delete().then(() =&gt; actualizarTodo()); } }
 
+ 
 
+async function cargarParaModificar(idVenta) {
+    try {
+        const docSnap = await db.collection(&quot;cuentas&quot;).doc(idVenta).get();
+        if (!docSnap.exists) return alert(&quot;No se encontró el registro&quot;);
+
+        const v = docSnap.data();
+        idModificando = idVenta; 
+        
+        // ASIGNACIÓN CLAVE PARA EL CÁLCULO
+        vencimientoOriginalParaEdicion = v.fin; 
+        fechaFinalCalculadaGarantia = v.fin; 
+
+        if(typeof mostrar === 'function') mostrar(&quot;cuentas&quot;); 
+
+        // Bloqueo de campos superiores
+        clienteIdSeleccionado.value = v.clienteId || &quot;&quot;;
+        inputBuscarCliente.value = v.cliente_nombre || &quot;Cliente&quot;;
+        inputBuscarCliente.disabled = true;
+
+        txtElegido.innerHTML = `🛠️ &lt;b style=&quot;color:#ff9800&quot;&gt;GARANTÍA ACTIVA&lt;/b&gt;`;
+        btnGuardar.innerText = &quot;Actualizar y Guardar&quot;;
+
+        plataformas.innerHTML = &quot;&quot;;
+        const div = document.createElement(&quot;div&quot;);
+        div.className = &quot;fila-plataforma&quot;;
+        div.style = &quot;background: #ffffff; padding: 25px; border: 2px solid #e67e22; border-radius: 12px; color: #333;&quot;;
+        
+        div.innerHTML = `
+            &lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;${v.plataforma}&quot;&gt;
+            
+            &lt;div style=&quot;text-align:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px; color:#000;&quot;&gt;
+                &lt;b&gt;Servicio:&lt;/b&gt; ${v.plataforma} | &lt;b&gt;Vence:&lt;/b&gt; ${v.fin}
+            &lt;/div&gt;
+
+            &lt;div style=&quot;display:flex; flex-direction:column; gap:15px; align-items:center;&quot;&gt;
+                
+                &lt;!-- Selector de Cuenta --&gt;
+                &lt;div style=&quot;width:100%; text-align:center;&quot;&gt;
+                    &lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;
+                    &lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Datos de Acceso Centrados --&gt;
+                &lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;
+                    &lt;div class=&quot;item-perfil&quot; style=&quot;display:contents;&quot;&gt;
+                        &lt;div style=&quot;text-align:center;&quot;&gt;
+                            &lt;label style=&quot;font-weight:bold; font-size:11px; color:#000;&quot;&gt;CLAVE&lt;/label&gt;
+                            &lt;input class=&quot;clave&quot; value=&quot;${v.clave}&quot; readonly 
+                                style=&quot;width:120px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;
+                        &lt;/div&gt;
+                        &lt;div style=&quot;text-align:center;&quot;&gt;
+                            &lt;label style=&quot;font-weight:bold; font-size:11px; color:#000;&quot;&gt;P&lt;/label&gt;
+                            &lt;input class=&quot;perfil-select&quot; value=&quot;${v.perfil}&quot; readonly 
+                                style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
+                        &lt;/div&gt;
+                        &lt;div style=&quot;text-align:center;&quot;&gt;
+                            &lt;label style=&quot;font-weight:bold; font-size:11px; color:#000;&quot;&gt;PIN&lt;/label&gt;
+                            &lt;input class=&quot;pin&quot; value=&quot;${v.pin}&quot; readonly 
+                                style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Días Extra --&gt;
+                &lt;div style=&quot;background:#d5f5e3; padding:10px; border-radius:8px; border:1px solid #2ecc71; text-align:center;&quot;&gt;
+                    &lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 ¿Días Extra?&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot; oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot;
+                        style=&quot;width:70px; padding:5px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div style=&quot;margin-top:15px; background:#fff3cd; padding:10px; border-radius:8px; border:1px solid #ffeeba;&quot;&gt;
+                &lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;
+                &lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;
+                &lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        `;
+        plataformas.appendChild(div);
+
+        await filtrarCuentasParaEdicion(v.plataforma, div, v.correo);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+
+    } catch (e) {
+        alert(&quot;Error: &quot; + e.message);
+    }
+}
+
+// Nueva función de apoyo para llenar el select en modo edición
+async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
+    const snap = await db.collection(&quot;cuentas_base&quot;).where(&quot;plataforma&quot;, &quot;==&quot;, plataforma).get();
+    let ops = `&lt;option value=&quot;&quot;&gt;-- Selecciona Cuenta --&lt;/option&gt;`;
+    
+    snap.forEach(doc =&gt; {
+        const d = doc.data();
+        const selected = d.correo.trim() === correoActual.trim() ? &quot;selected&quot; : &quot;&quot;;
+        ops += `&lt;option value=&quot;${d.clave}&quot; ${selected}&gt;${d.correo.trim()}&lt;/option&gt;`;
+    });
+
+    filaDiv.querySelector(&quot;.cont-correo&quot;).innerHTML = `
+        &lt;select class=&quot;correo-select&quot; style=&quot;width:200px; padding:5px;&quot; onchange=&quot;this.parentElement.parentElement.parentElement.querySelector('.clave').value = this.value&quot;&gt;
+            ${ops}
+        &lt;/select&gt;`;
+}
 
 function actualizarPin(sel) { const it = sel.closest(&quot;.item-perfil&quot;); const val = parseInt(sel.value); it.querySelector(&quot;.pin&quot;).value = isNaN(val) ? &quot;&quot; : 1000 + val; }
-function guardarCuentas(){ if(!clienteIdSeleccionado.value) return alert(&quot;Selecciona cliente&quot;); const marca = Date.now(); let promesas = []; document.querySelectorAll(&quot;.fila-plataforma&quot;).forEach(f =&gt; { const cSel = f.querySelector(&quot;.correo-select&quot;); if(!cSel || !cSel.value) return; const plat = f.querySelector(&quot;.tipo&quot;).value; const correo = cSel.options[cSel.selectedIndex].text; const clave = f.querySelector(&quot;.clave&quot;).value; f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it =&gt; { const p = it.querySelector(&quot;.perfil-select&quot;).value; if(!p) return; promesas.push(db.collection(&quot;cuentas&quot;).add({ clienteId: clienteIdSeleccionado.value, plataforma: plat, correo: correo, clave: clave, perfil: p, perfil_etiqueta: `${p}. ${inputBuscarCliente.value}`, pin: it.querySelector(&quot;.pin&quot;).value, inicio: fechaInicio.value, fin: fechaFin.value, metodoPago: metodoPago.value, valor: valorPago.value, fechaRegistro: marca, ultimaModificacion: new Date().toISOString() })); }); }); Promise.all(promesas).then(() =&gt; { alert(&quot;Guardado&quot;); idFilaSeleccionadaAzul = null; reiniciarFormVentas(); actualizarTodo(); }); }
+async function guardarCuentas() {
+    // 1. Obtener el ID del cliente de forma segura
+    const idCli = clienteIdSeleccionado.value;
+    if (!idCli) return alert(&quot;Selecciona un cliente&quot;);
+
+    const marca = Date.now();
+    let promesas = [];
+    
+    // Capturar la nota de garantía y los días extra del formulario de edición
+    const notaGarantia = document.getElementById(&quot;txt_obs_cambio&quot;) ? document.getElementById(&quot;txt_obs_cambio&quot;).value : &quot;&quot;;
+    const diasRegalo = document.getElementById(&quot;dias_regalo&quot;) ? parseInt(document.getElementById(&quot;dias_regalo&quot;).value) : 0;
+
+    // 2. Recorrer la fila de la plataforma (solo habrá una en modo edición)
+    document.querySelectorAll(&quot;.fila-plataforma&quot;).forEach(f =&gt; {
+        const cSel = f.querySelector(&quot;.correo-select&quot;);
+        if (!cSel || !cSel.value) return;
+
+        const plat = f.querySelector(&quot;.tipo&quot;).value;
+        
+        // REGLA CRÍTICA: Si es un SELECT (venta nueva) sacamos el text. 
+        // Si es un INPUT u otra cosa (edición), sacamos el value.
+        const correoFinal = cSel.tagName === &quot;SELECT&quot; ? cSel.options[cSel.selectedIndex].text : cSel.value;
+        const claveFinal = f.querySelector(&quot;.clave&quot;).value;
+
+        f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it =&gt; {
+            const p = it.querySelector(&quot;.perfil-select&quot;).value;
+            
+            // Construimos el objeto de datos que se enviará a Firebase
+            let objetoData = {
+                clienteId: idCli,
+                plataforma: plat,
+                correo: correoFinal,
+                clave: claveFinal,
+                perfil: p,
+                perfil_etiqueta: `${p}. ${inputBuscarCliente.value}`,
+                pin: it.querySelector(&quot;.pin&quot;).value,
+                // Si es edición, usamos la fecha compensada. Si es venta, la fecha fin normal.
+                fin: (idModificando &amp;&amp; typeof fechaFinalCalculadaGarantia !== 'undefined' &amp;&amp; fechaFinalCalculadaGarantia) ? fechaFinalCalculadaGarantia : fechaFin.value,
+                ultimaModificacion: new Date().toISOString()
+            };
+
+            // 3. ¿ES EDICIÓN O ES VENTA NUEVA?
+            if (idModificando) {
+                // AGREGAMOS DATOS DE AUDITORÍA DE GARANTÍA
+                objetoData.nota_cambio = notaGarantia;
+                objetoData.dias_extra_regalados = diasRegalo;
+                objetoData.estado_edicion = &quot;Garantía Aplicada&quot;;
+
+                // ACTUALIZAMOS EL DOCUMENTO EXISTENTE
+                promesas.push(db.collection(&quot;cuentas&quot;).doc(idModificando).update(objetoData));
+            } else {
+                // ES UNA VENTA NUEVA: Agregamos campos que solo lleva la venta inicial
+                objetoData.inicio = fechaInicio.value;
+                objetoData.metodoPago = metodoPago.value;
+                objetoData.valor = valorPago.value;
+                objetoData.fechaRegistro = marca;
+                
+                promesas.push(db.collection(&quot;cuentas&quot;).add(objetoData));
+            }
+        });
+    });
+
+    if (promesas.length === 0) return alert(&quot;No hay datos para procesar&quot;);
+
+    try {
+        await Promise.all(promesas);
+        alert(idModificando ? &quot;✅ Garantía guardada correctamente&quot; : &quot;✅ Venta guardada con éxito&quot;);
+
+        // 4. LIMPIEZA TOTAL Y DESBLOQUEO
+        idModificando = null;
+        fechaFinalCalculadaGarantia = &quot;&quot;;
+        
+        // Habilitar campos para la siguiente operación
+        inputBuscarCliente.disabled = true;
+        if(document.getElementById(&quot;fechaInicio&quot;)) document.getElementById(&quot;fechaInicio&quot;).disabled = false;
+        if(document.getElementById(&quot;fechaFin&quot;)) document.getElementById(&quot;fechaFin&quot;).disabled = false;
+        if(document.getElementById(&quot;diasVenta&quot;)) document.getElementById(&quot;diasVenta&quot;).disabled = false;
+
+        reiniciarFormVentas();
+        actualizarTodo();
+
+    } catch (err) {
+        console.error(&quot;Error al guardar:&quot;, err);
+        alert(&quot;❌ Error al conectar con la base de datos&quot;);
+    }
+}
+
+function dibujarSeccionOtrosAdmin(plataforma, cuentasBase, ventasActivas) {
+    let html = `&lt;div class=&quot;seccion-servicio&quot; style=&quot;margin-bottom: 30px; font-family: Arial, sans-serif;&quot;&gt;
+        &lt;div style=&quot;background: #2c3e50; color: white; padding: 12px; font-weight: bold; border-radius: 8px 8px 0 0; text-align: center;&quot;&gt;
+            🖥️ MONITOREO GLOBAL: ${plataforma.toUpperCase()}
+        &lt;/div&gt;
+        &lt;table style=&quot;width: 100%; border-collapse: collapse; background: white; color: black; font-size: 12px; border: 1px solid #ccc;&quot;&gt;
+            &lt;thead style=&quot;background: #f8f9fa; border-bottom: 2px solid #2c3e50;&quot;&gt;
+                &lt;tr&gt;
+                    &lt;th style=&quot;padding: 10px; text-align: left; border-right: 1px solid #ddd;&quot;&gt;Cuenta Correo&lt;/th&gt;
+                    &lt;th style=&quot;border-right: 1px solid #ddd;&quot;&gt;Clave&lt;/th&gt;
+                    &lt;th&gt;P1&lt;/th&gt;&lt;th&gt;P2&lt;/th&gt;&lt;th&gt;P3&lt;/th&gt;&lt;th&gt;P4&lt;/th&gt;&lt;th&gt;P5&lt;/th&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody&gt;`;
+
+    cuentasBase.forEach(cuenta =&gt; {
+        html += `&lt;tr style=&quot;border-bottom: 1px solid #eee;&quot;&gt;
+            &lt;td style=&quot;padding: 8px; font-weight: bold; border-right: 1px solid #ddd; background: #fafafa;&quot;&gt;${cuenta.correo}&lt;/td&gt;
+            &lt;td style=&quot;padding: 5px; text-align: center; border-right: 1px solid #ddd;&quot;&gt;${cuenta.clave}&lt;/td&gt;`;
+
+        // Generamos las 5 columnas de perfiles
+        for (let i = 1; i &lt;= 5; i++) {
+            // BUSCADOR INTERNO: Filtra si este correo y perfil están en el historial de ventas
+            const asignacion = ventasActivas.find(v =&gt; 
+                v.correo.trim().toLowerCase() === cuenta.correo.trim().toLowerCase() &amp;&amp;
+                v.perfil.toString() === i.toString() &amp;&amp;
+                v.plataforma.trim().toLowerCase() === plataforma.trim().toLowerCase()
+            );
+
+            if (asignacion) {
+                // 1. CÁLCULO DE DÍAS RESTANTES
+                const hoy = new Date();
+                const fechaFin = new Date(asignacion.fin);
+                const diferencia = Math.ceil((fechaFin - hoy) / (1000 * 60 * 60 * 24));
+
+                // 2. LÓGICA DE SEMÁFORO (Igual a Netflix)
+                let colorFondo = &quot;#27ae60&quot;; // Verde (OK)
+                let colorTexto = &quot;white&quot;;
+
+                if (diferencia &lt;= 0) {
+                    colorFondo = &quot;#c0392b&quot;; // Rojo (Vencido)
+                } else if (diferencia &lt;= 3) {
+                    colorFondo = &quot;#f1c40f&quot;; // Amarillo (Próximo)
+                    colorTexto = &quot;black&quot;;
+                }
+
+                // 3. DISEÑO DE LA CELDA OCUPADA
+                html += `&lt;td style=&quot;background: ${colorFondo}; color: ${colorTexto}; padding: 6px; text-align: center; border: 1px solid #fff; min-width: 90px;&quot;&gt;
+                    &lt;div style=&quot;font-weight: bold; font-size: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); margin-bottom: 3px;&quot;&gt;
+                        ${diferencia &lt;= 0 ? 'VENCIDO' : 'Faltan ' + diferencia + 'd'}
+                    &lt;/div&gt;
+                    &lt;div style=&quot;font-size: 9px; line-height: 1;&quot;&gt;
+                        👤 ${asignacion.cliente_nombre || &quot;Sin Nombre&quot;}
+                    &lt;/div&gt;
+                    &lt;div style=&quot;font-size: 8px; margin-top: 2px; opacity: 0.8;&quot;&gt;
+                        📅 ${asignacion.fin}
+                    &lt;/div&gt;
+                &lt;/td&gt;`;
+            } else {
+                // PERFIL LIBRE
+                html += `&lt;td style=&quot;background: #ffffff; color: #bdc3c7; text-align: center; font-style: italic; border: 1px solid #f0f0f0;&quot;&gt;
+                    Libre
+                &lt;/td&gt;`;
+            }
+        }
+        html += `&lt;/tr&gt;`;
+    });
+
+    html += `&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;`;
+    return html;
+}
 function buscarClienteHibrido(){ const txt=inputBuscarCliente.value.toLowerCase(); listaSugerencias.innerHTML=&quot;&quot;; const filtrados=listaClientesLocal.filter(c=&gt;c.nombre.toLowerCase().includes(txt) || c.whatsapp.includes(txt)); if(filtrados.length&gt;0){ filtrados.forEach(c=&gt;{ const div=document.createElement(&quot;div&quot;); div.className=&quot;sugerencia-item&quot;; div.style=&quot;padding:10px; cursor:pointer; border-bottom:1px solid #eee&quot;; div.innerHTML=`👤 &lt;b&gt;${c.nombre}&lt;/b&gt; &lt;span style=&quot;float:right; color:gray; font-size:15px;&quot;&gt;${c.whatsapp}&lt;/span&gt;`; div.onclick=()=&gt;{ clienteIdSeleccionado.value=c.id; inputBuscarCliente.value=c.nombre; txtElegido.innerText=`✅ Seleccionado: ${c.nombre} (${c.whatsapp})`; listaSugerencias.style.display=&quot;none&quot;; }; listaSugerencias.appendChild(div); }); listaSugerencias.style.display=&quot;block&quot;; } else { listaSugerencias.style.display=&quot;none&quot;; } }
 function confirmarReinicioForm() { if(confirm(&quot;¿Limpiar formulario?&quot;)) reiniciarFormVentas(); }
-function reiniciarFormVentas() { plataformas.innerHTML = &quot;&quot;; inputBuscarCliente.value = &quot;&quot;; clienteIdSeleccionado.value = &quot;&quot;; txtElegido.innerText = &quot;&quot;; valorPago.value = &quot;&quot;; metodoPago.value = &quot;Transferencia&quot;; tipoCompra.value = &quot;individual&quot;; cambiarModoCompra(); }
+function reiniciarFormVentas() { idModificando = null; // Limpiamos el ID de edición
+    inputBuscarCliente.value = &quot;&quot;;
+    inputBuscarCliente.disabled = false; // &lt;-- ESTA LÍNEA DESBLOQUEA EL BUSCADOR
+    clienteIdSeleccionado.value = &quot;&quot;; plataformas.innerHTML = &quot;&quot;; inputBuscarCliente.value = &quot;&quot;; clienteIdSeleccionado.value = &quot;&quot;; txtElegido.innerText = &quot;&quot;; valorPago.value = &quot;&quot;; metodoPago.value = &quot;Transferencia&quot;; tipoCompra.value = &quot;individual&quot;; cambiarModoCompra(); }
 function validarDisponibilidad(sel){ const f=sel.parentElement.parentElement; f.querySelector(&quot;.clave&quot;).value=sel.value; f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it=&gt;renderizarSelectPerfil(it, f.querySelector(&quot;.tipo&quot;).value, sel.options[sel.selectedIndex].text)); }
 function crearNuevaFilaPerfil(btn){ const bloque=btn.closest(&quot;.bloque-perfiles&quot;); const divExtra=document.createElement(&quot;div&quot;); divExtra.className=&quot;item-perfil extra-perfil&quot;; divExtra.innerHTML=`&lt;span class=&quot;cont-perfil&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cont-pin&quot;&gt;&lt;/span&gt;&lt;button class=&quot;delete-btn&quot; style=&quot;padding:4px 8px; margin-left:5px&quot; onclick=&quot;this.parentElement.remove()&quot;&gt;x&lt;/button&gt;`; bloque.appendChild(divExtra); renderizarSelectPerfil(divExtra, btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.tipo&quot;).value, btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.correo-select&quot;).options[btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.correo-select&quot;).selectedIndex].text); }
 function cargarClientes(){ db.collection(&quot;clientes&quot;).get().then(s=&gt;{ listaClientesLocal=[]; s.forEach(d=&gt;{ const c=d.data(); const servs=listaSuscripcionesGlobal.filter(s=&gt;s.clienteId===d.id); const activos=servs.filter(ser=&gt;Math.ceil((new Date(ser.fin+&quot;T12:00:00&quot;)-hoy)/(1000*60*60*24))&gt;-3).length; listaClientesLocal.push({id:d.id,...c,cantServiciosActivos:activos,servsData:servs}); }); renderizarTablaClientes(); cargarVentasVencimientos(); }); }
@@ -1097,100 +1528,304 @@ function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase
 // -------------------------------------------------------------------------
 async function cargarAdminPerfiles() {
     const tablas = { 
-    'Netflix': document.getElementById(&quot;tablaNetflixBody&quot;), 
-    'Disney': document.getElementById(&quot;tablaDisneyBody&quot;),
-    'HBO': document.getElementById(&quot;tablaHBOBody&quot;) // &lt;--- AGREGADO
-};
+        'Netflix': document.getElementById(&quot;tablaNetflixBody&quot;), 
+        'Disney': document.getElementById(&quot;tablaDisneyBody&quot;),
+        'HBO': document.getElementById(&quot;tablaHBOBody&quot;),
+        'OTROS': document.getElementById(&quot;tablaOtrosBody&quot;)
+    };
+
     Object.values(tablas).forEach(t =&gt; { if(t) t.innerHTML = &quot;&quot;; });
+    const hoy = new Date();
 
-    const snap = await db.collection(&quot;cuentas_base&quot;).get();
-    
-    snap.forEach(doc =&gt; {
-        const d = doc.data(); 
-        const id = doc.id; 
-        const body = tablas[d.plataforma]; 
-        if (!body) return;
+    try {
+        const [snapBase, snapSusc] = await Promise.all([
+            db.collection(&quot;cuentas_base&quot;).get(),
+            db.collection(&quot;suscripciones&quot;).get()
+        ]);
 
-        let numP = d.plataforma === 'Disney' ? 7 : 5; 
-        let celdas = &quot;&quot;;
+        let todosLosDocs = [];
+        snapBase.forEach(doc =&gt; todosLosDocs.push({ id: doc.id, d: doc.data(), col: 'cuentas_base' }));
+        snapSusc.forEach(doc =&gt; todosLosDocs.push({ id: doc.id, d: doc.data(), col: 'suscripciones' }));
 
-        for (let i = 1; i &lt;= numP; i++) {
-            // Buscamos si el perfil i está ocupado por algún cliente
-            const asig = listaSuscripcionesGlobal.find(s =&gt; s.correo === d.correo &amp;&amp; s.plataforma === d.plataforma &amp;&amp; parseInt(s.perfil) === i);
+        todosLosDocs.forEach(item =&gt; {
+            const d = item.d;
+            const id = item.id;
+            const colOrigen = item.col;
             
-            let cl = &quot;p-libre&quot;, txt = &quot;Libre&quot;;
+            let body = tablas[d.plataforma] || tablas['OTROS']; 
+            if (!body) return;
 
-            if (asig) {
-                const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / (1000 * 60 * 60 * 24)) - 1;
-                
-                // &gt;&gt;&gt; CAMBIO: Solo mostramos ocupado si no ha vencido hace más de 7 días &lt;&lt;&lt;
-                if(diff &gt; -7) {
-                    cl = diff &gt; 5 ? &quot;p-verde&quot; : (diff &gt;= 0 ? &quot;p-amarillo&quot; : &quot;p-rojo&quot;);
-                    
-                    // &gt;&gt;&gt; CAMBIO: Ahora extrae el NOMBRE del cliente de la etiqueta &lt;&lt;&lt;
-                    const nombreC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split('. ')[1] || 'Ocupado') : 'Ocupado';
-                    txt = `&lt;div style=&quot;line-height:1&quot;&gt;${diff &lt; 0 ? 'Vencido' : 'Faltan '+diff+'d'}&lt;br&gt;&lt;small style=&quot;font-size:15px&quot;&gt;${nombreC}&lt;/small&gt;&lt;/div&gt;`;
+            let numP = d.plataforma === 'Disney' ? 7 : (body === tablas['OTROS'] ? 6 : 5);
+            let celdas = &quot;&quot;;
+
+            for (let i = 1; i &lt;= numP; i++) {
+                const asig = listaSuscripcionesGlobal.find(s =&gt; 
+                    s.correo === d.correo &amp;&amp; s.plataforma === d.plataforma &amp;&amp; parseInt(s.perfil) === i
+                );
+                let cl = &quot;p-libre&quot;, txt = &quot;Libre&quot;;
+                if (asig) {
+                    const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / (1000 * 60 * 60 * 24)) - 1;
+                    if(diff &gt; -7) {
+                        cl = diff &gt; 5 ? &quot;p-verde&quot; : (diff &gt;= 0 ? &quot;p-amarillo&quot; : &quot;p-rojo&quot;);
+                        const nombreC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split('. ')[1] || 'Ocupado') : 'Ocupado';
+                        txt = `&lt;div style=&quot;line-height:1&quot;&gt;${diff &lt; 0 ? 'Vencido' : 'Faltan '+diff+'d'}&lt;br&gt;&lt;small style=&quot;font-size:13px&quot;&gt;${nombreC}&lt;/small&gt;&lt;/div&gt;`;
+                    }
                 }
+                celdas += `&lt;td class=&quot;celda-perfil ${cl}&quot;&gt;${txt}&lt;/td&gt;`;
             }
-            celdas += `&lt;td class=&quot;celda-perfil ${cl}&quot;&gt;${txt}&lt;/td&gt;`;
+
+            const fMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString('es-CO', {hour12:true, month:'short', day:'numeric', hour:'numeric', minute:'numeric'}) : '---';
+
+            const row = document.createElement(&quot;tr&quot;);
+            let btnBorrar = (body === tablas['OTROS']) ? `&lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCuentaGenerica('${id}', '${colOrigen}')&quot; style=&quot;background:none; border:none; cursor:pointer;&quot;&gt;🗑️&lt;/button&gt;` : &quot;&quot;;
+            let colPlataforma = (body === tablas['OTROS']) ? `&lt;td&gt;&lt;b&gt;${d.plataforma}&lt;/b&gt;&lt;/td&gt;` : &quot;&quot;;
+
+            row.innerHTML = `
+                ${colPlataforma}
+                &lt;td&gt;&lt;input type=&quot;text&quot; value=&quot;${d.correo}&quot; id=&quot;edit-cor-${id}&quot; class=&quot;input-locked&quot; readonly&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;input type=&quot;text&quot; value=&quot;${d.clave}&quot; id=&quot;edit-cla-${id}&quot; class=&quot;input-locked&quot; readonly&gt;&lt;/td&gt;
+                ${celdas}
+                &lt;td style=&quot;font-size:13px; color:gray;&quot;&gt;${fMod}&lt;/td&gt;
+                &lt;td id=&quot;td-accion-${id}&quot; style=&quot;white-space:nowrap;&quot;&gt;
+                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;habilitarEdicionFila('${id}', '${colOrigen}')&quot;&gt;✏️&lt;/button&gt;
+                    ${btnBorrar}
+                &lt;/td&gt;
+            `;
+            body.appendChild(row);
+        });
+    } catch (e) { console.error(&quot;Error:&quot;, e); }
+}
+
+// ESTA FUNCIÓN ES LA QUE CAMBIA EL LÁPIZ POR EL DISCO DE GUARDAR
+function habilitarEdicionFila(id, coleccion) {
+    let inputCor = document.getElementById(&quot;edit-cor-&quot; + id);
+    let inputCla = document.getElementById(&quot;edit-cla-&quot; + id);
+    let tdAccion = document.getElementById(&quot;td-accion-&quot; + id);
+
+    if (!inputCor || !inputCla) return;
+
+    // 1. DESBLOQUEO DE TECLADO Y MOUSE
+    inputCor.readOnly = false;
+    inputCla.readOnly = false;
+
+    // 2. ESTILO DE CAJÓN ABIERTO
+    // El 'cursor: text' es vital para que el mouse te deje seleccionar letras
+    let estiloEditable = &quot;background:#fff !important; border:2px solid #25d366 !important; color:#000 !important; cursor:text !important; pointer-events: auto !important;&quot;;
+    
+    inputCor.setAttribute(&quot;style&quot;, estiloEditable);
+    inputCla.setAttribute(&quot;style&quot;, estiloEditable);
+
+    // 3. CAMBIO DE BOTONES
+    tdAccion.innerHTML = `
+        &lt;button onclick=&quot;guardarCambiosCompletos('${id}', '${coleccion}')&quot; style=&quot;background:#25d366; color:white; border:none; padding:8px; border-radius:4px; cursor:pointer;&quot;&gt;💾&lt;/button&gt;
+        &lt;button onclick=&quot;cargarAdminPerfiles()&quot; style=&quot;background:#e74c3c; color:white; border:none; padding:8px; border-radius:4px; cursor:pointer; margin-left:5px;&quot;&gt;✖&lt;/button&gt;
+    `;
+
+    // 4. AUTO-SELECCIÓN (Opcional pero recomendado)
+    // Esto hace que al darle al lápiz, ya quede sombreada la clave para borrarla de una
+    inputCla.select(); 
+}
+
+// Para que los botones siempre encuentren la función
+window.habilitarEdicionFila = habilitarEdicionFila;
+
+async function guardarCambiosCompletos(id, coleccion) {
+    let nCor = document.getElementById(&quot;edit-cor-&quot; + id).value;
+    let nCla = document.getElementById(&quot;edit-cla-&quot; + id).value;
+    
+    // Guardamos en formato ISO (Estándar universal)
+    let fechaISO = new Date().toISOString();
+
+    try {
+        await db.collection(coleccion).doc(id).update({
+            correo: nCor,
+            clave: nCla,
+            ultimaModificacion: fechaISO
+        });
+        alert(&quot;✅ Guardado con éxito&quot;);
+    
+        cargarAdminPerfiles(); 
+        
+        // --- ESTO ES LO QUE DEBES AGREGAR ---
+        // 1. Si estás en la misma página de Admin Perfiles, refresca esa tabla
+        if (typeof cargarAdminPerfiles === 'function') {
+            await cargarAdminPerfiles();
         }
 
-        // &gt;&gt;&gt; CAMBIO: Formateo de fecha de última modificación para que sea legible &lt;&lt;&lt;
-        const fMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString('es-CO', {hour12:true, month:'short', day:'numeric', hour:'numeric', minute:'numeric'}) : '---';
-
-        const row = document.createElement(&quot;tr&quot;);
-        row.innerHTML = `
-            &lt;td&gt;&lt;input type=&quot;text&quot; value=&quot;${d.correo}&quot; id=&quot;edit-cor-${id}&quot; class=&quot;input-locked&quot;&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;input type=&quot;text&quot; value=&quot;${d.clave}&quot; id=&quot;edit-cla-${id}&quot; class=&quot;input-locked&quot;&gt;&lt;/td&gt;
-            ${celdas}
-            &lt;td style=&quot;font-size:15px; color:gray;&quot;&gt;${fMod}&lt;/td&gt;
-            &lt;td id=&quot;td-accion-${id}&quot;&gt;
-                &lt;button class=&quot;edit-btn&quot; onclick=&quot;habilitarEdicionFila('${id}')&quot;&gt;✏️&lt;/button&gt;
-            &lt;/td&gt;
-        `;
-        body.appendChild(row);
-    });
+        // 2. Si tienes la tabla de Historial/Ventas en la misma pantalla, la refrescamos
+        // Suponiendo que tu función de historial se llama 'cargarHistorialVentas'
+        if (typeof cargarHistorialVentas === 'function') {
+            await cargarHistorialVentas();
+        }
+        
+    } catch (e) {
+        alert(&quot;❌ Error al guardar&quot;);
+    }
+    
+    
 }
+
+async function actualizarCuentaBase(id) {
+    // 1. Capturamos lo que escribiste en los cajones
+    const elCor = document.getElementById(`edit-cor-${id}`);
+    const elCla = document.getElementById(`edit-cla-${id}`);
+    
+    if (!elCor || !elCla) return;
+
+    const nuevoCor = elCor.value.trim(); 
+    const nuevaCla = elCla.value.trim();
+    const ahora = new Date().toISOString();
+
+    try {
+        // 2. OBTENEMOS LOS DATOS ACTUALES (Antes de guardar el cambio)
+        // Esto es para saber qué correo tienen los clientes ahora mismo
+        const refMaestra = db.collection(&quot;cuentas_base&quot;).doc(id);
+        const snapMaestro = await refMaestra.get();
+        
+        if (!snapMaestro.exists) return;
+
+        // Guardamos el correo y plataforma que ya estaban en la DB
+        const correoParaBuscar = snapMaestro.data().correo.trim();
+        const plataformaActual = snapMaestro.data().plataforma;
+
+        // 3. ACTUALIZAR LA CUENTA EN CUENTAS_BASE
+        await refMaestra.update({
+            correo: nuevoCor,
+            clave: nuevaCla,
+            ultimaModificacion: ahora
+        });
+
+        // 4. SINCRONIZACIÓN AUTOMÁTICA CON LA COLECCIÓN &quot;CUENTAS&quot;
+        // Buscamos a todos los clientes que tengan el correo viejo
+        const snapClientes = await db.collection(&quot;cuentas&quot;)
+            .where(&quot;correo&quot;, &quot;==&quot;, correoParaBuscar)
+            .get();
+
+        if (!snapClientes.empty) {
+            const batch = db.batch();
+            let sincronizados = 0;
+
+            snapClientes.forEach(docC =&gt; {
+                // Filtramos por plataforma para seguridad
+                if (docC.data().plataforma === plataformaActual) {
+                    batch.update(docC.ref, {
+                        correo: nuevoCor, // Si cambiaste el correo, también se les cambia a ellos
+                        clave: nuevaCla,
+                        ultimaModificacion: ahora
+                    });
+                    sincronizados++;
+                }
+            });
+
+            await batch.commit();
+            console.log(&quot;Sincronización terminada: &quot; + sincronizados + &quot; clientes actualizados.&quot;);
+        }
+
+        alert(&quot;✅ ¡Excelente! Se actualizó cuentas_base y se sincronizó con la colección cuentas.&quot;);
+        
+        // 5. REFRESCAR LA PÁGINA (Para que veas el cambio en tu tabla)
+        if (typeof cargarAdminPerfiles === 'function') {
+            await cargarAdminPerfiles();
+        }
+
+    } catch (error) {
+        console.error(&quot;Error en la sincronización:&quot;, error);
+        alert(&quot;❌ Error al guardar: &quot; + error.message);
+    }
+}
+
+// Hacer la función global para el onclick
+window.actualizarCuentaBase = actualizarCuentaBase;
+
+async function guardarCambiosCompletos(id, coleccion) {
+    // 1. Capturamos los datos que escribiste en los cajones de Admin Perfiles
+    const inputCor = document.getElementById(&quot;edit-cor-&quot; + id);
+    const inputCla = document.getElementById(&quot;edit-cla-&quot; + id);
+    
+    if (!inputCor || !inputCla) return;
+
+    const nuevoCor = inputCor.value.trim(); 
+    const nuevaCla = inputCla.value.trim();
+    const ahora = new Date().toISOString();
+
+    try {
+        // 2. BUSCAMOS EL CORREO ACTUAL EN CUENTAS_BASE (Antes de cambiarlo)
+        // Lo necesitamos para saber a qué clientes buscar en la otra tabla
+        const refMaestra = db.collection(&quot;cuentas_base&quot;).doc(id);
+        const snapMaestro = await refMaestra.get();
+        
+        if (!snapMaestro.exists) return;
+        const correoBusqueda = snapMaestro.data().correo.trim();
+
+        // 3. ACTUALIZAMOS CUENTAS_BASE (Lo que ya te funciona bien)
+        await refMaestra.update({
+            correo: nuevoCor,
+            clave: nuevaCla,
+            ultimaModificacion: ahora
+        });
+
+        // 4. EL ENLACE: ACTUALIZAR LA COLECCIÓN &quot;CUENTAS&quot; (Los clientes)
+        // Buscamos a todos los clientes que tengan el correo que acabamos de editar
+        const snapClientes = await db.collection(&quot;cuentas&quot;)
+            .where(&quot;correo&quot;, &quot;==&quot;, correoBusqueda)
+            .get();
+
+        if (!snapClientes.empty) {
+            const batch = db.batch();
+            
+            snapClientes.forEach(docC =&gt; {
+                // A cada cliente encontrado le actualizamos su clave y correo
+                batch.update(docC.ref, {
+                    correo: nuevoCor,
+                    clave: nuevaCla,
+                    ultimaModificacion: ahora
+                });
+            });
+
+            // Se ejecutan todos los cambios de los clientes de un solo golpe
+            await batch.commit();
+            console.log(&quot;Sincronización con clientes exitosa&quot;);
+        }
+
+        alert(&quot;✅ Guardado en cuentas_base y actualizado en cuentas de clientes.&quot;);
+        
+        // 5. Refrescamos la tabla que estás viendo
+        if (typeof cargarAdminPerfiles === 'function') {
+            await cargarAdminPerfiles();
+        }
+
+    } catch (error) {
+        console.error(&quot;Error sincronizando:&quot;, error);
+        alert(&quot;❌ Error al enlazar con clientes: &quot; + error.message);
+    }
+}
+
+// Hacer la función disponible para el botón
+window.guardarCambiosCompletos = guardarCambiosCompletos;
+
+async function eliminarCuentaGenerica(id, coleccion) {
+    // Mensaje de verificación
+    const confirmar = confirm(&quot;⚠ ¿Estás seguro de que deseas eliminar esta cuenta? Esta acción no se puede deshacer.&quot;);
+    
+    if (confirmar) {
+        try {
+            await db.collection(coleccion).doc(id).delete();
+            alert(&quot;🗑 Cuenta eliminada con éxito&quot;);
+            cargarAdminPerfiles(); // Refresca la tabla automáticamente
+        } catch (error) {
+            console.error(&quot;Error al eliminar:&quot;, error);
+            alert(&quot;❌ No se pudo eliminar la cuenta&quot;);
+        }
+    }
+}
+
 
 // -------------------------------------------------------------------------
 // FUNCIONES DE SINCRONIZACIÓN (LA LÓGICA QUE AGREGUÉ PARA TI)
 // -------------------------------------------------------------------------
-function habilitarEdicionFila(id) {
-    document.getElementById(`edit-cor-${id}`).classList.add('input-editable');
-    document.getElementById(`edit-cla-${id}`).classList.add('input-editable');
-    document.getElementById(`td-accion-${id}`).innerHTML = `
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#28a745&quot; onclick=&quot;actualizarCuentaBase('${id}')&quot;&gt;💾&lt;/button&gt;
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#6c757d&quot; onclick=&quot;actualizarTodo()&quot;&gt;X&lt;/button&gt;
-    `;
-}
 
-async function actualizarCuentaBase(id) {
-    const nuevoCor = document.getElementById(`edit-cor-${id}`).value;
-    const nuevaCla = document.getElementById(`edit-cla-${id}`).value;
-    const ahora = new Date().toISOString(); // Marca de tiempo real
 
-    // 1. Actualiza la cuenta principal
-    await db.collection(&quot;cuentas_base&quot;).doc(id).update({ 
-        correo: nuevoCor, 
-        clave: nuevaCla, 
-        ultimaModificacion: ahora 
-    });
 
-    // 2. &gt;&gt;&gt; CAMBIO: SINCRONIZACIÓN AUTOMÁTICA CON CLIENTES &lt;&lt;&lt;
-    // Busca a todos los clientes que tengan este correo y les cambia la clave de un solo golpe
-    const snap = await db.collection(&quot;cuentas&quot;).where(&quot;correo&quot;, &quot;==&quot;, nuevoCor).get();
-    const batch = db.batch();
-    snap.forEach(doc =&gt; {
-        batch.update(doc.ref, { 
-            clave: nuevaCla, 
-            ultimaModificacion: ahora 
-        });
-    });
-    await batch.commit();
-
-    alert(&quot;¡Sincronizado! La nueva clave ya es visible para todos los clientes de esta cuenta.&quot;);
-    actualizarTodo();
-}
 
 function mostrarTooltip(e) {
     const info = e.currentTarget.getAttribute('data-info');
@@ -1204,68 +1839,46 @@ function mostrarTooltip(e) {
 
 function ocultarTooltip() { tooltip.style.display = 'none'; }
 
-function habilitarEdicionFila(id) {
-    const inputCor = document.getElementById(`edit-cor-${id}`);
-    const inputCla = document.getElementById(`edit-cla-${id}`);
-    const tdAccion = document.getElementById(`td-accion-${id}`);
-    inputCor.classList.add('input-editable');
-    inputCla.classList.add('input-editable');
-    tdAccion.innerHTML = `
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#28a745; margin-right:5px;&quot; onclick=&quot;actualizarCuentaBase('${id}')&quot;&gt;💾&lt;/button&gt;
-        &lt;button class=&quot;delete-btn&quot; style=&quot;background:#6c757d;&quot; onclick=&quot;cargarAdminPerfiles()&quot;&gt;X&lt;/button&gt;
-    `;
-}
 
-async function actualizarCuentaBase(idCuenta, nuevoCorreo, nuevaClave) {
+
+async function actualizarCuentaBase(idCuenta) {
     try {
-        // 1. Obtener los datos actuales para saber qué plataforma es
-        const docRef = db.collection(&quot;cuentas_base&quot;).doc(idCuenta);
-        const docSnap = await docRef.get();
-        
-        if (!docSnap.exists) return alert(&quot;Cuenta no encontrada&quot;);
-        const datosActuales = docSnap.data();
-        const plat = datosActuales.plataforma;
+        const nuevoCorreo = document.getElementById(`edit-cor-${idCuenta}`).value.trim();
+        const nuevaClave = document.getElementById(`edit-cla-${idCuenta}`).value.trim();
+        const ahora = new Date().toISOString();
 
-        const batch = db.batch();
-
-        // 2. Actualizar siempre la Cuenta Base (Administrador)
-        batch.update(docRef, {
+        // 1. Actualizar CUENTA BASE
+        await db.collection(&quot;cuentas_base&quot;).doc(idCuenta).update({
             correo: nuevoCorreo,
             clave: nuevaClave,
-            ultimaModificacion: new Date().toISOString()
+            ultimaModificacion: ahora
         });
 
-        // 3. LÓGICA DE CASCADA SOLO PARA &quot;OTROS SERVICIOS&quot;
-        // Definimos cuáles NO son otros servicios
-        const plataformasPrincipales = [&quot;Netflix&quot;, &quot;Disney&quot;, &quot;HBO&quot;];
+        // 2. Actualización EN CASCADA usando ID (NO correo)
+        const snap = await db.collection(&quot;cuentas&quot;)
+            .where(&quot;idReferenciaBase&quot;, &quot;==&quot;, idCuenta)
+            .get();
 
-        if (!plataformasPrincipales.includes(plat)) {
-            console.log(&quot;Aplicando actualización en cascada para: &quot; + plat);
-            
-            const snapVentas = await db.collection(&quot;suscripciones&quot;)
-                .where(&quot;idReferenciaBase&quot;, &quot;==&quot;, idCuenta)
-                .get();
+        if (!snap.empty) {
+            const batch = db.batch();
 
-            snapVentas.forEach(docVenta =&gt; {
-                const refVenta = db.collection(&quot;suscripciones&quot;).doc(docVenta.id);
-                batch.update(refVenta, {
+            snap.forEach(doc =&gt; {
+                batch.update(doc.ref, {
                     correo: nuevoCorreo,
-                    clave: nuevaClave
+                    clave: nuevaClave,
+                    ultimaModificacion: ahora
                 });
             });
-            
-            console.log(&quot;Clientes actualizados: &quot; + snapVentas.size);
+
+            await batch.commit();
         }
 
-        // 4. Ejecutar cambios
-        await batch.commit();
-        alert(&quot;✅ Cambios guardados correctamente.&quot;);
-        
-        if (typeof cargarCuentasBase === 'function') cargarCuentasBase();
+        alert(&quot;✅ Cuenta y clientes sincronizados correctamente.&quot;);
+        actualizarTodo();
 
-    } catch (error) {
-        console.error(&quot;Error en actualización:&quot;, error);
-        alert(&quot;❌ Error: &quot; + error.message);
+    } catch (e) {
+        console.error(e);
+        alert(&quot;❌ Error al sincronizar: &quot; + e.message);
     }
 }
 
@@ -1285,6 +1898,24 @@ function abrirModalNuevaCuenta(plat) {
     // Esto precarga los datos en memoria apenas abre la web
     cargarCuentasBase();
 });
+
+// --- ANULADOR DE BLOQUEOS ---
+// Forzamos que cualquier intento de abrir el editor manual use nuestra nueva lógica
+window.abrirEditorManualLote = function(id) {
+    console.log(&quot;Anulando función vieja... Abriendo cargador nuevo para ID:&quot;, id);
+    cargarParaModificar(id); // Redirige a la función que SÍ funciona
+};
+
+// Si tienes un botón que llama a otra cosa, esto lo redireccionará
+window.editarCuentaSuscripcion = function(id) {
+    cargarParaModificar(id);
+    window.habilitarEdicionFila = habilitarEdicionFila;
+window.guardarCambiosCompletos = guardarCambiosCompletos;
+window.eliminarCuentaGenerica = eliminarCuentaGenerica;
+window.habilitarEdicionFila = habilitarEdicionFila;
+window.guardarCambiosCompletos = guardarCambiosCompletos;
+};
+
 &lt;/script&gt; 
 &lt;/body&gt;
 &lt;/html&gt;" title="Panel MultiBC" style="width:100%; height:100vh; border:none;""></iframe></body>
