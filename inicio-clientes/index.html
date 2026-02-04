@@ -13,7 +13,7 @@
             --text-main: #1e1e2f;
             --text-muted: #6c757d;
             --info-row-bg: #f8f9fa;
-            --border-color: #dee2e6; /* Gris suave para líneas */
+            --border-color: #dee2e6;
         }
 
         [data-theme="dark"] {
@@ -22,18 +22,11 @@
             --text-main: #f4f6f8;
             --text-muted: #b0b0b0;
             --info-row-bg: #2a2a2a;
-            --border-color: #444;    /* Gris oscuro para líneas en modo oscuro */
+            --border-color: #444;
         }
         
-        /* Esto corrige el texto "Gestiona tus cuentas" y "Último pago" */
-.text-muted { 
-    color: var(--text-muted) !important; 
-}
-
-/* Esto corrige las líneas de separación entre los montos de pago */
-.border-start { 
-    border-color: var(--border-color) !important; 
-}
+        .text-muted { color: var(--text-muted) !important; }
+        .border-start { border-color: var(--border-color) !important; }
 
         body { background: var(--bg-body); font-family: 'Segoe UI', sans-serif; color: var(--text-main); transition: 0.3s; }
         .login-container { max-width: 450px; margin: 80px auto; padding: 20px; }
@@ -56,55 +49,55 @@
         .btn-autogestion { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-left: 10px; border: 1px solid #0d6efd; color: #0d6efd; background: transparent; }
         .btn-autogestion:hover { background: #0d6efd; color: white; }
 
-        /* BOTÓN DE MODO OSCURO */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--bg-card);
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: 0.3s;
-        }
+        .theme-toggle { position: fixed; top: 20px; right: 20px; z-index: 1000; background: var(--bg-card); border: 1px solid #ccc; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s; }
 
         .link-soporte { font-size: 0.85rem; display: block; margin-top: 15px; color: #0d6efd; text-decoration: none; }
 
-        @media (max-width: 991px) {
-            .order-mobile-1 { order: 1; }
-            .order-mobile-2 { order: 2; }
+        .oferta-renovacion { background: #fff3cd; border: 1px dashed #ffc107; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; color: #856404; text-align: center; }
+        [data-theme="dark"] .oferta-renovacion { background: #332b00; border-color: #ffd700; color: #ffe082; }
+
+        @media (max-width: 991px) { .order-mobile-1 { order: 1; } .order-mobile-2 { order: 2; } }
+        
+         .main-footer {
+             opacity: 0; /* Invisible al principio */
+    transition: opacity 0.5s ease; /* Aparecerá suavemente */
+            background-color: #ffffff;
+            text-align: center;
+            padding: 5px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute; /* siempre al fondo */
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 40px auto 20px auto;
+            margin-top: auto; /* Empuja el footer hacia abajo */
+            border-top: 2px solid #333;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            border-radius: 50px 50px 0 0;
+            z-index: 100;
+            width: 100%;
+            position: relative; 
+    /* 50px de espacio arriba | auto para centrar horizontalmente | 40px de espacio al final */
+    margin: 50px auto  auto;
+            
+          left: 0;
+        }
+
+        .footer-text {
+            color: #555;
+            font-size: 5em;
         }
         
-        /* Estilo para el aviso de oferta de renovación */
-.oferta-renovacion {
-    background: #fff3cd; /* Color crema llamativo */
-    border: 1px dashed #ffc107;
-    border-radius: 8px;
-    padding: 10px;
-    margin-top: 10px;
-    font-size: 0.85rem;
-    color: #856404; /* Texto café oscuro para buen contraste */
-    text-align: center;
+        .footer-visible {
+    opacity: 1 !important; /* Clase que activaremos por JS */
 }
 
-[data-theme="dark"] .oferta-renovacion {
-    background: #332b00; /* Fondo oscuro amarillento */
-    border-color: #ffd700;
-    color: #ffe082;
-}
     </style>
 </head>
 <body>
     
-    <div id="customModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+<div id="customModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
     <div style="background: var(--bg-card); color: var(--text-main); padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
         <span onclick="cerrarModal()" style="position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted);">&times;</span>
         <div id="modalBody"></div>
@@ -152,7 +145,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // --- DATOS FAQ ---
     const soporteData = {
         "NETFLIX": [
         // --- SECCIÓN 1: EL HOGAR NETFLIX (EL MÁS IMPORTANTE) ---
@@ -325,8 +317,7 @@
     };
 
     let platFaqSeleccionada = "";
-    
-    // --- LÓGICA DE TEMA (LUNA/SOL) ---
+
     function setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
@@ -337,12 +328,9 @@
         const currentTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
         setTheme(currentTheme);
     }
-
-    // Aplicar tema guardado al cargar
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
 
-    // --- CONFIGURACIÓN FIREBASE ---
     const firebaseConfig = { 
         apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8", 
         authDomain: "panel-cuentas-clientes.firebaseapp.com", 
@@ -353,8 +341,7 @@
 
     const linkNetflix = "https://multibc2025.github.io/codigosNT-bc/"; 
     const linkDisney = "https://onlinealarmkur.com/date/es/#count-days";
-    
-    // MODALES
+
     function cerrarModal() { document.getElementById("customModal").style.display = "none"; }
     function abrirModal(html) {
         document.getElementById("modalBody").innerHTML = html;
@@ -362,24 +349,24 @@
     }
 
     function verTerminos() {
-    abrirModal(`
-        <div class="text-start">
-            <h3 class="text-center mb-4">📄 Términos y Condiciones</h3>
-            <div style="font-size: 0.9rem; line-height: 1.6;">
-                <p><b>1. Integridad:</b> Prohibido modificar correos, claves o configuraciones de la cuenta.</p>
-                <p><b>2. Dispositivos:</b> Uso limitado estrictamente a las pantallas adquiridas.</p>
-                <p><b>3. Perfiles:</b> No crear, borrar ni cambiar nombres/fotos. El PIN es fijo y no debe modificarse.</p>
-                <p><b>4. Privacidad:</b> Prohibido compartir la cuenta con terceros sin autorización.</p>
-                <p><b>5. Garantía:</b> No hay reembolsos. Solo se ofrece garantía de reemplazo ante fallas. Se entregan los dias de garantías desde el primer momento de reporte</p>
-                <hr>
-                <div class="p-3 bg-danger bg-opacity-10 border border-danger rounded">
-                    <small class="text-danger d-block fw-bold">⚠️ AVISO DE CANCELACIÓN:</small>
-                    <small class="text-muted">Violar estas reglas anula la garantía y el servicio se cancelará de inmediato sin devolución de dinero.</small>
+        abrirModal(`
+            <div class="text-start">
+                <h3 class="text-center mb-4">📄 Términos y Condiciones</h3>
+                <div style="font-size: 0.9rem; line-height: 1.6;">
+                    <p><b>1. Integridad:</b> Prohibido modificar correos, claves o configuraciones de la cuenta.</p>
+                    <p><b>2. Dispositivos:</b> Uso limitado estrictamente a las pantallas adquiridas.</p>
+                    <p><b>3. Perfiles:</b> No crear, borrar ni cambiar nombres/fotos. El PIN es fijo.</p>
+                    <p><b>4. Privacidad:</b> Prohibido compartir la cuenta con terceros.</p>
+                    <p><b>5. Garantía:</b> No hay reembolsos. Solo garantía de reemplazo ante fallas.</p>
+                    <hr>
+                    <div class="p-3 bg-danger bg-opacity-10 border border-danger rounded">
+                        <small class="text-danger d-block fw-bold">⚠️ AVISO DE CANCELACIÓN:</small>
+                        <small class="text-muted">Violar estas reglas anula la garantía y el servicio se cancelará de inmediato sin devolución de dinero. </small>
+                    </div>
                 </div>
             </div>
-        </div>
-    `);
-}
+        `);
+    }
 
     function verFAQ() {
         let botones = Object.keys(soporteData).map(p => 
@@ -390,9 +377,8 @@
             <h3>❓ Centro de Soporte</h3>
             <p class="text-muted">Selecciona el servicio que presenta problemas:</p>
             <div class="mb-3 d-flex flex-wrap justify-content-center">${botones}</div>
-            
             <div id="areaFaq" style="display:none;">
-                <input type="text" id="busquedaFaq" class="form-control mb-3" placeholder="Escribe tu duda o error..." onkeyup="filtrarContenidoFaq()">
+                <input type="text" id="busquedaFaq" class="form-control mb-3" placeholder="Escribe tu duda..." onkeyup="filtrarContenidoFaq()">
                 <div id="resultadosFaq"></div>
             </div>
         `;
@@ -402,8 +388,6 @@
     function activarSoportePlataforma(p) {
         platFaqSeleccionada = p;
         document.getElementById("areaFaq").style.display = "block";
-        document.getElementById("busquedaFaq").value = "";
-        document.getElementById("busquedaFaq").focus();
         filtrarContenidoFaq();
     }
 
@@ -411,20 +395,11 @@
         const query = document.getElementById("busquedaFaq").value.toLowerCase();
         const resultadosDiv = document.getElementById("resultadosFaq");
         const items = soporteData[platFaqSeleccionada];
-
         let html = `<h6 class="text-primary">Soluciones para ${platFaqSeleccionada}:</h6>`;
         const filtrados = items.filter(i => i.q.toLowerCase().includes(query) || i.a.toLowerCase().includes(query));
-
-        if(filtrados.length > 0) {
-            filtrados.forEach(i => {
-                html += `<div class="resultado-item">
-                            <b class="d-block">¿${i.q}?</b>
-                            <span class="text-muted small">${i.a}</span>
-                         </div>`;
-            });
-        } else {
-            html += `<p class="text-danger small mt-2">No encontramos resultados. Intenta con otra palabra, o contactanos al WhatsApp.</p>`;
-        }
+        filtrados.forEach(i => {
+            html += `<div class="resultado-item mb-2"><b>¿${i.q}?</b><br><span class="text-muted small">${i.a}</span></div>`;
+        });
         resultadosDiv.innerHTML = html;
     }
 
@@ -479,7 +454,6 @@
             const pagosOrd = [...servicios].sort((a, b) => new Date(b.inicio) - new Date(a.inicio)).slice(0, 2);
             let htmlPagos = "";
             pagosOrd.forEach((s, idx) => {
-                const fPago = s.inicio.split('-').reverse().join('/');
                 htmlPagos += `<div class="px-3 border-start text-center">
                 <small class="text-muted d-block" style="font-size: 0.6rem;">${idx==0?'ÚLTIMO':'PENÚLTIMO'} PAGO</small>
                 <span class="fw-bold text-success" style="font-size: 0.9rem;">$${s.valor || 0}</span>
@@ -491,8 +465,8 @@
                     <h4 class="mb-0">¡${momentoDia}, ${cliente.nombre}! 👋</h4>
                     <div class="d-flex align-items-center mt-2 mt-md-0">
                         ${htmlPagos}
-                        <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary">📄 Términos</button>
-                         <button onclick="verFAQ()" class="btn btn-sm btn-outline-info">❓ FAQ</button>
+                        <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary ms-2">📄 Términos</button>
+                         <button onclick="verFAQ()" class="btn btn-sm btn-outline-info ms-2">❓ FAQ</button>
                         <button onclick="location.reload()" class="btn btn-outline-danger btn-sm fw-bold ms-3">Salir</button>
                     </div>
                 </div>
@@ -504,103 +478,96 @@
                 <div class="banner-largo"><p class="mb-0 fw-bold">🚀 PUBLICIDAD: ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p></div>`;
 
             const generarHTML = (s) => {
-    const fV = s.fin.split('-').reverse().join('/');
-    const ahoraMomento = new Date();
-    const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-    const horaActual = ahoraMomento.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-    
-    // 1. RESTAURACIÓN DE BOTONES DE AUTOGESTIÓN
-    const pName = s.plataforma.toUpperCase();
-    let btnLink = "";
-    // Se muestran siempre que el servicio no esté vencido (diff >= 0)
-    if(s.diff >= 0) {
-        if(pName.includes("NETFLIX")) {
-            btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
-        } else if(pName.includes("DISNEY")) {
-            btnLink = `<a href="${linkDisney}" target="_blank" class="btn-autogestion">Autogestión</a>`;
-        }
-    }
+                const fV = s.fin.split('-').reverse().join('/');
+                const ahoraMomento = new Date();
+                
+                // 1. RESTAURACIÓN DE BOTONES DE AUTOGESTIÓN
+                const pName = s.plataforma.toUpperCase();
+                let btnLink = "";
+                if(s.diff >= 0) {
+                    if(pName.includes("NETFLIX")) btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+                    else if(pName.includes("DISNEY")) btnLink = `<a href="${linkDisney}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+                }
 
-    // 2. LÓGICA DE FECHAS PARA LA OFERTA
-    const fechaHoyText = ahoraMomento.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
-    const mañana = new Date();
-    mañana.setDate(ahoraMomento.getDate() + 1);
-    const fechaMañanaText = mañana.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
+                // 2. LÓGICA DE FECHAS PARA LA OFERTA
+                const fechaHoyText = ahoraMomento.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
+                const mañana = new Date();
+                mañana.setDate(ahoraMomento.getDate() + 1);
+                const fechaMañanaText = mañana.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
 
-    let textoEstado = "";
-    let palabraFinaliza = "";
-    if (s.diff > 0) {
-        textoEstado = "está próximo a vencer (falta(n) *" + s.diff + "* día(s))";
-        palabraFinaliza = "finaliza";
-    } else if (s.diff === 0) {
-        textoEstado = "*VENCE HOY mismo*";
-        palabraFinaliza = "finaliza";
-    } else {
-        textoEstado = "ya se encuentra *VENCIDO* (hace " + Math.abs(s.diff) + " días)";
-        palabraFinaliza = "finalizó";
-    }
+                let textoEstado = "";
+                let palabraFinaliza = "";
+                if (s.diff > 0) {
+                    textoEstado = "está próximo a vencer (falta(n) *" + s.diff + "* día(s))";
+                    palabraFinaliza = "finaliza";
+                } else if (s.diff === 0) {
+                    textoEstado = "*VENCE HOY mismo*";
+                    palabraFinaliza = "finaliza";
+                } else {
+                    textoEstado = "ya se encuentra *VENCIDO* (hace " + Math.abs(s.diff) + " días)";
+                    palabraFinaliza = "finalizó";
+                }
 
-    // 3. OFERTA SOLO HOY Y MAÑANA (Sin porcentaje explícito)
-    const aplicaOferta = (s.diff === 0 || s.diff === 1);
-    let avisoOferta = "";
-    let textoOfertaWA = "";
+                const aplicaOferta = (s.diff === 0 || s.diff === 1);
+                let avisoOferta = "";
+                let textoOfertaWA = "";
+                if (aplicaOferta) {
+                    const diaDeLaOferta = s.diff === 0 ? fechaHoyText : fechaMañanaText;
+                    avisoOferta = `<div class="oferta-renovacion">🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>Renueva hoy <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b>.<br><small>*Aplica en soporte*</small></div>`;
+                    textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
+                }
 
-    if (aplicaOferta) {
-        const diaDeLaOferta = s.diff === 0 ? fechaHoyText : fechaMañanaText;
-        
-        avisoOferta = `
-            <div class="oferta-renovacion" style="background: #fff3cd; border: 1px dashed #ffc107; border-radius: 8px; padding: 10px; margin-top: 10px; font-size: 0.85rem; color: #856404; text-align: center;">
-                🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>
-                Renueva hoy <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b> en tu servicio.<br>
-                <small>*Aplica descuento en soporte de WhatsApp*</small> 🍿
-            </div>`;
-        
-        textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
-    }
+                let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
+                                "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
+                                "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
+                                "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
+                                "📧 *Correo:* " + s.correo + "\n" +
+                                "👤 *Perfil:* " + s.perfil + "\n" +
+                                "👤 *Cliente:* " + cliente.nombre + "\n\n" +
+                                "Deseo realizar el proceso de renovación un nuevo mes.\n" +
+                                textoOfertaWA +
+                                "Quedo a la espera de su respuesta para proceder con el pago.\n\n";
 
-    let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
-                    "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
-                    "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
-                    "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
-                    "📧 *Correo:* " + s.correo + "\n" +
-                    "👤 *Perfil:* " + s.perfil + "\n" +
-                    "👤 *Cliente:* " + cliente.nombre + "\n\n" +
-                    "Deseo realizar el proceso de renovación un nuevo mes.\n" +
-                    textoOfertaWA +
-                    "Quedo a la espera de su respuesta para proceder con el pago.\n\n";
+                const msjWA = encodeURIComponent(cuerpoTxt);
+                
+                // --- LÓGICA ÚLTIMA FECHA DE MODIFICACIÓN (SOLO VERDES Y AMARILLOS) ---
+                let htmlModificacion = "";
+                if (s.diff >= 0) {
+                    let txtMod = s.ultimaModificacion ? new Date(s.ultimaModificacion).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : "No ha habido modificación";
+                    htmlModificacion = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-bottom: 8px; font-style: italic;">Última modificación: ${txtMod}</div>`;
+                }
+                
+                // Botón de WhatsApp
+                let btnWA = s.diff <= 5 ? `
+                    <div class="mt-3">
+                        ${htmlModificacion}
+                        <a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>
+                        ${avisoOferta}
+                    </div>` : `<div class="mt-3">${htmlModificacion}</div>`;
 
-    const msjWA = encodeURIComponent(cuerpoTxt);
-    
-    // Botón de WhatsApp (Se muestra si faltan 5 días o menos, o está vencido)
-    let btnWA = s.diff <= 5 ? `
-        <div class="mt-3">
-            <a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>
-            ${avisoOferta}
-        </div>` : "";
+                const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
+                const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
 
-    const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
-    const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
-
-    return `
-    <div class="card servicio-card shadow-sm ${colorClase} mb-3">
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="mb-0 text-uppercase"><b>${s.plataforma}</b> ${btnLink}</h5>
-                <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
-            </div>
-            <div class="row text-center mb-2" style="font-size: 0.8rem;">
-                <div class="col-6 border-end">INICIO: <b>${s.inicio.split('-').reverse().join('/')}</b></div>
-                <div class="col-6">FIN: <b>${fV}</b></div>
-            </div>
-            <div class="info-row" style="font-size: 0.85rem;">
-                <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
-                <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
-                <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>
-            </div>
-            ${btnWA}
-        </div>
-    </div>`;
-};;
+                return `
+                <div class="card servicio-card shadow-sm ${colorClase} mb-3">
+                    <div class="card-body p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="mb-0 text-uppercase"><b>${s.plataforma}</b> ${btnLink}</h5>
+                            <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
+                        </div>
+                        <div class="row text-center mb-2" style="font-size: 0.8rem;">
+                            <div class="col-6 border-end">INICIO: <b>${s.inicio.split('-').reverse().join('/')}</b></div>
+                            <div class="col-6">FIN: <b>${fV}</b></div>
+                        </div>
+                        <div class="info-row" style="font-size: 0.85rem;">
+                            <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
+                            <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
+                            <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>
+                        </div>
+                        ${btnWA}
+                    </div>
+                </div>`;
+            };
 
             const vigentes = servicios.filter(s => s.diff > 5).sort((a,b) => b.diff - a.diff);
             const proximos = servicios.filter(s => s.diff >= 0 && s.diff <= 5).sort((a,b) => a.diff - b.diff);
@@ -616,9 +583,26 @@
             lista.innerHTML = "";
             lista.appendChild(colD);
             lista.appendChild(colI);
+            
+            // NUEVO: Hace aparecer el footer solo cuando ya todo está cargado
+    document.querySelector(".main-footer").classList.add("footer-visible");
 
         } catch (e) { console.error(e); }
     }
+    
+    
+</script>
+
+<footer class="main-footer">
+    <p>
+        &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong> 
+        <span style="margin-left: 8px; border-left: 1px solid #ccc; padding-left: 8px;">Todos los derechos reservados</span>
+    </p>
+</footer>
+
+<script>
+    // Se asegura de poner el año actual
+    document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
