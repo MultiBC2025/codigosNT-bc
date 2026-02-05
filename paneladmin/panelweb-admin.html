@@ -287,7 +287,13 @@
 
 &lt;div id=&quot;panel&quot;&gt;
     &lt;div class=&quot;sidebar&quot;&gt;
-        &lt;h2&gt;🚀 Mi Panel&lt;/h2&gt;
+        &lt;h2 onclick=&quot;location.reload();&quot; 
+        style=&quot;cursor: pointer; user-select: none; transition: 0.3s;&quot; 
+        onmouseover=&quot;this.style.color='#25d366'&quot; 
+        onmouseout=&quot;this.style.color=''&quot;
+        title=&quot;Click para reiniciar todo el panel&quot;&gt;
+        🚀 Mi Panel
+    &lt;/h2&gt;
         &lt;button onclick=&quot;mostrar('clientes')&quot;&gt;👤 Gestión Clientes&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('cuentas')&quot;&gt;🔑 Asignar Cuentas&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('seccionVentas')&quot;&gt;💰 Ventas (Historial)&lt;/button&gt;
@@ -514,6 +520,8 @@ const firebaseConfig={ apiKey:&quot;AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8&quot
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(); const auth=firebase.auth();
 
+let clienteActualId = null; // ← ID del cliente que se está editando
+let ventaActualId = null;   // ← ID del registro/venta (MUY IMPORTANTE)
 let listaSuscripcionesGlobal = [];
 let listaClientesLocal = [];
 let idFilaSeleccionadaAzul = null; 
@@ -904,20 +912,61 @@ function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: 
 function cancelarEdicion(){ c_id_hidden.value=&quot;&quot;; c_nombre.value=&quot;&quot;; c_whatsapp.value=&quot;&quot;; formTitle.innerText=&quot;✨ Registrar Nuevo Cliente&quot;; btnGuardar.innerText=&quot;Guardar Cliente&quot;; btnCancel.style.display=&quot;none&quot;; }
 function cargarLoteParaRenovar(cliId, items, rowId, listaIds) { marcarComoRenovadoEnBD(listaIds, rowId); document.querySelectorAll('tr').forEach(r =&gt; r.classList.remove('row-selected-renew')); if(rowId) { const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-selected-renew'); idFilaSeleccionadaAzul = rowId; } mostrar('cuentas', true); const cliente = listaClientesLocal.find(c =&gt; c.id === cliId); clienteIdSeleccionado.value = cliId; inputBuscarCliente.value = cliente.nombre; txtElegido.innerText = `✅ Renovando Lote de ${cliente.nombre}`; tipoCompra.value = items.length &gt; 1 ? &quot;combo&quot; : &quot;individual&quot;; document.getElementById(&quot;btnMasPlat&quot;).style.display = items.length &gt; 1 ? &quot;inline-block&quot; : &quot;none&quot;; plataformas.innerHTML = &quot;&quot;; items.forEach(it =&gt; { const div = document.createElement(&quot;div&quot;); div.className = &quot;fila-plataforma&quot;; div.style = &quot;margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;&quot;; div.innerHTML = `&lt;select class=&quot;tipo&quot;&gt;&lt;option value=&quot;${it.plat}&quot;&gt;${it.plat}&lt;/option&gt;&lt;/select&gt; &lt;span class=&quot;cont-correo&quot;&gt;&lt;select class=&quot;correo-select&quot;&gt;&lt;option value=&quot;${it.clave}&quot;&gt;${it.correo}&lt;/option&gt;&lt;/select&gt;&lt;/span&gt; &lt;span class=&quot;cont-clave&quot;&gt;&lt;input class=&quot;clave&quot; value=&quot;${it.clave}&quot; readonly style=&quot;width:80px&quot;&gt;&lt;/span&gt; &lt;div class=&quot;bloque-perfiles&quot; style=&quot;display:inline-block&quot;&gt;&lt;div class=&quot;item-perfil&quot;&gt;&lt;span class=&quot;cont-perfil&quot;&gt;&lt;select class=&quot;perfil-select&quot;&gt;&lt;option value=&quot;${it.perfil}&quot;&gt;${it.perfil}&lt;/option&gt;&lt;/select&gt;&lt;/span&gt; &lt;span class=&quot;cont-pin&quot;&gt;&lt;input class=&quot;pin&quot; value=&quot;${it.pin}&quot; style=&quot;width:50px&quot; readonly&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;`; plataformas.appendChild(div); }); }
 /* --- FUNCION WHATSAPP PARA LOTES --- */
-function enviarWhatsAppLote(idsStr) { 
+function enviarWhatsAppLote(idsStr) {
     const ids = idsStr.split(','); 
-    const ventas = listaSuscripcionesGlobal.filter(v =&gt; ids.includes(v.id)); 
+    const ventas = listaSuscripcionesGlobal.filter(v => ids.includes(v.id)); 
     if(ventas.length === 0) return; 
-    const c = listaClientesLocal.find(cl =&gt; cl.id === ventas[0].clienteId); 
+    const c = listaClientesLocal.find(cl => cl.id === ventas[0].clienteId); 
     if(!c) return; 
 
+    // 1. FECHAS Y TIEMPO AUTOMÁTICO
+    const hoy = new Date();
+    const fechaHoy = hoy.toLocaleDateString('es-ES');
+    const horaHoy = hoy.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const nombreDia = hoy.toLocaleDateString('es-ES', { weekday: 'long' });
+
+    // 2. DATOS GENERALES
+    const metodo = ventas[0].metodoPago || 'Otro';
+    const fechaCompra = ventas[0].inicio || fechaHoy;
+    const fechaVence = ventas[0].fin || '---';
+    const valorTotal = ventas.reduce((acc, v) => acc + (parseFloat(v.valor) || 0), 0);
+    
+    // Conteo de dispositivos para la regla dinámica
+    const totalDispositivos = ventas.length;
+    const reglaUso = totalDispositivos > 1 ? `${totalDispositivos} DISPOSITIVOS, 1 PANTALLA EN SIMULTANEO POR SERVICIO Y/O PERFIL ADQUIRIDO` : '1 DISPOSITIVO EN SIMULTANEO';
+
+    // Cálculo de días con el ajuste de +1
+    const fVence = new Date(fechaVence);
+    let diasGarantizados = '30';
+    if (!isNaN(fVence.getTime())) {
+        diasGarantizados = Math.ceil((fVence - hoy) / (1000 * 60 * 60 * 24)) + 1;
+    }
+
     let detalleMsg = ''; 
-    ventas.forEach(v =&gt; { 
-        detalleMsg += `%0A🌟 *${v.plataforma}*%0A📧 Correo: ${v.correo}%0A🔑 Clave: ${v.clave}%0A👤 Perfil: P${v.perfil} | PIN: ${v.pin}%0A📅 Vence: ${v.fin}%0A-------------------`; 
+
+    // 3. CONSTRUIMOS EL DETALLE (Tu diseño de forEach)
+    ventas.forEach(v => { 
+        detalleMsg += `%0A------------------------------------------------`;
+        detalleMsg += `%0A*Información De La Cuenta de: ${v.plataforma}*`;
+        detalleMsg += `%0A📧 : ${v.correo}`;
+        detalleMsg += `%0A🔐 : *${v.clave}*`;
+        detalleMsg += `%0A👤 : ${v.perfil || ''}) ${c.nombre}`;
+        detalleMsg += `%0A🔒 : ${v.pin || '---'}`;
+        detalleMsg += `%0A------------------------------------------------`;
     }); 
 
-    const msg = `*M U L T I - B C* 🍿%0A%0A¡Hola *${c.nombre}*!%0AAquí tienes los datos de tu compra:%0A${detalleMsg}%0A%0A*Instrucciones:* No modificar datos de la cuenta. ¡Disfruta! ✨`; 
-    window.open(`https://wa.me/${c.whatsapp}?text=${msg}`, &quot;_blank&quot;); 
+    // 4. EL MENSAJE FINAL (Links integrados como texto después del eslogan)
+    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: youtube.com _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: google.com, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
+
+    // 5. LIMPIEZA DE TELÉFONO
+    const cod = c.codigo ? c.codigo.toString().replace(/\D/g, '') : '';
+    const num = c.whatsapp ? c.whatsapp.toString().replace(/\D/g, '') : '';
+    const telLimpio = cod + num;
+
+    // 6. ABRIR WHATSAPP
+    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&text=${msg}`); 
+
+
 }
 
 /* --- FUNCION EDITAR MANUAL (INDIVIDUAL O LOTE) --- */
@@ -961,22 +1010,38 @@ async function abrirEditorManualLote(idsStr) {
     alert(&quot;¡Cuenta externa actualizada!&quot;); 
     actualizarTodo(); 
 }
-async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
-    const snap = await db.collection(&quot;cuentas_base&quot;).where(&quot;plataforma&quot;, &quot;==&quot;, plataforma).get();
-    let ops = `&lt;option value=&quot;&quot;&gt;-- Selecciona Cuenta --&lt;/option&gt;`;
-    
-    snap.forEach(doc =&gt; {
-        const d = doc.data();
-        const selected = d.correo.trim() === correoActual.trim() ? &quot;selected&quot; : &quot;&quot;;
-        ops += `&lt;option value=&quot;${d.clave}&quot; ${selected}&gt;${d.correo.trim()}&lt;/option&gt;`;
+async function filtrarCuentasParaEdicion(plataforma, div, correoActual) {
+
+    var cont = div.getElementsByClassName(&quot;cont-correo&quot;)[0];
+    if (!cont) {
+        console.warn(&quot;No se encontró cont-correo&quot;);
+        return;
+    }
+
+    cont.innerHTML = &quot;Cargando cuentas...&quot;;
+
+    var snap = await db.collection(&quot;cuentas_base&quot;)
+        .where(&quot;plataforma&quot;, &quot;==&quot;, plataforma)
+        .get();
+
+    if (snap.empty) {
+        cont.innerHTML =
+            &quot;&lt;input class='correo-select' value='&quot; + correoActual + &quot;' style='padding:6px; width:80%;'&gt;&quot;;
+        return;
+    }
+
+    var html = &quot;&lt;select class='correo-select' style='padding:6px; width:80%;'&gt;&quot;;
+
+    snap.forEach(function(doc) {
+        var d = doc.data();
+        var sel = (d.correo === correoActual) ? &quot;selected&quot; : &quot;&quot;;
+        html += &quot;&lt;option value='&quot; + d.correo + &quot;' &quot; + sel + &quot;&gt;&quot; + d.correo + &quot;&lt;/option&gt;&quot;;
     });
 
-    filaDiv.querySelector(&quot;.cont-correo&quot;).innerHTML = `
-        &lt;select class=&quot;correo-select&quot; style=&quot;width: 250px; padding: 10px; border-radius: 5px; border: 1px solid #ccc; background: white; color: black;&quot; 
-            onchange=&quot;this.parentElement.parentElement.parentElement.querySelector('.clave').value = this.value&quot;&gt;
-            ${ops}
-        &lt;/select&gt;`;
+    html += &quot;&lt;/select&gt;&quot;;
+    cont.innerHTML = html;
 }
+
 
 function calcularNuevaFechaCompensacion(diasExtra) {
     if (!vencimientoOriginalParaEdicion) return;
@@ -1199,8 +1264,11 @@ async function guardarServicioManual() {
     }
 }
 
+
 /* --- PARTE 1: GESTIÓN DE CUENTAS Y AUTO-SELECCIÓN --- */
 async function filtrarCuentas(sel) { const p = sel.value; if (!p) return; const f = sel.parentElement; const clienteId = clienteIdSeleccionado.value; const snap = await db.collection(&quot;cuentas_base&quot;).where(&quot;plataforma&quot;, &quot;==&quot;, p).get(); let ops = '&lt;option value=&quot;&quot;&gt;Cuenta...&lt;/option&gt;'; snap.forEach(doc =&gt; { const d = doc.data(); ops += `&lt;option value=&quot;${d.clave}&quot;&gt;${d.correo.trim()}&lt;/option&gt;`; }); f.querySelector(&quot;.cont-correo&quot;).innerHTML = `&lt;select class=&quot;correo-select&quot; onchange=&quot;validarDisponibilidad(this)&quot;&gt;${ops}&lt;/select&gt;`; f.querySelector(&quot;.cont-clave&quot;).innerHTML = `&lt;input class=&quot;clave&quot; readonly style=&quot;width:80px&quot;&gt;`; f.querySelector(&quot;.bloque-perfiles&quot;).innerHTML = `&lt;div class=&quot;item-perfil&quot;&gt;&lt;span class=&quot;cont-perfil&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cont-pin&quot;&gt;&lt;/span&gt;&lt;button class=&quot;add-perfil-btn&quot; onclick=&quot;crearNuevaFilaPerfil(this)&quot;&gt;+&lt;/button&gt;&lt;/div&gt;`; if (clienteId) { const yaTiene = listaSuscripcionesGlobal.find(s =&gt; s.clienteId === clienteId &amp;&amp; s.plataforma.trim().toLowerCase() === p.trim().toLowerCase() &amp;&amp; (new Date(s.fin + &quot;T12:00:00&quot;) &gt;= new Date(hoy.getTime() - (7 * 86400000)))); if (yaTiene) { setTimeout(() =&gt; { const selCorreo = f.querySelector(&quot;.correo-select&quot;); if (!selCorreo) return; let enc = false; for (let i = 0; i &lt; selCorreo.options.length; i++) { if (selCorreo.options[i].text.trim().toLowerCase() === yaTiene.correo.trim().toLowerCase()) { selCorreo.selectedIndex = i; enc = true; break; } } if (enc) { validarDisponibilidad(selCorreo); selCorreo.style.border = &quot;2px solid #28a745&quot;; selCorreo.style.backgroundColor = &quot;#e8f5e9&quot;; } }, 60); } } }
+
+
 
 /* --- PARTE 2: RENDERIZADO DE PERFILES Y PIN (SÍMBOLO ESPECIAL) --- */
 function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(&quot;.cont-perfil&quot;); it.querySelector(&quot;.cont-pin&quot;).innerHTML = `&lt;input class=&quot;pin&quot; style=&quot;width:50px&quot; readonly&gt;`; contP.innerHTML = `&lt;select class=&quot;perfil-select&quot; onchange=&quot;actualizarPin(this)&quot;&gt;&lt;option value=&quot;&quot;&gt;P...&lt;/option&gt;&lt;/select&gt;`; const selP = contP.querySelector(&quot;.perfil-select&quot;); const max = plat === &quot;Disney&quot; ? 7 : 5; const margenVencido = new Date(hoy.getTime() - (3 * 86400000)); const ocup = listaSuscripcionesGlobal.filter(s =&gt; s.correo === corr &amp;&amp; s.plataforma.trim().toLowerCase() === plat.trim().toLowerCase() &amp;&amp; new Date(s.fin+&quot;T12:00:00&quot;) &gt;= margenVencido); const miP = ocup.find(s =&gt; s.clienteId === cId); for(let i=1; i&lt;=max; i++) { const o = ocup.find(x =&gt; parseInt(x.perfil) === i); const opt = document.createElement(&quot;option&quot;); opt.value = i; if(o) { const n = o.perfil_etiqueta ? (o.perfil_etiqueta.split('. ')[1] || 'Ocup') : 'Ocup'; const esVencidoReciente = new Date(o.fin + &quot;T12:00:00&quot;) &lt; hoy; opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '('+n+')'} ${esVencidoReciente ? '[V]' : ''}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miP) { selP.value = miP.perfil; actualizarPin(selP); } }
@@ -1215,92 +1283,128 @@ function eliminarCuentaBase(id) { if (confirm(&quot;¿Eliminar?&quot;)) { db.col
 
  
 
-async function cargarParaModificar(idVenta) {
+async function cargarParaModificar(idsVenta) {
     try {
-        const docSnap = await db.collection(&quot;cuentas&quot;).doc(idVenta).get();
-        if (!docSnap.exists) return alert(&quot;No se encontró el registro&quot;);
 
-        const v = docSnap.data();
-        idModificando = idVenta; 
-        
-        // ASIGNACIÓN CLAVE PARA EL CÁLCULO
-        vencimientoOriginalParaEdicion = v.fin; 
-        fechaFinalCalculadaGarantia = v.fin; 
+        if (!idsVenta) return alert(&quot;ID inválido&quot;);
 
-        if(typeof mostrar === 'function') mostrar(&quot;cuentas&quot;); 
-
-        // Bloqueo de campos superiores
-        clienteIdSeleccionado.value = v.clienteId || &quot;&quot;;
-        inputBuscarCliente.value = v.cliente_nombre || &quot;Cliente&quot;;
-        inputBuscarCliente.disabled = true;
-
-        txtElegido.innerHTML = `🛠️ &lt;b style=&quot;color:#ff9800&quot;&gt;GARANTÍA ACTIVA&lt;/b&gt;`;
-        btnGuardar.innerText = &quot;Actualizar y Guardar&quot;;
+        var listaIds = idsVenta.split(&quot;,&quot;);
+        idModificando = listaIds;
 
         plataformas.innerHTML = &quot;&quot;;
-        const div = document.createElement(&quot;div&quot;);
-        div.className = &quot;fila-plataforma&quot;;
-        div.style = &quot;background: #ffffff; padding: 25px; border: 2px solid #e67e22; border-radius: 12px; color: #333;&quot;;
-        
-        div.innerHTML = `
-            &lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;${v.plataforma}&quot;&gt;
-            
-            &lt;div style=&quot;text-align:center; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px; color:#000;&quot;&gt;
-                &lt;b&gt;Servicio:&lt;/b&gt; ${v.plataforma} | &lt;b&gt;Vence:&lt;/b&gt; ${v.fin}
-            &lt;/div&gt;
 
-            &lt;div style=&quot;display:flex; flex-direction:column; gap:15px; align-items:center;&quot;&gt;
-                
-                &lt;!-- Selector de Cuenta --&gt;
-                &lt;div style=&quot;width:100%; text-align:center;&quot;&gt;
-                    &lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;
-                    &lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;
+        if(typeof mostrar === 'function') mostrar(&quot;cuentas&quot;);
+
+        // Tomamos el PRIMER registro como base del cliente
+        const primerDoc = await db.collection(&quot;cuentas&quot;).doc(listaIds[0].trim()).get();
+        if (!primerDoc.exists) return alert(&quot;No se encontró el registro&quot;);
+
+        const base = primerDoc.data();
+
+        // Cliente bloqueado
+        clienteIdSeleccionado.value = base.clienteId || &quot;&quot;;
+        inputBuscarCliente.value = base.cliente_nombre || &quot;Cliente&quot;;
+        inputBuscarCliente.disabled = true;
+
+        // Fechas base
+        vencimientoOriginalParaEdicion = base.fin;
+        fechaFinalCalculadaGarantia = base.fin;
+
+        txtElegido.innerHTML = `🛠️ &lt;b style=&quot;color:#ff9800&quot;&gt;GARANTÍA / EDICIÓN MÚLTIPLE&lt;/b&gt;`;
+        btnGuardar.innerText = &quot;Actualizar y Guardar&quot;;
+
+        // === BLOQUES POR CADA CUENTA ===
+        for (var i = 0; i &lt; listaIds.length; i++) {
+
+            const idDoc = listaIds[i].trim();
+            const docSnap = await db.collection(&quot;cuentas&quot;).doc(idDoc).get();
+            if (!docSnap.exists) continue;
+
+            const v = docSnap.data();
+
+            const div = document.createElement(&quot;div&quot;);
+            div.className = &quot;fila-plataforma&quot;;
+            div.setAttribute(&quot;data-id&quot;, idDoc);
+            div.style = &quot;background:#ffffff; padding:25px; border:2px solid #e67e22; border-radius:12px; margin-bottom:15px; color:#333;&quot;;
+
+            div.innerHTML = `
+                &lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;${v.plataforma}&quot;&gt;
+
+                &lt;div style=&quot;text-align:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px; color:#000;&quot;&gt;
+                    &lt;b&gt;Servicio:&lt;/b&gt; ${v.plataforma} |
+                    &lt;b&gt;Vence:&lt;/b&gt; ${v.fin}
                 &lt;/div&gt;
 
-                &lt;!-- Datos de Acceso Centrados --&gt;
-                &lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;
-                    &lt;div class=&quot;item-perfil&quot; style=&quot;display:contents;&quot;&gt;
-                        &lt;div style=&quot;text-align:center;&quot;&gt;
-                            &lt;label style=&quot;font-weight:bold; font-size:11px; color:#000;&quot;&gt;CLAVE&lt;/label&gt;
-                            &lt;input class=&quot;clave&quot; value=&quot;${v.clave}&quot; readonly 
-                                style=&quot;width:120px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;
-                        &lt;/div&gt;
-                        &lt;div style=&quot;text-align:center;&quot;&gt;
-                            &lt;label style=&quot;font-weight:bold; font-size:11px; color:#000;&quot;&gt;P&lt;/label&gt;
-                            &lt;input class=&quot;perfil-select&quot; value=&quot;${v.perfil}&quot; readonly 
-                                style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
-                        &lt;/div&gt;
-                        &lt;div style=&quot;text-align:center;&quot;&gt;
-                            &lt;label style=&quot;font-weight:bold; font-size:11px; color:#000;&quot;&gt;PIN&lt;/label&gt;
-                            &lt;input class=&quot;pin&quot; value=&quot;${v.pin}&quot; readonly 
-                                style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
+                &lt;div style=&quot;display:flex; flex-direction:column; gap:12px; align-items:center;&quot;&gt;
+
+                    &lt;div style=&quot;width:100%; text-align:center;&quot;&gt;
+                        &lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;&lt;br&gt;
+                        &lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;
+                    &lt;/div&gt;
+
+                    &lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;
+                        &lt;div class=&quot;item-perfil&quot; style=&quot;display:contents;&quot;&gt;
+
+                            &lt;div style=&quot;text-align:center;&quot;&gt;
+                                &lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;CLAVE&lt;/label&gt;
+                                &lt;input class=&quot;clave&quot; value=&quot;${v.clave}&quot; readonly
+                                    style=&quot;width:120px; padding:8px; text-align:center; background:#eee; border:1px solid #ccc; color:#000;&quot;&gt;
+                            &lt;/div&gt;
+
+                            &lt;div style=&quot;text-align:center;&quot;&gt;
+                                &lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;P&lt;/label&gt;
+                                &lt;input class=&quot;perfil-select&quot; value=&quot;${v.perfil}&quot; readonly
+                                    style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
+                            &lt;/div&gt;
+
+                            &lt;div style=&quot;text-align:center;&quot;&gt;
+                                &lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;PIN&lt;/label&gt;
+                                &lt;input class=&quot;pin&quot; value=&quot;${v.pin}&quot; readonly
+                                    style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
+                            &lt;/div&gt;
+
                         &lt;/div&gt;
                     &lt;/div&gt;
-                &lt;/div&gt;
 
-                &lt;!-- Días Extra --&gt;
-                &lt;div style=&quot;background:#d5f5e3; padding:10px; border-radius:8px; border:1px solid #2ecc71; text-align:center;&quot;&gt;
-                    &lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 ¿Días Extra?&lt;/label&gt;
-                    &lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot; oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot;
-                        style=&quot;width:70px; padding:5px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;
                 &lt;/div&gt;
-            &lt;/div&gt;
+            `;
 
-            &lt;div style=&quot;margin-top:15px; background:#fff3cd; padding:10px; border-radius:8px; border:1px solid #ffeeba;&quot;&gt;
-                &lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;
-                &lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;
-                &lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;
-            &lt;/div&gt;
+            plataformas.appendChild(div);
+
+            // 🔑 Cargar cuentas según servicio
+            await filtrarCuentasParaEdicion(v.plataforma, div, v.correo);
+        }
+
+        // === DÍAS EXTRA GENERALES (UNO SOLO POR COMBO) ===
+        const divExtra = document.createElement(&quot;div&quot;);
+        divExtra.style = &quot;background:#d5f5e3; padding:12px; border-radius:8px; border:1px solid #2ecc71; text-align:center; margin-top:10px;&quot;;
+        divExtra.innerHTML = `
+            &lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 Días Extra (GENERAL)&lt;/label&gt;&lt;br&gt;
+            &lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot;
+                oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot;
+                style=&quot;width:80px; padding:6px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;
         `;
-        plataformas.appendChild(div);
+        plataformas.appendChild(divExtra);
 
-        await filtrarCuentasParaEdicion(v.plataforma, div, v.correo);
-        window.scrollTo({top: 0, behavior: 'smooth'});
+        // === NOTA GENERAL ===
+        const divNota = document.createElement(&quot;div&quot;);
+        divNota.style = &quot;margin-top:10px; background:#fff3cd; padding:10px; border-radius:8px; border:1px solid #ffeeba;&quot;;
+        divNota.innerHTML = `
+            &lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;
+            &lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;
+            &lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;
+        `;
+        plataformas.appendChild(divNota);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (e) {
         alert(&quot;Error: &quot; + e.message);
     }
 }
+
+
+
 
 // Nueva función de apoyo para llenar el select en modo edición
 async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
