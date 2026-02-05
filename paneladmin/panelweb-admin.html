@@ -937,9 +937,9 @@ function enviarWhatsAppLote(idsStr) {
 
     // Cálculo de días con el ajuste de +1
     const fVence = new Date(fechaVence);
-    let diasGarantizados = '30';
+    let diasGarantizados = ventas[0].dias || '30';
     if (!isNaN(fVence.getTime())) {
-        diasGarantizados = Math.ceil((fVence - hoy) / (1000 * 60 * 60 * 24)) + 1;
+        diasGarantizados = Math.ceil((fVence - hoy) / (1000 * 60 * 60 * 24));
     }
 
     let detalleMsg = ''; 
@@ -1285,121 +1285,119 @@ function eliminarCuentaBase(id) { if (confirm(&quot;¿Eliminar?&quot;)) { db.col
 
 async function cargarParaModificar(idsVenta) {
     try {
-
         if (!idsVenta) return alert(&quot;ID inválido&quot;);
 
         var listaIds = idsVenta.split(&quot;,&quot;);
         idModificando = listaIds;
-
         plataformas.innerHTML = &quot;&quot;;
 
         if(typeof mostrar === 'function') mostrar(&quot;cuentas&quot;);
 
-        // Tomamos el PRIMER registro como base del cliente
+        // 1. OBTENER EL REGISTRO BASE (Para rellenar la parte superior)
         const primerDoc = await db.collection(&quot;cuentas&quot;).doc(listaIds[0].trim()).get();
         if (!primerDoc.exists) return alert(&quot;No se encontró el registro&quot;);
 
         const base = primerDoc.data();
+        var idDelCliente = base.clienteId || &quot;&quot;;
 
-        // Cliente bloqueado
-        clienteIdSeleccionado.value = base.clienteId || &quot;&quot;;
-        inputBuscarCliente.value = base.cliente_nombre || &quot;Cliente&quot;;
-        inputBuscarCliente.disabled = true;
+        // 2. BUSCAR NOMBRE REAL EN LA COLECCIÓN CLIENTES
+        var nombreReal = base.cliente_nombre || &quot;Cliente&quot;;
+        if (idDelCliente !== &quot;&quot;) {
+            const docCli = await db.collection(&quot;clientes&quot;).doc(idDelCliente).get();
+            if (docCli.exists) {
+                nombreReal = docCli.data().nombre || nombreReal;
+            }
+        }
 
-        // Fechas base
+        // 3. RELLENAR CAMPOS SUPERIORES AUTOMÁTICAMENTE
+        if (document.getElementById(&quot;clienteIdSeleccionado&quot;)) document.getElementById(&quot;clienteIdSeleccionado&quot;).value = idDelCliente;
+        if (document.getElementById(&quot;inputBuscarCliente&quot;)) {
+            document.getElementById(&quot;inputBuscarCliente&quot;).value = nombreReal;
+            document.getElementById(&quot;inputBuscarCliente&quot;).disabled = true;
+        }
+        if (document.getElementById(&quot;fechaInicio&quot;)) document.getElementById(&quot;fechaInicio&quot;).value = base.inicio || &quot;&quot;;
+        if (document.getElementById(&quot;fechaFin&quot;)) document.getElementById(&quot;fechaFin&quot;).value = base.fin || &quot;&quot;;
+        if (document.getElementById(&quot;metodoPago&quot;)) document.getElementById(&quot;metodoPago&quot;).value = base.metodoPago || &quot;Transferencia&quot;;
+        if (document.getElementById(&quot;valorPago&quot;)) document.getElementById(&quot;valorPago&quot;).value = base.valor || &quot;0&quot;;
+
+        // Ajustar el combo de días
+        if (base.inicio && base.fin && document.getElementById(&quot;dias&quot;)) {
+            var f1 = new Date(base.inicio);
+            var f2 = new Date(base.fin);
+            var dif = Math.ceil(Math.abs(f2 - f1) / (1000 * 60 * 60 * 24));
+            document.getElementById(&quot;dias&quot;).value = dif;
+        }
+
+        // Variables de garantía
         vencimientoOriginalParaEdicion = base.fin;
         fechaFinalCalculadaGarantia = base.fin;
 
-        txtElegido.innerHTML = `🛠️ &lt;b style=&quot;color:#ff9800&quot;&gt;GARANTÍA / EDICIÓN MÚLTIPLE&lt;/b&gt;`;
+        txtElegido.innerHTML = &quot;🛠️ &lt;b style=&quot; + &quot;&quot; + &quot;color:#ff9800&quot; + &quot;&quot; + &quot;&gt;GARANTÍA / EDICIÓN: &quot; + (base.plataforma || &quot;&quot;) + &quot; - &quot; + nombreReal + &quot;&lt;/b&gt;&quot;;
         btnGuardar.innerText = &quot;Actualizar y Guardar&quot;;
 
-        // === BLOQUES POR CADA CUENTA ===
-        for (var i = 0; i &lt; listaIds.length; i++) {
-
+        // 4. BLOQUES POR CADA CUENTA (Tu estructura visual)
+        for (var i = 0; i < listaIds.length; i++) {
             const idDoc = listaIds[i].trim();
             const docSnap = await db.collection(&quot;cuentas&quot;).doc(idDoc).get();
             if (!docSnap.exists) continue;
 
             const v = docSnap.data();
-
             const div = document.createElement(&quot;div&quot;);
             div.className = &quot;fila-plataforma&quot;;
             div.setAttribute(&quot;data-id&quot;, idDoc);
             div.style = &quot;background:#ffffff; padding:25px; border:2px solid #e67e22; border-radius:12px; margin-bottom:15px; color:#333;&quot;;
 
-            div.innerHTML = `
-                &lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;${v.plataforma}&quot;&gt;
-
-                &lt;div style=&quot;text-align:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px; color:#000;&quot;&gt;
-                    &lt;b&gt;Servicio:&lt;/b&gt; ${v.plataforma} |
-                    &lt;b&gt;Vence:&lt;/b&gt; ${v.fin}
-                &lt;/div&gt;
-
-                &lt;div style=&quot;display:flex; flex-direction:column; gap:12px; align-items:center;&quot;&gt;
-
-                    &lt;div style=&quot;width:100%; text-align:center;&quot;&gt;
-                        &lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;&lt;br&gt;
-                        &lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;
-                    &lt;/div&gt;
-
-                    &lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;
-                        &lt;div class=&quot;item-perfil&quot; style=&quot;display:contents;&quot;&gt;
-
-                            &lt;div style=&quot;text-align:center;&quot;&gt;
-                                &lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;CLAVE&lt;/label&gt;
-                                &lt;input class=&quot;clave&quot; value=&quot;${v.clave}&quot; readonly
-                                    style=&quot;width:120px; padding:8px; text-align:center; background:#eee; border:1px solid #ccc; color:#000;&quot;&gt;
-                            &lt;/div&gt;
-
-                            &lt;div style=&quot;text-align:center;&quot;&gt;
-                                &lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;P&lt;/label&gt;
-                                &lt;input class=&quot;perfil-select&quot; value=&quot;${v.perfil}&quot; readonly
-                                    style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
-                            &lt;/div&gt;
-
-                            &lt;div style=&quot;text-align:center;&quot;&gt;
-                                &lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;PIN&lt;/label&gt;
-                                &lt;input class=&quot;pin&quot; value=&quot;${v.pin}&quot; readonly
-                                    style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000;&quot;&gt;
-                            &lt;/div&gt;
-
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-
-                &lt;/div&gt;
-            `;
+            div.innerHTML = 
+                '&lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;' + v.plataforma + '&quot;&gt;' +
+                '&lt;div style=&quot;text-align:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px; color:#000;&quot;&gt;' +
+                    '&lt;b&gt;Servicio:&lt;/b&gt; ' + v.plataforma + ' | &lt;b&gt;Vence:&lt;/b&gt; ' + v.fin +
+                '&lt;/div&gt;' +
+                '&lt;div style=&quot;display:flex; flex-direction:column; gap:12px; align-items:center;&quot;&gt;' +
+                    '&lt;div style=&quot;width:100%; text-align:center;&quot;&gt;' +
+                        '&lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;&lt;br&gt;' +
+                        '&lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;' +
+                    '&lt;/div&gt;' +
+                    '&lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;' +
+                        '&lt;div style=&quot;text-align:center;&quot;&gt;' +
+                            '&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;CLAVE&lt;/label&gt;&lt;br&gt;' +
+                            '&lt;input class=&quot;clave&quot; value=&quot;' + v.clave + '&quot; readonly style=&quot;width:120px; padding:8px; text-align:center; background:#eee; border:1px solid #ccc; color:#000;&quot;&gt;' +
+                        '&lt;/div&gt;' +
+                        '&lt;div style=&quot;text-align:center;&quot;&gt;' +
+                            '&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;P&lt;/label&gt;&lt;br&gt;' +
+                            '&lt;input class=&quot;perfil-select&quot; value=&quot;' + v.perfil + '&quot; readonly style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;' +
+                        '&lt;/div&gt;' +
+                        '&lt;div style=&quot;text-align:center;&quot;&gt;' +
+                            '&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;PIN&lt;/label&gt;&lt;br&gt;' +
+                            '&lt;input class=&quot;pin&quot; value=&quot;' + v.pin + '&quot; readonly style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;' +
+                        '&lt;/div&gt;' +
+                    '&lt;/div&gt;' +
+                '&lt;/div&gt;';
 
             plataformas.appendChild(div);
-
-            // 🔑 Cargar cuentas según servicio
             await filtrarCuentasParaEdicion(v.plataforma, div, v.correo);
         }
 
-        // === DÍAS EXTRA GENERALES (UNO SOLO POR COMBO) ===
+        // 5. DÍAS EXTRA GENERALES
         const divExtra = document.createElement(&quot;div&quot;);
         divExtra.style = &quot;background:#d5f5e3; padding:12px; border-radius:8px; border:1px solid #2ecc71; text-align:center; margin-top:10px;&quot;;
-        divExtra.innerHTML = `
-            &lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 Días Extra (GENERAL)&lt;/label&gt;&lt;br&gt;
-            &lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot;
-                oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot;
-                style=&quot;width:80px; padding:6px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;
-        `;
+        divExtra.innerHTML = 
+            '&lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 Días Extra (GENERAL)&lt;/label&gt;&lt;br&gt;' +
+            '&lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot; oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot; style=&quot;width:80px; padding:6px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;';
         plataformas.appendChild(divExtra);
 
-        // === NOTA GENERAL ===
+        // 6. NOTA GENERAL
         const divNota = document.createElement(&quot;div&quot;);
         divNota.style = &quot;margin-top:10px; background:#fff3cd; padding:10px; border-radius:8px; border:1px solid #ffeeba;&quot;;
-        divNota.innerHTML = `
-            &lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;
-            &lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;
-            &lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;
-        `;
+        divNota.innerHTML = 
+            '&lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;' +
+            '&lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;' +
+            '&lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;';
         plataformas.appendChild(divNota);
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (e) {
-        alert(&quot;Error: &quot; + e.message);
+        alert(&quot;Error al unificar: &quot; + e.message);
     }
 }
 
@@ -1425,89 +1423,95 @@ async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
 
 function actualizarPin(sel) { const it = sel.closest(&quot;.item-perfil&quot;); const val = parseInt(sel.value); it.querySelector(&quot;.pin&quot;).value = isNaN(val) ? &quot;&quot; : 1000 + val; }
 async function guardarCuentas() {
-    // 1. Obtener el ID del cliente de forma segura
-    const idCli = clienteIdSeleccionado.value;
-    if (!idCli) return alert(&quot;Selecciona un cliente&quot;);
-
-    const marca = Date.now();
-    let promesas = [];
-    
-    // Capturar la nota de garantía y los días extra del formulario de edición
-    const notaGarantia = document.getElementById(&quot;txt_obs_cambio&quot;) ? document.getElementById(&quot;txt_obs_cambio&quot;).value : &quot;&quot;;
-    const diasRegalo = document.getElementById(&quot;dias_regalo&quot;) ? parseInt(document.getElementById(&quot;dias_regalo&quot;).value) : 0;
-
-    // 2. Recorrer la fila de la plataforma (solo habrá una en modo edición)
-    document.querySelectorAll(&quot;.fila-plataforma&quot;).forEach(f =&gt; {
-        const cSel = f.querySelector(&quot;.correo-select&quot;);
-        if (!cSel || !cSel.value) return;
-
-        const plat = f.querySelector(&quot;.tipo&quot;).value;
-        
-        // REGLA CRÍTICA: Si es un SELECT (venta nueva) sacamos el text. 
-        // Si es un INPUT u otra cosa (edición), sacamos el value.
-        const correoFinal = cSel.tagName === &quot;SELECT&quot; ? cSel.options[cSel.selectedIndex].text : cSel.value;
-        const claveFinal = f.querySelector(&quot;.clave&quot;).value;
-
-        f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it =&gt; {
-            const p = it.querySelector(&quot;.perfil-select&quot;).value;
-            
-            // Construimos el objeto de datos que se enviará a Firebase
-            let objetoData = {
-                clienteId: idCli,
-                plataforma: plat,
-                correo: correoFinal,
-                clave: claveFinal,
-                perfil: p,
-                perfil_etiqueta: `${p}. ${inputBuscarCliente.value}`,
-                pin: it.querySelector(&quot;.pin&quot;).value,
-                // Si es edición, usamos la fecha compensada. Si es venta, la fecha fin normal.
-                fin: (idModificando &amp;&amp; typeof fechaFinalCalculadaGarantia !== 'undefined' &amp;&amp; fechaFinalCalculadaGarantia) ? fechaFinalCalculadaGarantia : fechaFin.value,
-                ultimaModificacion: new Date().toISOString()
-            };
-
-            // 3. ¿ES EDICIÓN O ES VENTA NUEVA?
-            if (idModificando) {
-                // AGREGAMOS DATOS DE AUDITORÍA DE GARANTÍA
-                objetoData.nota_cambio = notaGarantia;
-                objetoData.dias_extra_regalados = diasRegalo;
-                objetoData.estado_edicion = &quot;Garantía Aplicada&quot;;
-
-                // ACTUALIZAMOS EL DOCUMENTO EXISTENTE
-                promesas.push(db.collection(&quot;cuentas&quot;).doc(idModificando).update(objetoData));
-            } else {
-                // ES UNA VENTA NUEVA: Agregamos campos que solo lleva la venta inicial
-                objetoData.inicio = fechaInicio.value;
-                objetoData.metodoPago = metodoPago.value;
-                objetoData.valor = valorPago.value;
-                objetoData.fechaRegistro = marca;
-                
-                promesas.push(db.collection(&quot;cuentas&quot;).add(objetoData));
-            }
-        });
-    });
-
-    if (promesas.length === 0) return alert(&quot;No hay datos para procesar&quot;);
-
     try {
-        await Promise.all(promesas);
-        alert(idModificando ? &quot;✅ Garantía guardada correctamente&quot; : &quot;✅ Venta guardada con éxito&quot;);
+        // 1. OBTENER DATOS CON VALIDACION DE EXISTENCIA
+        var elCliId = document.getElementById(&quot;clienteIdSeleccionado&quot;);
+        var idCli = &quot;&quot;;
+        if (elCliId != null) { idCli = elCliId.value; }
 
-        // 4. LIMPIEZA TOTAL Y DESBLOQUEO
+        if (idCli == &quot;&quot;) {
+            alert(&quot;Selecciona un cliente&quot;);
+            return;
+        }
+
+        var elNombreCli = document.getElementById(&quot;inputBuscarCliente&quot;);
+        var nombreCli = &quot;&quot;;
+        if (elNombreCli != null) { nombreCli = elNombreCli.value; }
+
+        var elFInicio = document.getElementById(&quot;fechaInicio&quot;);
+        var fInicio = (elFInicio != null) ? elFInicio.value : &quot;&quot;;
+
+        var elFFin = document.getElementById(&quot;fechaFin&quot;);
+        var fFin = (elFFin != null) ? elFFin.value : &quot;&quot;;
+
+        var elMPago = document.getElementById(&quot;metodoPago&quot;);
+        var mPago = (elMPago != null) ? elMPago.value : &quot;Efectivo&quot;;
+
+        var elVPago = document.getElementById(&quot;valorPago&quot;);
+        var vPago = (elVPago != null) ? elVPago.value : &quot;0&quot;;
+
+        // 2. PROCESAR CADA FILA NARANJA
+        var filas = document.querySelectorAll(&quot;.fila-plataforma&quot;);
+        var totalFilas = filas.length;
+
+        for (var i = 0; i < totalFilas; i++) {
+            var f = filas[i];
+            
+            // SACAR EL ID DEL DOCUMENTO PARA BORRARLO (EVITA DUPLICADOS)
+            var idDocViejo = f.getAttribute(&quot;data-id&quot;);
+
+            var elTipo = f.querySelector(&quot;.tipo&quot;);
+            var elClave = f.querySelector(&quot;.clave&quot;);
+            var elPerf = f.querySelector(&quot;.perfil-select&quot;);
+            var elPin = f.querySelector(&quot;.pin&quot;);
+            var elCSel = f.querySelector(&quot;.correo-select&quot;);
+
+            var correoF = &quot;&quot;;
+            if (elCSel != null) {
+                correoF = elCSel.options[elCSel.selectedIndex].text;
+            } else {
+                var elContC = f.querySelector(&quot;.cont-correo&quot;);
+                correoF = (elContC != null) ? elContC.innerText : &quot;&quot;;
+            }
+
+            // SI NO HAY CORREO, NO GUARDAMOS NADA
+            if (correoF == &quot;&quot; || correoF == &quot;Seleccione...&quot;) { continue; }
+
+            // 3. ACCION DE BORRADO REAL (ELIMINA EL ANTERIOR)
+            if (idDocViejo != null) {
+                if (idDocViejo != &quot;&quot;) {
+                    await db.collection(&quot;cuentas&quot;).doc(idDocViejo).delete();
+                }
+            }
+
+            // 4. CREAR EL NUEVO REGISTRO LIMPIO
+            var objetoNuevo = new Object();
+            objetoNuevo.clienteId = idCli;
+            objetoNuevo.plataforma = (elTipo != null) ? elTipo.value : &quot;&quot;;
+            objetoNuevo.correo = correoF;
+            objetoNuevo.clave = (elClave != null) ? elClave.value : &quot;&quot;;
+            objetoNuevo.perfil = (elPerf != null) ? elPerf.value : &quot;1&quot;;
+            objetoNuevo.perfil_etiqueta = objetoNuevo.perfil + &quot;. &quot; + nombreCli;
+            objetoNuevo.pin = (elPin != null) ? elPin.value : &quot;&quot;;
+            objetoNuevo.inicio = fInicio;
+            objetoNuevo.fin = fFin;
+            objetoNuevo.metodoPago = mPago;
+            objetoNuevo.valor = vPago;
+            objetoNuevo.fechaRegistro = Date.now();
+            objetoNuevo.estado = &quot;Activa&quot;;
+
+            await db.collection(&quot;cuentas&quot;).add(objetoNuevo);
+        }
+
+        alert(&quot;Hecho: Venta anterior eliminada y registro nuevo guardado&quot;);
+
+        // 5. LIMPIEZA
         idModificando = null;
-        fechaFinalCalculadaGarantia = &quot;&quot;;
-        
-        // Habilitar campos para la siguiente operación
-        inputBuscarCliente.disabled = true;
-        if(document.getElementById(&quot;fechaInicio&quot;)) document.getElementById(&quot;fechaInicio&quot;).disabled = false;
-        if(document.getElementById(&quot;fechaFin&quot;)) document.getElementById(&quot;fechaFin&quot;).disabled = false;
-        if(document.getElementById(&quot;diasVenta&quot;)) document.getElementById(&quot;diasVenta&quot;).disabled = false;
+        if (typeof reiniciarFormVentas == &quot;function&quot;) { reiniciarFormVentas(); }
+        if (typeof actualizarTodo == &quot;function&quot;) { actualizarTodo(); }
 
-        reiniciarFormVentas();
-        actualizarTodo();
-
-    } catch (err) {
-        console.error(&quot;Error al guardar:&quot;, err);
-        alert(&quot;❌ Error al conectar con la base de datos&quot;);
+    } catch (error) {
+        alert(&quot;Error: &quot; + error.message);
     }
 }
 
@@ -2014,10 +2018,14 @@ window.abrirEditorManualLote = function(id) {
 window.editarCuentaSuscripcion = function(id) {
     cargarParaModificar(id);
     window.habilitarEdicionFila = habilitarEdicionFila;
-window.guardarCambiosCompletos = guardarCambiosCompletos;
-window.eliminarCuentaGenerica = eliminarCuentaGenerica;
-window.habilitarEdicionFila = habilitarEdicionFila;
-window.guardarCambiosCompletos = guardarCambiosCompletos;
+    window.guardarCambiosCompletos = guardarCambiosCompletos;
+    window.actualizarCuentaBase = actualizarCuentaBase;
+    window.eliminarCuentaGenerica = eliminarCuentaGenerica;
+    window.habilitarEdicionFila = habilitarEdicionFila;
+    window.eliminarCuentaBase = eliminarCuentaBase;
+    window.cargarParaModificar = cargarParaModificar;
+    window.abrirEditorManualLote = function(id) {
+    cargarParaModificar(id);};
 };
 
 &lt;/script&gt; 
