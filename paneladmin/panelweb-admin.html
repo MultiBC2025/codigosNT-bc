@@ -536,9 +536,20 @@
     &lt;select id=&quot;selPlataformaOtros&quot; onchange=&quot;chequearIPTV(this.value)&quot; style=&quot;width:100%; padding:8px; margin:10px 0; background:#333; color:white;&quot;&gt;
         &lt;option value=&quot;Prime Video&quot;&gt;Prime Video&lt;/option&gt;
         &lt;option value=&quot;IPTV&quot;&gt;IPTV&lt;/option&gt;
-        &lt;option value=&quot;Crunchyroll&quot;&gt;Crunchyroll&lt;/option&gt;
-        &lt;option value=&quot;Disney+&quot;&gt;Disney+&lt;/option&gt;
-        &lt;option value=&quot;Paramount+&quot;&gt;Paramount+&lt;/option&gt;
+        &lt;option value=&quot;Crunchyroll&quot;&gt;Crunchyrol&lt;/option&gt;
+        &lt;option value=&quot;Paramount Plus&quot;&gt;Paramount Plus&lt;/option&gt;
+        &lt;option value=&quot;Disney Plus - Premium&quot;&gt;Disney Plus - Premium&lt;/option&gt;
+        &lt;option value=&quot;Plex&quot;&gt;Plex&lt;/option&gt;
+        &lt;option value=&quot;VIX&quot;&gt;VIX&lt;/option&gt;
+        &lt;option value=&quot;Apple TV&quot;&gt;Apple TV&lt;/option&gt;
+        &lt;option value=&quot;YouTube Premium&quot;&gt;YouTube Premium&lt;/option&gt;
+        &lt;option value=&quot;Spotify&quot;&gt;Spotify&lt;/option&gt;
+        &lt;option value=&quot;Deezer&quot;&gt;Deezer&lt;/option&gt;
+        &lt;option value=&quot;Apple Music&quot;&gt;Apple Music&lt;/option&gt;
+        &lt;option value=&quot;Canva&quot;&gt;Canva&lt;/option&gt;
+        &lt;option value=&quot;CapCut Pro&quot;&gt;CapCut Pro&lt;/option&gt;
+        &lt;option value=&quot;DirecTV-Go&quot;&gt;DirecTV-Go&lt;/option&gt;
+        
     &lt;/select&gt;&lt;br&gt;
 
     &lt;div id=&quot;divUrlIptv&quot; style=&quot;display:none;&quot;&gt;
@@ -1461,6 +1472,16 @@ async function cargarParaModificar(idsVenta) {
 
         const base = primerDoc.data();
         var idDelCliente = base.clienteId || &quot;&quot;;
+        
+        // --- ESTO ES LO NUEVO QUE AGREGUÉ ---
+// 1. Convertimos el valor de la base de datos a un número decimal
+var valorUnitario = parseFloat(base.valor || 0);
+
+// 2. Contamos cuántos IDs recibimos (cuántas cuentas se van a editar)
+var cantidadDeCuentas = listaIds.length;
+
+// 3. Multiplicamos para obtener el Gran Total
+var valorTotalCalculado = valorUnitario * cantidadDeCuentas;
 
         // 2. BUSCAR NOMBRE REAL EN LA COLECCIÓN CLIENTES
         var nombreReal = base.cliente_nombre || &quot;Cliente&quot;;
@@ -1489,6 +1510,47 @@ async function cargarParaModificar(idsVenta) {
             var dif = Math.ceil(Math.abs(f2 - f1) / (1000 * 60 * 60 * 24));
             document.getElementById(&quot;dias&quot;).value = dif;
         }
+        var idFIni = String.fromCharCode(102, 101, 99, 104, 97, 73, 110, 105, 99, 105, 111);
+var idD = String.fromCharCode(100, 105, 97, 115);
+        if (base.inicio) {
+    // CASO EDICION: Traemos la fecha que ya tiene el cliente
+    if (document.getElementById(idFIni)) {
+        document.getElementById(idFIni).value = base.inicio;
+    }
+    
+    // Calculamos los dias que ya tenia (f2 - f1)
+    if (base.fin && document.getElementById(idD)) {
+        var f1 = new Date(base.inicio);
+        var f2 = new Date(base.fin);
+        var dif = Math.ceil(Math.abs(f2 - f1) / 86400000);
+        document.getElementById(idD).value = dif;
+    }
+} else {
+    // CASO ASIGNAR CUENTA: Ponemos fecha de hoy y 30 dias
+    var objF = new Date();
+    var yyyy = objF.getFullYear();
+    var mm = objF.getMonth() + 1;
+    if (mm < 10) { mm = String.fromCharCode(48) + mm; }
+    var dd = objF.getDate();
+    if (dd < 10) { dd = String.fromCharCode(48) + dd; }
+    var g = String.fromCharCode(45);
+    var hoy = yyyy + g + mm + g + dd;
+
+    if (document.getElementById(idFIni)) {
+        document.getElementById(idFIni).value = hoy;
+    }
+    if (document.getElementById(idD)) {
+        document.getElementById(idD).value = 30;
+    }
+}
+        
+        // --- LÓGICA DE MULTIPLICACIÓN SIN COMILLAS ---
+var idVPago = String.fromCharCode(118, 97, 108, 111, 114, 80, 97, 103, 111);
+if (document.getElementById(idVPago)) {
+    var vUnit = parseFloat(base.valor || 0);
+    var vTotalMultiplicado = vUnit * listaIds.length;
+    document.getElementById(idVPago).value = vTotalMultiplicado;
+}
 
         // Variables de garantía
         vencimientoOriginalParaEdicion = base.fin;
@@ -1804,6 +1866,19 @@ function agregarPlataforma(){
         &lt;option value=&quot;Prime Video&quot;&gt;Prime Video&lt;/option&gt;
         &lt;option value=&quot;IPTV&quot;&gt;IPTV&lt;/option&gt;
         &lt;option value=&quot;Crunchyroll&quot;&gt;Crunchyroll&lt;/option&gt;
+        
+        &lt;option value=&quot;Paramount Plus&quot;&gt;Paramount Plus&lt;/option&gt;
+        &lt;option value=&quot;Disney Plus - Premium&quot;&gt;Disney Plus - Premium&lt;/option&gt;
+        &lt;option value=&quot;Plex&quot;&gt;Plex&lt;/option&gt;
+        &lt;option value=&quot;VIX&quot;&gt;VIX&lt;/option&gt;
+        &lt;option value=&quot;Apple TV&quot;&gt;Apple TV&lt;/option&gt;
+        &lt;option value=&quot;YouTube Premium&quot;&gt;YouTube Premium&lt;/option&gt;
+        &lt;option value=&quot;Spotify&quot;&gt;Spotify&lt;/option&gt;
+        &lt;option value=&quot;Deezer&quot;&gt;Deezer&lt;/option&gt;
+        &lt;option value=&quot;Apple Music&quot;&gt;Apple Music&lt;/option&gt;
+        &lt;option value=&quot;Canva&quot;&gt;Canva&lt;/option&gt;
+        &lt;option value=&quot;CapCut Pro&quot;&gt;CapCut Pro&lt;/option&gt;
+        &lt;option value=&quot;DirecTV-Go&quot;&gt;DirecTV-Go&lt;/option&gt;
     &lt;/select&gt; 
     &lt;span class=&quot;cont-correo&quot;&gt;&lt;/span&gt; 
     &lt;span class=&quot;cont-clave&quot;&gt;&lt;/span&gt; 
