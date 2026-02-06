@@ -197,6 +197,52 @@
         margin-right: 10px;
         font-size: 11px;
     }
+    
+    .contenedor-nota {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    margin-left: 5px;
+}
+
+.icono-interrogacion {
+    background: #555;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.tooltip-nota {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%; /* Aparece arriba del icono */
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    font-size: 13px;
+    line-height: 1.4;
+    border: 1px solid #777;
+}
+
+.contenedor-nota:hover .tooltip-nota {
+    visibility: visible;
+    opacity: 1;
+}
 
     .row-finalizada-color { background-color: #e8daff !important; color: #512da8 !important; border-left: 5px solid #673ab7; }
     .row-selected-renew { background-color: #cfe2ff !important; border: 2px solid #0d6efd !important; }
@@ -662,6 +708,7 @@ function cargarVentasVencimientos(){
     document.getElementById(&quot;bodyVentasHistorial&quot;).innerHTML = &quot;&quot;;
     const gruposVencimiento = {};
     const gruposHistorial = {}; 
+    var notaFinal = String();
 
     listaSuscripcionesGlobal.forEach(d =&gt; {
         const batchKey = `${d.clienteId}_${d.fechaRegistro || 0}`;
@@ -788,8 +835,58 @@ function cargarVentasVencimientos(){
             const dateObj = new Date(d.fechaRegistro);
             fechaFull = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} &lt;br&gt; &lt;small&gt;${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}&lt;/small&gt;`;
         }
+        var iconoNota = '';
+var notaTexto = d.nota_cuenta || d.nota_cambio || '';
+
+if (notaTexto !== '') {
+    var estiloNota = 'cursor:help; background:#007bff; color:white; border-radius:50%; padding:2px 7px; font-size:11px; margin-right:5px; font-weight:bold; display:inline-block;';
+    iconoNota = '<span title=\'' + notaTexto + '\' style=\'' + estiloNota + '\'>?</span>';
+}
+        var iconoNota = '';
+if (d.nota_cambio != null) {
+    if (d.nota_cambio != notaFinal) {
+        notaFinal = d.nota_cambio;
+    }
+}
+
+// Si sigue vacía, revisamos nota_cuenta
+if (notaFinal == String()) {
+    if (d.nota_cuenta != null) {
+        if (d.nota_cuenta != notaFinal) {
+            notaFinal = d.nota_cuenta;
+        }
+    }
+}
+
+// Creamos el icono solo si hay texto
+
+var iconoNota = String();
+var notaIndependiente = String();
+// Revisamos si el registro actual tiene nota_cuenta
+if (d.nota_cuenta != null) {
+    if (d.nota_cuenta != notaIndependiente) {
+        notaIndependiente = d.nota_cuenta;
+    }
+}
+
+// 2. DISEÑO GRANDE Y CLARO (Sin comillas)
+var iconoNota = String();
+
+if (notaIndependiente != String()) {
+    var signoPregunta = String.fromCharCode(63);
+    
+    var tagAbre = String.fromCharCode(60, 115, 112, 97, 110, 32, 116, 105, 116, 108, 101, 61, 39);
+    
+    var tagCierra = String.fromCharCode(39, 32, 115, 116, 121, 108, 101, 61, 39, 99, 117, 114, 115, 111, 114, 58, 104, 101, 108, 112, 59, 32, 98, 97, 99, 107, 103, 114, 111, 117, 110, 100, 58, 35, 48, 48, 55, 98, 102, 102, 59, 32, 99, 111, 108, 111, 114, 58, 119, 104, 105, 116, 101, 59, 32, 98, 111, 114, 100, 101, 114, 45, 114, 97, 100, 105, 117, 115, 58, 53, 48, 37, 59, 32, 112, 97, 100, 100, 105, 110, 103, 58, 53, 112, 120, 32, 49, 48, 112, 120, 59, 32, 109, 97, 114, 103, 105, 110, 45, 114, 105, 103, 104, 116, 58, 50, 112, 120, 59, 32, 102, 111, 110, 116, 45, 115, 105, 122, 101, 58, 49, 53, 112, 120, 59, 32, 102, 111, 110, 116, 45, 119, 101, 105, 103, 104, 116, 58, 98, 111, 108, 100, 59, 32, 100, 105, 115, 112, 108, 97, 121, 58, 105, 110, 108, 105, 110, 101, 45, 98, 108, 111, 99, 107, 59, 39, 62);
+    
+    var tagFin = String.fromCharCode(60, 47, 115, 112, 97, 110, 62);
+
+    iconoNota = tagAbre + notaIndependiente + tagCierra + signoPregunta + tagFin;
+}
+        
+        
         document.getElementById(&quot;bodyVentasHistorial&quot;).innerHTML += `&lt;tr class=&quot;${rowColorClass}&quot;&gt;
-    &lt;td style=&quot;font-size:15px;&quot;&gt;${fechaFull}&lt;/td&gt;
+    &lt;td style=&quot;font-size:15px;&quot;&gt;${iconoNota}${fechaFull}&lt;/td&gt;
     &lt;td&gt;&lt;b&gt;${nomC}&lt;/b&gt;&lt;/td&gt;
     &lt;td&gt;${d.plataformasCojuntas.join(&quot;&lt;br&gt;&quot;)}&lt;/td&gt;
     &lt;td style=&quot;color:#28a745; font-weight:bold;&quot;&gt;$${d.valorTotal.toFixed(2)}&lt;br&gt;&lt;small style=&quot;color:gray;&quot;&gt;(${d.metodoPago || 'S/M'})&lt;/small&gt;&lt;/td&gt;
@@ -910,7 +1007,72 @@ function renderizarTablaClientes(){
 function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = &quot;✏️ Editando Cliente&quot;; btnGuardar.innerText = &quot;Actualizar Cliente&quot;; btnCancel.style.display = &quot;inline-block&quot;; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(&quot; &quot;); if (partes.length &gt; 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
 function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + &quot; &quot; + c_whatsapp.value }; if(!data.nombre || !c_whatsapp.value) return alert(&quot;Completa los datos&quot;); if(id) { db.collection(&quot;clientes&quot;).doc(id).update(data).then(() =&gt; { alert(&quot;Cliente actualizado&quot;); cancelarEdicion(); actualizarTodo(); }).catch(e =&gt; alert(&quot;Error: &quot; + e.message)); } else { db.collection(&quot;clientes&quot;).add(data).then(() =&gt; { c_nombre.value = &quot;&quot;; c_whatsapp.value = &quot;&quot;; actualizarTodo(); }); } }
 function cancelarEdicion(){ c_id_hidden.value=&quot;&quot;; c_nombre.value=&quot;&quot;; c_whatsapp.value=&quot;&quot;; formTitle.innerText=&quot;✨ Registrar Nuevo Cliente&quot;; btnGuardar.innerText=&quot;Guardar Cliente&quot;; btnCancel.style.display=&quot;none&quot;; }
-function cargarLoteParaRenovar(cliId, items, rowId, listaIds) { marcarComoRenovadoEnBD(listaIds, rowId); document.querySelectorAll('tr').forEach(r =&gt; r.classList.remove('row-selected-renew')); if(rowId) { const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-selected-renew'); idFilaSeleccionadaAzul = rowId; } mostrar('cuentas', true); const cliente = listaClientesLocal.find(c =&gt; c.id === cliId); clienteIdSeleccionado.value = cliId; inputBuscarCliente.value = cliente.nombre; txtElegido.innerText = `✅ Renovando Lote de ${cliente.nombre}`; tipoCompra.value = items.length &gt; 1 ? &quot;combo&quot; : &quot;individual&quot;; document.getElementById(&quot;btnMasPlat&quot;).style.display = items.length &gt; 1 ? &quot;inline-block&quot; : &quot;none&quot;; plataformas.innerHTML = &quot;&quot;; items.forEach(it =&gt; { const div = document.createElement(&quot;div&quot;); div.className = &quot;fila-plataforma&quot;; div.style = &quot;margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;&quot;; div.innerHTML = `&lt;select class=&quot;tipo&quot;&gt;&lt;option value=&quot;${it.plat}&quot;&gt;${it.plat}&lt;/option&gt;&lt;/select&gt; &lt;span class=&quot;cont-correo&quot;&gt;&lt;select class=&quot;correo-select&quot;&gt;&lt;option value=&quot;${it.clave}&quot;&gt;${it.correo}&lt;/option&gt;&lt;/select&gt;&lt;/span&gt; &lt;span class=&quot;cont-clave&quot;&gt;&lt;input class=&quot;clave&quot; value=&quot;${it.clave}&quot; readonly style=&quot;width:80px&quot;&gt;&lt;/span&gt; &lt;div class=&quot;bloque-perfiles&quot; style=&quot;display:inline-block&quot;&gt;&lt;div class=&quot;item-perfil&quot;&gt;&lt;span class=&quot;cont-perfil&quot;&gt;&lt;select class=&quot;perfil-select&quot;&gt;&lt;option value=&quot;${it.perfil}&quot;&gt;${it.perfil}&lt;/option&gt;&lt;/select&gt;&lt;/span&gt; &lt;span class=&quot;cont-pin&quot;&gt;&lt;input class=&quot;pin&quot; value=&quot;${it.pin}&quot; style=&quot;width:50px&quot; readonly&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;`; plataformas.appendChild(div); }); }
+function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
+    marcarComoRenovadoEnBD(listaIds, rowId);
+    document.querySelectorAll('tr').forEach(r => r.classList.remove('row-selected-renew'));
+
+    if (rowId) {
+        const fila = document.getElementById(rowId);
+        if (fila) fila.classList.add('row-selected-renew');
+        idFilaSeleccionadaAzul = rowId;
+    }
+
+    mostrar('cuentas', true);
+    const cliente = listaClientesLocal.find(c => c.id === cliId);
+    clienteIdSeleccionado.value = cliId;
+    inputBuscarCliente.value = cliente.nombre;
+    txtElegido.innerText = '✅ Renovando Lote de ' + cliente.nombre;
+    
+    // --- LÓGICA DE ABONO DE DÍAS (SÓLO SI LE QUEDABAN DÍAS) ---
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    // Tomamos la fecha de fin del primer ítem para comparar
+    const fechaVenceActual = new Date(items[0].fin + 'T00:00:00');
+    
+    // Calcular días restantes
+    const diffMilis = fechaVenceActual - hoy;
+    const diasRestantes = Math.floor(diffMilis / (1000 * 60 * 60 * 24));
+
+    let diasParaSumar = 30;
+    if (diasRestantes > 0) {
+        // Si le sobraban días, se le abonan a su nueva suscripción
+        diasParaSumar += diasRestantes;
+    }
+
+    // Calcular las nuevas fechas
+    const fInicioNueva = hoy.toISOString().split('T')[0];
+    
+    const fFinNuevaDate = new Date(hoy);
+    fFinNuevaDate.setDate(hoy.getDate() + diasParaSumar);
+    const fFinNueva = fFinNuevaDate.toISOString().split('T')[0];
+
+    // Asignar a los campos del formulario
+    if (document.getElementById('fechaInicio')) document.getElementById('fechaInicio').value = fInicioNueva;
+    if (document.getElementById('fechaFin')) document.getElementById('fechaFin').value = fFinNueva;
+    if (document.getElementById('dias')) document.getElementById('dias').value = '30';
+    // ---------------------------------------------------------
+
+    tipoCompra.value = (items.length > 1) ? 'combo' : 'individual';
+    document.getElementById('btnMasPlat').style.display = (items.length > 1) ? 'inline-block' : 'none';
+    
+    plataformas.innerHTML = '';
+    items.forEach(it => {
+        const div = document.createElement('div');
+        div.className = 'fila-plataforma';
+        div.style = 'margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px;';
+        div.innerHTML = ' <select class=\'tipo\'><option value=\'' + it.plat + '\'>' + it.plat + '</option></select> ' +
+            ' <span class=\'cont-correo\'><select class=\'correo-select\'><option value=\'' + it.clave + '\'>' + it.correo + '</option></select></span> ' +
+            ' <span class=\'cont-clave\'><input class=\'clave\' value=\'' + it.clave + '\' readonly style=\'width:80px\'></span> ' +
+            ' <div class=\'bloque-perfiles\' style=\'display:inline-block\'>' +
+                ' <div class=\'item-perfil\'>' +
+                    ' <span class=\'cont-perfil\'><select class=\'perfil-select\'><option value=\'' + it.perfil + '\'>' + it.perfil + '</option></select></span> ' +
+                    ' <span class=\'cont-pin\'><input class=\'pin\' value=\'' + it.pin + '\' style=\'width:50px\' readonly></span>' +
+                ' </div>' +
+            ' </div>';
+        plataformas.appendChild(div);
+    });
+}
 /* --- FUNCION WHATSAPP PARA LOTES --- */
 function enviarWhatsAppLote(idsStr) {
     const ids = idsStr.split(','); 
@@ -1424,94 +1586,126 @@ async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
 function actualizarPin(sel) { const it = sel.closest(&quot;.item-perfil&quot;); const val = parseInt(sel.value); it.querySelector(&quot;.pin&quot;).value = isNaN(val) ? &quot;&quot; : 1000 + val; }
 async function guardarCuentas() {
     try {
-        // 1. OBTENER DATOS CON VALIDACION DE EXISTENCIA
-        var elCliId = document.getElementById(&quot;clienteIdSeleccionado&quot;);
-        var idCli = &quot;&quot;;
-        if (elCliId != null) { idCli = elCliId.value; }
+        var elCliId = document.getElementById('clienteIdSeleccionado');
+        var idCli = (elCliId != null) ? elCliId.value : '';
+        if (idCli == '') return alert('Selecciona un cliente');
 
-        if (idCli == &quot;&quot;) {
-            alert(&quot;Selecciona un cliente&quot;);
-            return;
+        var nombreCli = document.getElementById('inputBuscarCliente')?.value || '';
+        var fInicio = document.getElementById('fechaInicio')?.value || '';
+        var fFin = document.getElementById('fechaFin')?.value || '';
+        var mPago = document.getElementById('metodoPago')?.value || 'Efectivo';
+        
+        var elVPago = document.getElementById('valorPago');
+        var vPagoTotal = parseFloat((elVPago != null) ? elVPago.value : '0') || 0;
+
+        var elNotaCambio = document.getElementById('txt_obs_cambio');
+        var notaTexto = (elNotaCambio != null) ? elNotaCambio.value : '';
+
+        var elRegalo = document.getElementById('dias_regalo');
+        var diasExtra = (elRegalo != null) ? parseInt(elRegalo.value) || 0 : 0;
+
+        // LÓGICA DE DÍAS EXTRA
+        var fechaFinalCalculada = fFin;
+        if (diasExtra > 0 && fFin != '') {
+            var fechaAux = new Date(fFin + 'T00:00:00');
+            fechaAux.setDate(fechaAux.getDate() + diasExtra);
+            var anio = fechaAux.getFullYear();
+            var mes = (fechaAux.getMonth() + 1).toString().padStart(2, '0');
+            var dia = fechaAux.getDate().toString().padStart(2, '0');
+            fechaFinalCalculada = anio + '-' + mes + '-' + dia;
         }
 
-        var elNombreCli = document.getElementById(&quot;inputBuscarCliente&quot;);
-        var nombreCli = &quot;&quot;;
-        if (elNombreCli != null) { nombreCli = elNombreCli.value; }
+        var marcaTiempoUnica = Date.now();
+        var filas = document.querySelectorAll('.fila-plataforma');
 
-        var elFInicio = document.getElementById(&quot;fechaInicio&quot;);
-        var fInicio = (elFInicio != null) ? elFInicio.value : &quot;&quot;;
+        var contadorFilasValidas = 0;
+        for (var j = 0; j < filas.length; j++) {
+            var cSel = filas[j].querySelector('.correo-select');
+            var correoTemp = cSel?.tagName == 'SELECT' ? cSel.options[cSel.selectedIndex].text : (cSel?.value || filas[j].querySelector('.cont-correo')?.innerText || '');
+            if (correoTemp != '' && correoTemp != 'Seleccione...') {
+                contadorFilasValidas++;
+            }
+        }
 
-        var elFFin = document.getElementById(&quot;fechaFin&quot;);
-        var fFin = (elFFin != null) ? elFFin.value : &quot;&quot;;
+        var valorPorPlataforma = contadorFilasValidas > 0 ? (vPagoTotal / contadorFilasValidas) : 0;
 
-        var elMPago = document.getElementById(&quot;metodoPago&quot;);
-        var mPago = (elMPago != null) ? elMPago.value : &quot;Efectivo&quot;;
-
-        var elVPago = document.getElementById(&quot;valorPago&quot;);
-        var vPago = (elVPago != null) ? elVPago.value : &quot;0&quot;;
-
-        // 2. PROCESAR CADA FILA NARANJA
-        var filas = document.querySelectorAll(&quot;.fila-plataforma&quot;);
-        var totalFilas = filas.length;
-
-        for (var i = 0; i < totalFilas; i++) {
+        // GUARDAR EN BASE DE DATOS
+        for (var i = 0; i < filas.length; i++) {
             var f = filas[i];
-            
-            // SACAR EL ID DEL DOCUMENTO PARA BORRARLO (EVITA DUPLICADOS)
-            var idDocViejo = f.getAttribute(&quot;data-id&quot;);
+            var idDocViejo = f.getAttribute('data-id');
+            var elTipo = f.querySelector('.tipo');
+            var elClave = f.querySelector('.clave');
+            var elPerf = f.querySelector('.perfil-select');
+            var elPin = f.querySelector('.pin');
+            var elCSel = f.querySelector('.correo-select');
 
-            var elTipo = f.querySelector(&quot;.tipo&quot;);
-            var elClave = f.querySelector(&quot;.clave&quot;);
-            var elPerf = f.querySelector(&quot;.perfil-select&quot;);
-            var elPin = f.querySelector(&quot;.pin&quot;);
-            var elCSel = f.querySelector(&quot;.correo-select&quot;);
-
-            var correoF = &quot;&quot;;
-            if (elCSel != null) {
+            var correoF = '';
+            if (elCSel != null && elCSel.tagName == 'SELECT') {
                 correoF = elCSel.options[elCSel.selectedIndex].text;
             } else {
-                var elContC = f.querySelector(&quot;.cont-correo&quot;);
-                correoF = (elContC != null) ? elContC.innerText : &quot;&quot;;
+                correoF = elCSel?.value || f.querySelector('.cont-correo')?.innerText || '';
             }
 
-            // SI NO HAY CORREO, NO GUARDAMOS NADA
-            if (correoF == &quot;&quot; || correoF == &quot;Seleccione...&quot;) { continue; }
+            if (correoF == '' || correoF == 'Seleccione...') continue;
 
-            // 3. ACCION DE BORRADO REAL (ELIMINA EL ANTERIOR)
-            if (idDocViejo != null) {
-                if (idDocViejo != &quot;&quot;) {
-                    await db.collection(&quot;cuentas&quot;).doc(idDocViejo).delete();
-                }
+            if (idDocViejo) {
+                await db.collection('cuentas').doc(idDocViejo).delete();
+            } else if (idModificando) {
+                await db.collection('cuentas').doc(idModificando).delete();
             }
 
-            // 4. CREAR EL NUEVO REGISTRO LIMPIO
             var objetoNuevo = new Object();
             objetoNuevo.clienteId = idCli;
-            objetoNuevo.plataforma = (elTipo != null) ? elTipo.value : &quot;&quot;;
+            objetoNuevo.plataforma = (elTipo != null) ? elTipo.value : '';
             objetoNuevo.correo = correoF;
-            objetoNuevo.clave = (elClave != null) ? elClave.value : &quot;&quot;;
-            objetoNuevo.perfil = (elPerf != null) ? elPerf.value : &quot;1&quot;;
-            objetoNuevo.perfil_etiqueta = objetoNuevo.perfil + &quot;. &quot; + nombreCli;
-            objetoNuevo.pin = (elPin != null) ? elPin.value : &quot;&quot;;
+            objetoNuevo.clave = (elClave != null) ? elClave.value : '';
+            objetoNuevo.perfil = (elPerf != null) ? elPerf.value : '1';
+            objetoNuevo.perfil_etiqueta = objetoNuevo.perfil + '. ' + nombreCli;
+            objetoNuevo.pin = (elPin != null) ? elPin.value : '';
             objetoNuevo.inicio = fInicio;
-            objetoNuevo.fin = fFin;
+            objetoNuevo.fin = fechaFinalCalculada;
             objetoNuevo.metodoPago = mPago;
-            objetoNuevo.valor = vPago;
-            objetoNuevo.fechaRegistro = Date.now();
-            objetoNuevo.estado = &quot;Activa&quot;;
+            objetoNuevo.valor = valorPorPlataforma.toString(); 
+            objetoNuevo.fechaRegistro = marcaTiempoUnica; 
+            objetoNuevo.estado = 'Activa';
+            objetoNuevo.nota_cuenta = notaTexto; 
 
-            await db.collection(&quot;cuentas&quot;).add(objetoNuevo);
+            await db.collection('cuentas').add(objetoNuevo);
         }
 
-        alert(&quot;Hecho: Venta anterior eliminada y registro nuevo guardado&quot;);
+        alert('✅ Venta procesada con éxito');
 
-        // 5. LIMPIEZA
+        var fueGarantia = (idModificando != null); 
         idModificando = null;
-        if (typeof reiniciarFormVentas == &quot;function&quot;) { reiniciarFormVentas(); }
-        if (typeof actualizarTodo == &quot;function&quot;) { actualizarTodo(); }
+
+        if (typeof reiniciarFormVentas == 'function') { 
+            reiniciarFormVentas(); 
+        }
+
+        // --- LÓGICA DE REINICIO DE FORMULARIO (SÓLO SI NO ES GARANTÍA) ---
+        if (!fueGarantia) {
+            var hoy = new Date();
+            var fechaHoyStr = hoy.toISOString().split('T')[0];
+            
+            var fechaVence = new Date();
+            fechaVence.setDate(hoy.getDate() + 30);
+            var fechaVenceStr = fechaVence.toISOString().split('T')[0];
+
+            if (document.getElementById('fechaInicio')) document.getElementById('fechaInicio').value = fechaHoyStr;
+            if (document.getElementById('fechaFin')) document.getElementById('fechaFin').value = fechaVenceStr;
+            if (document.getElementById('valorPago')) document.getElementById('valorPago').value = '0';
+            
+            // PRESELECCIONAR 30 DÍAS POR DEFECTO
+            var elDias = document.getElementById('dias'); // Asegúrate que el ID sea 'dias'
+            if (elDias) {
+                elDias.value = '30';
+            }
+        }
+
+        if (typeof actualizarTodo == 'function') actualizarTodo();
 
     } catch (error) {
-        alert(&quot;Error: &quot; + error.message);
+        alert('Error: ' + error.message);
     }
 }
 
