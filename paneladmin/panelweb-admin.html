@@ -1948,7 +1948,7 @@ async function cargarAdminPerfiles() {
                 );
                 let cl = &quot;p-libre&quot;, txt = &quot;Libre&quot;;
                 if (asig) {
-                    const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / 86400000) - 1;
+                    const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / 86400000) ;
                     if(diff > -7) {
                         cl = diff > 5 ? &quot;p-verde&quot; : (diff >= 0 ? &quot;p-amarillo&quot; : &quot;p-rojo&quot;);
                         const nC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split(&quot;. &quot;)[1] || &quot;Oc&quot;) : &quot;Oc&quot;;
