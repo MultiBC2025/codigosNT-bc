@@ -498,8 +498,8 @@
         &lt;tr&gt;
             &lt;th&gt;Correo&lt;/th&gt;
             &lt;th&gt;Clave&lt;/th&gt;
-            &lt;th colspan=&quot;5&quot;&gt;Perfiles (HBO)&lt;/th&gt; &lt;th&gt;Modificado&lt;/th&gt;
-            &lt;th&gt;Acción&lt;/th&gt;
+            &lt;th&gt;P1&lt;/th&gt;&lt;th&gt;P2&lt;/th&gt;&lt;th&gt;P3&lt;/th&gt;&lt;th&gt;P4&lt;/th&gt;&lt;th&gt;P5&lt;/th&gt;
+                        &lt;th style=&quot;width: 130px;&quot;&gt;Modificado&lt;/th&gt;&lt;th&gt;Acción&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tbody id=&quot;tablaHBOBody&quot;&gt;&lt;/tbody&gt;
@@ -520,7 +520,7 @@
                     &lt;th&gt;Cuenta (Usuario / URL)&lt;/th&gt;
                     &lt;th&gt;Clave&lt;/th&gt;
                     &lt;th&gt;P1&lt;/th&gt;&lt;th&gt;P2&lt;/th&gt;&lt;th&gt;P3&lt;/th&gt;&lt;th&gt;P4&lt;/th&gt;&lt;th&gt;P5&lt;/th&gt;&lt;th&gt;P6&lt;/th&gt;
-                    &lt;th&gt;Acción&lt;/th&gt;
+                    &lt;th&gt;Modificado&lt;/th&gt;&lt;th&gt;Acción&lt;/th&gt;
                 &lt;/tr&gt;
             &lt;/thead&gt;
             &lt;tbody id=&quot;tablaOtrosBody&quot;&gt;&lt;/tbody&gt;
@@ -1905,14 +1905,21 @@ function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase
 // -------------------------------------------------------------------------
 async function cargarAdminPerfiles() {
     const tablas = { 
-        'Netflix': document.getElementById(&quot;tablaNetflixBody&quot;), 
-        'Disney': document.getElementById(&quot;tablaDisneyBody&quot;),
-        'HBO': document.getElementById(&quot;tablaHBOBody&quot;),
-        'OTROS': document.getElementById(&quot;tablaOtrosBody&quot;)
+        &quot;Netflix&quot;: document.getElementById(&quot;tablaNetflixBody&quot;), 
+        &quot;Disney&quot;: document.getElementById(&quot;tablaDisneyBody&quot;),
+        &quot;HBO&quot;: document.getElementById(&quot;tablaHBOBody&quot;),
+        &quot;OTROS&quot;: document.getElementById(&quot;tablaOtrosBody&quot;)
     };
 
-    Object.values(tablas).forEach(t =&gt; { if(t) t.innerHTML = &quot;&quot;; });
+    Object.values(tablas).forEach(t => { if(t) t.innerHTML = &quot;&quot;; });
     const hoy = new Date();
+
+    // ESTILOS DE COLOR Y TAMAÑO
+    var stCor = &quot;font-size:14px; color:#007bff; font-weight:bold; padding:10px;&quot;; // Azul para correo
+    var stCla = &quot;font-size:14px; color:#333; font-weight:500; text-align:center;&quot;; // Gris oscuro para clave
+    var stPerf = &quot;width:38px;font-weight: bold; font-size:14px; text-align:center; border:1px solid #eee;&quot;;
+    var stMod = &quot;font-size:14px; color:#666; text-align:center; width:150px; border-left:1px solid #ddd;&quot;;
+    var stAcc = &quot;text-align:center; width:100px; border-left:1px solid #ddd;&quot;;
 
     try {
         const [snapBase, snapSusc] = await Promise.all([
@@ -1921,45 +1928,45 @@ async function cargarAdminPerfiles() {
         ]);
 
         let todosLosDocs = [];
-        snapBase.forEach(doc =&gt; todosLosDocs.push({ id: doc.id, d: doc.data(), col: 'cuentas_base' }));
-        snapSusc.forEach(doc =&gt; todosLosDocs.push({ id: doc.id, d: doc.data(), col: 'suscripciones' }));
+        snapBase.forEach(doc => todosLosDocs.push({ id: doc.id, d: doc.data(), col: &quot;cuentas_base&quot; }));
+        snapSusc.forEach(doc => todosLosDocs.push({ id: doc.id, d: doc.data(), col: &quot;suscripciones&quot; }));
 
-        todosLosDocs.forEach(item =&gt; {
+        todosLosDocs.forEach(item => {
             const d = item.d;
             const id = item.id;
             const colOrigen = item.col;
             
-            let body = tablas[d.plataforma] || tablas['OTROS']; 
+            let body = tablas[d.plataforma] || tablas[&quot;OTROS&quot;]; 
             if (!body) return;
 
-            let numP = d.plataforma === 'Disney' ? 7 : (body === tablas['OTROS'] ? 6 : 5);
+            let numP = d.plataforma === &quot;Disney&quot; ? 7 : (body === tablas[&quot;OTROS&quot;] ? 6 : 5);
             let celdas = &quot;&quot;;
 
-            for (let i = 1; i &lt;= numP; i++) {
-                const asig = listaSuscripcionesGlobal.find(s =&gt; 
-                    s.correo === d.correo &amp;&amp; s.plataforma === d.plataforma &amp;&amp; parseInt(s.perfil) === i
+            for (let i = 1; i <= numP; i++) {
+                const asig = listaSuscripcionesGlobal.find(s => 
+                    s.correo === d.correo && s.plataforma === d.plataforma && parseInt(s.perfil) === i
                 );
                 let cl = &quot;p-libre&quot;, txt = &quot;Libre&quot;;
                 if (asig) {
-                    const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / (1000 * 60 * 60 * 24)) - 1;
-                    if(diff &gt; -7) {
-                        cl = diff &gt; 5 ? &quot;p-verde&quot; : (diff &gt;= 0 ? &quot;p-amarillo&quot; : &quot;p-rojo&quot;);
-                        const nombreC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split('. ')[1] || 'Ocupado') : 'Ocupado';
-                        txt = `&lt;div style=&quot;line-height:1&quot;&gt;${diff &lt; 0 ? 'Vencido' : 'Faltan '+diff+'d'}&lt;br&gt;&lt;small style=&quot;font-size:13px&quot;&gt;${nombreC}&lt;/small&gt;&lt;/div&gt;`;
+                    const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / 86400000) - 1;
+                    if(diff > -7) {
+                        cl = diff > 5 ? &quot;p-verde&quot; : (diff >= 0 ? &quot;p-amarillo&quot; : &quot;p-rojo&quot;);
+                        const nC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split(&quot;. &quot;)[1] || &quot;Oc&quot;) : &quot;Oc&quot;;
+                        txt = `<div style=&quot;line-height:1.1&quot;>${diff < 0 ? &quot;Venc&quot; : diff+&quot;d&quot;}<br><small style=&quot;font-weight: bold;font-size:14px&quot;>${nC}</small></div>`;
                     }
                 }
-                celdas += `&lt;td class=&quot;celda-perfil ${cl}&quot;&gt;${txt}&lt;/td&gt;`;
+                celdas += `<td class=&quot;celda-perfil ${cl}&quot; style=&quot;${stPerf}&quot;>${txt}</td>`;
             }
 
-            const fMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString('es-CO', {hour12:true, month:'short', day:'numeric', hour:'numeric', minute:'numeric'}) : '---';
+            const fMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString(&quot;es-CO&quot;) : &quot;---&quot;;
 
             const row = document.createElement(&quot;tr&quot;);
-            let btnBorrar = (body === tablas['OTROS']) ? `&lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCuentaGenerica('${id}', '${colOrigen}')&quot; style=&quot;background:none; border:none; cursor:pointer;&quot;&gt;🗑️&lt;/button&gt;` : &quot;&quot;;
-            let colPlataforma = (body === tablas['OTROS']) ? `&lt;td&gt;&lt;b&gt;${d.plataforma}&lt;/b&gt;&lt;/td&gt;` : &quot;&quot;;
+            let btnBorrar = (body === tablas[&quot;OTROS&quot;]) ? `<button onclick=&quot;eliminarCuentaGenerica(&quot;${id}&quot;, &quot;${colOrigen}&quot;)&quot; style=&quot;background:none; border:none; cursor:pointer; font-size:16px;&quot;>🗑️</button>` : &quot;&quot;;
+            let colPlataforma = (body === tablas[&quot;OTROS&quot;]) ? `<td style=&quot;padding:10px; font-weight:bold; font-size:13px;&quot;>${d.plataforma}</td>` : &quot;&quot;;
 
             row.innerHTML = `
                 ${colPlataforma}
-                &lt;td&gt;&lt;input type=&quot;text&quot; value=&quot;${d.correo}&quot; id=&quot;edit-cor-${id}&quot; class=&quot;input-locked&quot; readonly&gt;&lt;/td&gt;
+                &lt;td&gt;&lt;input type=&quot;text&quot; style=&quot;${stCor}&quot;value=&quot;${d.correo}&quot; id=&quot;edit-cor-${id}&quot; class=&quot;input-locked&quot; readonly&gt;&lt;/td&gt;
                 &lt;td&gt;&lt;input type=&quot;text&quot; value=&quot;${d.clave}&quot; id=&quot;edit-cla-${id}&quot; class=&quot;input-locked&quot; readonly&gt;&lt;/td&gt;
                 ${celdas}
                 &lt;td style=&quot;font-size:13px; color:gray;&quot;&gt;${fMod}&lt;/td&gt;
