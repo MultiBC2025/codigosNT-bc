@@ -467,7 +467,7 @@
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
                     <h4 class="mb-0">¡${momentoDia}, ${cliente.nombre}! 👋</h4>
                     <div class="d-flex align-items-center mt-2 mt-md-0">
-                        ${htmlPagos}
+                        
                         <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary ms-2">📄 Términos</button>
                          <button onclick="verFAQ()" class="btn btn-sm btn-outline-info ms-2">❓ FAQ</button>
                         <button onclick="location.reload()" class="btn btn-outline-danger btn-sm fw-bold ms-3">Salir</button>
@@ -539,6 +539,8 @@
                     let txtMod = s.ultimaModificacion ? new Date(s.ultimaModificacion).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : "No ha habido modificación";
                     htmlModificacion = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-bottom: 8px; font-style: italic;">Última modificación: ${txtMod}</div>`;
                 }
+                
+                let htmlNotas = "";
                 if (s.nota_cuenta && s.nota_cuenta !== "") {
                         htmlNotas = `
                         <div style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left;">
