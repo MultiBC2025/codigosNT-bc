@@ -1130,17 +1130,15 @@ function enviarWhatsAppLote(idsStr) {
     }); 
 
     // 4. EL MENSAJE FINAL (Links integrados como texto después del eslogan)
-    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: youtube.com _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: google.com, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
+    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
 
     // 5. LIMPIEZA DE TELÉFONO
     const cod = c.codigo ? c.codigo.toString().replace(/\D/g, '') : '';
     const num = c.whatsapp ? c.whatsapp.toString().replace(/\D/g, '') : '';
     const telLimpio = cod + num;
 
-    // 6. ABRIR WHATSAPP
-    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&text=${msg}`); 
-
-
+    // 6. ABRIR WHATSAPP (Asegurando que el mensaje final procese cualquier + restante)
+    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&text=${msg.replace(/\+/g, '%2B')}`); 
 }
 
 /* --- FUNCION EDITAR MANUAL (INDIVIDUAL O LOTE) --- */
