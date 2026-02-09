@@ -1093,23 +1093,19 @@ function enviarWhatsAppLote(idsStr) {
     const c = listaClientesLocal.find(cl => cl.id === ventas[0].clienteId); 
     if(!c) return; 
 
-    // 1. FECHAS Y TIEMPO AUTOMÁTICO
     const hoy = new Date();
     const fechaHoy = hoy.toLocaleDateString('es-ES');
     const horaHoy = hoy.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const nombreDia = hoy.toLocaleDateString('es-ES', { weekday: 'long' });
 
-    // 2. DATOS GENERALES
     const metodo = ventas[0].metodoPago || 'Otro';
     const fechaCompra = ventas[0].inicio || fechaHoy;
     const fechaVence = ventas[0].fin || '---';
     const valorTotal = ventas.reduce((acc, v) => acc + (parseFloat(v.valor) || 0), 0);
     
-    // Conteo de dispositivos para la regla dinámica
     const totalDispositivos = ventas.length;
     const reglaUso = totalDispositivos > 1 ? `${totalDispositivos} DISPOSITIVOS, 1 PANTALLA EN SIMULTANEO POR SERVICIO Y/O PERFIL ADQUIRIDO` : '1 DISPOSITIVO EN SIMULTANEO';
 
-    // Cálculo de días con el ajuste de +1
     const fVence = new Date(fechaVence);
     let diasGarantizados = ventas[0].dias || '30';
     if (!isNaN(fVence.getTime())) {
@@ -1118,27 +1114,31 @@ function enviarWhatsAppLote(idsStr) {
 
     let detalleMsg = ''; 
 
-    // 3. CONSTRUIMOS EL DETALLE (Tu diseño de forEach)
     ventas.forEach(v => { 
+        // TRUCO MAESTRO: Limpiamos + y # en correo y clave
+        let correoLimpio = v.correo ? v.correo.toString().replace(/\+/g, '%2B').replace(/#/g, '%23') : '';
+        let claveLimpia = v.clave ? v.clave.toString().replace(/\+/g, '%2B').replace(/#/g, '%23') : '';
+        
         detalleMsg += `%0A------------------------------------------------`;
         detalleMsg += `%0A*Información De La Cuenta de: ${v.plataforma}*`;
-        detalleMsg += `%0A📧 : ${v.correo}`;
-        detalleMsg += `%0A🔐 : *${v.clave}*`;
+        detalleMsg += `%0A📧 : ${correoLimpio}`;
+        detalleMsg += `%0A🔐 : *${claveLimpia}*`;
         detalleMsg += `%0A👤 : ${v.perfil || ''}) ${c.nombre}`;
         detalleMsg += `%0A🔒 : ${v.pin || '---'}`;
         detalleMsg += `%0A------------------------------------------------`;
     }); 
 
-    // 4. EL MENSAJE FINAL (Links integrados como texto después del eslogan)
     const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
 
-    // 5. LIMPIEZA DE TELÉFONO
     const cod = c.codigo ? c.codigo.toString().replace(/\D/g, '') : '';
     const num = c.whatsapp ? c.whatsapp.toString().replace(/\D/g, '') : '';
     const telLimpio = cod + num;
 
-    // 6. ABRIR WHATSAPP (Asegurando que el mensaje final procese cualquier + restante)
-    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&text=${msg.replace(/\+/g, '%2B')}`); 
+    // ABRIR WHATSAPP: El replace final asegura que nada se rompa
+    // Reemplazamos # por %23 globalmente en el mensaje final
+    let mensajeFinal = msg.replace(/#/g, '%23');
+    
+    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&text=${mensajeFinal}`); 
 }
 
 /* --- FUNCION EDITAR MANUAL (INDIVIDUAL O LOTE) --- */
