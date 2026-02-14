@@ -380,6 +380,14 @@
     &lt;/div&gt;
 &lt;/div&gt;
 
+&lt;div class=&quot;section&quot; style=&quot;border: 2px dashed #1a73e8; margin-top: 20px; padding: 15px;&quot;&gt;
+    &lt;h4&gt;📥 Importar desde Excel (JSON)&lt;/h4&gt;
+    &lt;textarea id=&quot;areaJson&quot; placeholder=&quot;Pega el JSON aquí...&quot; style=&quot;width: 100%; height: 80px; border-radius: 5px; border: 1px solid #ccc;&quot;&gt;&lt;/textarea&gt;
+    &lt;button class=&quot;save-btn&quot; style=&quot;background: #28a745; margin-top: 10px; width: 100%;&quot; onclick=&quot;migrarDesdeExcel()&quot;&gt;
+        INICIAR MIGRACIÓN MASIVA
+    &lt;/button&gt;
+&lt;/div&gt;
+
 &lt;div id=&quot;cuentas&quot; style=&quot;display:none&quot;&gt;
     &lt;h3&gt;🔑 Asignar Nueva Suscripción&lt;/h3&gt;
     &lt;div class=&quot;section&quot;&gt;
@@ -607,6 +615,39 @@ auth.onAuthStateChanged(u=&gt;{
     else{ login.style.display=&quot;block&quot;; panel.style.display=&quot;none&quot;; }
 });
 
+async function migrarDesdeExcel() {
+    const areaTexto = document.getElementById(&quot;areaJson&quot;).value.trim();
+    if (!areaTexto) return alert(&quot;Pega el JSON primero&quot;);
+
+    try {
+        const clientesExcel = JSON.parse(areaTexto);
+        const btnGuardar = document.getElementById(&quot;btnGuardar&quot;);
+
+        for (const c of clientesExcel) {
+            console.log(&quot;Procesando a: &quot; + c.nombre);
+
+            // 1. Rellenamos los campos
+            document.getElementById(&quot;c_nombre&quot;).value = c.nombre;
+            document.getElementById(&quot;c_codigo&quot;).value = c.codigo;
+            document.getElementById(&quot;c_whatsapp&quot;).value = c.whatsapp;
+
+            // 2. Simulamos el clic en tu botón de guardar
+            if (btnGuardar) {
+                btnGuardar.click(); 
+                console.log(&quot;Clic enviado para: &quot; + c.nombre);
+            }
+
+            // 3. Esperamos 1 segundo para que Firebase procese antes de seguir
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        alert(&quot;✅ Proceso terminado. Revisa la tabla abajo.&quot;);
+
+    } catch (e) {
+        alert(&quot;❌ Error: &quot; + e.message);
+    }
+}
+
 async function actualizarTodo() {
     const snap = await db.collection(&quot;cuentas&quot;).get();
     listaSuscripcionesGlobal = [];
@@ -756,7 +797,56 @@ function cargarVentasVencimientos(){
         }
     });
 
-    Object.values(gruposVencimiento).sort((a,b) =&gt; (b.fechaRegistro || 0) - (a.fechaRegistro || 0)).forEach(g =&gt; {
+    let listaOrdenada = Object.values(gruposVencimiento).map(g =&gt; {
+
+    const partesFin = g.fin.split('-');
+    const fechaVenceObj = new Date(partesFin[0], partesFin[1] - 1, partesFin[2]);
+    fechaVenceObj.setHours(0,0,0,0);
+
+    const hoyLocal = new Date();
+    hoyLocal.setHours(0,0,0,0);
+
+    let diff = Math.round((fechaVenceObj - hoyLocal) / 86400000);
+
+    // --- MES COMERCIAL 30 DIAS ---
+    const partesInicio = g.inicio.split('-');
+    const fechaInicioObj = new Date(partesInicio[0], partesInicio[1] - 1, partesInicio[2]);
+    fechaInicioObj.setHours(0,0,0,0);
+
+    if (fechaInicioObj.getTime() === hoyLocal.getTime() &amp;&amp; diff &gt; 0 &amp;&amp; diff &lt; 31) {
+        diff = 30;
+    }
+
+    return { ...g, diff, fechaVenceObj };
+});
+
+
+// ---- FILTRO (NO MOSTRAR MUY ANTIGUOS) ----
+listaOrdenada = listaOrdenada.filter(g =&gt; !(g.diff &lt; -15));
+
+
+// ---- ORDEN REAL POR VENCIMIENTO ----
+listaOrdenada.sort((a,b) =&gt; {
+
+    // ambos vencidos
+    if (a.diff &lt; 0 &amp;&amp; b.diff &lt; 0)
+        return b.diff - a.diff;
+
+    // ambos activos
+    if (a.diff &gt;= 0 &amp;&amp; b.diff &gt;= 0)
+        return a.diff - b.diff;
+
+    // vencidos primero
+    return a.diff - b.diff;
+});
+
+
+// =====================================================
+// TU BLOQUE ORIGINAL (NO MODIFICADO)
+// =====================================================
+
+listaOrdenada.forEach(g =&gt; {
+
     // --- LÓGICA DE DÍAS (MES COMERCIAL 30D) ---
     const partesFin = g.fin.split('-');
     const fechaVenceObj = new Date(partesFin[0], partesFin[1] - 1, partesFin[2]);
@@ -765,18 +855,7 @@ function cargarVentasVencimientos(){
     const hoyLocal = new Date();
     hoyLocal.setHours(0, 0, 0, 0);
 
-    // Cálculo real
-    let diff = Math.round((fechaVenceObj - hoyLocal) / 86400000);
-
-    // AJUSTE PARA FEBRERO/MESES CORTOS: 
-    // Si se compró hoy y la fecha de fin es el próximo mes, forzamos 30d
-    const partesInicio = g.inicio.split('-');
-    const fechaInicioObj = new Date(partesInicio[0], partesInicio[1] - 1, partesInicio[2]);
-    fechaInicioObj.setHours(0,0,0,0);
-
-    if (fechaInicioObj.getTime() === hoyLocal.getTime() &amp;&amp; diff &gt; 0 &amp;&amp; diff &lt; 31) {
-        diff = 30; 
-    }
+    let diff = g.diff;
 
     const clienteObj = listaClientesLocal.find(c =&gt; c.id === g.clienteId);
     const nomC = clienteObj?.nombre || &quot;---&quot;;
@@ -787,17 +866,18 @@ function cargarVentasVencimientos(){
     let clasePersistente = (g.marcado_renovado === true) ? &quot;row-finalizada-color&quot; : &quot;&quot;;
     let claseAzul = (idFilaSeleccionadaAzul === rowId) ? &quot;row-selected-renew&quot; : &quot;&quot;;
 
-    // --- LÓGICA DE COMUNICACIÓN (WHATSAPP) ---
+    // --- LÓGICA WHATSAPP ---
     const ahoraMomento = new Date();
     const diasSemana = [&quot;domingo&quot;, &quot;lunes&quot;, &quot;martes&quot;, &quot;miercoles&quot;, &quot;jueves&quot;, &quot;viernes&quot;, &quot;sabado&quot;];
     const diaNombreVence = diasSemana[fechaVenceObj.getDay()];
-    const fechaVenceFormato = g.fin.split('-').reverse().join('-'); 
+    const fechaVenceFormato = g.fin.split('-').reverse().join('-');
     const horaActual = ahoraMomento.getHours().toString().padStart(2, '0') + &quot;:&quot; + ahoraMomento.getMinutes().toString().padStart(2, '0');
 
     let btnWhatsapp = &quot;&quot;;
     let btnRenovar = &quot;&quot;;
 
     if (diff &lt;= 5) {
+
         let textoEstado = &quot;&quot;;
         let palabraFinaliza = &quot;finaliza&quot;;
         const serviciosChat = g.serviciosTexto.join(&quot; + &quot;);
@@ -810,7 +890,8 @@ function cargarVentasVencimientos(){
             textoEstado = &quot;*&quot; + (diff === 0 ? &quot;vence hoy mismo&quot; : (diff === 1 ? &quot;vence mañana&quot; : &quot;vence en &quot; + diff + &quot; dias&quot;)) + &quot;*&quot;;
         }
 
-        let cuerpoTxt = &quot;Hola *_&quot; + nomC + &quot;_* (̶◉͛‿◉̶), Cómo estas?.\n\n&quot; +
+        let cuerpoTxt =
+            &quot;Hola *_&quot; + nomC + &quot;_* (̶◉͛‿◉̶), Cómo estas?.\n\n&quot; +
             &quot;Para informarte que tu Servicio de *&quot; + serviciosChat + &quot;*  &quot; + textoEstado + &quot;\n&quot; +
             &quot;웃 El día *&quot; + diaNombreVence + &quot;* *&quot; + fechaVenceFormato + &quot;* &quot; + palabraFinaliza + &quot; el servicio. \n\n&quot; +
             &quot;✍(◔◡◔)   Porfa confirma si deseas renovar nuevamente el servicio con nosotros --\n&quot; +
@@ -818,14 +899,15 @@ function cargarVentasVencimientos(){
             &quot;Mensaje enviado el dia *&quot; + diasSemana[ahoraMomento.getDay()] + &quot;*, *&quot; + ahoraMomento.toLocaleDateString() + &quot;* a las *&quot; + horaActual + &quot;*.\n&quot; +
             &quot;*Somos MultiEntretenimiento BC ʕ•́ᴥ•̀ʔっ, El mejor entretenimiento para todos*&quot;;
 
-        let soloNumeros = telC.replace(/\D/g, ''); 
+        let soloNumeros = telC.replace(/\D/g, '');
+
         if (soloNumeros) {
             btnWhatsapp = `&lt;a href=&quot;https://wa.me/${soloNumeros}?text=${encodeURIComponent(cuerpoTxt)}&quot; target=&quot;_blank&quot; class=&quot;btn-ws-table&quot;&gt;🟢&lt;/a&gt;`;
         }
+
         btnRenovar = `&lt;button class=&quot;renew-btn&quot; onclick='cargarLoteParaRenovar(${JSON.stringify(g.clienteId)}, ${JSON.stringify(g.dataRenew)}, &quot;${rowId}&quot;, ${JSON.stringify(g.ids)})'&gt;✔&lt;/button&gt;`;
     }
 
-    // --- FILA FINAL ---
     let row = `&lt;tr id=&quot;${rowId}&quot; class=&quot;${clasePersistente} ${claseAzul}&quot;&gt;
         &lt;td&gt;&lt;b&gt;${nomC}&lt;/b&gt; ${btnWhatsapp}&lt;/td&gt;
         &lt;td&gt;${g.serviciosTexto.join(&quot;, &quot;)}&lt;/td&gt;
@@ -834,8 +916,11 @@ function cargarVentasVencimientos(){
         &lt;td&gt;&lt;span class=&quot;${colorClase}&quot;&gt;${formatearDiasTexto(diff)}&lt;/span&gt;&lt;/td&gt;
         &lt;td&gt;${btnRenovar}&lt;/td&gt;
     &lt;/tr&gt;`;
-    
-    if(diff &lt; 0) bodyVencidas.innerHTML += row; else if(diff &lt;= 5) bodyProximas.innerHTML += row; else bodyVigentes.innerHTML += row;
+
+    if(diff &lt; 0) bodyVencidas.innerHTML += row;
+    else if(diff &lt;= 5) bodyProximas.innerHTML += row;
+    else bodyVigentes.innerHTML += row;
+
 });
 
     Object.values(gruposHistorial).sort((a,b)=&gt; (b.fechaRegistro||0)-(a.fechaRegistro||0)).forEach(d =&gt; {
@@ -1443,7 +1528,7 @@ async function filtrarCuentas(sel) { const p = sel.value; if (!p) return; const 
 
 
 /* --- PARTE 2: RENDERIZADO DE PERFILES Y PIN (SÍMBOLO ESPECIAL) --- */
-function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(&quot;.cont-perfil&quot;); it.querySelector(&quot;.cont-pin&quot;).innerHTML = `&lt;input class=&quot;pin&quot; style=&quot;width:50px&quot; readonly&gt;`; contP.innerHTML = `&lt;select class=&quot;perfil-select&quot; onchange=&quot;actualizarPin(this)&quot;&gt;&lt;option value=&quot;&quot;&gt;P...&lt;/option&gt;&lt;/select&gt;`; const selP = contP.querySelector(&quot;.perfil-select&quot;); const max = plat === &quot;Disney&quot; ? 7 : 5; const margenVencido = new Date(hoy.getTime() - (3 * 86400000)); const ocup = listaSuscripcionesGlobal.filter(s =&gt; s.correo === corr &amp;&amp; s.plataforma.trim().toLowerCase() === plat.trim().toLowerCase() &amp;&amp; new Date(s.fin+&quot;T12:00:00&quot;) &gt;= margenVencido); const miP = ocup.find(s =&gt; s.clienteId === cId); for(let i=1; i&lt;=max; i++) { const o = ocup.find(x =&gt; parseInt(x.perfil) === i); const opt = document.createElement(&quot;option&quot;); opt.value = i; if(o) { const n = o.perfil_etiqueta ? (o.perfil_etiqueta.split('. ')[1] || 'Ocup') : 'Ocup'; const esVencidoReciente = new Date(o.fin + &quot;T12:00:00&quot;) &lt; hoy; opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '('+n+')'} ${esVencidoReciente ? '[V]' : ''}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miP) { selP.value = miP.perfil; actualizarPin(selP); } }
+function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(&quot;.cont-perfil&quot;); it.querySelector(&quot;.cont-pin&quot;).innerHTML = `&lt;input class=&quot;pin&quot; style=&quot;width:50px&quot; readonly&gt;`; contP.innerHTML = `&lt;select class=&quot;perfil-select&quot; onchange=&quot;actualizarPin(this)&quot;&gt;&lt;option value=&quot;&quot;&gt;P...&lt;/option&gt;&lt;/select&gt;`; const selP = contP.querySelector(&quot;.perfil-select&quot;); const max = plat === &quot;Disney&quot; ? 7 : 7; const margenVencido = new Date(hoy.getTime() - (3 * 86400000)); const ocup = listaSuscripcionesGlobal.filter(s =&gt; s.correo === corr &amp;&amp; s.plataforma.trim().toLowerCase() === plat.trim().toLowerCase() &amp;&amp; new Date(s.fin+&quot;T12:00:00&quot;) &gt;= margenVencido); const miP = ocup.find(s =&gt; s.clienteId === cId); for(let i=1; i&lt;=max; i++) { const o = ocup.find(x =&gt; parseInt(x.perfil) === i); const opt = document.createElement(&quot;option&quot;); opt.value = i; if(o) { const n = o.perfil_etiqueta ? (o.perfil_etiqueta.split('. ')[1] || 'Ocup') : 'Ocup'; const esVencidoReciente = new Date(o.fin + &quot;T12:00:00&quot;) &lt; hoy; opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '('+n+')'} ${esVencidoReciente ? '[V]' : ''}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miP) { selP.value = miP.perfil; actualizarPin(selP); } }
 
 /* --- PARTE 3: SINCRONIZACIÓN AUTOMÁTICA DE CLAVES --- */
 
@@ -1942,9 +2027,17 @@ async function cargarAdminPerfiles() {
             let celdas = &quot;&quot;;
 
             for (let i = 1; i <= numP; i++) {
-                const asig = listaSuscripcionesGlobal.find(s => 
-                    s.correo === d.correo && s.plataforma === d.plataforma && parseInt(s.perfil) === i
-                );
+                const historial = listaSuscripcionesGlobal
+    .filter(s =>
+        s.correo.trim().toLowerCase() === d.correo.trim().toLowerCase() &&
+        s.plataforma.trim().toLowerCase() === d.plataforma.trim().toLowerCase() &&
+        parseInt(s.perfil) === i
+    )
+    .sort((a,b) =>
+        new Date(b.fin || 0) - new Date(a.fin || 0)
+    );
+
+const asig = historial[0];
                 let cl = &quot;p-libre&quot;, txt = &quot;Libre&quot;;
                 if (asig) {
                     const diff = Math.ceil((new Date(asig.fin + &quot;T12:00:00&quot;) - hoy) / 86400000) ;
