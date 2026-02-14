@@ -415,192 +415,199 @@
         return diff + "d";
     }
 
-    async function verificarAcceso() {
-        const tel = document.getElementById("inputTel").value.trim();
-        if(!tel) return alert("Ingresa tu número.");
-        const btn = document.getElementById("btnAcceder");
-        btn.disabled = true; btn.innerText = "Buscando...";
+async function verificarAcceso() {
+    const tel = document.getElementById("inputTel").value.trim();
+    if(!tel) return alert("Ingresa tu número.");
+    const btn = document.getElementById("btnAcceder");
+    btn.disabled = true; btn.innerText = "Buscando...";
 
-        try {
-            const snapClientes = await db.collection("clientes").get();
-            let clienteEncontrado = null;
-            snapClientes.forEach(doc => {
-                const c = doc.data();
-                const numBD = (c.whatsapp || "").replace(/\D/g, '');
-                if(numBD.includes(tel) && tel.length >= 7) clienteEncontrado = { id: doc.id, ...c };
-            });
+    try {
+        const snapClientes = await db.collection("clientes").get();
+        // Definimos la lista de clientes encontrados (con S al final)
+        let clientesEncontrados = []; 
 
-            if(clienteEncontrado) cargarPanelCliente(clienteEncontrado);
-            else { alert("No registrado."); btn.disabled = false; btn.innerText = "Consultar"; }
-        } catch (e) { alert("Error"); btn.disabled = false; }
+        snapClientes.forEach(doc => {
+            const c = doc.data();
+            const numBD = (c.whatsapp || "").replace(/\D/g, '');
+            // Si el número coincide, lo agregamos a la lista
+            if(numBD.includes(tel) && tel.length >= 7) {
+                clientesEncontrados.push({ id: doc.id, ...c });
+            }
+        });
+
+        // Si la lista tiene al menos un cliente
+        if(clientesEncontrados.length > 0) {
+            cargarPanelCliente(clientesEncontrados); 
+        } else { 
+            alert("No registrado."); 
+            btn.disabled = false; 
+            btn.innerText = "Consultar"; 
+        }
+    } catch (e) { 
+        alert("Error"); 
+        btn.disabled = false; 
     }
+}
+async function cargarPanelCliente(clientesEncontrados) {
+    const hoyLocal = new Date();
+    const hora = hoyLocal.getHours();
+    hoyLocal.setHours(0,0,0,0);
+    let momentoDia = hora < 12 ? "Buenos días" : (hora < 18 ? "Buenas tardes" : "Buenas noches");
 
-    async function cargarPanelCliente(cliente) {
-        const hoyLocal = new Date();
-        const hora = hoyLocal.getHours();
-        hoyLocal.setHours(0,0,0,0);
-        let momentoDia = hora < 12 ? "Buenos días" : (hora < 18 ? "Buenas tardes" : "Buenas noches");
+    document.getElementById("sectionLogin").style.display = "none";
+    document.getElementById("sectionPanel").style.display = "block";
 
-        document.getElementById("sectionLogin").style.display = "none";
-        document.getElementById("sectionPanel").style.display = "block";
+    try {
+        let servicios = [];
 
-        try {
+        // BUSCAMOS LAS CUENTAS DE CADA CLIENTE EN LA LISTA
+        for (const cliente of clientesEncontrados) {
             const snapCuentas = await db.collection("cuentas").where("clienteId", "==", cliente.id).get();
-            let servicios = [];
+            
             snapCuentas.forEach(doc => {
                 const d = doc.data();
                 const fVenceObj = new Date(d.fin + "T12:00:00");
                 const diff = Math.ceil((fVenceObj - hoyLocal) / (1000 * 60 * 60 * 24)) - 1;
-                if (diff >= -20) servicios.push({ ...d, diff });
+                // Agregamos el nombre del titular al objeto para saber de quién es cada cuenta
+                if (diff >= -20) servicios.push({ ...d, diff, nombreTitular: cliente.nombre });
             });
+        }
 
-            const pagosOrd = [...servicios].sort((a, b) => new Date(b.inicio) - new Date(a.inicio)).slice(0, 2);
-            let htmlPagos = "";
-            pagosOrd.forEach((s, idx) => {
-                htmlPagos += `<div class="px-3 border-start text-center">
-                <small class="text-muted d-block" style="font-size: 0.6rem;">${idx==0?'ÚLTIMO':'PENÚLTIMO'} PAGO</small>
-                <span class="fw-bold text-success" style="font-size: 0.9rem;">$${s.valor || 0}</span>
-              </div>`;
-            });
+        // Lógica de pagos (usando los últimos de la lista general)
+        const pagosOrd = [...servicios].sort((a, b) => new Date(b.inicio) - new Date(a.inicio)).slice(0, 2);
+        let htmlPagos = "";
+        pagosOrd.forEach((s, idx) => {
+            htmlPagos += `<div class="px-3 border-start text-center">
+            <small class="text-muted d-block" style="font-size: 0.6rem;">${idx==0?'ÚLTIMO':'PENÚLTIMO'} PAGO</small>
+            <span class="fw-bold text-success" style="font-size: 0.9rem;">$${s.valor || 0}</span>
+          </div>`;
+        });
 
-            document.getElementById("panelHeader").innerHTML = `
-                <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-                    <h4 class="mb-0">¡${momentoDia}, ${cliente.nombre}! 👋</h4>
-                    <div class="d-flex align-items-center mt-2 mt-md-0">
-                        
-                        <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary ms-2">📄 Términos</button>
-                         <button onclick="verFAQ()" class="btn btn-sm btn-outline-info ms-2">❓ FAQ</button>
-                        <button onclick="location.reload()" class="btn btn-outline-danger btn-sm fw-bold ms-3">Salir</button>
-                    </div>
+        // En el encabezado usamos el nombre del primer cliente de la lista como referencia
+        document.getElementById("panelHeader").innerHTML = `
+            <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                <h4 class="mb-0">¡${momentoDia}, ${clientesEncontrados[0].nombre}! 👋</h4>
+                <div class="d-flex align-items-center mt-2 mt-md-0">
+                    <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary ms-2">📄 Términos</button>
+                    <button onclick="verFAQ()" class="btn btn-sm btn-outline-info ms-2">❓ FAQ</button>
+                    <button onclick="location.reload()" class="btn btn-outline-danger btn-sm fw-bold ms-3">Salir</button>
                 </div>
-                <hr>
-                <div class="mb-4 text-center text-md-start">
-                    <h2 class="fw-bold mb-0">Estado de tus suscripciones</h2>
-                    <p class="text-muted">Gestiona tus cuentas y vencimientos</p>
-                </div>
-                <div class="banner-largo"><p class="mb-0 fw-bold">🚀 PUBLICIDAD: ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p></div>`;
+            </div>
+            <p class="text-muted">Mostrando cuentas de ${clientesEncontrados.length} clientes vinculados.</p>
+            <hr>
+            <div class="mb-4 text-center text-md-start">
+                <h2 class="fw-bold mb-0">Estado de tus suscripciones</h2>
+                <p class="text-muted">Gestiona tus cuentas y vencimientos</p>
+            </div>
+            <div class="banner-largo"><p class="mb-0 fw-bold">🚀 PUBLICIDAD: ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p></div>`;
 
-            const generarHTML = (s) => {
-                const fV = s.fin.split('-').reverse().join('/');
-                const ahoraMomento = new Date();
-                
-                // 1. RESTAURACIÓN DE BOTONES DE AUTOGESTIÓN
-                const pName = s.plataforma.toUpperCase();
-                let btnLink = "";
-                if(s.diff >= 0) {
-                    if(pName.includes("NETFLIX")) btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
-                    else if(pName.includes("DISNEY")) btnLink = `<a href="${linkDisney}" target="_blank" class="btn-autogestion">Autogestión</a>`;
-                }
+        const generarHTML = (s) => {
+            const fV = s.fin.split('-').reverse().join('/');
+            const ahoraMomento = new Date();
+            const pName = s.plataforma.toUpperCase();
+            let btnLink = "";
+            if(s.diff >= 0) {
+                if(pName.includes("NETFLIX")) btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+                else if(pName.includes("DISNEY")) btnLink = `<a href="${linkDisney}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+            }
 
-                // 2. LÓGICA DE FECHAS PARA LA OFERTA
-                const fechaHoyText = ahoraMomento.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
-                const mañana = new Date();
-                mañana.setDate(ahoraMomento.getDate() + 1);
-                const fechaMañanaText = mañana.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
+            const fechaHoyText = ahoraMomento.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
+            const mañana = new Date();
+            mañana.setDate(ahoraMomento.getDate() + 1);
+            const fechaMañanaText = mañana.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
 
-                let textoEstado = "";
-                let palabraFinaliza = "";
-                if (s.diff > 0) {
-                    textoEstado = "está próximo a vencer (falta(n) *" + s.diff + "* día(s))";
-                    palabraFinaliza = "finaliza";
-                } else if (s.diff === 0) {
-                    textoEstado = "*VENCE HOY mismo*";
-                    palabraFinaliza = "finaliza";
-                } else {
-                    textoEstado = "ya se encuentra *VENCIDO* (hace " + Math.abs(s.diff) + " días)";
-                    palabraFinaliza = "finalizó";
-                }
+            let textoEstado = "";
+            let palabraFinaliza = "";
+            if (s.diff > 0) {
+                textoEstado = "está próximo a vencer (falta(n) *" + s.diff + "* día(s))";
+                palabraFinaliza = "finaliza";
+            } else if (s.diff === 0) {
+                textoEstado = "*VENCE HOY mismo*";
+                palabraFinaliza = "finaliza";
+            } else {
+                textoEstado = "ya se encuentra *VENCIDO* (hace " + Math.abs(s.diff) + " días)";
+                palabraFinaliza = "finalizó";
+            }
 
-                const aplicaOferta = (s.diff === 0 || s.diff === 1);
-                let avisoOferta = "";
-                let textoOfertaWA = "";
-                if (aplicaOferta) {
-                    const diaDeLaOferta = s.diff === 0 ? fechaHoyText : fechaMañanaText;
-                    avisoOferta = `<div class="oferta-renovacion">🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>Renueva hoy <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b>.<br><small>*Aplica en soporte*</small></div>`;
-                    textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
-                }
+            const aplicaOferta = (s.diff === 0 || s.diff === 1);
+            let avisoOferta = "";
+            let textoOfertaWA = "";
+            if (aplicaOferta) {
+                const diaDeLaOferta = s.diff === 0 ? fechaHoyText : fechaMañanaText;
+                avisoOferta = `<div class="oferta-renovacion">🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>Renueva hoy <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b>.<br><small>*Aplica en soporte*</small></div>`;
+                textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
+            }
 
-                let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
-                                "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
-                                "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
-                                "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
-                                "📧 *Correo:* " + s.correo + "\n" +
-                                "👤 *Perfil:* " + s.perfil + "\n" +
-                                "👤 *Cliente:* " + cliente.nombre + "\n\n" +
-                                "Deseo realizar el proceso de renovación un nuevo mes.\n" +
-                                textoOfertaWA +
-                                "Quedo a la espera de su respuesta para proceder con el pago.\n\n";
+            let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
+                            "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
+                            "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
+                            "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
+                            "📧 *Correo:* " + s.correo + "\n" +
+                            "👤 *Perfil:* " + s.perfil + "\n" +
+                            "👤 *Cliente:* " + s.nombreTitular + "\n\n" + // USAMOS EL NOMBRE DEL TITULAR ESPECÍFICO
+                            "Deseo realizar el proceso de renovación un nuevo mes.\n" +
+                            textoOfertaWA +
+                            "Quedo a la espera de su respuesta para proceder con el pago.\n\n";
 
-                const msjWA = encodeURIComponent(cuerpoTxt);
-                
-                // --- LÓGICA ÚLTIMA FECHA DE MODIFICACIÓN (SOLO VERDES Y AMARILLOS) ---
-                let htmlModificacion = "";
-                if (s.diff >= 0) {
-                    let txtMod = s.ultimaModificacion ? new Date(s.ultimaModificacion).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : "No ha habido modificación";
-                    htmlModificacion = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-bottom: 8px; font-style: italic;">Última modificación: ${txtMod}</div>`;
-                }
-                
-                let htmlNotas = "";
-                if (s.nota_cuenta && s.nota_cuenta !== "") {
-                        htmlNotas = `
-                        <div style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left;">
-                            <b style="color: #bc9105;">📌 NOTA DE SOPORTE:</b><br>
-                            ${s.nota_cuenta}
-                        </div>`;
-                    }
-                // Botón de WhatsApp
-                let btnWA = s.diff <= 5 ? `
-                    <div class="mt-3">
-                        ${htmlModificacion}
-                        <a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>
-                        ${avisoOferta}
-                    </div>` : `<div class="mt-3">${htmlModificacion}</div>`;
-
-                const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
-                const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
-
-                return `
-                <div class="card servicio-card shadow-sm ${colorClase} mb-3">
-                    <div class="card-body p-3">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="mb-0 text-uppercase"><b>${s.plataforma}</b> ${btnLink}</h5>
-                            <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
-                        </div>
-                        <div class="row text-center mb-2" style="font-size: 0.8rem;">
-                            <div class="col-6 border-end">INICIO: <b>${s.inicio.split('-').reverse().join('/')}</b></div>
-                            <div class="col-6">FIN: <b>${fV}</b></div>
-                        </div>
-                        <div class="info-row" style="font-size: 0.85rem;">
-                            <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
-                            <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
-                            <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>
-                        ${htmlNotas}</div>
-                        ${btnWA}
-                    </div>
-                </div>`;
-            };
-
-            const vigentes = servicios.filter(s => s.diff > 5).sort((a,b) => b.diff - a.diff);
-            const proximos = servicios.filter(s => s.diff >= 0 && s.diff <= 5).sort((a,b) => a.diff - b.diff);
-            const vencidos = servicios.filter(s => s.diff < 0).sort((a,b) => b.diff - a.diff);
-
-            const colD = document.createElement("div"); colD.className = "col-lg-6 order-mobile-1";
-            const colI = document.createElement("div"); colI.className = "col-lg-6 order-mobile-2";
-
-            colD.innerHTML = "<h6 class='column-title'>✅ SERVICIOS ACTIVOS</h6>" + vigentes.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Activos</div>";
-            colI.innerHTML = "<h6 class='column-title'>⚠️ PRIORIDAD / VENCIDOS</h6>" + proximos.map(generarHTML).join('') + vencidos.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Renovaciones</div>";
-
-            const lista = document.getElementById("listaServicios");
-            lista.innerHTML = "";
-            lista.appendChild(colD);
-            lista.appendChild(colI);
+            const msjWA = encodeURIComponent(cuerpoTxt);
             
-            // NUEVO: Hace aparecer el footer solo cuando ya todo está cargado
-    document.querySelector(".main-footer").classList.add("footer-visible");
+            let htmlModificacion = "";
+            if (s.diff >= 0) {
+                let txtMod = s.ultimaModificacion ? new Date(s.ultimaModificacion).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : "No ha habido modificación";
+                htmlModificacion = `<div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-bottom: 8px; font-style: italic;">Última modificación: ${txtMod}</div>`;
+            }
+            
+            let htmlNotas = "";
+            if (s.note_cuenta && s.note_cuenta !== "") {
+                htmlNotas = `<div style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left;">
+                                <b style="color: #bc9105;">📌 NOTA DE SOPORTE:</b><br>${s.note_cuenta}</div>`;
+            }
 
-        } catch (e) { console.error(e); }
-    }
-    
+            let btnWA = s.diff <= 5 ? `<div class="mt-3">${htmlModificacion}<a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>${avisoOferta}</div>` : `<div class="mt-3">${htmlModificacion}</div>`;
+
+            const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
+            const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
+
+            return `
+            <div class="card servicio-card shadow-sm ${colorClase} mb-3">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="mb-0 text-uppercase"><b>${s.plataforma}</b> ${btnLink}</h5>
+                        <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
+                    </div>
+                    <div class="row text-center mb-2" style="font-size: 0.8rem;">
+                        <div class="col-6 border-end">INICIO: <b>${s.inicio.split('-').reverse().join('/')}</b></div>
+                        <div class="col-6">FIN: <b>${fV}</b></div>
+                    </div>
+                    <div class="info-row" style="font-size: 0.85rem;">
+                        <p class="mb-1">👤 <b>Titular:</b> <span class="mb-0">${s.nombreTitular}</span></p> <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
+                        <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
+                        <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>
+                    ${htmlNotas}</div>
+                    ${btnWA}
+                </div>
+            </div>`;
+        };
+
+        const vigentes = servicios.filter(s => s.diff > 5).sort((a,b) => b.diff - a.diff);
+        const proximos = servicios.filter(s => s.diff >= 0 && s.diff <= 5).sort((a,b) => a.diff - b.diff);
+        const vencidos = servicios.filter(s => s.diff < 0).sort((a,b) => b.diff - a.diff);
+
+        const colD = document.createElement("div"); colD.className = "col-lg-6 order-mobile-1";
+        const colI = document.createElement("div"); colI.className = "col-lg-6 order-mobile-2";
+
+        colD.innerHTML = "<h6 class='column-title'>✅ SERVICIOS ACTIVOS</h6>" + vigentes.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Activos</div>";
+        colI.innerHTML = "<h6 class='column-title'>⚠️ PRIORIDAD / VENCIDOS</h6>" + proximos.map(generarHTML).join('') + vencidos.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Renovaciones</div>";
+
+        const lista = document.getElementById("listaServicios");
+        lista.innerHTML = "";
+        lista.appendChild(colD);
+        lista.appendChild(colI);
+        
+        document.querySelector(".main-footer").classList.add("footer-visible");
+
+    } catch (e) { console.error(e); }
+}    
     
 </script>
 
