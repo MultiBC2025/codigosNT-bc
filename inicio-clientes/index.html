@@ -408,7 +408,8 @@
 
     function formatearDiasTexto(diff) {
         if (diff > 5) return "Vence en " + diff + "d";
-        if (diff > 0 && diff <= 5) return "Próximo a vencer (" + diff + "d)";
+        if (diff > 1 && diff <= 5) return "Próximo a vencer (" + diff + "d)";
+        if (diff === 1) return "Vence Mañana";
         if (diff === 0) return "Vence Hoy";
         if (diff === -1) return "Venció Ayer";
         if (diff < -1) return "Venció hace " + Math.abs(diff) + "d";
@@ -534,7 +535,7 @@ async function cargarPanelCliente(clientesEncontrados) {
             let textoOfertaWA = "";
             if (aplicaOferta) {
                 const diaDeLaOferta = s.diff === 0 ? fechaHoyText : fechaMañanaText;
-                avisoOferta = `<div class="oferta-renovacion">🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>Renueva hoy <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b>.<br><small>*Aplica en soporte*</small></div>`;
+                avisoOferta = `<div class="oferta-renovacion">🔥 <b>¡PROMOCIÓN ESPECIAL!</b> 🔥<br>Renueva de hoy hasta el <b>${diaDeLaOferta}</b> y recibe un <b>DESCUENTO</b>.<br><small>*Aplica en soporte*</small></div>`;
                 textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
             }
 
@@ -558,9 +559,9 @@ async function cargarPanelCliente(clientesEncontrados) {
             }
             
             let htmlNotas = "";
-            if (s.note_cuenta && s.note_cuenta !== "") {
+            if (s.nota_cuenta && s.nota_cuenta !== "") {
                 htmlNotas = `<div style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left;">
-                                <b style="color: #bc9105;">📌 NOTA DE SOPORTE:</b><br>${s.note_cuenta}</div>`;
+                                <b style="color: #bc9105;">📌 NOTA DE SOPORTE:</b><br>${s.nota_cuenta}</div>`;
             }
 
             let btnWA = s.diff <= 5 ? `<div class="mt-3">${htmlModificacion}<a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>${avisoOferta}</div>` : `<div class="mt-3">${htmlModificacion}</div>`;
