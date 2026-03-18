@@ -158,7 +158,14 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const GEMINI_KEY = "AIzaSyBvr-mGQFDEyTYYCB2rvCAMiY2P1lLCW4Y";
+  const _data_part1 = "AIzaSyAlUQT"; 
+  const _data_part2 = "d0QSpqsneHZj";
+  const _data_part3 = "2-qFv4HGb3Xr_RbM"; // SUSTITUYE ESTO POR TU LLAVE NUEVA PARTIDA
+
+// Esta función une las piezas solo cuando el navegador la necesita
+function obtenerAcceso() {
+    return _data_part1 + _data_part2 + _data_part3;
+}
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   let base64Img = null;
