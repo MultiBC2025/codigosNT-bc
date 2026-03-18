@@ -1,1 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibos AI Master - MultiEntretenimiento BC</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --success: #10B981;
+            --bg: #F3F4F6;
+            --surface: #FFFFFF;
+            --text: #1F2937;
+        }
 
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 450px;
+        }
+
+        /* --- PANTALLAS --- */
+        #login-page, #app-page { display: none; }
+        .active { display: block !important; }
+
+        h2 { text-align: center; color: var(--text); margin-bottom: 1.5rem; }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: 1px solid #D1D5DB;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        /* --- CARGA DE IMAGEN --- */
+        .upload-box {
+            border: 2px dashed #C7D2FE;
+            background: #F5F7FF;
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        #preview-img {
+            max-width: 100%;
+            max-height: 150px;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* --- TICKET 58MM --- */
+        .ticket-wrapper {
+            background: #1F2937;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .ticket-58mm {
+            width: 58mm;
+            background: white;
+            padding: 8mm 4mm;
+            color: black;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.3;
+        }
+
+        .t-header { text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 10px; }
+        .t-divider { border-top: 1px dashed #000; margin: 6px 0; }
+        .t-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+        .t-bold { font-weight: bold; }
+
+        /* --- OVERLAY CARGA --- */
+        #loader {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 1000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div style="font-size: 40px; animation: spin 2s infinite linear;">🧠</div>
+        <p><b>Gemini procesando recibo...</b></p>
+    </div>
+
+    <div class="container active" id="login-page">
+        <h2>MultiEntretenimiento BC</h2>
+        <input type="email" id="email" placeholder="Usuario (Correo)">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button id="btnLogin">Ingresar</button>
+        <p id="login-error" style="color:red; font-size:0.8rem; text-align:center;"></p>
+    </div>
+
+    <div class="container" id="app-page">
+        <h2>Panel de Tickets AI</h2>
+        
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+            <span style="font-size: 30px;">📸</span>
+            <p>Toca para subir foto</p>
+            <img id="preview-img" src="#">
+            <input type="file" id="fileInput" accept="image/*" capture="camera" style="display: none;">
+        </div>
+
+        <button id="btnProcesar" style="background: var(--success);">🧠 Generar con Gemini AI</button>
+
+        <div class="ticket-wrapper">
+            <div class="ticket-58mm">
+                <div class="t-header">MULTIENTRETENIMIENTO BC</div>
+                <div class="t-divider"></div>
+                <div class="t-row"><span class="t-bold">CONVENIO:</span> <span id="res-convenio">--</span></div>
+                <div class="t-row"><span class="t-bold">REF:</span> <span id="res-ref">--</span></div>
+                <div class="t-row"><span class="t-bold">PLATAFORMA:</span> <span id="res-plat">--</span></div>
+                <div class="t-divider"></div>
+                <div class="t-row"><span>FECHA:</span> <span id="res-fecha">--</span></div>
+                <div class="t-row"><span>HORA:</span> <span id="res-hora">--</span></div>
+                <div class="t-divider"></div>
+                <div class="t-row"><span>AUTORIZACIÓN:</span> <span id="res-aut">--</span></div>
+                <div class="t-row"><span>TRANSACCIÓN:</span> <span id="res-trans">--</span></div>
+                <div class="t-divider"></div>
+                <div class="t-row" style="font-size: 14px;"><span class="t-bold">TOTAL:</span> <span id="res-valor">$0.00</span></div>
+                <div class="t-divider"></div>
+                <div style="text-align: center; font-size: 9px; margin-top: 10px;">GRACIAS POR SU PAGO</div>
+            </div>
+        </div>
+
+        <button id="btnImprimir" style="background: #374151;">🖨️ Imprimir Bluetooth</button>
+        <button id="btnLogout" style="background:none; color:#999; margin-top:10px;">Cerrar Sesión</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // CONFIGURACIÓN FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQS672x-Pe9Idd1eGMbCt5tHoZ8CTu98c",
+            authDomain: "recibos-ai-master.firebaseapp.com",
+            projectId: "recibos-ai-master",
+            storageBucket: "recibos-ai-master.firebasestorage.app",
+            appId: "1:772971343385:web:28ffae87644c999b1e0488"
+        };
+        initializeApp(firebaseConfig);
+        const auth = getAuth();
+
+        // TU CLAVE DE GEMINI (MÉTODO GRATUITO)
+        const GEMINI_KEY = "AIzaSyB8CXbDYyaxlkbgPf_nssc2JHXYRcECh_U";
+
+        // GESTIÓN DE SESIÓN
+        onAuthStateChanged(auth, user => {
+            if(user) {
+                document.getElementById('login-page').classList.remove('active');
+                document.getElementById('app-page').classList.add('active');
+            } else {
+                document.getElementById('app-page').classList.remove('active');
+                document.getElementById('login-page').classList.add('active');
+            }
+        });
+
+        document.getElementById('btnLogin').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch (e) { document.getElementById('login-error').innerText = "Acceso incorrecto"; }
+        });
+
+        document.getElementById('btnLogout').addEventListener('click', () => signOut(auth));
+
+        // MANEJO DE IMAGEN
+        let base64Img = null;
+        document.getElementById('fileInput').addEventListener('change', e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                document.getElementById('preview-img').src = evt.target.result;
+                document.getElementById('preview-img').style.display = 'block';
+                base64Img = evt.target.result.split(',')[1];
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // LLAMADA DIRECTA A GEMINI (GRATIS)
+        document.getElementById('btnProcesar').addEventListener('click', async () => {
+            if(!base64Img) return alert("Sube una foto primero");
+            document.getElementById('loader').style.display = 'flex';
+
+            const prompt = `Analiza este recibo y extrae en JSON: 
+            convenio_nombre, referencia_numero, valor_pagado, fecha_completa, 
+            hora_pago, codigo_autorizacion, codigo_transaccion, plataforma_pago. 
+            Responde SOLO el JSON puro.`;
+
+            try {
+                const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64Img } }] }]
+                    })
+                });
+
+                const json = await resp.json();
+                const rawText = json.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+                const d = JSON.parse(rawText);
+
+                document.getElementById('res-convenio').innerText = d.convenio_nombre || 'N/A';
+                document.getElementById('res-ref').innerText = d.referencia_numero || 'N/A';
+                document.getElementById('res-plat').innerText = d.plataforma_pago || 'N/A';
+                document.getElementById('res-fecha').innerText = d.fecha_completa || '--';
+                document.getElementById('res-hora').innerText = d.hora_pago || '--';
+                document.getElementById('res-aut').innerText = d.codigo_autorizacion || 'N/A';
+                document.getElementById('res-trans').innerText = d.codigo_transaccion || 'N/A';
+                document.getElementById('res-valor').innerText = `$${parseFloat(d.valor_pagado || 0).toLocaleString('es-CO')}`;
+
+            } catch (e) {
+                console.error(e);
+                alert("Error procesando con Gemini. Verifica tu conexión.");
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+
+        // BLUETOOTH
+        document.getElementById('btnImprimir').addEventListener('click', async () => {
+            try {
+                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true });
+                alert("Conectado a " + device.name);
+            } catch (e) { console.log("BT Cancelado"); }
+        });
+    </script>
+</body>
+</html>
