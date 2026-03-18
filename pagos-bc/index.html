@@ -46,16 +46,21 @@
     .btn-primary { background: var(--p); color: #fff; }
     .btn-save { background: #059669; color: white; }
     .btn-dark { background: #111827; color: #fff; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .output { border: 1px solid var(--line); border-radius: 20px; background: #fff; overflow: hidden; }
-    .ticket { width: 100%; padding: 20px 15px; font-family: "Courier New", monospace; color: #000; font-size: 12px; line-height: 1.3; }
+    .ticket { 
+      width: 100%; 
+      padding: 20px 15px; 
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #000; 
+      font-size: 12px; 
+      line-height: 1.3; 
+    }
     .divider { border-top: 1px dashed #000; margin: 10px 0; }
     .row { display: flex; justify-content: space-between; margin: 3px 0; }
 
     .recibo-item { background: white; border: 1px solid var(--line); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-left: 5px solid var(--p); display: flex; justify-content: space-between; align-items: center; }
-    .recibo-info b { color: var(--p); font-size: 1.1rem; }
-    .btn-reprint-mini { background: #111827; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+    .btn-reprint-mini { background: #111827; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
 
     .loader { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .9); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
     .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--p); border-radius: 50%; animation: spin 1s linear infinite; }
@@ -82,14 +87,13 @@
 </nav>
 
 <div class="container">
-  
   <section id="registrar" class="section active">
     <div class="card">
       <h1 class="title">MultiEntretenimiento BC</h1>
       
-      <div class="input-group" id="group-cliente">
+      <div id="group-cliente" class="input-group">
         <label>NOMBRE DEL CLIENTE</label>
-        <input type="text" id="nombre_cliente" placeholder="Escribe para buscar o crear..." autocomplete="off" />
+        <input type="text" id="nombre_cliente" placeholder="Escribe para buscar..." autocomplete="off" />
         <div id="sugerencias-box" class="sugerencias"></div>
       </div>
 
@@ -97,12 +101,12 @@
         <div class="left">
           <div id="area-acciones">
             <div class="upload-area" onclick="document.getElementById('foto').click()">
-              <span style="font-size: 1.5rem;">📸</span><br><b>Subir Comprobante</b>
+              <span style="font-size: 1.5rem;">📂</span><br><b>Subir Comprobante</b>
               <img id="preview" />
-              <input type="file" id="foto" accept="image/*" capture="environment" style="display:none" />
+              <input type="file" id="foto" accept="image/*" style="display:none" />
             </div>
             <button id="btnProcesar" class="btn btn-primary">🧠 EXTRAER DATOS</button>
-            <button id="btnGuardar" class="btn btn-save" disabled>💾 GUARDAR EN NUBE</button>
+            <button id="btnGuardar" class="btn btn-save" disabled>💾 GUARDAR</button>
           </div>
           <button onclick="window.print()" class="btn btn-dark">🖨️ IMPRIMIR</button>
           <button id="btn-volver" class="btn btn-primary" style="display:none; background:#6B7280;" onclick="location.reload()">🔄 NUEVO REGISTRO</button>
@@ -114,17 +118,18 @@
             <div style="text-align:center; font-size:10px;">CÚCUTA - NORTE DE SANTANDER</div>
             <div class="divider"></div>
             <div class="row"><b>CLIENTE:</b> <span id="out-cliente">---</span></div>
+            <div class="row"><b>EMPRESA:</b> <span id="out-empresa">---</span></div>
             <div class="divider"></div>
             <div class="row"><b>FECHA:</b> <span id="out-fec">--/--/----</span></div>
             <div class="row"><b>HORA:</b> <span id="out-hor">--:--</span></div>
             <div class="divider"></div>
             <div class="row"><b>CONVENIO:</b> <span id="out-conv">---</span></div>
-            <div class="row"><b>REF:</b> <span id="out-ref">---</span></div>
+            <div class="row"><b>REFE:</b> <span id="out-ref">---</span></div>
             <div class="row"><b>AUTORIZ:</b> <span id="out-aut">---</span></div>
             <div class="divider"></div>
             <div class="row" style="font-weight:bold; font-size:13px;"><b>TOTAL:</b> <span id="out-val">$ 0</span></div>
             <div class="divider"></div>
-            <div style="text-align:center; font-size:9px;">SOPORTE GENERADO POR IA</div>
+            <div style="text-align:center; font-weight:bold; font-size:14px;">PARA CUALQUIER RECLAMO, POR FAVOR CONSERVAR ESTE TICKET ORIGINAL Y CONTACTARSE AL WhatsApp +57 3503938788 "MultiBC"</div>
           </div>
         </div>
       </div>
@@ -138,7 +143,6 @@
       <div id="historial-lista"></div>
     </div>
   </section>
-
 </div>
 
 <script type="module">
@@ -156,8 +160,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-
-  const GEMINI_KEY = "AIzaSyAqpYb97ZuZKyDcHAikv8cM3fIRe9AkH3k";
+  const GEMINI_KEY = "AIzaSyCQefESKNIODsmCgzd-_oWv_I_Whzfxm34";
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   let base64Img = null;
@@ -170,9 +173,8 @@
   inputCli.oninput = () => {
     const val = inputCli.value.toUpperCase();
     document.getElementById("out-cliente").innerText = val || "---";
-    if(val.length < 1) { sugBox.style.display = "none"; return; }
     const sugeridos = Array.from(clientesUnicos).filter(c => c.includes(val));
-    if(sugeridos.length > 0) {
+    if(val.length > 0 && sugeridos.length > 0) {
       sugBox.innerHTML = sugeridos.map(s => `<div class="sug-item">${s}</div>`).join('');
       sugBox.style.display = "block";
     } else { sugBox.style.display = "none"; }
@@ -187,8 +189,10 @@
   };
 
   async function cargarNombresClientes() {
-    const snap = await getDocs(collection(db, "recibos"));
-    snap.forEach(doc => clientesUnicos.add(doc.data().cliente));
+    try {
+      const snap = await getDocs(collection(db, "recibos"));
+      snap.forEach(doc => clientesUnicos.add(doc.data().cliente));
+    } catch (e) { console.error("Error cargando clientes", e); }
   }
   cargarNombresClientes();
 
@@ -205,89 +209,112 @@
   document.getElementById("btnProcesar").onclick = async () => {
     if(!base64Img) return alert("Por favor, sube una foto primero.");
     document.getElementById("loader").style.display = "flex";
-    const payload = {
-      contents: [{ parts: [
-        { text: "Extrae de este recibo en JSON: convenio_nombre, referencia_numero, valor_pagado, fecha_pago, hora_pago, codigo_autorizacion. Solo JSON puro." },
-        { inline_data: { mime_type: "image/png", data: base64Img } }
-      ]}]
-    };
+    
+    // Instrucción ultra-reforzada para evitar errores de la IA
+    const instruction = `Analiza la imagen y devuelve estrictamente un objeto JSON. 
+    En 'empresa' selecciona obligatoriamente una de estas tres: 'PAGO FÁCIL COOGUASIMALES', 'BEMÓVIL' o 'REFACIL'.
+    Campos requeridos: empresa, convenio_nombre, referencia_numero, valor_pagado, fecha_pago, hora_pago, codigo_autorizacion.
+    No añadas texto extra ni bloques de código markdown. Solo el JSON.`;
+
     try {
-      const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, { method: "POST", body: JSON.stringify(payload) });
+      const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [
+          { text: instruction },
+          { inline_data: { mime_type: "image/png", data: base64Img } }
+        ]}]})
+      });
+      
       const data = await resp.json();
-      resAI = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim());
+      if (!data.candidates) throw new Error("Respuesta inválida de la IA");
+
+      let rawText = data.candidates[0].content.parts[0].text;
+      
+      // LIMPIEZA TOTAL: Extraemos solo lo que esté entre llaves { }
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No se encontró JSON en la respuesta");
+      
+      resAI = JSON.parse(jsonMatch[0]);
+      
+      // Asignar a la interfaz
+      document.getElementById("out-empresa").innerText = (resAI.empresa || "---").toUpperCase();
       document.getElementById("out-fec").innerText = resAI.fecha_pago || "--";
       document.getElementById("out-hor").innerText = resAI.hora_pago || "--";
       document.getElementById("out-conv").innerText = resAI.convenio_nombre || "--";
       document.getElementById("out-ref").innerText = resAI.referencia_numero || "--";
       document.getElementById("out-aut").innerText = resAI.codigo_autorizacion || "--";
-      document.getElementById("out-val").innerText = "$ " + Number(resAI.valor_pagado.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO");
+      
+      // Limpiar valor de símbolos para el formato moneda
+      let valNum = String(resAI.valor_pagado).replace(/[^0-9]/g, "");
+      document.getElementById("out-val").innerText = "$ " + Number(valNum).toLocaleString("es-CO");
+      
       document.getElementById("btnGuardar").disabled = false;
-    } catch (e) { alert("Error al extraer datos."); }
+    } catch (e) { 
+      console.error("Error detalle:", e);
+      alert("Error al extraer datos. Intenta con una imagen más nítida o centrada."); 
+    }
     finally { document.getElementById("loader").style.display = "none"; }
   };
 
   document.getElementById("btnGuardar").onclick = async () => {
-    const cliente = inputCli.value.toUpperCase();
-    if(!cliente) return alert("Ingresa el nombre del cliente.");
+    const cli = inputCli.value.toUpperCase();
+    if(!cli) return alert("Nombre de cliente requerido.");
     document.getElementById("loader").style.display = "flex";
     try {
       await addDoc(collection(db, "recibos"), {
-        cliente: cliente,
+        cliente: cli, 
+        empresa: resAI.empresa, 
         fecha: resAI.fecha_pago,
-        hora: resAI.hora_pago,
-        convenio: resAI.convenio_nombre,
+        hora: resAI.hora_pago, 
+        convenio: resAI.convenio_nombre, 
         referencia: resAI.referencia_numero,
-        autorizacion: resAI.codigo_autorizacion,
-        valor: resAI.valor_pagado,
+        autorizacion: resAI.codigo_autorizacion, 
+        valor: resAI.valor_pagado, 
         timestamp: new Date()
       });
-      alert("✅ Ticket guardado.");
+      alert("✅ Guardado correctamente.");
       location.reload();
-    } catch (e) { alert("Error al guardar."); }
+    } catch (e) { alert("Error al guardar en Firebase."); }
     finally { document.getElementById("loader").style.display = "none"; }
   };
 
   window.cargarHistorial = async () => {
     const list = document.getElementById("historial-lista");
     list.innerHTML = "Cargando...";
-    const snap = await getDocs(query(collection(db, "recibos"), orderBy("timestamp", "desc")));
-    list.innerHTML = "";
-    snap.forEach(doc => {
-      const r = doc.data();
-      const div = document.createElement("div");
-      div.className = "recibo-item";
-      div.innerHTML = `
-        <div class="recibo-info">
-          <b>👤 ${r.cliente}</b><br>
-          <small>📅 ${r.fecha} | 🕒 ${r.hora}</small><br>
-          <span>${r.convenio} - Ref: ${r.referencia}</span><br>
-          <strong style="color:#059669">Valor: $ ${Number(r.valor.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
-        </div>
-        <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
-      `;
-      div.querySelector("button").onclick = () => reimprimirTicket(r);
-      list.appendChild(div);
-    });
+    try {
+      const snap = await getDocs(query(collection(db, "recibos"), orderBy("timestamp", "desc")));
+      list.innerHTML = "";
+      snap.forEach(doc => {
+        const r = doc.data();
+        const div = document.createElement("div");
+        div.className = "recibo-item";
+        div.innerHTML = `
+          <div style="font-size:0.9rem;">
+            <b style="color:var(--p);">👤 ${r.cliente}</b><br>
+            <small>🏢 ${r.empresa || ""} | 📅 ${r.fecha}</small><br>
+            <strong style="color:#059669;">$ ${Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
+          </div>
+          <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
+        `;
+        div.querySelector("button").onclick = () => {
+          showSection('registrar');
+          document.getElementById("area-acciones").style.display = "none";
+          document.getElementById("group-cliente").style.display = "none";
+          document.getElementById("btn-volver").style.display = "block";
+          document.getElementById("out-cliente").innerText = r.cliente;
+          document.getElementById("out-empresa").innerText = (r.empresa || "---").toUpperCase();
+          document.getElementById("out-fec").innerText = r.fecha;
+          document.getElementById("out-hor").innerText = r.hora;
+          document.getElementById("out-conv").innerText = r.convenio;
+          document.getElementById("out-ref").innerText = r.referencia;
+          document.getElementById("out-aut").innerText = r.autorizacion;
+          document.getElementById("out-val").innerText = "$ " + Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO");
+        };
+        list.appendChild(div);
+      });
+    } catch (e) { list.innerHTML = "Error al cargar historial."; }
   };
-
-  function reimprimirTicket(datos) {
-    // 1. Moverse a registrar
-    showSection('registrar');
-    
-    // 2. Ocultar botones de guardado e inputs
-    document.getElementById("area-acciones").style.display = "none";
-    document.getElementById("group-cliente").style.display = "none";
-    document.getElementById("btn-volver").style.display = "block";
-
-    // 3. Cargar datos al ticket
-    document.getElementById("out-cliente").innerText = datos.cliente;
-    document.getElementById("out-fec").innerText = datos.fecha;
-    document.getElementById("out-hor").innerText = datos.hora;
-    document.getElementById("out-conv").innerText = datos.convenio;
-    document.getElementById("out-ref").innerText = datos.referencia;
-    document.getElementById("out-aut").innerText = datos.autorizacion;
-    document.getElementById("out-val").innerText = "$ " + Number(datos.valor.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO");
-  }
 
   window.showSection = (id) => {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -299,11 +326,8 @@
 
   document.getElementById("buscador-hist").oninput = (e) => {
     const f = e.target.value.toUpperCase();
-    document.querySelectorAll(".recibo-item").forEach(i => {
-      i.style.display = i.innerText.toUpperCase().includes(f) ? "flex" : "none";
-    });
+    document.querySelectorAll(".recibo-item").forEach(i => i.style.display = i.innerText.toUpperCase().includes(f) ? "flex" : "none");
   };
 </script>
-
 </body>
 </html>
