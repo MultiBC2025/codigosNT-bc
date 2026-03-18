@@ -1,274 +1,308 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clonador de Tickets BC - Cúcuta</title>
-    <style>
-        :root { --p: #4F46E5; --s: #10B981; --bg: #F3F4F6; --text: #1F2937; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; min-height: 100vh; align-items: center; }
-        
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 420px; transition: all 0.3s ease; }
-        
-        h1 { text-align: center; font-size: 1.4rem; margin: 0 0 10px 0; color: var(--p); font-weight: 800; }
-        p.subtitle { text-align: center; color: #6B7280; margin: 0 0 25px 0; font-size: 0.9rem; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MultiEntretenimiento BC - OCR & Historial</title>
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+      }
+    }
+  </script>
 
-        /* Zona de Carga Reforzada */
-        .upload-area { border: 2px dashed #C7D2FE; background: #F5F7FF; padding: 30px 20px; text-align: center; border-radius: 15px; cursor: pointer; margin-bottom: 20px; transition: 0.2s; position: relative; }
-        .upload-area:hover { border-color: var(--p); background: #EBF0FF; }
-        .upload-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
-        #preview { max-width: 100%; max-height: 200px; border-radius: 10px; margin-top: 15px; display: none; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        
-        button { width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 1rem; position: relative; overflow: hidden; }
-        button:active { transform: scale(0.98); }
-        
-        .btn-ocr { background: var(--p); color: white; margin-bottom: 10px; }
-        .btn-ocr:hover { background: #4338CA; }
-        .btn-print { background: #374151; color: white; margin-top: 25px; }
-        .btn-print:hover { background: #1F2937; }
+  <style>
+    :root { --p: #4F46E5; --bg: #F3F4F6; --card: #ffffff; --line: #E5E7EB; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); font-family: "Segoe UI", sans-serif; color: #111827; }
+    
+    nav { background: white; padding: 12px; display: flex; justify-content: center; gap: 10px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .nav-btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; background: #E5E7EB; color: #6B7280; }
+    .nav-btn.active { background: var(--p); color: white; }
 
-        /* Ticket Térmico 58mm (Estilo Real) */
-        .ticket-box { background: #E5E7EB; padding: 20px; border-radius: 12px; display: flex; justify-content: center; margin-top: 20px; position: relative; }
-        .ticket-box::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); border-width: 10px; border-style: solid; border-color: transparent transparent #E5E7EB transparent; }
-        
-        .ticket-58mm { 
-            width: 58mm; background: white; padding: 10mm 5mm; color: black; 
-            font-family: 'Courier New', Courier, monospace; font-size: 11px; line-height: 1.3;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative;
-        }
-        .t-header { text-align: center; font-weight: bold; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-        .t-subheader { text-align: center; font-size: 9px; margin-bottom: 12px; }
-        .t-divider { border-top: 1px dashed black; margin: 8px 0; }
-        .t-row { display: flex; justify-content: space-between; margin-bottom: 3px; align-items: flex-start; }
-        .t-label { font-weight: bold; padding-right: 5px; white-space: nowrap; }
-        .t-val { text-align: right; word-break: break-all; }
-        
-        /* Loader Overlay Reforzado */
-        #loader { 
-            display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); 
-            z-index: 1000; flex-direction: column; align-items: center; justify-content: center; 
-            font-weight: bold; color: var(--p); font-size: 1.1rem; 
-        }
-        .spinner { width: 50px; height: 50px; border: 5px solid #E0E7FF; border-top: 5px solid var(--p); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .container { display: flex; justify-content: center; padding: 20px; }
+    .section { display: none; width: 100%; max-width: 760px; }
+    .section.active { display: block; }
 
-        /* Estilos de Impresión */
-        @media print {
-            body * { visibility: hidden; }
-            .ticket-box, .ticket-58mm, .ticket-58mm * { visibility: visible; }
-            .ticket-box { background: none; padding: 0; margin: 0; position: fixed; inset: 0; display: flex; justify-content: center; align-items: flex-start; }
-            .ticket-58mm { width: 58mm; box-shadow: none; border: none; margin: 0; padding: 5mm; }
-            .btn-print, .btn-ocr, .upload-area, h1, .subtitle { display: none !important; }
-        }
-    </style>
+    .card { background: var(--card); border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); padding: 24px; border: 1px solid var(--line); }
+    .title { margin: 0; font-size: 1.5rem; color: var(--p); font-weight: 900; text-align: center; margin-bottom: 20px; }
+
+    .input-group { margin-bottom: 15px; position: relative; }
+    .input-group label { display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 5px; color: var(--p); }
+    input[type="text"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 1rem; outline: none; }
+
+    .sugerencias { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--line); border-radius: 0 0 12px 12px; z-index: 100; max-height: 150px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .sug-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #f9f9f9; font-weight: 600; }
+    .sug-item:hover { background: #f0f0ff; color: var(--p); }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .upload-area { border: 2px dashed #C7D2FE; background: #F8FAFF; border-radius: 18px; padding: 25px; text-align: center; cursor: pointer; }
+    #preview { display: none; width: 100%; max-height: 250px; object-fit: contain; border-radius: 14px; margin-top: 15px; }
+
+    .btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.2s; }
+    .btn-primary { background: var(--p); color: #fff; }
+    .btn-save { background: #059669; color: white; }
+    .btn-dark { background: #111827; color: #fff; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .output { border: 1px solid var(--line); border-radius: 20px; background: #fff; overflow: hidden; }
+    .ticket { width: 100%; padding: 20px 15px; font-family: "Courier New", monospace; color: #000; font-size: 12px; line-height: 1.3; }
+    .divider { border-top: 1px dashed #000; margin: 10px 0; }
+    .row { display: flex; justify-content: space-between; margin: 3px 0; }
+
+    .recibo-item { background: white; border: 1px solid var(--line); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-left: 5px solid var(--p); display: flex; justify-content: space-between; align-items: center; }
+    .recibo-info b { color: var(--p); font-size: 1.1rem; }
+    .btn-reprint-mini { background: #111827; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+
+    .loader { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .9); z-index: 1000; align-items: center; justify-content: center; flex-direction: column; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--p); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (min-width: 780px) { .grid { grid-template-columns: 1fr 1fr; } }
+    @media print {
+        body * { visibility: hidden; }
+        #ticket-print, #ticket-print * { visibility: visible; }
+        #ticket-print { position: fixed; left: 0; top: 0; width: 58mm; border: none; padding: 0; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="loader">
-    <div class="spinner"></div>
-    <span>🤖 IA Analizando Recibo...</span>
-    <p style="font-size: 0.8rem; color: #6B7280; margin-top: 10px;">Esto puede tardar unos segundos.</p>
+<div id="loader" class="loader">
+  <div class="spinner"></div>
+  <div style="font-weight:bold; color:var(--p); margin-top:10px;">Cargando...</div>
 </div>
 
-<div class="card">
-    <h1>MultiEntretenimiento BC</h1>
-    <p class="subtitle">Escaner y Clonador de Tickets AI</p>
-    
-    <div class="upload-area" id="drop-zone" onclick="document.getElementById('foto').click()">
-        <span class="upload-icon">📄</span>
-        <b style="color: var(--p);">Toca para escanear</b>
-        <p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #6B7280;">o arrastra la imagen aquí</p>
-        <img id="preview" src="" alt="Vista previa del recibo">
-        <input type="file" id="foto" accept="image/png, image/jpeg, image/webp" capture="camera" style="display: none;">
-    </div>
+<nav>
+  <button class="nav-btn active" id="btn-reg" onclick="showSection('registrar')">📝 REGISTRAR</button>
+  <button class="nav-btn" id="btn-hist" onclick="showSection('historial')">📂 HISTORIAL</button>
+</nav>
 
-    <button id="btnProcesar" class="btn-ocr">🧠 Clonar Ticket con Gemini AI</button>
+<div class="container">
+  
+  <section id="registrar" class="section active">
+    <div class="card">
+      <h1 class="title">MultiEntretenimiento BC</h1>
+      
+      <div class="input-group" id="group-cliente">
+        <label>NOMBRE DEL CLIENTE</label>
+        <input type="text" id="nombre_cliente" placeholder="Escribe para buscar o crear..." autocomplete="off" />
+        <div id="sugerencias-box" class="sugerencias"></div>
+      </div>
 
-    <div class="ticket-box">
-        <div class="ticket-58mm" id="ticket">
-            <div class="t-header">MULTIENTRETENIMIENTO BC</div>
-            <div class="t-subheader">CÚCUTA - NORTE DE SANTANDER<br>Servicio al Cliente: 311 000 0000</div>
-            <div class="t-divider"></div>
-            <div class="t-row"><span class="t-label">CONVENIO:</span> <span class="t-val" id="out-conv">---</span></div>
-            <div class="t-row"><span class="t-label">REFERENCIA:</span> <span class="t-val" id="out-ref">---</span></div>
-            <div class="t-row"><span class="t-label">CANAL:</span> <span class="t-val" id="out-plat">---</span></div>
-            <div class="t-divider"></div>
-            <div class="t-row"><span class="t-label">FECHA:</span> <span class="t-val" id="out-fec">--/--/----</span></div>
-            <div class="t-row"><span class="t-label">HORA:</span> <span class="t-val" id="out-hor">--:--:--</span></div>
-            <div class="t-divider"></div>
-            <div class="t-row"><span class="t-label">AUTORIZACIÓN:</span> <span class="t-val" id="out-aut">---</span></div>
-            <div class="t-row"><span class="t-label">TRANSACCIÓN:</span> <span class="t-val" id="out-tra">---</span></div>
-            <div class="t-divider"></div>
-            <div class="t-row" style="font-size: 14px; margin-top: 5px;">
-                <span class="t-label">TOTAL:</span> 
-                <span class="t-val" style="font-weight: bold;" id="out-val">$ 0 COP</span>
+      <div class="grid">
+        <div class="left">
+          <div id="area-acciones">
+            <div class="upload-area" onclick="document.getElementById('foto').click()">
+              <span style="font-size: 1.5rem;">📸</span><br><b>Subir Comprobante</b>
+              <img id="preview" />
+              <input type="file" id="foto" accept="image/*" capture="environment" style="display:none" />
             </div>
-            <div class="t-divider"></div>
-            <div class="t-subheader" style="margin-top: 15px; font-style: italic; font-size: 8px;">Este es un soporte de pago procesado por MultiEntretenimiento BC. Conserve este ticket.</div>
+            <button id="btnProcesar" class="btn btn-primary">🧠 EXTRAER DATOS</button>
+            <button id="btnGuardar" class="btn btn-save" disabled>💾 GUARDAR EN NUBE</button>
+          </div>
+          <button onclick="window.print()" class="btn btn-dark">🖨️ IMPRIMIR</button>
+          <button id="btn-volver" class="btn btn-primary" style="display:none; background:#6B7280;" onclick="location.reload()">🔄 NUEVO REGISTRO</button>
         </div>
-    </div>
 
-    <button id="btnImprimir" class="btn-print">🖨️ Imprimir Ticket (58mm)</button>
+        <div class="right output">
+          <div id="ticket-print" class="ticket">
+            <div style="text-align:center; font-weight:bold; font-size:14px;">MULTIENTRETENIMIENTO BC</div>
+            <div style="text-align:center; font-size:10px;">CÚCUTA - NORTE DE SANTANDER</div>
+            <div class="divider"></div>
+            <div class="row"><b>CLIENTE:</b> <span id="out-cliente">---</span></div>
+            <div class="divider"></div>
+            <div class="row"><b>FECHA:</b> <span id="out-fec">--/--/----</span></div>
+            <div class="row"><b>HORA:</b> <span id="out-hor">--:--</span></div>
+            <div class="divider"></div>
+            <div class="row"><b>CONVENIO:</b> <span id="out-conv">---</span></div>
+            <div class="row"><b>REF:</b> <span id="out-ref">---</span></div>
+            <div class="row"><b>AUTORIZ:</b> <span id="out-aut">---</span></div>
+            <div class="divider"></div>
+            <div class="row" style="font-weight:bold; font-size:13px;"><b>TOTAL:</b> <span id="out-val">$ 0</span></div>
+            <div class="divider"></div>
+            <div style="text-align:center; font-size:9px;">SOPORTE GENERADO POR IA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="historial" class="section">
+    <div class="card">
+      <h1 class="title">Historial de Pagos</h1>
+      <input type="text" id="buscador-hist" placeholder="🔍 Buscar por nombre..." style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--line); margin-bottom:20px;" />
+      <div id="historial-lista"></div>
+    </div>
+  </section>
+
 </div>
 
 <script type="module">
-    // Tu API Key gratuita de Google AI Studio (Plan Spark)
-    // Nota: Es normal que sea visible en este entorno de prueba gratuito.
-    const API_KEY = "AIzaSyB8CXbDYyaxlkbgPf_nssc2JHXYRcECh_U";
-    
-    // El modelo exacto compatible con imágenes
-    const MODEL_NAME = "gemini-1.5-flash"; 
-    
-    let base64Img = null;
-    let fileType = "image/png"; // Por defecto para tu recibo
+  import { initializeApp } from "firebase/app";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
 
-    const loader = document.getElementById('loader');
-    const preview = document.getElementById('preview');
-    const uploadPrompt = document.querySelector('.upload-area b');
-    const uploadSubprompt = document.querySelector('.upload-area p');
-    const uploadIcon = document.querySelector('.upload-icon');
+  const firebaseConfig = {
+    apiKey: "AIzaSyBQS672x-Pe9Idd1eGMbCt5tHoZ8CTu98c",
+    authDomain: "recibos-ai-master.firebaseapp.com",
+    projectId: "recibos-ai-master",
+    storageBucket: "recibos-ai-master.firebasestorage.app",
+    messagingSenderId: "772971343385",
+    appId: "1:772971343385:web:28ffae87644c999b1e0488"
+  };
 
-    // --- MANEJO DE IMAGEN ---
-    
-    // Función para procesar el archivo seleccionado
-    function handleFile(file) {
-        if (!file || !file.type.startsWith('image/')) {
-            alert("Por favor, sube un archivo de imagen válido (PNG, JPG, WEBP).");
-            return;
-        }
-        
-        fileType = file.type;
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            // Actualizar interfaz
-            preview.src = evt.target.result;
-            preview.style.display = 'block';
-            uploadIcon.style.display = 'none';
-            uploadPrompt.style.display = 'none';
-            uploadSubprompt.style.display = 'none';
-            
-            // Extraer cadena Base64 pura
-            base64Img = evt.target.result.split(',')[1];
-            console.log("Imagen cargada y convertida (Tipo:", fileType, ")");
-        };
-        reader.onerror = () => alert("Error al leer el archivo.");
-        reader.readAsDataURL(file);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const GEMINI_KEY = "AIzaSyAqpYb97ZuZKyDcHAikv8cM3fIRe9AkH3k";
+  const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
+
+  let base64Img = null;
+  let resAI = null;
+  let clientesUnicos = new Set();
+
+  const inputCli = document.getElementById("nombre_cliente");
+  const sugBox = document.getElementById("sugerencias-box");
+
+  inputCli.oninput = () => {
+    const val = inputCli.value.toUpperCase();
+    document.getElementById("out-cliente").innerText = val || "---";
+    if(val.length < 1) { sugBox.style.display = "none"; return; }
+    const sugeridos = Array.from(clientesUnicos).filter(c => c.includes(val));
+    if(sugeridos.length > 0) {
+      sugBox.innerHTML = sugeridos.map(s => `<div class="sug-item">${s}</div>`).join('');
+      sugBox.style.display = "block";
+    } else { sugBox.style.display = "none"; }
+  };
+
+  sugBox.onclick = (e) => {
+    if(e.target.classList.contains("sug-item")) {
+      inputCli.value = e.target.innerText;
+      document.getElementById("out-cliente").innerText = e.target.innerText;
+      sugBox.style.display = "none";
     }
+  };
 
-    // Input de archivo tradicional
-    document.getElementById('foto').onchange = e => handleFile(e.target.files[0]);
+  async function cargarNombresClientes() {
+    const snap = await getDocs(collection(db, "recibos"));
+    snap.forEach(doc => clientesUnicos.add(doc.data().cliente));
+  }
+  cargarNombresClientes();
 
-    // Soporte para Arrastrar y Soltar (Drag & Drop)
-    const dropZone = document.getElementById('drop-zone');
-    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--p)'; });
-    dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.style.borderColor = '#C7D2FE'; });
-    dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = '#C7D2FE'; handleFile(e.dataTransfer.files[0]); });
+  document.getElementById("foto").onchange = e => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById("preview").src = reader.result;
+      document.getElementById("preview").style.display = "block";
+      base64Img = reader.result.split(",")[1];
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
 
+  document.getElementById("btnProcesar").onclick = async () => {
+    if(!base64Img) return alert("Por favor, sube una foto primero.");
+    document.getElementById("loader").style.display = "flex";
+    const payload = {
+      contents: [{ parts: [
+        { text: "Extrae de este recibo en JSON: convenio_nombre, referencia_numero, valor_pagado, fecha_pago, hora_pago, codigo_autorizacion. Solo JSON puro." },
+        { inline_data: { mime_type: "image/png", data: base64Img } }
+      ]}]
+    };
+    try {
+      const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, { method: "POST", body: JSON.stringify(payload) });
+      const data = await resp.json();
+      resAI = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim());
+      document.getElementById("out-fec").innerText = resAI.fecha_pago || "--";
+      document.getElementById("out-hor").innerText = resAI.hora_pago || "--";
+      document.getElementById("out-conv").innerText = resAI.convenio_nombre || "--";
+      document.getElementById("out-ref").innerText = resAI.referencia_numero || "--";
+      document.getElementById("out-aut").innerText = resAI.codigo_autorizacion || "--";
+      document.getElementById("out-val").innerText = "$ " + Number(resAI.valor_pagado.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO");
+      document.getElementById("btnGuardar").disabled = false;
+    } catch (e) { alert("Error al extraer datos."); }
+    finally { document.getElementById("loader").style.display = "none"; }
+  };
 
-    // --- PROCESAMIENTO CON GEMINI (OCR INTELIGENTE) ---
+  document.getElementById("btnGuardar").onclick = async () => {
+    const cliente = inputCli.value.toUpperCase();
+    if(!cliente) return alert("Ingresa el nombre del cliente.");
+    document.getElementById("loader").style.display = "flex";
+    try {
+      await addDoc(collection(db, "recibos"), {
+        cliente: cliente,
+        fecha: resAI.fecha_pago,
+        hora: resAI.hora_pago,
+        convenio: resAI.convenio_nombre,
+        referencia: resAI.referencia_numero,
+        autorizacion: resAI.codigo_autorizacion,
+        valor: resAI.valor_pagado,
+        timestamp: new Date()
+      });
+      alert("✅ Ticket guardado.");
+      location.reload();
+    } catch (e) { alert("Error al guardar."); }
+    finally { document.getElementById("loader").style.display = "none"; }
+  };
+
+  window.cargarHistorial = async () => {
+    const list = document.getElementById("historial-lista");
+    list.innerHTML = "Cargando...";
+    const snap = await getDocs(query(collection(db, "recibos"), orderBy("timestamp", "desc")));
+    list.innerHTML = "";
+    snap.forEach(doc => {
+      const r = doc.data();
+      const div = document.createElement("div");
+      div.className = "recibo-item";
+      div.innerHTML = `
+        <div class="recibo-info">
+          <b>👤 ${r.cliente}</b><br>
+          <small>📅 ${r.fecha} | 🕒 ${r.hora}</small><br>
+          <span>${r.convenio} - Ref: ${r.referencia}</span><br>
+          <strong style="color:#059669">Valor: $ ${Number(r.valor.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
+        </div>
+        <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
+      `;
+      div.querySelector("button").onclick = () => reimprimirTicket(r);
+      list.appendChild(div);
+    });
+  };
+
+  function reimprimirTicket(datos) {
+    // 1. Moverse a registrar
+    showSection('registrar');
     
-    document.getElementById('btnProcesar').onclick = async () => {
-        if(!base64Img) return alert("Por favor, primero escanea o sube un recibo.");
-        
-        // Mostrar Loader
-        loader.style.display = 'flex';
-        
-        // Prompt Maestro optimizado para Recibos de Cúcuta (Pago Fácil/Aguas Kpital)
-        const promptInstructions = `
-            Actúa como un extractor de datos de alta precisión para recibos de pago térmicos. 
-            Analiza la imagen adjunta y extrae EXCLUSIVAMENTE los siguientes campos en formato JSON puro. 
-            No añadas bloques de código markdown (\`\`\`json), ni texto extra. Si no encuentras un campo, usa "N/A".
+    // 2. Ocultar botones de guardado e inputs
+    document.getElementById("area-acciones").style.display = "none";
+    document.getElementById("group-cliente").style.display = "none";
+    document.getElementById("btn-volver").style.display = "block";
 
-            Campos a extraer (respeta los nombres de clave):
-            {
-                "convenio_nombre": "", 
-                "referencia_numero": "", 
-                "valor_pagado": "", 
-                "fecha_completa": "", 
-                "hora_pago": "", 
-                "codigo_autorizacion": "", 
-                "codigo_transaccion": ""
-            }
+    // 3. Cargar datos al ticket
+    document.getElementById("out-cliente").innerText = datos.cliente;
+    document.getElementById("out-fec").innerText = datos.fecha;
+    document.getElementById("out-hor").innerText = datos.hora;
+    document.getElementById("out-conv").innerText = datos.convenio;
+    document.getElementById("out-ref").innerText = datos.referencia;
+    document.getElementById("out-aut").innerText = datos.autorizacion;
+    document.getElementById("out-val").innerText = "$ " + Number(datos.valor.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO");
+  }
 
-            Notas específicas para el recibo adjunto (si aplica):
-            - Si es 'Pago Fácil' o 'Aguas Kpital', usa el CUS como codigo_autorizacion.
-            - Extrae el Valor sin puntos ni símbolos (ej: 29090).
-            - Extrae la Referencia exacta (ej: 133025).
-            - Extrae el Id Trx como codigo_transaccion.
-        `;
+  window.showSection = (id) => {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById(id === 'registrar' ? 'btn-reg' : 'btn-hist').classList.add('active');
+    if(id === 'historial') cargarHistorial();
+  };
 
-        try {
-            // Petición directa a la API gratuita de Google AI Studio
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ 
-                        parts: [
-                            { text: promptInstructions }, 
-                            { inline_data: { mime_type: fileType, data: base64Img } }
-                        ] 
-                    }]
-                })
-            });
-
-            // Manejo de errores de red o API
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Error de API (${response.status}): ${errorData.error.message}`);
-            }
-
-            const data = await response.json();
-            
-            // Verificación de seguridad por si Gemini no responde contenido
-            if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-                throw new Error("La IA no pudo generar una respuesta. Intenta con otra foto.");
-            }
-
-            let textRaw = data.candidates[0].content.parts[0].text;
-            console.log("Respuesta cruda de Gemini:", textRaw);
-
-            // --- LIMPIEZA EXTREMA DEL JSON ---
-            // Busca el primer '{' y el último '}' para ignorar cualquier texto extra
-            const start = textRaw.indexOf('{');
-            const end = textRaw.lastIndexOf('}') + 1;
-            
-            if (start === -1 || end === 0) {
-                throw new Error("La IA leyó el recibo pero no pudo organizar los datos correctamente.");
-            }
-            
-            const jsonString = textRaw.substring(start, end);
-            const json = JSON.parse(jsonString);
-
-            // --- ACTUALIZAR TICKET VISUAL (58mm) ---
-            document.getElementById('out-conv').innerText = (json.convenio_nombre || 'N/A').toUpperCase();
-            document.getElementById('out-ref').innerText = json.referencia_numero || 'N/A';
-            document.getElementById('out-plat').innerText = 'PAGO FÁCIL (BELLAVISTA)';
-            document.getElementById('out-fec').innerText = json.fecha_completa || '--/--/----';
-            document.getElementById('out-hor').innerText = json.hora_pago || '--:--:--';
-            document.getElementById('out-aut').innerText = json.codigo_autorizacion || 'N/A';
-            document.getElementById('out-tra').innerText = json.codigo_transaccion || 'N/A';
-            
-            // Limpieza y formateo del valor monetario (COP)
-            const valorRaw = String(json.valor_pagado || 0).replace(/[^0-9]/g, '');
-            const valorFinal = parseInt(valorRaw) || 0;
-            document.getElementById('out-val').innerText = `$ ${valorFinal.toLocaleString('es-CO')} COP`;
-
-        } catch (error) {
-            console.error("Detalle del Error:", error);
-            // Mensaje de error detallado para el usuario
-            alert(`Error técnico: ${error.message}\n\nRecomendaciones:\n1. Asegúrate de no estar usando un visualizador online restringido.\n2. Verifica tu conexión a internet.\n3. Intenta presionar el botón de nuevo.`);
-        } finally {
-            // Ocultar Loader
-            loader.style.display = 'none';
-        }
-    };
-
-    // --- IMPRESIÓN ---
-    document.getElementById('btnImprimir').onclick = () => {
-        // Abre el diálogo de impresión nativo. Requiere driver de 58mm configurado.
-        window.print();
-    };
+  document.getElementById("buscador-hist").oninput = (e) => {
+    const f = e.target.value.toUpperCase();
+    document.querySelectorAll(".recibo-item").forEach(i => {
+      i.style.display = i.innerText.toUpperCase().includes(f) ? "flex" : "none";
+    });
+  };
 </script>
 
 </body>
