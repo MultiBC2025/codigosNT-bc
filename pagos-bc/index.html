@@ -44,20 +44,15 @@
 
     .btn { width: 100%; padding: 16px; border: none; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.2s; }
     .btn-primary { background: var(--p); color: #fff; }
+    .btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
     .btn-save { background: #059669; color: white; }
     .btn-dark { background: #111827; color: #fff; }
 
     .output { border: 1px solid var(--line); border-radius: 20px; background: #fff; overflow: hidden; }
-    .ticket { 
-      width: 100%; 
-      padding: 20px 15px; 
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      color: #000; 
-      font-size: 12px; 
-      line-height: 1.3; 
-    }
+    .ticket { width: 100%; padding: 20px 15px; font-family: ui-monospace, monospace; color: #000; font-size: 12px; line-height: 1.3; }
     .divider { border-top: 1px dashed #000; margin: 10px 0; }
     .row { display: flex; justify-content: space-between; margin: 3px 0; }
+    .hidden { display: none !important; }
 
     .recibo-item { background: white; border: 1px solid var(--line); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-left: 5px solid var(--p); display: flex; justify-content: space-between; align-items: center; }
     .btn-reprint-mini { background: #111827; color: white; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
@@ -100,16 +95,16 @@
       <div class="grid">
         <div class="left">
           <div id="area-acciones">
-            <div class="upload-area" onclick="document.getElementById('foto').click()">
+            <div id="btn-subir-area" class="upload-area" onclick="document.getElementById('foto').click()">
               <span style="font-size: 1.5rem;">📂</span><br><b>Subir Comprobante</b>
               <img id="preview" />
               <input type="file" id="foto" accept="image/*" style="display:none" />
             </div>
-            <button id="btnProcesar" class="btn btn-primary">🧠 EXTRAER DATOS</button>
+            <button id="btnProcesar" class="btn btn-primary" disabled>🧠 SELECCIONA UNA IMAGEN</button>
             <button id="btnGuardar" class="btn btn-save" disabled>💾 GUARDAR</button>
           </div>
-          <button onclick="window.print()" class="btn btn-dark">🖨️ IMPRIMIR</button>
-          <button id="btn-volver" class="btn btn-primary" style="display:none; background:#6B7280;" onclick="location.reload()">🔄 NUEVO REGISTRO</button>
+          <button onclick="window.print()" class="btn btn-dark">🖨️ IMPRIMIR TICKET</button>
+          <button id="btn-volver" class="btn btn-primary hidden" style="background:#6B7280;" onclick="location.reload()">🔄 NUEVO REGISTRO</button>
         </div>
 
         <div class="right output">
@@ -123,13 +118,15 @@
             <div class="row"><b>FECHA:</b> <span id="out-fec">--/--/----</span></div>
             <div class="row"><b>HORA:</b> <span id="out-hor">--:--</span></div>
             <div class="divider"></div>
-            <div class="row"><b>CONVENIO:</b> <span id="out-conv">---</span></div>
+            <div id="row-prod" class="row hidden"><b>PRODUCTO:</b> <span id="out-prod">---</span></div>
+            <div id="row-conv" class="row"><b>CONVENIO:</b> <span id="out-conv">---</span></div>
             <div class="row"><b>REFE:</b> <span id="out-ref">---</span></div>
-            <div class="row"><b>AUTORIZ:</b> <span id="out-aut">---</span></div>
+            <div id="row-aut" class="row"><b>AUTORIZ:</b> <span id="out-aut">---</span></div>
+            <div id="row-recibo" class="row hidden"><b>NRO RECIBO:</b> <span id="out-recibo">---</span></div>
             <div class="divider"></div>
             <div class="row" style="font-weight:bold; font-size:13px;"><b>TOTAL:</b> <span id="out-val">$ 0</span></div>
             <div class="divider"></div>
-            <div style="text-align:center; font-weight:bold; font-size:14px;">PARA CUALQUIER RECLAMO, POR FAVOR CONSERVAR ESTE TICKET ORIGINAL Y CONTACTARSE AL WhatsApp +57 3503938788 "MultiBC"</div>
+            <div style="text-align:center; font-weight:bold; font-size:13px; line-height:1.2;">PARA CUALQUIER RECLAMO, POR FAVOR CONSERVAR ESTE TICKET ORIGINAL Y CONTACTARSE AL WhatsApp +57 3503938788 "MultiBC"</div>
           </div>
         </div>
       </div>
@@ -139,7 +136,7 @@
   <section id="historial" class="section">
     <div class="card">
       <h1 class="title">Historial de Pagos</h1>
-      <input type="text" id="buscador-hist" placeholder="🔍 Buscar por nombre..." style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--line); margin-bottom:20px;" />
+      <input type="text" id="buscador-hist" placeholder="🔍 Buscar por nombre o referencia..." style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--line); margin-bottom:20px;" />
       <div id="historial-lista"></div>
     </div>
   </section>
@@ -160,7 +157,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const GEMINI_KEY = "AIzaSyCQefESKNIODsmCgzd-_oWv_I_Whzfxm34";
+  const GEMINI_KEY = "AIzaSyAqpYb97ZuZKyDcHAikv8cM3fIRe9AkH3k";
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   let base64Img = null;
@@ -169,6 +166,7 @@
 
   const inputCli = document.getElementById("nombre_cliente");
   const sugBox = document.getElementById("sugerencias-box");
+  const btnProcesar = document.getElementById("btnProcesar");
 
   inputCli.oninput = () => {
     const val = inputCli.value.toUpperCase();
@@ -192,7 +190,7 @@
     try {
       const snap = await getDocs(collection(db, "recibos"));
       snap.forEach(doc => clientesUnicos.add(doc.data().cliente));
-    } catch (e) { console.error("Error cargando clientes", e); }
+    } catch (e) {}
   }
   cargarNombresClientes();
 
@@ -202,118 +200,127 @@
       document.getElementById("preview").src = reader.result;
       document.getElementById("preview").style.display = "block";
       base64Img = reader.result.split(",")[1];
+      
+      let segundos = 6;
+      btnProcesar.disabled = true;
+      btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
+      const intervalo = setInterval(() => {
+        segundos--;
+        if(segundos > 0) btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
+        else {
+          clearInterval(intervalo);
+          btnProcesar.disabled = false;
+          btnProcesar.innerText = "🧠 EXTRAER DATOS";
+        }
+      }, 1000);
     };
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  document.getElementById("btnProcesar").onclick = async () => {
-    if(!base64Img) return alert("Por favor, sube una foto primero.");
+  btnProcesar.onclick = async () => {
+    if(!base64Img) return alert("Sube una foto.");
     document.getElementById("loader").style.display = "flex";
-    
-    // Instrucción ultra-reforzada para evitar errores de la IA
-    const instruction = `Analiza la imagen y devuelve estrictamente un objeto JSON. 
-    En 'empresa' selecciona obligatoriamente una de estas tres: 'PAGO FÁCIL COOGUASIMALES', 'BEMÓVIL' o 'REFACIL'.
-    Campos requeridos: empresa, convenio_nombre, referencia_numero, valor_pagado, fecha_pago, hora_pago, codigo_autorizacion.
-    No añadas texto extra ni bloques de código markdown. Solo el JSON.`;
-
+    const instruction = `Analiza la imagen y devuelve estrictamente JSON. Empresa: 'PAGO FÁCIL COOGUASIMALES', 'BEMÓVIL' o 'REFACIL'. Campos: empresa, producto_nombre, convenio_nombre, referencia_numero, valor_pagado, fecha_pago, hora_pago, codigo_autorizacion, numero_recibo_adicional.`;
     try {
       const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [
-          { text: instruction },
-          { inline_data: { mime_type: "image/png", data: base64Img } }
-        ]}]})
+        body: JSON.stringify({ contents: [{ parts: [{ text: instruction }, { inline_data: { mime_type: "image/png", data: base64Img } }]}]})
       });
-      
       const data = await resp.json();
-      if (!data.candidates) throw new Error("Respuesta inválida de la IA");
-
-      let rawText = data.candidates[0].content.parts[0].text;
+      const rawText = data.candidates[0].content.parts[0].text;
+      resAI = JSON.parse(rawText.match(/\{[\s\S]*\}/)[0]);
       
-      // LIMPIEZA TOTAL: Extraemos solo lo que esté entre llaves { }
-      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("No se encontró JSON en la respuesta");
-      
-      resAI = JSON.parse(jsonMatch[0]);
-      
-      // Asignar a la interfaz
-      document.getElementById("out-empresa").innerText = (resAI.empresa || "---").toUpperCase();
-      document.getElementById("out-fec").innerText = resAI.fecha_pago || "--";
-      document.getElementById("out-hor").innerText = resAI.hora_pago || "--";
-      document.getElementById("out-conv").innerText = resAI.convenio_nombre || "--";
-      document.getElementById("out-ref").innerText = resAI.referencia_numero || "--";
+      if(resAI.producto_nombre && resAI.producto_nombre !== resAI.convenio_nombre) {
+          document.getElementById("row-prod").classList.remove("hidden");
+          document.getElementById("out-prod").innerText = resAI.producto_nombre.toUpperCase();
+      }
+      document.getElementById("out-empresa").innerText = (resAI.empresa || "").toUpperCase();
+      document.getElementById("out-fec").innerText = resAI.fecha_pago;
+      document.getElementById("out-hor").innerText = resAI.hora_pago;
+      document.getElementById("out-conv").innerText = (resAI.convenio_nombre || "").toUpperCase();
+      document.getElementById("out-ref").innerText = resAI.referencia_numero;
       document.getElementById("out-aut").innerText = resAI.codigo_autorizacion || "--";
-      
-      // Limpiar valor de símbolos para el formato moneda
-      let valNum = String(resAI.valor_pagado).replace(/[^0-9]/g, "");
-      document.getElementById("out-val").innerText = "$ " + Number(valNum).toLocaleString("es-CO");
-      
+      if(resAI.numero_recibo_adicional) {
+          document.getElementById("row-recibo").classList.remove("hidden");
+          document.getElementById("out-recibo").innerText = resAI.numero_recibo_adicional;
+      }
+      document.getElementById("out-val").innerText = "$ " + Number(String(resAI.valor_pagado).replace(/[^0-9]/g, "")).toLocaleString("es-CO");
       document.getElementById("btnGuardar").disabled = false;
-    } catch (e) { 
-      console.error("Error detalle:", e);
-      alert("Error al extraer datos. Intenta con una imagen más nítida o centrada."); 
-    }
+    } catch (e) { alert("Error de lectura."); }
     finally { document.getElementById("loader").style.display = "none"; }
   };
 
   document.getElementById("btnGuardar").onclick = async () => {
     const cli = inputCli.value.toUpperCase();
-    if(!cli) return alert("Nombre de cliente requerido.");
+    if(!cli) return alert("Nombre requerido.");
     document.getElementById("loader").style.display = "flex";
     try {
       await addDoc(collection(db, "recibos"), {
-        cliente: cli, 
-        empresa: resAI.empresa, 
-        fecha: resAI.fecha_pago,
-        hora: resAI.hora_pago, 
-        convenio: resAI.convenio_nombre, 
-        referencia: resAI.referencia_numero,
-        autorizacion: resAI.codigo_autorizacion, 
-        valor: resAI.valor_pagado, 
-        timestamp: new Date()
+        cliente: cli, empresa: resAI.empresa, fecha: resAI.fecha_pago,
+        hora: resAI.hora_pago, convenio: resAI.convenio_nombre, 
+        producto: resAI.producto_nombre || "", referencia: resAI.referencia_numero,
+        autorizacion: resAI.codigo_autorizacion, recibo_extra: resAI.numero_recibo_adicional || "",
+        valor: resAI.valor_pagado, timestamp: new Date()
       });
-      alert("✅ Guardado correctamente.");
       location.reload();
-    } catch (e) { alert("Error al guardar en Firebase."); }
+    } catch (e) { alert("Error."); }
     finally { document.getElementById("loader").style.display = "none"; }
   };
 
   window.cargarHistorial = async () => {
     const list = document.getElementById("historial-lista");
     list.innerHTML = "Cargando...";
-    try {
-      const snap = await getDocs(query(collection(db, "recibos"), orderBy("timestamp", "desc")));
-      list.innerHTML = "";
-      snap.forEach(doc => {
-        const r = doc.data();
-        const div = document.createElement("div");
-        div.className = "recibo-item";
-        div.innerHTML = `
-          <div style="font-size:0.9rem;">
-            <b style="color:var(--p);">👤 ${r.cliente}</b><br>
-            <small>🏢 ${r.empresa || ""} | 📅 ${r.fecha}</small><br>
-            <strong style="color:#059669;">$ ${Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
-          </div>
-          <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
-        `;
-        div.querySelector("button").onclick = () => {
-          showSection('registrar');
-          document.getElementById("area-acciones").style.display = "none";
-          document.getElementById("group-cliente").style.display = "none";
-          document.getElementById("btn-volver").style.display = "block";
-          document.getElementById("out-cliente").innerText = r.cliente;
-          document.getElementById("out-empresa").innerText = (r.empresa || "---").toUpperCase();
-          document.getElementById("out-fec").innerText = r.fecha;
-          document.getElementById("out-hor").innerText = r.hora;
-          document.getElementById("out-conv").innerText = r.convenio;
-          document.getElementById("out-ref").innerText = r.referencia;
-          document.getElementById("out-aut").innerText = r.autorizacion;
-          document.getElementById("out-val").innerText = "$ " + Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO");
-        };
-        list.appendChild(div);
-      });
-    } catch (e) { list.innerHTML = "Error al cargar historial."; }
+    const snap = await getDocs(query(collection(db, "recibos"), orderBy("timestamp", "desc")));
+    list.innerHTML = "";
+    snap.forEach(doc => {
+      const r = doc.data();
+      const div = document.createElement("div");
+      div.className = "recibo-item";
+      div.innerHTML = `
+        <div style="font-size:0.9rem;">
+          <b style="color:var(--p);">👤 ${r.cliente}</b><br>
+          <small>🏢 ${r.empresa || ""} | 📅 ${r.fecha}</small><br>
+          <strong style="color:#059669;">$ ${Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
+        </div>
+        <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
+      `;
+      div.querySelector("button").onclick = () => {
+        // --- LIMPIEZA TOTAL ANTES DE MOSTRAR ---
+        document.getElementById("nombre_cliente").value = "";
+        document.getElementById("preview").src = "";
+        document.getElementById("preview").style.display = "none";
+        document.getElementById("btnGuardar").disabled = true;
+        document.getElementById("row-prod").classList.add("hidden");
+        document.getElementById("row-recibo").classList.add("hidden");
+        
+        // --- MOSTRAR SECCIÓN ---
+        showSection('registrar');
+        document.getElementById("area-acciones").classList.add("hidden");
+        document.getElementById("group-cliente").classList.add("hidden");
+        document.getElementById("btn-volver").classList.remove("hidden");
+        
+        // --- CARGAR DATOS DEL HISTORIAL ---
+        document.getElementById("out-cliente").innerText = r.cliente;
+        document.getElementById("out-empresa").innerText = (r.empresa || "").toUpperCase();
+        document.getElementById("out-fec").innerText = r.fecha;
+        document.getElementById("out-hor").innerText = r.hora;
+        document.getElementById("out-conv").innerText = (r.convenio || "").toUpperCase();
+        document.getElementById("out-ref").innerText = r.referencia;
+        document.getElementById("out-aut").innerText = r.autorizacion;
+        
+        if(r.producto && r.producto !== r.convenio) {
+            document.getElementById("row-prod").classList.remove("hidden");
+            document.getElementById("out-prod").innerText = r.producto.toUpperCase();
+        }
+        if(r.recibo_extra) {
+            document.getElementById("row-recibo").classList.remove("hidden");
+            document.getElementById("out-recibo").innerText = r.recibo_extra;
+        }
+        document.getElementById("out-val").innerText = "$ " + Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO");
+      };
+      list.appendChild(div);
+    });
   };
 
   window.showSection = (id) => {
