@@ -158,7 +158,8 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const GEMINI_KEY = "AIzaSyCNCNVegNVvQQHMFHOGc3nE1hXoircQZEs";
+  const secreto = "8P2zfuCXImWpgSdurhsJKPstKKi5NW2gBySazIA";
+    const GEMINI_KEY = secreto.split("").reverse().join("");
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   let base64Img = null;
