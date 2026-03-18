@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MultiEntretenimiento BC - OCR & Historial</title>
+  <title>MultiEntretenimiento BC - Recibos</title>
   
   <script type="importmap">
     {
@@ -109,6 +109,7 @@
 
         <div class="right output">
           <div id="ticket-print" class="ticket">
+              <div style="text-align:center; font-weight:bold; font-size:20px;"> </div>
             <div style="text-align:center; font-weight:bold; font-size:14px;">MULTIENTRETENIMIENTO BC</div>
             <div style="text-align:center; font-size:10px;">CÚCUTA - NORTE DE SANTANDER</div>
             <div class="divider"></div>
@@ -157,7 +158,7 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const GEMINI_KEY = "AIzaSyAqpYb97ZuZKyDcHAikv8cM3fIRe9AkH3k";
+  const GEMINI_KEY = "AIzaSyBvr-mGQFDEyTYYCB2rvCAMiY2P1lLCW4Y";
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   let base64Img = null;
@@ -201,7 +202,7 @@
       document.getElementById("preview").style.display = "block";
       base64Img = reader.result.split(",")[1];
       
-      let segundos = 6;
+      let segundos = 3;
       btnProcesar.disabled = true;
       btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
       const intervalo = setInterval(() => {
@@ -220,7 +221,27 @@
   btnProcesar.onclick = async () => {
     if(!base64Img) return alert("Sube una foto.");
     document.getElementById("loader").style.display = "flex";
-    const instruction = `Analiza la imagen y devuelve estrictamente JSON. Empresa: 'PAGO FÁCIL COOGUASIMALES', 'BEMÓVIL' o 'REFACIL'. Campos: empresa, producto_nombre, convenio_nombre, referencia_numero, valor_pagado, fecha_pago, hora_pago, codigo_autorizacion, numero_recibo_adicional.`;
+    
+    // 3. INSTRUCCIONES CON "DICCIONARIO" PARA CONVENIOS DIFÍCILES
+    const instruction = `Analiza el comprobante de pago y extrae los datos en formato JSON.
+    REGLAS DE ORO PARA CONVENIOS:
+    - Si detectas 'CLARO - CO', escribe: 'CLARO - COMCEL (14)'
+    - Si detectas 'CLARO - HOG', escribe: 'CLARO HOGAR (84)'
+    - Si detectas 'MOVIST', escribe: 'MOVISTAR'
+    
+    Estructura JSON requerida:
+    {
+      "empresa": "PAGO FÁCIL COOGUASIMALES, BEMÓVIL o REFACIL",
+      "producto_nombre": "Nombre del producto",
+      "convenio_nombre": "Nombre del convenio (Aplica las REGLAS DE ORO)",
+      "referencia_numero": "Número de referencia o cuenta",
+      "valor_pagado": 10000,
+      "fecha_pago": "DD/MM/AAAA",
+      "hora_pago": "HH:MM",
+      "codigo_autorizacion": "Número de aprobación/autorización",
+      "numero_recibo_adicional": "Pin o número de recibo si existe"
+    }
+    Responde ÚNICAMENTE con el objeto JSON limpio.`;
     try {
       const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
         method: "POST",
@@ -278,10 +299,11 @@
       const div = document.createElement("div");
       div.className = "recibo-item";
       div.innerHTML = `
-        <div style="font-size:0.9rem;">
-          <b style="color:var(--p);">👤 ${r.cliente}</b><br>
-          <small>🏢 ${r.empresa || ""} | 📅 ${r.fecha}</small><br>
-          <strong style="color:#059669;">$ ${Number(String(r.valor).replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
+        <div class="recibo-info">
+          <b>👤 ${r.cliente}</b><br>
+          <small>📅 ${r.fecha} | 🕒 ${r.hora}</small><br>
+          <span>${r.convenio} - Ref: ${r.referencia}</span><br>
+          <strong style="color:#059669">Valor: $ ${Number(r.valor.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
         </div>
         <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
       `;
