@@ -5,25 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MultiEntretenimiento BC - Recibos</title>
   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <script type="importmap">
     {
       "imports": {
         "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
       }
     }
   </script>
 
   <style>
-    :root { --p: #4F46E5; --bg: #F3F4F6; --card: #ffffff; --line: #E5E7EB; }
+    :root { --p: #4F46E5; --bg: #F3F4F6; --card: #ffffff; --line: #E5E7EB; --wsp: #25D366; }
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; background: var(--bg); font-family: "Segoe UI", sans-serif; color: #111827; }
     
-    nav { background: white; padding: 12px; display: flex; justify-content: center; gap: 10px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    /* Estilos Login */
+    #login-container { display: none; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
+    .login-card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
+
+    nav { background: white; padding: 12px; display: none; justify-content: center; gap: 10px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
     .nav-btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; background: #E5E7EB; color: #6B7280; }
     .nav-btn.active { background: var(--p); color: white; }
+    .btn-logout { background: #fee2e2; color: #ef4444; }
 
-    .container { display: flex; justify-content: center; padding: 20px; }
+    .container { display: none; justify-content: center; padding: 20px; }
     .section { display: none; width: 100%; max-width: 760px; }
     .section.active { display: block; }
 
@@ -32,7 +40,7 @@
 
     .input-group { margin-bottom: 15px; position: relative; }
     .input-group label { display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 5px; color: var(--p); }
-    input[type="text"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 1rem; outline: none; }
+    input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 1rem; outline: none; }
 
     .sugerencias { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--line); border-radius: 0 0 12px 12px; z-index: 100; max-height: 150px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .sug-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #f9f9f9; font-weight: 600; }
@@ -47,6 +55,9 @@
     .btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
     .btn-save { background: #059669; color: white; }
     .btn-dark { background: #111827; color: #fff; }
+    
+    /* Estilo del nuevo botón Compartir */
+    .btn-wsp { background: var(--wsp); color: white; }
 
     .output { border: 1px solid var(--line); border-radius: 20px; background: #fff; overflow: hidden; }
     .ticket { width: 100%; padding: 20px 15px; font-family: ui-monospace, monospace; color: #000; font-size: 12px; line-height: 1.3; }
@@ -76,12 +87,27 @@
   <div style="font-weight:bold; color:var(--p); margin-top:10px;">Cargando...</div>
 </div>
 
-<nav>
+<div id="login-container">
+  <div class="login-card">
+    <img src="https://raw.githubusercontent.com/MultiBC2025/codigosNT-bc/main/Icon_BC_1280x1280x300dpi.png" style="width: 70px; margin-bottom: 15px;">
+    <h2 style="color:var(--p); margin: 0 0 20px 0;">Iniciar Sesión</h2>
+    <div class="input-group">
+      <input type="email" id="email" placeholder="Correo electrónico">
+    </div>
+    <div class="input-group">
+      <input type="password" id="pass" placeholder="Contraseña">
+    </div>
+    <button class="btn btn-primary" id="btn-login-fire">ENTRAR</button>
+  </div>
+</div>
+
+<nav id="app-nav">
   <button class="nav-btn active" id="btn-reg" onclick="showSection('registrar')">📝 REGISTRAR</button>
   <button class="nav-btn" id="btn-hist" onclick="showSection('historial')">📂 HISTORIAL</button>
+  <button class="nav-btn btn-logout" id="btn-logout-fire">🔒 SALIR</button>
 </nav>
 
-<div class="container">
+<div class="container" id="app-container">
   <section id="registrar" class="section active">
     <div class="card">
       <h1 class="title">MultiEntretenimiento BC</h1>
@@ -103,18 +129,28 @@
             <button id="btnProcesar" class="btn btn-primary" disabled>🧠 SELECCIONA UNA IMAGEN</button>
             <button id="btnGuardar" class="btn btn-save" disabled>💾 GUARDAR</button>
           </div>
-          <button onclick="window.print()" class="btn btn-dark">🖨️ IMPRIMIR TICKET</button>
+          
+          <div style="display: flex; gap: 8px;">
+            <button onclick="window.print()" class="btn btn-dark" style="flex: 1;">🖨️ IMPRIMIR</button>
+            <button id="btnCompartir" class="btn btn-wsp" style="flex: 1;">📲 COMPARTIR</button>
+          </div>
+
           <button id="btn-volver" class="btn btn-primary hidden" style="background:#6B7280;" onclick="location.reload()">🔄 NUEVO REGISTRO</button>
         </div>
 
         <div class="right output">
-          <div id="ticket-print" class="ticket">
-              <div style="text-align:center; font-weight:bold; font-size:20px;"> </div>
-            <div style="text-align:center; font-weight:bold; font-size:14px;">MULTIENTRETENIMIENTO BC</div>
-            <div style="text-align:center; font-size:10px;">CÚCUTA - NORTE DE SANTANDER</div>
+          <div id="ticket-print" class="ticket" style="background: white;">
+            <div style="display: flex; align-items: center; justify-content: flex-center; gap: 8px; margin-bottom: 8px;">
+              <img src="https://raw.githubusercontent.com/MultiBC2025/codigosNT-bc/main/Icon_BC_1280x1280x300dpi.png" alt="BC" style="width: 55px; height: auto;" crossorigin="anonymous">
+              <div style="text-align: center;">
+                <div style="font-weight: bold; font-size: 20px; line-height: 1.1;">MULTIENTRETENIMIENTO BC</div>
+                <div style="font-size: 15px; margin-top: 2px;">CÚCUTA - NORTE DE SANTANDER</div>
+              </div>
+            </div>
+            <div style="font-weight: bold; font-size: 18px;width: 100%; text-align: center;">SOPORTE DE PAGO</div>
             <div class="divider"></div>
             <div class="row"><b>CLIENTE:</b> <span id="out-cliente">---</span></div>
-            <div class="row"><b>EMPRESA:</b> <span id="out-empresa">---</span></div>
+            <div class="row"><b>TRX REALIZADA POR:</b> <span id="out-empresa">---</span></div>
             <div class="divider"></div>
             <div class="row"><b>FECHA:</b> <span id="out-fec">--/--/----</span></div>
             <div class="row"><b>HORA:</b> <span id="out-hor">--:--</span></div>
@@ -127,7 +163,7 @@
             <div class="divider"></div>
             <div class="row" style="font-weight:bold; font-size:13px;"><b>TOTAL:</b> <span id="out-val">$ 0</span></div>
             <div class="divider"></div>
-            <div style="text-align:center; font-weight:bold; font-size:13px; line-height:1.2;">PARA CUALQUIER RECLAMO, POR FAVOR CONSERVAR ESTE TICKET ORIGINAL Y CONTACTARSE AL WhatsApp +57 3503938788 "MultiBC"</div>
+            <div style="text-align:center; font-weight:bold; font-size:15px; line-height:1.2;">PARA CUALQUIER RECLAMO, POR FAVOR CONSERVAR ESTE TICKET ORIGINAL Y CONTACTARSE AL WhatsApp +57 3503938788 "MultiBC"</div>
           </div>
         </div>
       </div>
@@ -146,6 +182,7 @@
 <script type="module">
   import { initializeApp } from "firebase/app";
   import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBQS672x-Pe9Idd1eGMbCt5tHoZ8CTu98c",
@@ -158,8 +195,46 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // --- CONTROL DE SESIÓN ---
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      document.getElementById("login-container").style.display = "none";
+      document.getElementById("app-nav").style.display = "flex";
+      document.getElementById("app-container").style.display = "flex";
+      cargarNombresClientes();
+    } else {
+      document.getElementById("login-container").style.display = "flex";
+      document.getElementById("app-nav").style.display = "none";
+      document.getElementById("app-container").style.display = "none";
+    }
+  });
+
+  document.getElementById("btn-login-fire").onclick = async () => {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("pass").value;
+    if(!email || !pass) return alert("Completa los datos");
+    document.getElementById("loader").style.display = "flex";
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (e) { alert("Error: Credenciales inválidas"); }
+    finally { document.getElementById("loader").style.display = "none"; }
+  };
+  
+  [document.getElementById("email"), document.getElementById("pass")].forEach(input => {
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        document.getElementById("btn-login-fire").click();
+      }
+    });
+  });
+
+  document.getElementById("btn-logout-fire").onclick = () => signOut(auth);
+
+  // --- LÓGICA ORIGINAL SIN CAMBIOS ---
   const secreto = "8P2zfuCXImWpgSdurhsJKPstKKi5NW2gBySazIA";
-    const GEMINI_KEY = secreto.split("").reverse().join("");
+  const GEMINI_KEY = secreto.split("").reverse().join("");
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
 
   let base64Img = null;
@@ -194,7 +269,6 @@
       snap.forEach(doc => clientesUnicos.add(doc.data().cliente));
     } catch (e) {}
   }
-  cargarNombresClientes();
 
   document.getElementById("foto").onchange = e => {
     const reader = new FileReader();
@@ -202,7 +276,6 @@
       document.getElementById("preview").src = reader.result;
       document.getElementById("preview").style.display = "block";
       base64Img = reader.result.split(",")[1];
-      
       let segundos = 3;
       btnProcesar.disabled = true;
       btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
@@ -222,14 +295,11 @@
   btnProcesar.onclick = async () => {
     if(!base64Img) return alert("Sube una foto.");
     document.getElementById("loader").style.display = "flex";
-    
-    // 3. INSTRUCCIONES CON "DICCIONARIO" PARA CONVENIOS DIFÍCILES
     const instruction = `Analiza el comprobante de pago y extrae los datos en formato JSON.
     REGLAS DE ORO PARA CONVENIOS:
     - Si detectas 'CLARO - CO', escribe: 'CLARO - COMCEL (14)'
     - Si detectas 'CLARO - HOG', escribe: 'CLARO HOGAR (84)'
     - Si detectas 'MOVIST', escribe: 'MOVISTAR'
-    
     Estructura JSON requerida:
     {
       "empresa": "PAGO FÁCIL COOGUASIMALES, BEMÓVIL o REFACIL",
@@ -252,7 +322,6 @@
       const data = await resp.json();
       const rawText = data.candidates[0].content.parts[0].text;
       resAI = JSON.parse(rawText.match(/\{[\s\S]*\}/)[0]);
-      
       if(resAI.producto_nombre && resAI.producto_nombre !== resAI.convenio_nombre) {
           document.getElementById("row-prod").classList.remove("hidden");
           document.getElementById("out-prod").innerText = resAI.producto_nombre.toUpperCase();
@@ -290,6 +359,36 @@
     finally { document.getElementById("loader").style.display = "none"; }
   };
 
+  // --- NUEVA LÓGICA DE COMPARTIR (Separada y Segura) ---
+  document.getElementById("btnCompartir").onclick = async () => {
+    const ticketElement = document.getElementById("ticket-print");
+    const cliente = document.getElementById("out-cliente").innerText;
+    const valor = document.getElementById("out-val").innerText;
+    const convenio = document.getElementById("out-conv").innerText;
+    const autorizacion = document.getElementById("out-aut").innerText;
+    const ref = document.getElementById("out-ref").innerText;
+
+    if(cliente === "---" || cliente === "") return alert("Primero genera un ticket.");
+    document.getElementById("loader").style.display = "flex";
+
+    try {
+      const canvas = await html2canvas(ticketElement, { useCORS: true, scale: 3, backgroundColor: "#ffffff" });
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], `Recibo_${cliente}.png`, { type: 'image/png' });
+      const texto = `👋 _*Buen día estimado/a,*_\n\n🌟 Somos *MultiEntretenimiento BC* 🌟\n✅ *PAGO EXITOSO*\n\n👤 *Cliente:* ${cliente}\n📝 *Convenio:* ${convenio}\n🪪 *Referencia:* ${ref}\n💵 *Valor:* ${valor}\n🆔 *Autorización:* ${autorizacion}\n\n _¡Gracias por confiar en nosotros!_`;
+
+      if (navigator.share) {
+        await navigator.share({ files: [file], text: texto });
+      } else {
+        alert("Tu navegador no soporta compartir directamente.");
+      }
+    } catch (err) {
+      alert("Error al compartir.");
+    } finally {
+      document.getElementById("loader").style.display = "none";
+    }
+  };
+
   window.cargarHistorial = async () => {
     const list = document.getElementById("historial-lista");
     list.innerHTML = "Cargando...";
@@ -309,21 +408,16 @@
         <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
       `;
       div.querySelector("button").onclick = () => {
-        // --- LIMPIEZA TOTAL ANTES DE MOSTRAR ---
         document.getElementById("nombre_cliente").value = "";
         document.getElementById("preview").src = "";
         document.getElementById("preview").style.display = "none";
         document.getElementById("btnGuardar").disabled = true;
         document.getElementById("row-prod").classList.add("hidden");
         document.getElementById("row-recibo").classList.add("hidden");
-        
-        // --- MOSTRAR SECCIÓN ---
         showSection('registrar');
         document.getElementById("area-acciones").classList.add("hidden");
         document.getElementById("group-cliente").classList.add("hidden");
         document.getElementById("btn-volver").classList.remove("hidden");
-        
-        // --- CARGAR DATOS DEL HISTORIAL ---
         document.getElementById("out-cliente").innerText = r.cliente;
         document.getElementById("out-empresa").innerText = (r.empresa || "").toUpperCase();
         document.getElementById("out-fec").innerText = r.fecha;
@@ -331,7 +425,6 @@
         document.getElementById("out-conv").innerText = (r.convenio || "").toUpperCase();
         document.getElementById("out-ref").innerText = r.referencia;
         document.getElementById("out-aut").innerText = r.autorizacion;
-        
         if(r.producto && r.producto !== r.convenio) {
             document.getElementById("row-prod").classList.remove("hidden");
             document.getElementById("out-prod").innerText = r.producto.toUpperCase();
