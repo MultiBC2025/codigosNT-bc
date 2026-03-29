@@ -346,10 +346,31 @@
         &lt;button onclick=&quot;mostrar('seccionVentas')&quot;&gt;💰 Ventas (Historial)&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('seccionVencimientos')&quot;&gt;📅 Vencimientos&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('adminCuentas')&quot;&gt;⚙️ Admin. Perfiles&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar('seccionLogs')&quot;&gt;📧 Historial de códigos&lt;/button&gt;
         &lt;button onclick=&quot;logout()&quot;&gt;🚪 Cerrar sesión&lt;/button&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;content&quot;&gt;
+
+
+&lt;div id=&quot;seccionLogs&quot; class=&quot;content-section&quot; style=&quot;display:none;&quot;&gt;
+    &lt;h3&gt;📋 Registro de Actividad en Vivo&lt;/h3&gt;
+    &lt;div style=&quot;background:#1a1a1a; padding:10px; border-radius:8px; border:1px solid #333;&quot;&gt;
+        &lt;table style=&quot;width:100%; border-collapse:collapse; color:#eee;&quot;&gt;
+            &lt;thead&gt;
+                &lt;tr style=&quot;background:#252525; border-bottom:2px solid #444; text-align:left;&quot;&gt;
+                    &lt;th style=&quot;padding:12px;&quot;&gt;Fecha&lt;/th&gt;
+                    &lt;th style=&quot;padding:12px;&quot;&gt;Cliente&lt;/th&gt;
+                    &lt;th style=&quot;padding:12px;&quot;&gt;Plataforma&lt;/th&gt;
+                    &lt;th style=&quot;padding:12px;&quot;&gt;Código&lt;/th&gt;
+                &lt;/tr&gt;
+            &lt;/thead&gt;
+            &lt;tbody id=&quot;tablaLogsBody&quot;&gt;
+                &lt;!-- Se llenará automáticamente --&gt;
+            &lt;/tbody&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
 
 &lt;div id=&quot;clientes&quot;&gt;
     &lt;h3&gt;👤 Gestión de Clientes&lt;/h3&gt;
@@ -2472,6 +2493,71 @@ async function actualizarCuentaBase(idCuenta) {
     }
 }
 
+function mostrarSeccion(id) {
+    const secciones = document.querySelectorAll('.content-section');
+    secciones.forEach(s => { s.style.display = 'none'; });
+
+    const activa = document.getElementById(id);
+    if (activa) {
+        activa.style.display = 'block';
+    }
+
+    if (id === 'seccionLogs') {
+        cargarLogsAuditoria();
+    }
+}
+
+(function cargarLogsAuditoria() {
+    const visor = document.getElementById(&quot;tablaLogsBody&quot;);
+    if (!visor) return;
+
+    visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; padding:20px; color:#555;'&gt;Conectando con registro...&lt;/td&gt;&lt;/tr&gt;&quot;;
+
+    db.collection(&quot;logs_codigos&quot;)
+        .orderBy(&quot;timestamp&quot;, &quot;desc&quot;)
+        .limit(50)
+        .onSnapshot((snapshot) =&gt; {
+
+            visor.innerHTML = &quot;&quot;;
+
+            if (snapshot.empty) {
+                visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; padding:20px;'&gt;No hay registros en la base de datos.&lt;/td&gt;&lt;/tr&gt;&quot;;
+                return;
+            }
+
+            snapshot.forEach((doc) =&gt; {
+
+                const item = doc.data();
+                const tr = document.createElement(&quot;tr&quot;);
+                tr.style.borderBottom = &quot;1px solid #2a2a2a&quot;;
+
+                const fondoP = item.plataforma === 'DISNEY' ? '#0063e5' : '#e50914';
+
+                tr.innerHTML = `
+                    &lt;td style='padding:12px;font-weight:bold; font-size:13px; color:#075E35;'&gt;${item.fecha || '---'}&lt;/td&gt;
+                    &lt;td style='padding:12px; font-weight:bold; color:#000;'&gt;${item.nombre_cliente || '---'}&lt;/td&gt;
+                    &lt;td style='padding:12px;'&gt;
+                        &lt;span style='background:${fondoP}; padding:2px 8px; border-radius:4px; font-size:13px; font-weight:bold;'&gt;${item.plataforma || '---'}&lt;/span&gt;
+                    &lt;/td&gt;
+                    &lt;td style='padding:12px; font-family:monospace; color:#11075E; font-weight:bold; font-size:16px;'&gt;${item.codigo_visto || '---'}&lt;/td&gt;
+                `;
+
+                visor.appendChild(tr);
+
+            });
+
+        }, (error) =&gt; {
+
+            console.error(&quot;Error en logs_codigos:&quot;, error);
+
+            visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; color:red; padding:20px;'&gt;⚠️ ERROR: Revisa el índice de Firestore en la consola (F12)&lt;/td&gt;&lt;/tr&gt;&quot;;
+
+        });
+
+})();
+
+
+
 async function eliminarCuentaBase(id) {
     if (confirm(&quot;¿Eliminar esta cuenta base?&quot;)) {
         await db.collection(&quot;cuentas_base&quot;).doc(id).delete();
@@ -2495,6 +2581,7 @@ window.abrirEditorManualLote = function(id) {
     console.log(&quot;Anulando función vieja... Abriendo cargador nuevo para ID:&quot;, id);
     cargarParaModificar(id); // Redirige a la función que SÍ funciona
 };
+
 
 // Si tienes un botón que llama a otra cosa, esto lo redireccionará
 window.editarCuentaSuscripcion = function(id) {
