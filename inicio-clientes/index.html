@@ -341,6 +341,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     const linkNetflix = "https://multibc2025.github.io/codigosNT-bc/"; 
     const linkDisney = "https://onlinealarmkur.com/date/es/#count-days";
@@ -508,9 +509,34 @@ async function cargarPanelCliente(clientesEncontrados) {
             const pName = s.plataforma.toUpperCase();
             let btnLink = "";
             if(s.diff >= 0) {
-                if(pName.includes("NETFLIX")) btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
-                else if(pName.includes("DISNEY")) btnLink = `<a href="${linkDisney}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+            const linkNetflix = "https://multibc2025.github.io/codigosNT-bc/";
+            const linkDisney = "https://multibc2025.github.io/disney/";
+
+            if(pName.includes("NETFLIX")) {
+                // Botón de Autogestión original
+                btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+                
+                // BOTÓN AZUL: Ver Código (Con icono y estilo mejorado)
+                btnLink += `<button type="button" onclick="pedirCodigo('${s.correo}', this)" 
+                            class="btn-autogestion" 
+                            style="background: #0d6efd !important; color: white !important; border: none; margin-left: 5px; font-weight: bold;">
+                            🔑 Ver Código
+                            </button>`;
+                            
+                        
+                
+                // Espacio para el resultado
+                btnLink += `<div id="cod-${s.correo.replace(/[^a-zA-Z0-9]/g, '')}" 
+                            style="font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px;"></div>`;
+            } else if(pName.includes("DISNEY")) {
+                // Botón independiente para Disney
+btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\", this)' class='btn-autogestion'>✨ Código Disney</button>";
+                
+                // Visor específico para Disney
+                btnLink += `<div id="cod-disney-${s.correo.replace(/[^a-zA-Z0-9]/g, '')}" 
+                            style="font-size: 16px; color: #0063e5; font-weight: bold; margin-top: 8px; text-align: center;"></div>`;
             }
+        }
 
             const fechaHoyText = ahoraMomento.toLocaleDateString('es-ES', { day: '2-digit', month: 'long' });
             const mañana = new Date();
@@ -589,6 +615,8 @@ async function cargarPanelCliente(clientesEncontrados) {
                 </div>
             </div>`;
         };
+        
+    
 
         const vigentes = servicios.filter(s => s.diff > 5).sort((a,b) => b.diff - a.diff);
         const proximos = servicios.filter(s => s.diff >= 0 && s.diff <= 5).sort((a,b) => a.diff - b.diff);
@@ -609,6 +637,137 @@ async function cargarPanelCliente(clientesEncontrados) {
 
     } catch (e) { console.error(e); }
 }    
+
+
+function pedirCodigo(correoCliente, boton) {
+    const idVisor = "cod-" + correoCliente.replace(/[^a-zA-Z0-9]/g, '');
+    const visor = document.getElementById(idVisor);
+    
+    // URL VERSIÓN 6 - ULTRA FILTRADO
+    const urlApi = "https://script.google.com/macros/s/AKfycbykvVlFsRDK5pqE4bNPT1f_Yij1SuArTD3W0KhuIlAgM3fXHXHj8zhoL1jntGm_ZFrfNw/exec";
+
+    if (!visor) return;
+
+    visor.innerText = "⏳ Verificando su cuenta...";
+    visor.style.color = "#0d6efd";
+    boton.disabled = true;
+
+    // Sistema Anti-Caché
+    const urlFinal = urlApi + "?correo=" + encodeURIComponent(correoCliente) + "&t=" + new Date().getTime();
+
+    fetch(urlFinal)
+        .then(response => response.text())
+        .then(resultado => {
+            if (resultado === "No encontrado") {
+                visor.innerHTML = "<span style='color:red;'>❌ Sin código reciente de Netflix</span><br><small style='color:#666; font-size:10px;'>Solicítelo de nuevo en su dispositivo</small>";
+            } else if (resultado === "Pendiente...") {
+                visor.innerText = "📩 Procesando correo...";
+                visor.style.color = "orange";
+            } else {
+                // ÉXITO: Mostramos el código
+                visor.innerHTML = "🔑 CÓDIGO ACTUAL:<br><span style='font-size: 24px; color: #198754; font-weight: 800;'>" + resultado + "</span>";
+                
+                // --- REGISTRO SILENCIOSO CON NOMBRE LIMPIO ---
+                try {
+                    const tarjeta = boton.closest('.card-body');
+                    
+                    // Buscamos la fila de información para extraer el nombre real
+                    const infoRow = tarjeta.querySelector('.info-row');
+                    let nombreReal = "Cliente Panel";
+                    
+                    if (infoRow) {
+                        const textoInfo = infoRow.innerText;
+                        // Extraemos lo que está entre "Titular:" y "Correo:"
+                        nombreReal = textoInfo.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
+                    }
+
+                    // Llamamos a la función de registro (Usando 'resultado' que es el código)
+                    registrarEventoCodigo(nombreReal, correoCliente, "NETFLIX", resultado);
+                    
+                } catch(e) { 
+                    console.log("No se pudo registrar el log, pero el código se muestra."); 
+                }
+                
+                // Borrar en 1 minuto (60000ms según tu código original)
+                setTimeout(() => { visor.innerText = ""; }, 60000);
+            }
+            boton.disabled = false;
+        })
+        .catch(error => { 
+            console.error("Error en Multi Bot:", error);
+            visor.innerText = "⚠️ Error de red";
+            boton.disabled = false;
+        });
+}
+
+function pedirCodigoDisney(correoCliente, boton) {
+    const idVisor = "cod-disney-" + correoCliente.replace(/[^a-zA-Z0-9]/g, '');
+    const visor = document.getElementById(idVisor);
+    const urlApiDisney = "https://script.google.com/macros/s/AKfycbwamgpijgwuDY4KZefeg-hjzW3_H3VLBfQKargBTjgoaLqjbO8wxdMWpAQAR3PBksqD0w/exec";
+
+    if (!visor) return;
+    visor.innerText = "⏳ Buscando código...";
+    visor.style.color = "#0063e5";
+    boton.disabled = true;
+
+    fetch(urlApiDisney + "?correo=" + encodeURIComponent(correoCliente) + "&v=" + Math.random())
+        .then(response => response.text())
+        .then(resultado => {
+            if (resultado.includes("No encontrado")) {
+                visor.innerHTML = "<span style='color:red;'>❌ Sin código reciente de Disney</span><br><small style='color:#666; font-size:10px;'>Solicítelo de nuevo en su dispositivo</small>";
+            } else if (resultado === "Pendiente...") {
+                visor.innerText = "📩 Código ya usado...";
+                visor.style.color = "orange";
+            } else {
+                visor.innerHTML = "✨ CÓDIGO ACTUAL:<br><span style='font-size: 28px; color: #0063e5; font-weight: bold;'>" + resultado + "</span>";
+                
+                // --- REGISTRO SILENCIOSO CON NOMBRE LIMPIO ---
+                try {
+                    const tarjeta = boton.closest('.card-body');
+                    
+                    // Buscamos la fila de información para extraer el nombre real
+                    const infoRow = tarjeta.querySelector('.info-row');
+                    let nombreReal = "Cliente Panel";
+                    
+                    if (infoRow) {
+                        const textoInfo = infoRow.innerText;
+                        // Extraemos lo que está entre "Titular:" y "Correo:"
+                        nombreReal = textoInfo.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
+                    }
+
+                    // Llamamos a la función de registro (Usando 'resultado' que es el código)
+                    registrarEventoCodigo(nombreReal, correoCliente, "DISNEY", resultado);
+                    
+                } catch(e) { 
+                    console.log("No se pudo registrar el log, pero el código se muestra."); 
+                }
+
+                setTimeout(() => { visor.innerText = ""; }, 180000);
+            }
+            boton.disabled = false;
+        })
+        .catch(error => {
+            visor.innerText = "⚠️ Error de conexión";
+            boton.disabled = false;
+        });
+}
+
+function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
+    // Usamos 'db' porque es tu variable de Firestore
+    if (typeof db !== 'undefined') {
+        db.collection("logs_codigos").add({
+            nombre_cliente: nombre || "Cliente Panel",
+            correo_cuenta: correo,
+            plataforma: plataforma,
+            codigo_visto: codigo,
+            fecha: new Date().toLocaleString('es-CO'),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => { console.log("✅ Registro guardado en Firestore"); })
+        .catch((error) => { console.error("❌ Error Firestore:", error); });
+    }
+}
+
     
 </script>
 
