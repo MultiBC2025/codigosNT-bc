@@ -500,8 +500,18 @@ async function cargarPanelCliente(clientesEncontrados) {
             <div class="mb-4 text-center text-md-start">
                 <h2 class="fw-bold mb-0">Estado de tus suscripciones</h2>
                 <p class="text-muted">Gestiona tus cuentas y vencimientos</p>
+                 </div>
+            <div id="publi-larga" style="width:100%; text-align:center; margin-bottom:15px;"</p>
             </div>
-            <div class="banner-largo"><p class="mb-0 fw-bold">🚀 PUBLICIDAD: ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p></div>`;
+            <div class="banner-largo"><p class="mb-0 fw-bold">🚀 ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p>
+            
+            
+            
+        
+            
+            </div>
+            
+            </div>`;
 
         const generarHTML = (s) => {
             const fV = s.fin.split('-').reverse().join('/');
@@ -523,11 +533,21 @@ async function cargarPanelCliente(clientesEncontrados) {
                             🔑 Ver Código
                             </button>`;
                             
-                        
+                 // NUEVO BOTÓN UNIFICADO: Busca Temporal y Hogar usando el perfil dinámico
+                 btnLink += `<button type="button" onclick="solicitarAccesoNetflix('${s.correo}','${s.perfil}', this)" 
+                            class="btn-autogestion" 
+                            style="background: #620AA6 !important; color: white !important; border: none; margin-left: 5px; font-weight: bold;">
+                            🔑 Activar Hogar / Código temp
+                            </button>`;
                 
                 // Espacio para el resultado
                 btnLink += `<div id="cod-${s.correo.replace(/[^a-zA-Z0-9]/g, '')}" 
                             style="font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px;"></div>`;
+                            
+                            
+                btnLink += `<div class="contenedor-codigo" style="margin-top:10px;"></div>`;            
+                            
+                            
             } else if(pName.includes("DISNEY")) {
                 // Botón independiente para Disney
 btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\", this)' class='btn-autogestion'>✨ Código Disney</button>";
@@ -625,23 +645,98 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
         const colD = document.createElement("div"); colD.className = "col-lg-6 order-mobile-1";
         const colI = document.createElement("div"); colI.className = "col-lg-6 order-mobile-2";
 
-        colD.innerHTML = "<h6 class='column-title'>✅ SERVICIOS ACTIVOS</h6>" + vigentes.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Activos</div>";
-        colI.innerHTML = "<h6 class='column-title'>⚠️ PRIORIDAD / VENCIDOS</h6>" + proximos.map(generarHTML).join('') + vencidos.map(generarHTML).join('') + "<div class='mini-banner'>Publicidad Renovaciones</div>";
+        colD.innerHTML = "<h6 class='column-title'>✅ SERVICIOS ACTIVOS</h6>" + vigentes.map(generarHTML).join('') + "<div id='publi-activos' style='margin-top:20px;'></div>";
+        colI.innerHTML = "<h6 class='column-title'>⚠️ PRIORIDAD / VENCIDOS</h6>" + proximos.map(generarHTML).join('') + vencidos.map(generarHTML).join('') + "<div id='publi-vencidos' style='margin-top:20px;'></div>";
 
-        const lista = document.getElementById("listaServicios");
+        var lista = document.getElementById("listaServicios");
         lista.innerHTML = "";
         lista.appendChild(colD);
         lista.appendChild(colI);
+
         
-        document.querySelector(".main-footer").classList.add("footer-visible");
+        gestionarPublicidadBC("publi-larga", "promotop");
+        gestionarPublicidadBC("publi-activos", "promo_derecha");
+        gestionarPublicidadBC("publi-vencidos", "promo_izquierda");
 
     } catch (e) { console.error(e); }
 }    
 
+function gestionarPublicidadBC(contenedorId, seccion) {
+    setTimeout(function() {
+        var contenedor = document.getElementById(contenedorId);
+        if (!contenedor) return;
+
+        var USUARIO = "MultiBC2025"; 
+        var REPO = "codigosNT-bc";
+        // URL de la API de GitHub para listar archivos
+        var URL_API = "https://api.github.com/repos/" + USUARIO + "/" + REPO + "/contents/media/" + seccion;
+        // URL para mostrar la imagen (Raw)
+        var URL_RAW = "https://raw.githubusercontent.com/" + USUARIO + "/" + REPO + "/main/media/" + seccion + "/";
+        
+        var imagenesValidas = [];
+
+        // 1. Le preguntamos a GitHub: "¿Qué archivos hay en esta carpeta?"
+        fetch(URL_API)
+            .then(response => response.json())
+            .then(data => {
+                // 2. Filtramos solo los que sean imágenes (.png, .jpg, .jpeg)
+                data.forEach(archivo => {
+                    var nombre = archivo.name.toLowerCase();
+                    if (nombre.endsWith('.png') || nombre.endsWith('.jpg') || nombre.endsWith('.jpeg')) {
+                        // Guardamos la URL completa con el truco anti-caché
+                        imagenesValidas.push(URL_RAW + archivo.name + "?v=" + Date.now());
+                    }
+                });
+
+                if (imagenesValidas.length > 0) {
+                    // 3. Mezclamos para que el orden sea aleatorio
+                    imagenesValidas.sort(() => Math.random() - 0.5);
+                    iniciarVisor();
+                }
+            })
+            .catch(err => console.error("Error leyendo carpeta de publicidad:", err));
+
+        function iniciarVisor() {
+            var idx = 0;
+            function mostrar() {
+                var altoMax = (contenedorId === "publi-larga") ? "250px" : "600px";
+                
+                contenedor.innerHTML = '<img src="' + imagenesValidas[idx] + '" ' +
+                    'style="width:100%; max-height:' + altoMax + '; object-fit: contain; border-radius:12px; display:block; ' +
+                    'margin: auto; user-select: none; -webkit-user-drag: none;" ' +
+                    'oncontextmenu="return false;" onmousedown="return false;" draggable="false">';
+                
+                idx = (idx + 1) % imagenesValidas.length;
+                
+                // Si vuelve al inicio, mezclamos de nuevo para que nunca se repita el orden
+                if (idx === 0) imagenesValidas.sort(() => Math.random() - 0.5);
+            }
+            mostrar();
+            if (imagenesValidas.length > 1) setInterval(mostrar, 5000);
+        }
+    }, 1200);
+}
+
+function revisarFormato(numero, extension) {
+    var img = new Image();
+    var fuente = URL_BASE + numero + extension + "?v=" + Date.now();
+    
+    img.onload = function() {
+        imagenesValidas.push(fuente);
+        verificar();
+    };
+    img.onerror = function() {
+        // ESTA LÍNEA TE DIRÁ POR QUÉ FALLA:
+        console.warn("No se encontró: " + fuente); 
+        verificar();
+    };
+    img.src = fuente;
+}
+
 
 function pedirCodigo(correoCliente, boton) {
     const idVisor = "cod-" + correoCliente.replace(/[^a-zA-Z0-9]/g, '');
-    const visor = document.getElementById(idVisor);
+    const visor = boton.parentElement.querySelector('.contenedor-codigo');
     
     // URL VERSIÓN 6 - ULTRA FILTRADO
     const urlApi = "https://script.google.com/macros/s/AKfycbykvVlFsRDK5pqE4bNPT1f_Yij1SuArTD3W0KhuIlAgM3fXHXHj8zhoL1jntGm_ZFrfNw/exec";
@@ -702,7 +797,7 @@ function pedirCodigo(correoCliente, boton) {
 
 function pedirCodigoDisney(correoCliente, boton) {
     const idVisor = "cod-disney-" + correoCliente.replace(/[^a-zA-Z0-9]/g, '');
-    const visor = document.getElementById(idVisor);
+    const visor = boton.parentElement.querySelector('.contenedor-codigo');
     const urlApiDisney = "https://script.google.com/macros/s/AKfycbwamgpijgwuDY4KZefeg-hjzW3_H3VLBfQKargBTjgoaLqjbO8wxdMWpAQAR3PBksqD0w/exec";
 
     if (!visor) return;
@@ -749,6 +844,101 @@ function pedirCodigoDisney(correoCliente, boton) {
         .catch(error => {
             visor.innerText = "⚠️ Error de conexión";
             boton.disabled = false;
+        });
+}
+
+
+function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
+    const visor = botonPresionado.parentElement.querySelector('.contenedor-codigo');
+    const urlApi = "https://script.google.com/macros/s/AKfycby_vB6FkeA2eq0-CV3-oIA7fpzCINkUDijE0irHC744e3Wzby7-QVaJTuyNhS8nkSoOMg/exec";
+
+    if (!visor) return;
+
+    botonPresionado.disabled = true;
+    const textoOriginal = botonPresionado.innerHTML;
+    botonPresionado.innerHTML = "⏳Buscando correos...";
+    
+    // Cargador sólido en tono ámbar
+    visor.innerHTML = `
+        <div style="margin-top:15px; padding:15px; text-align:center; background: #fffcf0; border-radius: 12px; border: 1px dashed #daa520;">
+            <div style="color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;">🔍 BUSCANDO SOLICITUD PREMIUM...</div>
+        </div>`;
+
+    const urlFinal = urlApi + "?correo=" + encodeURIComponent(correo) + 
+                     "&perfil=" + encodeURIComponent(perfil) + 
+                     "&t=" + new Date().getTime();
+
+    fetch(urlFinal)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let tipoSolicitud = "";
+                let textoBoton = "";
+                if (data.enlace.includes("travel/verify")) {
+                    tipoSolicitud = "CÓDIGO DE ACCESO TEMPORAL";
+                    textoBoton = "OBTENER CÓDIGO";
+                } else {
+                    tipoSolicitud = "ACTUALIZACIÓN DE HOGAR";
+                    textoBoton = "SÍ, LA ENVIÉ YO";
+                }
+                
+                // 2. ENVIAR REGISTRO AL HISTORIAL (Solo si hay éxito)
+                // Usamos los datos que devolvió el servidor para que el registro sea exacto
+                registrarEventoCodigo(data.nombre, correo, "NETFLIX: " + tipoSolicitud, "Solicitud Procesada");
+                
+                visor.innerHTML = `
+                    <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(218, 165, 32, 0.4)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding:20px; border-radius:18px; border: 1px solid rgba(255, 215, 0, 0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.2); margin-top:15px; font-family: 'Segoe UI', Roboto, sans-serif; position: relative;">
+                        
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="background: linear-gradient(90deg, #E50914, #b20710); color: white; display: inline-block; padding: 10px 25px; border-radius: 25px; font-size: 15px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); text-transform: uppercase;">
+                                ${tipoSolicitud}
+                            </div>
+                        </div>
+
+                        <div style="background: #ffffff; padding: 15px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);">
+                            <p style="margin:0 0 12px 0; font-size:13px; color: #5d4037; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <b>SOLICITUD DE:</b> 
+                                <span style="color: #000; font-weight: 900; font-style: italic; font-size: 16px; margin-left: 5px;">
+                                    ${data.nombre}
+                                </span>
+                            </p>
+                            
+                            <p style="margin:0 0 12px 0; font-size:13px; color: #5d4037; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <b>ENVIADA DESDE:</b> 
+                                <span style="color: #000; font-weight: 900; font-style: italic; font-size: 16px; margin-left: 5px;">
+                                    ${data.dispositivo}
+                                </span>
+                            </p>
+                            
+                            <p style="margin:0; font-size:13px; color: #5d4037; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <b>FECHA/HORA:</b> 
+                                <span style="color: #000; font-weight: 900; font-style: italic; font-size: 16px; margin-left: 5px;">
+                                    ${data.fecha}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div style="margin-top:20px;">
+                            <a href="${data.enlace}" target="_blank" rel="noopener noreferrer" 
+                               style="background: #E50914; color:white; display:block; text-align:center; padding:16px; border-radius:10px; text-decoration:none; font-weight:bold; font-size:15px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);">
+                               ${textoBoton}
+                            </a>
+                        </div>
+                    </div>`;
+            } else {
+                visor.innerHTML = `
+                    <div style="background: #fff5f5; color:#E50914; font-size:12px; margin-top:15px; padding:15px; border:1px solid #E50914; border-radius:12px; text-align: center;">
+                        <b>⚠️ SIN RESULTADOS</b><br>
+                        <span style="color:#555;">No hay solicitudes nuevas para este perfil.</span>
+                    </div>`;
+            }
+        })
+        .catch(error => {
+            visor.innerHTML = "<div style='color:#E50914; font-size:11px; margin-top:15px; text-align:center;'>⚠️ ERROR DE CONEXIÓN.</div>";
+        })
+        .finally(() => {
+            botonPresionado.disabled = false;
+            botonPresionado.innerHTML = textoOriginal;
         });
 }
 
