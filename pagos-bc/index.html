@@ -22,7 +22,6 @@
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; background: var(--bg); font-family: "Segoe UI", sans-serif; color: #111827; }
     
-    /* Estilos Login */
     #login-container { display: none; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg); }
     .login-card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
 
@@ -56,8 +55,8 @@
     .btn-save { background: #059669; color: white; }
     .btn-dark { background: #111827; color: #fff; }
     
-    /* Estilo del nuevo botón Compartir */
     .btn-wsp { background: var(--wsp); color: white; }
+    .btn-paste { background: #6366f1; color: white; margin-top: 10px; } /* Estilo agregado */
 
     .output { border: 1px solid var(--line); border-radius: 20px; background: #fff; overflow: hidden; }
     .ticket { width: 100%; padding: 20px 15px; font-family: ui-monospace, monospace; color: #000; font-size: 12px; line-height: 1.3; }
@@ -126,6 +125,7 @@
               <img id="preview" />
               <input type="file" id="foto" accept="image/*" style="display:none" />
             </div>
+            <button type="button" id="btnPegar" class="btn btn-paste">📋 PEGAR IMAGEN</button>
             <button id="btnProcesar" class="btn btn-primary" disabled>🧠 SELECCIONA UNA IMAGEN</button>
             <button id="btnGuardar" class="btn btn-save" disabled>💾 GUARDAR</button>
           </div>
@@ -198,7 +198,6 @@
   const db = getFirestore(app);
   const auth = getAuth(app);
 
-  // --- CONTROL DE SESIÓN ---
   onAuthStateChanged(auth, (user) => {
     if (user) {
       document.getElementById("login-container").style.display = "none";
@@ -225,15 +224,12 @@
   
   [document.getElementById("email"), document.getElementById("pass")].forEach(input => {
     input.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        document.getElementById("btn-login-fire").click();
-      }
+      if (e.key === "Enter") document.getElementById("btn-login-fire").click();
     });
   });
 
   document.getElementById("btn-logout-fire").onclick = () => signOut(auth);
 
-  // --- LÓGICA ORIGINAL SIN CAMBIOS ---
   const secreto = "8P2zfuCXImWpgSdurhsJKPstKKi5NW2gBySazIA";
   const GEMINI_KEY = secreto.split("").reverse().join("");
   const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent";
@@ -245,6 +241,43 @@
   const inputCli = document.getElementById("nombre_cliente");
   const sugBox = document.getElementById("sugerencias-box");
   const btnProcesar = document.getElementById("btnProcesar");
+  const previewImg = document.getElementById("preview");
+
+  // LOGICA PARA PROCESAR IMAGEN (Común para archivo y pegar)
+  function procesarImagen(data) {
+    previewImg.src = data;
+    previewImg.style.display = "block";
+    base64Img = data.split(",")[1];
+    let segundos = 3;
+    btnProcesar.disabled = true;
+    btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
+    const intervalo = setInterval(() => {
+      segundos--;
+      if(segundos > 0) btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
+      else {
+        clearInterval(intervalo);
+        btnProcesar.disabled = false;
+        btnProcesar.innerText = "🧠 EXTRAER DATOS";
+      }
+    }, 1000);
+  }
+
+  // BOTÓN PEGAR
+  document.getElementById("btnPegar").onclick = async () => {
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        if (item.types.some(t => t.startsWith("image/"))) {
+          const blob = await item.getType(item.types.find(t => t.startsWith("image/")));
+          const reader = new FileReader();
+          reader.onload = (e) => procesarImagen(e.target.result);
+          reader.readAsDataURL(blob);
+          return;
+        }
+      }
+      alert("No se encontró imagen en el portapapeles.");
+    } catch(e) { alert("Error al pegar: asegúrate de dar permisos."); }
+  };
 
   inputCli.oninput = () => {
     const val = inputCli.value.toUpperCase();
@@ -273,49 +306,37 @@
 
   document.getElementById("foto").onchange = e => {
     const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById("preview").src = reader.result;
-      document.getElementById("preview").style.display = "block";
-      base64Img = reader.result.split(",")[1];
-      let segundos = 3;
-      btnProcesar.disabled = true;
-      btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
-      const intervalo = setInterval(() => {
-        segundos--;
-        if(segundos > 0) btnProcesar.innerText = `⏳ ESPERA ${segundos}s...`;
-        else {
-          clearInterval(intervalo);
-          btnProcesar.disabled = false;
-          btnProcesar.innerText = "🧠 EXTRAER DATOS";
-        }
-      }, 1000);
-    };
+    reader.onload = () => procesarImagen(reader.result);
     reader.readAsDataURL(e.target.files[0]);
   };
 
   btnProcesar.onclick = async () => {
     if(!base64Img) return alert("Sube una foto.");
     document.getElementById("loader").style.display = "flex";
+    
     const instruction = `Analiza el comprobante de pago y extrae los datos en formato JSON.
-    REGLAS DE ORO PARA CONVENIOS:
+    REGLAS DE ORO:
     - Si detectas 'CLARO - CO', escribe: 'CLARO - COMCEL (14)'
     - Si detectas 'CLARO - HOG', escribe: 'CLARO HOGAR (84)'
     - Si detectas 'MOVIST', escribe: 'MOVISTAR'
+    - FECHA: EL AÑO SIEMPRE DEBE SER 2026. Si el comprobante dice '23', '24' o '25', ignóralo y escribe '2026' obligatoriamente. La fecha debe seguir el formato DD/MM/2026.
+
     Estructura JSON requerida:
     {
-      "empresa": "PAGO FÁCIL COOGUASIMALES, BEMÓVIL o REFACIL",
+      "empresa": "PAGO FACIL, COOGUASIMALES, BEMÓVIL o REFACIL",
       "producto_nombre": "Nombre del producto",
       "convenio_nombre": "Nombre del convenio (Aplica las REGLAS DE ORO)",
       "referencia_numero": "Número de referencia o cuenta",
-      "valor_pagado": 10000,
-      "fecha_pago": "DD/MM/AAAA",
+      "valor_pagado": "10000",
+      "fecha_pago": "DD/MM/2026",
       "hora_pago": "HH:MM",
       "codigo_autorizacion": "Número de aprobación/autorización",
       "numero_recibo_adicional": "Pin o número de recibo si existe"
     }
-    Responde ÚNICAMENTE con el objeto JSON limpio.`;
+    Responde ÚNICAMENTE con el objeto JSON.`;
+
     try {
-      const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
+      const resp = await fetch(`${GEMINI_KEY}?key=${GEMINI_KEY}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents: [{ parts: [{ text: instruction }, { inline_data: { mime_type: "image/png", data: base64Img } }]}]})
@@ -323,21 +344,29 @@
       const data = await resp.json();
       const rawText = data.candidates[0].content.parts[0].text;
       resAI = JSON.parse(rawText.match(/\{[\s\S]*\}/)[0]);
+      
       if(resAI.producto_nombre && resAI.producto_nombre !== resAI.convenio_nombre) {
           document.getElementById("row-prod").classList.remove("hidden");
           document.getElementById("out-prod").innerText = resAI.producto_nombre.toUpperCase();
       }
+      
       document.getElementById("out-empresa").innerText = (resAI.empresa || "").toUpperCase();
       document.getElementById("out-fec").innerText = resAI.fecha_pago;
       document.getElementById("out-hor").innerText = resAI.hora_pago;
       document.getElementById("out-conv").innerText = (resAI.convenio_nombre || "").toUpperCase();
       document.getElementById("out-ref").innerText = resAI.referencia_numero;
       document.getElementById("out-aut").innerText = resAI.codigo_autorizacion || "--";
+      
       if(resAI.numero_recibo_adicional) {
           document.getElementById("row-recibo").classList.remove("hidden");
           document.getElementById("out-recibo").innerText = resAI.numero_recibo_adicional;
       }
-      document.getElementById("out-val").innerText = "$ " + Number(String(resAI.valor_pagado).replace(/[^0-9]/g, "")).toLocaleString("es-CO");
+
+      // Mantenemos la lógica de valor con ceros intacta
+      let rawVal = String(resAI.valor_pagado).replace(/[^0-9]/g, "");
+      let formattedVal = rawVal.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      document.getElementById("out-val").innerText = "$ " + formattedVal;
+      
       document.getElementById("btnGuardar").disabled = false;
     } catch (e) { alert("Error de lectura."); }
     finally { document.getElementById("loader").style.display = "none"; }
@@ -360,34 +389,19 @@
     finally { document.getElementById("loader").style.display = "none"; }
   };
 
-  // --- NUEVA LÓGICA DE COMPARTIR (Separada y Segura) ---
   document.getElementById("btnCompartir").onclick = async () => {
     const ticketElement = document.getElementById("ticket-print");
     const cliente = document.getElementById("out-cliente").innerText;
-    const valor = document.getElementById("out-val").innerText;
-    const convenio = document.getElementById("out-conv").innerText;
-    const autorizacion = document.getElementById("out-aut").innerText;
-    const ref = document.getElementById("out-ref").innerText;
-
     if(cliente === "---" || cliente === "") return alert("Primero genera un ticket.");
     document.getElementById("loader").style.display = "flex";
-
     try {
       const canvas = await html2canvas(ticketElement, { useCORS: true, scale: 3, backgroundColor: "#ffffff" });
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       const file = new File([blob], `Recibo_${cliente}.png`, { type: 'image/png' });
-      const texto = `👋 _*Buen día estimado/a,*_\n\n🌟 Somos *MultiEntretenimiento BC* 🌟\n✅ *PAGO EXITOSO*\n\n👤 *Cliente:* ${cliente}\n📝 *Convenio:* ${convenio}\n🪪 *Referencia:* ${ref}\n💵 *Valor:* ${valor}\n🆔 *Autorización:* ${autorizacion}\n\n _¡Gracias por confiar en nosotros!_`;
-
-      if (navigator.share) {
-        await navigator.share({ files: [file], text: texto });
-      } else {
-        alert("Tu navegador no soporta compartir directamente.");
-      }
-    } catch (err) {
-      alert("Error al compartir.");
-    } finally {
-      document.getElementById("loader").style.display = "none";
-    }
+      if (navigator.share) await navigator.share({ files: [file] });
+      else alert("Navegador no soporta compartir.");
+    } catch (err) { alert("Error al compartir."); }
+    finally { document.getElementById("loader").style.display = "none"; }
   };
 
   window.cargarHistorial = async () => {
@@ -409,9 +423,7 @@
         <button class="btn-reprint-mini">🖨️ REIMPRIMIR</button>
       `;
       div.querySelector("button").onclick = () => {
-        document.getElementById("nombre_cliente").value = "";
-        document.getElementById("preview").src = "";
-        document.getElementById("preview").style.display = "none";
+        inputCli.value = ""; previewImg.src = ""; previewImg.style.display = "none";
         document.getElementById("btnGuardar").disabled = true;
         document.getElementById("row-prod").classList.add("hidden");
         document.getElementById("row-recibo").classList.add("hidden");
