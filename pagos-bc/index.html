@@ -525,7 +525,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from
     div.innerHTML = `
         <div>
             <b>💰 ${data.convenio || "---"}</b> - Ref: ${data.referencia || "---"}<br>
-            <small>Fecha: ${data.fecha || ""} ${data.hora || ""} Por valor de: ${data.compraNeta || ""}</small>
+            <small><b>Fecha:</b> ${data.fecha || ""} ${data.hora || ""}  💲 <b>Por valor de:</b> ${data.compraNeta || ""}</small>
         </div>
         <button class="btn-save" onclick="window.confirmarRecibo('${docSnap.id}')">✅</button>
         <button class="btn-logout" onclick="window.descartarRecibo('${docSnap.id}')">❌</button>
