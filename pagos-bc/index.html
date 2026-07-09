@@ -169,6 +169,12 @@
         </div>
       </div>
     </div>
+    
+    <div class="card" style="margin-top:20px;">
+    <h2 class="title" style="font-size: 1.2rem;">📥 LISTA DE ESPERA</h2>
+    <div id="lista-espera"></div>
+</div>
+</div>
   </section>
 
   <section id="historial" class="section">
@@ -182,8 +188,8 @@
 
 <script type="module">
   import { initializeApp } from "firebase/app";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy } from "firebase/firestore";
-  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot, deleteDoc, doc, updateDoc, getDoc, where, setDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBQS672x-Pe9Idd1eGMbCt5tHoZ8CTu98c",
@@ -200,6 +206,8 @@
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
+        cargarNombresClientes();
+    window.escucharRecibosPendientes();
       document.getElementById("login-container").style.display = "none";
       document.getElementById("app-nav").style.display = "flex";
       document.getElementById("app-container").style.display = "flex";
@@ -282,12 +290,18 @@
   inputCli.oninput = () => {
     const val = inputCli.value.toUpperCase();
     document.getElementById("out-cliente").innerText = val || "---";
-    const sugeridos = Array.from(clientesUnicos).filter(c => c.includes(val));
+    
+    // Convertimos el Set a Array para filtrar
+    const listaClientes = Array.from(clientesUnicos);
+    const sugeridos = listaClientes.filter(c => c.includes(val));
+    
     if(val.length > 0 && sugeridos.length > 0) {
-      sugBox.innerHTML = sugeridos.map(s => `<div class="sug-item">${s}</div>`).join('');
-      sugBox.style.display = "block";
-    } else { sugBox.style.display = "none"; }
-  };
+        sugBox.innerHTML = sugeridos.map(s => `<div class="sug-item">${s}</div>`).join('');
+        sugBox.style.display = "block";
+    } else { 
+        sugBox.style.display = "none"; 
+    }
+};
 
   sugBox.onclick = (e) => {
     if(e.target.classList.contains("sug-item")) {
@@ -299,10 +313,18 @@
 
   async function cargarNombresClientes() {
     try {
-      const snap = await getDocs(collection(db, "recibos"));
-      snap.forEach(doc => clientesUnicos.add(doc.data().cliente));
-    } catch (e) {}
-  }
+        const snap = await getDocs(collection(db, "recibos"));
+        clientesUnicos.clear(); // Limpiamos antes de llenar para evitar duplicados
+        snap.forEach(doc => {
+            if(doc.data().cliente) {
+                clientesUnicos.add(doc.data().cliente.toUpperCase());
+            }
+        });
+        console.log("Clientes cargados:", clientesUnicos.size); // Revisa esto en la consola F12
+    } catch (e) {
+        console.error("Error al cargar clientes:", e);
+    }
+}
 
   document.getElementById("foto").onchange = e => {
     const reader = new FileReader();
@@ -336,12 +358,15 @@
     Responde ÚNICAMENTE con el objeto JSON.`;
 
     try {
-      const resp = await fetch(`${GEMINI_KEY}?key=${GEMINI_KEY}`, {
+      const resp = await fetch(`${GEMINI_URL}?key=${GEMINI_KEY}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ contents: [{ parts: [{ text: instruction }, { inline_data: { mime_type: "image/png", data: base64Img } }]}]})
       });
       const data = await resp.json();
+      if (!data.candidates || !data.candidates[0].content) {
+        throw new Error("Respuesta inválida de la IA");
+      }
       const rawText = data.candidates[0].content.parts[0].text;
       resAI = JSON.parse(rawText.match(/\{[\s\S]*\}/)[0]);
       
@@ -373,21 +398,35 @@
   };
 
   document.getElementById("btnGuardar").onclick = async () => {
-    const cli = inputCli.value.toUpperCase();
-    if(!cli) return alert("Nombre requerido.");
+    const cli = document.getElementById("nombre_cliente").value.toUpperCase();
+    if(!cli) return alert("Nombre de cliente requerido.");
+
     document.getElementById("loader").style.display = "flex";
     try {
-      await addDoc(collection(db, "recibos"), {
-        cliente: cli, empresa: resAI.empresa, fecha: resAI.fecha_pago,
-        hora: resAI.hora_pago, convenio: resAI.convenio_nombre, 
-        producto: resAI.producto_nombre || "", referencia: resAI.referencia_numero,
-        autorizacion: resAI.codigo_autorizacion, recibo_extra: resAI.numero_recibo_adicional || "",
-        valor: resAI.valor_pagado, timestamp: new Date()
-      });
-      location.reload();
-    } catch (e) { alert("Error."); }
-    finally { document.getElementById("loader").style.display = "none"; }
-  };
+        // Tomamos los datos directamente de lo que se ve en el ticket
+        const nuevoRecibo = {
+            cliente: cli,
+            empresa: document.getElementById("out-empresa").innerText,
+            fecha: document.getElementById("out-fec").innerText,
+            hora: document.getElementById("out-hor").innerText,
+            convenio: document.getElementById("out-conv").innerText,
+            referencia: document.getElementById("out-ref").innerText,
+            autorizacion: document.getElementById("out-aut").innerText,
+            recibo_extra: document.getElementById("out-recibo").innerText,
+            valor: document.getElementById("out-val").innerText,
+            timestamp: new Date()
+        };
+
+        await addDoc(collection(db, "recibos"), nuevoRecibo);
+        
+        alert("Guardado exitosamente en el historial.");
+        location.reload(); // Recarga para limpiar
+    } catch (e) {
+        alert("Error al guardar: " + e.message);
+    } finally {
+        document.getElementById("loader").style.display = "none";
+    }
+};
 
   document.getElementById("btnCompartir").onclick = async () => {
     const ticketElement = document.getElementById("ticket-print");
@@ -464,6 +503,93 @@
     const f = e.target.value.toUpperCase();
     document.querySelectorAll(".recibo-item").forEach(i => i.style.display = i.innerText.toUpperCase().includes(f) ? "flex" : "none");
   };
+  
+  window.escucharRecibosPendientes = () => {
+    const q = query(collection(db, "lista_espera"));
+    onSnapshot(q, (snapshot) => {
+        const contenedor = document.getElementById("lista-espera");
+        if (!contenedor) return; 
+        contenedor.innerHTML = "";
+        
+        snapshot.forEach((docSnap) => {
+    const data = docSnap.data();
+    
+    // Si el campo 'visible' existe y es false, salta este elemento
+    if (data.visible === false) {
+        return;
+    }
+    
+    // Si llegamos aquí es porque es visible (true o no tiene el campo aún)
+    const div = document.createElement("div");
+    div.className = "recibo-item";
+    div.innerHTML = `
+        <div>
+            <b>💰 ${data.convenio || "---"}</b> - Ref: ${data.referencia || "---"}<br>
+            <small>Fecha: ${data.fecha || ""} ${data.hora || ""} Por valor de: ${data.compraNeta || ""}</small>
+        </div>
+        <button class="btn-save" onclick="window.confirmarRecibo('${docSnap.id}')">✅</button>
+        <button class="btn-logout" onclick="window.descartarRecibo('${docSnap.id}')">❌</button>
+    `;
+    document.getElementById("lista-espera").appendChild(div);
+});
+    });
+};
+
+window.descartarRecibo = async (id) => {
+    try {
+        // Referencia directa al documento
+        const docRef = doc(db, "lista_espera", id);
+        
+        // Actualizamos el campo visible a false
+        await updateDoc(docRef, {
+            visible: false
+        });
+        
+        console.log("Recibo descartado correctamente");
+    } catch (e) {
+        // Si el error es porque el documento no existe o algo falló, lo veremos en consola
+        console.error("Error al descartar:", e);
+        alert("Error al descartar: " + e.message);
+    }
+};
+
+
+window.confirmarRecibo = async (id) => {
+    document.getElementById("loader").style.display = "flex";
+    try {
+        const docRef = doc(db, "lista_espera", id);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            const d = docSnap.data();
+            
+            // Llenar los campos (Lógica visual)
+            document.getElementById("out-empresa").innerText = "Pago Fácil - Coguasimales";
+            document.getElementById("out-fec").innerText = d.fecha || "---";
+            document.getElementById("out-hor").innerText = d.hora || "---";
+            document.getElementById("out-conv").innerText = (d.convenio || "---").toUpperCase();
+            document.getElementById("out-ref").innerText = d.referencia || "---";
+            document.getElementById("row-aut").classList.remove("hidden");
+            document.getElementById("out-aut").innerText = d.codigoAutorizacion || "--";
+            document.getElementById("row-recibo").classList.remove("hidden");
+            document.getElementById("out-recibo").innerText = d.idTransaccion || d.idArchivo || "---";
+            document.getElementById("out-val").innerText = d.compraNeta || "$ 0";
+
+            // HABILITAR EL BOTÓN DE GUARDAR
+            document.getElementById("btnGuardar").disabled = false; 
+            await updateDoc(docRef, {
+                visible: false
+            });
+
+            alert("Datos cargados. Ahora puedes presionar el botón GUARDAR.");
+        }
+    } catch (e) {
+        alert("Error al cargar: " + e.message);
+    } finally {
+        document.getElementById("loader").style.display = "none";
+    }
+};
+
 </script>
 </body>
 </html>
