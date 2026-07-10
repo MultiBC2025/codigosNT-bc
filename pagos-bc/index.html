@@ -428,20 +428,43 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from
     }
 };
 
-  document.getElementById("btnCompartir").onclick = async () => {
+document.getElementById("btnCompartir").onclick = async () => {
     const ticketElement = document.getElementById("ticket-print");
     const cliente = document.getElementById("out-cliente").innerText;
-    if(cliente === "---" || cliente === "") return alert("Primero genera un ticket.");
+    const valor = document.getElementById("out-val").innerText;
+    const convenio = document.getElementById("out-conv").innerText;
+    const autorizacion = document.getElementById("out-aut").innerText;
+    const ref = document.getElementById("out-ref").innerText;
+
+    if (cliente === "---" || cliente === "") return alert("Primero genera un ticket.");
     document.getElementById("loader").style.display = "flex";
+
     try {
-      const canvas = await html2canvas(ticketElement, { useCORS: true, scale: 3, backgroundColor: "#ffffff" });
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-      const file = new File([blob], `Recibo_${cliente}.png`, { type: 'image/png' });
-      if (navigator.share) await navigator.share({ files: [file] });
-      else alert("Navegador no soporta compartir.");
-    } catch (err) { alert("Error al compartir."); }
-    finally { document.getElementById("loader").style.display = "none"; }
-  };
+        const canvas = await html2canvas(ticketElement, { useCORS: true, scale: 3, backgroundColor: "#ffffff" });
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], `Recibo_${cliente}.png`, { type: 'image/png' });
+
+        const texto = `👋 Buen día estimado/a,\n\n🌟 Somos *MultiEntretenimiento BC*\n\n✅ *PAGO EXITOSO*\n\n👤 *Cliente:* ${cliente}\n📝 *Convenio:* ${convenio}\n🔢 *Referencia:* ${ref}\n💰 *Valor:* ${valor}\n🆔 *Autorización:* ${autorizacion}\n\n¡Gracias por confiar en nosotros!`;
+
+        if (navigator.share) {
+            try {
+                // Intentamos compartir ambos
+                await navigator.share({ files: [file], text: texto, title: 'Recibo de Pago' });
+            } catch (shareErr) {
+                console.warn("No se pudo compartir texto + archivo, intentando solo archivo:", shareErr);
+                // Si falla (muy común), intentamos compartir solo el archivo
+                await navigator.share({ files: [file] });
+            }
+        } else {
+            alert("Tu navegador no soporta compartir directamente.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error al compartir el ticket.");
+    } finally {
+        document.getElementById("loader").style.display = "none";
+    }
+};
 
   window.cargarHistorial = async () => {
     const list = document.getElementById("historial-lista");
