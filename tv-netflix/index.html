@@ -1,1 +1,81 @@
-<h1>Hola, la página sí funciona</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Acceso - MultiBC</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f4f4f9; }
+        .card { background: white; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 2px 2px 10px #ccc; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="app" class="card">
+    <div id="contenido">
+        <h1>Cargando...</h1>
+    </div>
+</div>
+
+<script>
+    // Tu configuración integrada
+    const firebaseConfig = { 
+        apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8", 
+        authDomain: "panel-cuentas-clientes.firebaseapp.com", 
+        projectId: "panel-cuentas-clientes" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idVenta = urlParams.get('id');
+
+    if (idVenta) {
+        cargarPanel(idVenta);
+    } else {
+        mostrarFormulario();
+    }
+
+    function mostrarFormulario() {
+        document.getElementById('contenido').innerHTML = `
+            <h3>Acceso de Cliente</h3>
+            <p>Ingresa el código de tu servicio:</p>
+            <input type="text" id="codigoInput" placeholder="Ej: 07dM9K1DVc...">
+            <button onclick="buscarPorCodigo()">Ver mi Servicio</button>
+        `;
+    }
+
+    async function buscarPorCodigo() {
+        const codigo = document.getElementById('codigoInput').value;
+        if(codigo) window.location.href = `?id=${codigo}`;
+    }
+
+    async function cargarPanel(id) {
+        try {
+            const doc = await db.collection("cuentas").doc(id).get();
+            if (!doc.exists) {
+                document.getElementById('contenido').innerHTML = "<h3>Error: Código no válido.</h3><a href='.'>Intentar de nuevo</a>";
+                return;
+            }
+            const d = doc.data();
+            document.getElementById('contenido').innerHTML = `
+                <h2>Servicio: ${d.plataforma}</h2>
+                <p><b>Correo:</b> ${d.correo}</p>
+                <p><b>Clave:</b> ${d.clave}</p>
+                <p><b>Perfil:</b> ${d.perfil}</p>
+                <p><b>PIN:</b> ${d.pin || "Sin PIN"}</p>
+                <hr>
+                <button onclick="window.print()">Imprimir/Guardar</button>
+            `;
+        } catch (e) {
+            document.getElementById('contenido').innerHTML = "Error al conectar con el servidor.";
+        }
+    }
+</script>
+</body>
+</html>
