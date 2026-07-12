@@ -2,28 +2,28 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Acceso - MultiBC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Servicio - MultiBC</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f4f4f9; }
-        .card { background: white; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 100%; max-width: 400px; box-shadow: 2px 2px 10px #ccc; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f4f4f9; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .header-info { font-size: 12px; color: #666; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #e50914; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #b20710; }
+        .footer { margin-top: 20px; font-size: 12px; color: #888; }
     </style>
 </head>
 <body>
 
-<div id="app" class="card">
-    <div id="contenido">
-        <h1>Cargando...</h1>
-    </div>
+<div class="card" id="contenido">
+    <h1>Cargando...</h1>
 </div>
 
 <script>
-    // Tu configuración integrada
     const firebaseConfig = { 
         apiKey: "AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8", 
         authDomain: "panel-cuentas-clientes.firebaseapp.com", 
@@ -36,7 +36,7 @@
     const idVenta = urlParams.get('id');
 
     if (idVenta) {
-        cargarPanel(idVenta);
+        iniciarEscucha(idVenta);
     } else {
         mostrarFormulario();
     }
@@ -44,8 +44,7 @@
     function mostrarFormulario() {
         document.getElementById('contenido').innerHTML = `
             <h3>Acceso de Cliente</h3>
-            <p>Ingresa el código de tu servicio:</p>
-            <input type="text" id="codigoInput" placeholder="Ej: 07dM9K1DVc...">
+            <input type="text" id="codigoInput" placeholder="Ingresa tu código de servicio">
             <button onclick="buscarPorCodigo()">Ver mi Servicio</button>
         `;
     }
@@ -55,26 +54,55 @@
         if(codigo) window.location.href = `?id=${codigo}`;
     }
 
-    async function cargarPanel(id) {
-        try {
-            const doc = await db.collection("cuentas").doc(id).get();
+    function iniciarEscucha(id) {
+        db.collection("cuentas").doc(id).onSnapshot((doc) => {
             if (!doc.exists) {
-                document.getElementById('contenido').innerHTML = "<h3>Error: Código no válido.</h3><a href='.'>Intentar de nuevo</a>";
+                document.getElementById('contenido').innerHTML = "<h3>Código no válido.</h3><a href='.'>Volver</a>";
                 return;
             }
-            const d = doc.data();
-            document.getElementById('contenido').innerHTML = `
-                <h2>Servicio: ${d.plataforma}</h2>
-                <p><b>Correo:</b> ${d.correo}</p>
-                <p><b>Clave:</b> ${d.clave}</p>
-                <p><b>Perfil:</b> ${d.perfil}</p>
-                <p><b>PIN:</b> ${d.pin || "Sin PIN"}</p>
-                <hr>
-                <button onclick="window.print()">Imprimir/Guardar</button>
-            `;
-        } catch (e) {
-            document.getElementById('contenido').innerHTML = "Error al conectar con el servidor.";
+            renderizar(doc.data(), doc.id);
+        });
+    }
+
+    function renderizar(d, id) {
+        const contenido = document.getElementById('contenido');
+        const fFin = new Date(d.fin);
+        const dias = Math.ceil((fFin - new Date()) / (1000 * 60 * 60 * 24));
+        
+        const header = `<div class="header-info">Inicio: ${d.inicio} | Fin: ${d.fin} | Días: ${dias}</div>`;
+
+        switch(d.estado) {
+            case "desconectado":
+                contenido.innerHTML = `${header}
+                    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" style="width:80px;">
+                    <h2>Hola, ${d.perfil_etiqueta ? d.perfil_etiqueta.split('. ')[1] : 'Cliente'}</h2>
+                    <p>Confirma el código que aparece en tu TV Netflix:</p>
+                    <input type="text" id="codeTv" placeholder="--- ---">
+                    <button onclick="actualizarEstado('${id}', 'procesando')">Continuar</button>`;
+                break;
+            case "procesando":
+                contenido.innerHTML = `<h3>Cargando, por favor espera...</h3>`;
+                break;
+            case "tv-activo":
+                contenido.innerHTML = `${header}<h2>¡Configurado!</h2>
+                    <p><b>Perfil:</b> ${d.perfil}</p>
+                    <p><b>PIN:</b> ${d.pin}</p>`;
+                break;
+            case "error-netflix":
+                contenido.innerHTML = `<h3>Código incorrecto</h3><p>Intenta de nuevo.</p>
+                    <button onclick="actualizarEstado('${id}', 'desconectado')">Continuar</button>`;
+                break;
+            case "error-conexion":
+                contenido.innerHTML = `<h3>Servidor caído</h3><p>Intenta en 1 minuto.</p>
+                    <button onclick="actualizarEstado('${id}', 'desconectado')">Aceptar</button>`;
+                break;
         }
+    }
+
+    async function actualizarEstado(id, est) {
+        const payload = { estado: est };
+        if(est === 'procesando') payload.codigo_tv = document.getElementById('codeTv').value;
+        await db.collection("cuentas").doc(id).update(payload);
     }
 </script>
 </body>
