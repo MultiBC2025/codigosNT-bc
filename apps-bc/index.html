@@ -72,7 +72,7 @@
         const header = `<div class="header-info">Inicio: ${d.inicio} | Fin: ${d.fin} | Días: ${dias}</div>`;
 
         switch(d.estado) {
-            case "false":
+            case "desconectado":
                 contenido.innerHTML = `${header}
                     <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" style="width:80px;">
                     <h2>Hola, ${d.perfil_etiqueta ? d.perfil_etiqueta.split('. ')[1] : 'Cliente'}</h2>
@@ -83,7 +83,7 @@
             case "procesando":
                 contenido.innerHTML = `<h3>Cargando, por favor espera...</h3>`;
                 break;
-            case "true":
+            case "tv-activo":
                 contenido.innerHTML = `${header}<h2>¡Configurado!</h2>
                     <p><b>Perfil:</b> ${d.perfil}</p>
                     <p><b>PIN:</b> ${d.pin}</p>`;
