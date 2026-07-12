@@ -343,6 +343,7 @@
     &lt;/h2&gt;
         &lt;button onclick=&quot;mostrar('clientes')&quot;&gt;👤 Gestión Clientes&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('cuentas')&quot;&gt;🔑 Asignar Cuentas&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar('cuentasNetflixTV')&quot;&gt;🔑 Asignar Netflix TVs&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('seccionVentas')&quot;&gt;💰 Ventas (Historial)&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('seccionVencimientos')&quot;&gt;📅 Vencimientos&lt;/button&gt;
         &lt;button onclick=&quot;mostrar('adminCuentas')&quot;&gt;⚙️ Admin. Perfiles&lt;/button&gt;
@@ -415,7 +416,7 @@
         &lt;div style=&quot;display: grid; grid-template-columns: 1fr 1fr; gap: 20px;&quot;&gt;
             &lt;div style=&quot;position: relative; width: 100%;&quot;&gt;
                 &lt;label&gt;&lt;b&gt;1. Buscar Cliente (Nombre o Teléfono):&lt;/b&gt;&lt;/label&gt;&lt;br&gt;
-                &lt;input type=&quot;text&quot; id=&quot;inputBuscarCliente&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onclick=&quot;buscarClienteHibrido()&quot; onkeyup=&quot;buscarClienteHibrido()&quot;&gt;
+                &lt;input type=&quot;text&quot; id=&quot;inputBuscarCliente&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onclick=&quot;buscarClienteHibrido()&quot; onkeyup=&quot;buscarClienteHibrido('inputBuscarCliente', 'listaSugerencias', 'clienteIdSeleccionado', 'txtElegido')&quot;&gt;
                 &lt;div id=&quot;listaSugerencias&quot; style=&quot;position: absolute; background: white; border: 1px solid #ccc; width: 100%; z-index: 2000; max-height: 250px; overflow-y: auto; display: none;&quot;&gt;&lt;/div&gt;
                 &lt;input type=&quot;hidden&quot; id=&quot;clienteIdSeleccionado&quot;&gt;
                 &lt;p id=&quot;txtElegido&quot; style=&quot;font-size:15px; color:green; font-weight:bold;&quot;&gt;&lt;/p&gt;
@@ -444,6 +445,82 @@
         &lt;button class=&quot;reset-btn&quot; style=&quot;width:100%;&quot; onclick=&quot;confirmarReinicioForm()&quot;&gt;🧹 Reiniciar Formulario&lt;/button&gt;
     &lt;/div&gt;
 &lt;/div&gt;
+
+
+
+&lt;div id=&quot;cuentasNetflixTV&quot; style=&quot;display:none&quot;&gt;
+    &lt;h3&gt;📺 Asignar Netflix TV&lt;/h3&gt;
+    &lt;div class=&quot;section&quot;&gt;
+        &lt;div style=&quot;display: grid; grid-template-columns: 1fr 1fr; gap: 20px;&quot;&gt;
+            &lt;div style=&quot;position: relative; width: 100%;&quot;&gt;
+                &lt;label&gt;&lt;b&gt;1. Buscar Cliente:&lt;/b&gt;&lt;/label&gt;&lt;br&gt;
+                &lt;input type=&quot;text&quot; id=&quot;inputBuscarClienteTV&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onkeyup=&quot;buscarClienteHibrido('inputBuscarClienteTV', 'listaSugerenciasTV', 'clienteIdSeleccionadoTV', 'txtElegidoTV')&quot;&gt;
+                &lt;div id=&quot;listaSugerenciasTV&quot; style=&quot;position: absolute; background: white; border: 1px solid #ccc; width: 100%; z-index: 2000; max-height: 250px; overflow-y: auto; display: none;&quot;&gt;&lt;/div&gt;
+                &lt;input type=&quot;hidden&quot; id=&quot;clienteIdSeleccionadoTV&quot;&gt;
+                &lt;p id=&quot;txtElegidoTV&quot; style=&quot;font-size:15px; color:green; font-weight:bold;&quot;&gt;&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;label&gt;&lt;b&gt;Estado de la TV:&lt;/b&gt;&lt;/label&gt;&lt;br&gt;
+&lt;select id=&quot;estadoTvLista&quot; style=&quot;width:100%; padding:8px;&quot;&gt;
+    &lt;option value=&quot;false&quot;&gt;❌ No Lista (Esperando Código)&lt;/option&gt;
+    &lt;option value=&quot;true&quot;&gt;✅ Sí, Lista&lt;/option&gt;
+&lt;/select&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;div style=&quot;display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px;&quot;&gt;
+    &lt;div&gt;
+        &lt;label&gt;Fecha Inicio:&lt;/label&gt;
+        &lt;input type=&quot;date&quot; id=&quot;fechaInicioTV&quot; style=&quot;width:90%&quot; onchange=&quot;calcularFechaFinTV()&quot;&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label&gt;Días:&lt;/label&gt;
+        &lt;select id=&quot;diasTV&quot; style=&quot;width:90%&quot; onchange=&quot;calcularFechaFinTV()&quot;&gt;
+            &lt;option value=&quot;30&quot;&gt;30 Días&lt;/option&gt;
+            &lt;option value=&quot;60&quot;&gt;60 Días&lt;/option&gt;
+        &lt;/select&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label&gt;Vence:&lt;/label&gt;
+        &lt;input type=&quot;date&quot; id=&quot;fechaFinTV&quot; style=&quot;width:90%&quot; readonly&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+        &lt;div style=&quot;margin-top: 15px;&quot;&gt;
+            &lt;label&gt;&lt;b&gt;Seleccionar Cuenta Netflix TV:&lt;/b&gt;&lt;/label&gt;
+            &lt;select id=&quot;selectNetflixTVBase&quot; onchange=&quot;procesarCuentaSeleccionada(this.value)&quot;&gt;
+    &lt;option value=&quot;&quot;&gt;Cargando cuentas de Netflix TV...&lt;/option&gt;
+&lt;/select&gt;
+&lt;div id=&quot;contenedorResultadosTV&quot; style=&quot;display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 15px; margin-top: 20px;&quot;&gt;
+    &lt;!-- Columna 1: Contraseña --&gt;
+    &lt;div&gt;
+        &lt;label&gt;Contraseña:&lt;/label&gt;
+        &lt;input type=&quot;text&quot; id=&quot;inputClaveTV&quot; readonly style=&quot;width:100%;&quot;&gt;
+    &lt;/div&gt;
+    
+    &lt;!-- Columna 2: Perfiles --&gt;
+    &lt;div&gt;
+    &lt;label&gt;Selección de Perfil:&lt;/label&gt;
+    &lt;select id=&quot;selectPerfilTV&quot; style=&quot;width:100%; padding:8px;&quot;&gt;
+        &lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;
+    &lt;/select&gt;
+&lt;/div&gt;
+    
+    &lt;!-- Columna 3: PIN --&gt;
+    &lt;div&gt;
+        &lt;label&gt;PIN:&lt;/label&gt;
+        &lt;input type=&quot;text&quot; id=&quot;inputPinTV&quot; readonly style=&quot;width:100%;&quot;&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;hr&gt;
+         &lt;button class=&quot;save-btn&quot; style=&quot;width:100%; padding:15px;&quot; onclick=&quot;guardarCuentasTV()&quot;&gt;Finalizar y Guardar Venta TV&lt;/button&gt;
+        &lt;button class=&quot;reset-btn&quot; style=&quot;width:100%;&quot; onclick=&quot;reiniciarFormTV()&quot;&gt;🧹 Reiniciar Formulario&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
 
 &lt;div id=&quot;seccionVentas&quot; style=&quot;display:none&quot;&gt;
     &lt;h3&gt;💰 Historial Global de Ventas&lt;/h3&gt;
@@ -501,6 +578,23 @@
             &lt;/table&gt;
         &lt;/div&gt;
         &lt;button class=&quot;save-btn&quot; style=&quot;background:#e50914;&quot; onclick=&quot;abrirModalNuevaCuenta('Netflix')&quot;&gt;➕ Añadir Cuenta Netflix&lt;/button&gt;
+    &lt;/div&gt;
+    
+    &lt;div class=&quot;section&quot; style=&quot;border-top: 5px solid #e50914;&quot;&gt;
+        &lt;h4&gt;📺 Netflix TV(5 Perfiles)&lt;/h4&gt;
+        &lt;div style=&quot;overflow-x: auto;&quot;&gt;
+            &lt;table&gt;
+                &lt;thead&gt;
+                    &lt;tr&gt;
+                        &lt;th&gt;Correo&lt;/th&gt;&lt;th&gt;Contraseña&lt;/th&gt;
+                        &lt;th&gt;P1&lt;/th&gt;&lt;th&gt;P2&lt;/th&gt;&lt;th&gt;P3&lt;/th&gt;&lt;th&gt;P4&lt;/th&gt;&lt;th&gt;P5&lt;/th&gt;
+                        &lt;th style=&quot;width: 130px;&quot;&gt;Modificado&lt;/th&gt;&lt;th&gt;Acción&lt;/th&gt;
+                    &lt;/tr&gt;
+                &lt;/thead&gt;
+                &lt;tbody id=&quot;tablaNetflixTVBody&quot;&gt;&lt;/tbody&gt;
+            &lt;/table&gt;
+        &lt;/div&gt;
+        &lt;button class=&quot;save-btn&quot; style=&quot;background:#e50914;&quot; onclick=&quot;abrirModalNuevaCuenta('Netflix TV')&quot;&gt;➕ Añadir Cuenta Netflix TV&lt;/button&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;section&quot; style=&quot;border-top: 5px solid #006e99;&quot;&gt;
@@ -631,6 +725,7 @@ auth.onAuthStateChanged(u=&gt;{
         login.style.display=&quot;none&quot;; panel.style.display=&quot;block&quot;; 
         const ahora = new Date(); const offset = ahora.getTimezoneOffset() * 60000;
         fechaInicio.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
+        fechaInicioTV.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
         actualizarTodo();
     }
     else{ login.style.display=&quot;block&quot;; panel.style.display=&quot;none&quot;; }
@@ -665,7 +760,7 @@ async function migrarDesdeExcel() {
         alert(&quot;✅ Proceso terminado. Revisa la tabla abajo.&quot;);
 
     } catch (e) {
-        alert(&quot;❌ Error: &quot; + e.message);
+        alert(&quot;❌ Error:1009:  &quot; + e.message);
     }
 }
 
@@ -712,12 +807,93 @@ async function guardarServicioManual() {
         cerrarModalOtros();
         cargarCuentasBase();
     } catch (e) {
-        alert(&quot;Error: &quot; + e.message);
+        alert(&quot;Error 1001: &quot; + e.message);
+    }
+}
+function cargarCuentasNetflixTV() {
+    const select = document.getElementById(&quot;selectNetflixTVBase&quot;);
+    select.innerHTML = `&lt;option value=&quot;&quot;&gt;Seleccione un correo...&lt;/option&gt;`;
+
+    db.collection(&quot;cuentas_base&quot;)
+      .where(&quot;plataforma&quot;, &quot;==&quot;, &quot;Netflix TV&quot;)
+      .get()
+      .then((snapshot) =&gt; {
+          snapshot.forEach((doc) =&gt; {
+              const data = doc.data();
+              const opt = document.createElement(&quot;option&quot;);
+              opt.value = doc.id;
+              opt.text = data.correo; // Solo muestra el correo
+              select.appendChild(opt);
+          });
+      });
+}
+async function procesarCuentaSeleccionada(idCuenta) {
+    if (!idCuenta) return;
+    
+    const pinesNetflixTV = { &quot;1&quot;: &quot;2101&quot;, &quot;2&quot;: &quot;2202&quot;, &quot;3&quot;: &quot;2303&quot;, &quot;4&quot;: &quot;2404&quot;, &quot;5&quot;: &quot;2505&quot; };
+    
+    // 1. Obtener datos de la cuenta
+    const doc = await db.collection(&quot;cuentas_base&quot;).doc(idCuenta).get();
+    const data = doc.data();
+
+    // 2. Mostrar Contraseña y PIN (Solo lectura)
+    document.getElementById(&quot;inputClaveTV&quot;).value = data.clave;
+    document.getElementById(&quot;inputPinTV&quot;).value = data.pin || &quot;Sin PIN&quot;;
+
+    // 2. Buscar ventas existentes para esta cuenta base
+const ventasSnapshot = await db.collection(&quot;cuentas&quot;)
+                               .where(&quot;cuenta_base_id&quot;, &quot;==&quot;, idCuenta)
+                               .get();
+// Creamos un objeto para guardar los nombres de los clientes ya resueltos
+const nombresClientes = {}; 
+
+// Primero resolvemos los nombres de todos los clientes ocupados
+for (const docVenta of ventasSnapshot.docs) {
+    const venta = docVenta.data();
+    const cId = venta.clienteId;
+    
+    // Si no hemos buscado este cliente antes, lo buscamos en la colección &quot;clientes&quot;
+    if (cId &amp;&amp; !nombresClientes[cId]) {
+        const docCliente = await db.collection(&quot;clientes&quot;).doc(cId).get();
+        if (docCliente.exists) {
+            // Ajusta &quot;nombre&quot; si tu campo en la colección &quot;clientes&quot; se llama diferente (ej: &quot;nombres&quot;)
+            nombresClientes[cId] = docCliente.data().nombre || &quot;Cliente sin nombre&quot;;
+        } else {
+            nombresClientes[cId] = &quot;Cliente Desconocido&quot;;
+        }
     }
 }
 
+// Renderizar el select
+const selectPerfil = document.getElementById(&quot;selectPerfilTV&quot;);
+selectPerfil.innerHTML = '&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;';
+
+for (let i = 1; i &lt;= 5; i++) {
+    const num = String(i);
+    const option = document.createElement(&quot;option&quot;);
+    option.value = num;
+
+    // Buscamos si existe una venta para este perfil
+    const ventaEncontrada = ventasSnapshot.docs.find(d =&gt; String(d.data().perfil) === num);
+
+    if (ventaEncontrada) {
+        const nombre = nombresClientes[ventaEncontrada.data().clienteId];
+        option.text = `Perfil ${num} (${nombre})`; // ¡Aquí saldrá el nombre!
+        option.disabled = true;
+        option.style.backgroundColor = &quot;#ffcccc&quot;;
+    } else {
+        option.text = `Perfil ${num} (Libre)`;
+    }
+    selectPerfil.appendChild(option);
+}
+
+// 4. Asignar PIN automáticamente al cambiar
+selectPerfil.onchange = function() {
+    document.getElementById(&quot;inputPinTV&quot;).value = pinesNetflixTV[this.value] || &quot;&quot;;
+};
+}
 async function cargarCuentasBase() {
-    const tablas = [&quot;tablaNetflixBody&quot;, &quot;tablaDisneyBody&quot;, &quot;tablaHBOBody&quot;, &quot;tablaOtrosBody&quot;];
+    const tablas = [&quot;tablaNetflixBody&quot;, &quot;tablaNetflixTVBody&quot;, &quot;tablaDisneyBody&quot;, &quot;tablaHBOBody&quot;, &quot;tablaOtrosBody&quot;];
     tablas.forEach(id =&gt; { if(document.getElementById(id)) document.getElementById(id).innerHTML = &quot;&quot;; });
 
     try {
@@ -728,7 +904,7 @@ async function cargarCuentasBase() {
             const d = doc.data();
             const id = doc.id; // LLAVE ÚNICA DE LA CUENTA
 
-            if (d.plataforma !== &quot;Netflix&quot; &amp;&amp; d.plataforma !== &quot;Disney&quot; &amp;&amp; d.plataforma !== &quot;HBO&quot;) {
+            if (d.plataforma !== &quot;Netflix&quot; &amp;&amp; d.plataforma !== &quot;Netflix TV&quot; &amp;&amp; d.plataforma !== &quot;Disney&quot; &amp;&amp; d.plataforma !== &quot;HBO&quot;) {
                 const tr = document.createElement(&quot;tr&quot;);
                 let perfilesHTML = &quot;&quot;;
 
@@ -802,18 +978,23 @@ function cargarVentasVencimientos(){
         }
 
         const historialKey = `${d.clienteId}_${d.fechaRegistro}`;
+        let lineaId = &quot;&quot;;
+if (d.plataforma === &quot;Netflix TV&quot;) {
+    lineaId = `&lt;br&gt;&lt;span style=&quot;color:#555; font-size:11px;&quot;&gt;🔗 ID: &lt;b&gt;${d.id}&lt;/b&gt;&lt;/span&gt;`;
+}
+
         if (!gruposHistorial[historialKey]) {
             gruposHistorial[historialKey] = {
                 ...d,
                 plataformasCojuntas: [d.plataforma],
                 valorTotal: parseFloat(d.valor || 0),
-                detallesFull: [`&lt;div style=&quot;margin-bottom:8px;&quot;&gt;&lt;b&gt;📺 ${d.plataforma}&lt;/b&gt;&lt;br&gt;📧 ${d.correo}&lt;br&gt;🔑 ${d.clave}&lt;br&gt;👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}&lt;/div&gt;`],
+                detallesFull: [`&lt;div style=&quot;margin-bottom:8px;&quot;&gt;&lt;b&gt;📺 ${d.plataforma}&lt;/b&gt;&lt;br&gt;📧 ${d.correo}&lt;br&gt;🔑 ${d.clave}&lt;br&gt;👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}${lineaId}&lt;/div&gt;`],
                 idsParaEliminar: [d.id] 
             };
         } else {
             gruposHistorial[historialKey].plataformasCojuntas.push(d.plataforma);
             gruposHistorial[historialKey].valorTotal += parseFloat(d.valor || 0);
-            gruposHistorial[historialKey].detallesFull.push(`&lt;div style=&quot;margin-bottom:8px;&quot;&gt;&lt;b&gt;📺 ${d.plataforma}&lt;/b&gt;&lt;br&gt;📧 ${d.correo}&lt;br&gt;🔑 ${d.clave}&lt;br&gt;👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}&lt;/div&gt;`);
+            gruposHistorial[historialKey].detallesFull.push(`&lt;div style=&quot;margin-bottom:8px;&quot;&gt;&lt;b&gt;📺 ${d.plataforma}&lt;/b&gt;&lt;br&gt;📧 ${d.correo}&lt;br&gt;🔑 ${d.clave}&lt;br&gt;👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}${lineaId}&lt;/div&gt;`);
             gruposHistorial[historialKey].idsParaEliminar.push(d.id);
         }
     });
@@ -1015,19 +1196,217 @@ function verNota(texto) {
     &lt;td style=&quot;font-size:15px;&quot;&gt;${iconoNota}${fechaFull}&lt;/td&gt;
     &lt;td&gt;&lt;b&gt;${nomC}&lt;/b&gt;&lt;/td&gt;
     &lt;td&gt;${d.plataformasCojuntas.join(&quot;&lt;br&gt;&quot;)}&lt;/td&gt;
-    &lt;td style=&quot;color:#28a745; font-weight:bold;&quot;&gt;$${d.valorTotal.toFixed(2)}&lt;br&gt;&lt;small style=&quot;color:gray;&quot;&gt;(${d.metodoPago || 'S/M'})&lt;/small&gt;&lt;/td&gt;
+    &lt;td style=&quot;color:#28a745; font-weight:bold;&quot;&gt;$${d.valorTotal.toFixed(2)}&lt;br&gt;&lt;small style=&quot;color:gray;&quot;&gt;(${d.metodoPago || 'Transferencia'})&lt;/small&gt;&lt;/td&gt;
     &lt;td style=&quot;text-align:left; font-size:15px;&quot;&gt;${d.detallesFull.join(&quot;&lt;hr style='margin:5px 0; border:0; border-top:1px dashed #ccc'&gt;&quot;)}&lt;/td&gt;
     &lt;td&gt;${d.fin}&lt;/td&gt;
     &lt;td&gt;&lt;b&gt;${formatearDiasTexto(diff)}&lt;/b&gt;&lt;/td&gt;
     &lt;td&gt;
         &lt;div style=&quot;display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;&quot;&gt;
             &lt;button onclick=&quot;enviarWhatsAppLote('${d.idsParaEliminar.join(',')}')&quot; title=&quot;Enviar WhatsApp&quot; style=&quot;background:#25d366; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;📱&lt;/button&gt;
-            &lt;button onclick=&quot;abrirEditorManualLote('${d.idsParaEliminar.join(',')}')&quot; title=&quot;Editar Manual&quot; style=&quot;background:#ffc107; color:black; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;✏️&lt;/button&gt;
+            &lt;button onclick=&quot;gestionarEdicionLote('${d.idsParaEliminar.join(',')}', '${d.plataforma}')&quot; title=&quot;Editar Manual&quot; style=&quot;background:#ffc107; color:black; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;✏️&lt;/button&gt;
             &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarLoteHistorial('${d.idsParaEliminar.join(',')}')&quot; style=&quot;padding:6px; font-size:16px;&quot;&gt;🗑️&lt;/button&gt;
         &lt;/div&gt;
     &lt;/td&gt;
 &lt;/tr&gt;`;
     });
+}
+
+function gestionarEdicionLote(ids, plataforma) {
+    // Aquí defines tu condición
+    if (plataforma === &quot;Netflix TV&quot;) {
+        // Ejecuta tu nueva función que crearás desde cero
+        abrirNuevoEditorNetflixTV(ids);
+    } else {
+        // Ejecuta la función original intacta
+        abrirEditorManualLote(ids);
+    }
+}
+
+async function abrirNuevoEditorNetflixTV(ids) {
+  const primerId = String(ids).split(',')[0].trim();
+
+  /* 1) Leer la venta actual del cliente */
+  let correoActual='', nombreCliente='Cliente', fechaVence='';
+  let perfilActual='', pinActual='', claveActual='';
+  let estadoActual = 'tv-activo';
+  try {
+    const s = await db.collection('cuentas').doc(primerId).get();
+    if (s.exists) {
+      const d = s.data();
+      correoActual  = (d.correo||'').trim();
+      claveActual   = d.clave  || '';
+      perfilActual  = d.perfil || '';
+      pinActual     = d.pin    || '';
+      fechaVence    = d.fin    || '';
+      estadoActual  = d.estado || 'tv-activo';
+      nombreCliente = d.perfil_etiqueta
+        ? (d.perfil_etiqueta.split('. ')[1] || d.cliente || 'Cliente')
+        : (d.cliente || 'Cliente');
+    }
+  } catch(e){ console.warn('No se pudo leer venta', e); }
+
+  const datosCliente = { correo: correoActual, clave: claveActual, perfil: perfilActual, pin: pinActual };
+
+  /* 2) Construir modal */
+  const div = document.createElement('div');
+  div.id = 'modalNetflixTV';
+  div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;justify-content:center;align-items:center;';
+
+  const estados = [
+  { v:'desconectado',   t:'❌ Desconectado' },
+    { v:'procesando',     t:'⏳ Procesando' },
+    { v:'tv-activo',      t:'✅ TV Activo' },
+    { v:'error-netflix',  t:'⚠️ Error Netflix' },
+    { v:'error-conexion', t:'📡 Error Conexión' }
+  ];
+  let optsEstado = '';
+  estados.forEach(function(e){
+    optsEstado += '&lt;option value=&quot;'+e.v+'&quot;'+(e.v===estadoActual?' selected':'')+'&gt;'+e.t+'&lt;/option&gt;';
+  });
+
+  div.innerHTML =
+    '&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;'
+  +   '&lt;h3 style=&quot;margin-top:0;&quot;&gt;🛠️ GARANTÍA / EDICIÓN: '+nombreCliente+'&lt;/h3&gt;'
+  +   '&lt;div style=&quot;background:#fff3cd;padding:10px;border-radius:5px;margin-bottom:15px;&quot;&gt;'
+  +     '&lt;strong&gt;ID:&lt;/strong&gt; '+primerId+' | &lt;strong&gt;Servicio:&lt;/strong&gt; Netflix TV'
+  +   '&lt;/div&gt;'
+  +   '&lt;label&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;'
+  +   '&lt;div style=&quot;margin-bottom:10px;&quot;&gt;'
+  +     '&lt;select id=&quot;selectCuentaTV&quot; style=&quot;width:100%;padding:8px;&quot;&gt;&lt;option&gt;Cargando cuentas...&lt;/option&gt;&lt;/select&gt;'
+  +   '&lt;/div&gt;'
+  +   '&lt;div style=&quot;display:flex;gap:10px;margin-bottom:15px;&quot;&gt;'
+  +     '&lt;input type=&quot;text&quot; id=&quot;claveTV&quot;  value=&quot;'+claveActual +'&quot; placeholder=&quot;Clave&quot; style=&quot;flex:1;padding:8px;&quot; readonly&gt;'
+  +     '&lt;input type=&quot;text&quot; id=&quot;perfilTV&quot; value=&quot;'+perfilActual+'&quot; placeholder=&quot;P&quot;     style=&quot;width:50px;padding:8px;&quot; readonly&gt;'
+  +     '&lt;input type=&quot;text&quot; id=&quot;pinTV&quot;    value=&quot;'+pinActual   +'&quot; placeholder=&quot;PIN&quot;   style=&quot;width:80px;padding:8px;&quot; readonly&gt;'
+  +   '&lt;/div&gt;'
+  +   '&lt;div style=&quot;background:#d4edda;padding:15px;border-radius:5px;text-align:center;margin-bottom:15px;&quot;&gt;'
+  +     '&lt;label&gt;🎁 Días Extra (GENERAL):&lt;/label&gt; '
+  +     '&lt;input type=&quot;number&quot; id=&quot;inputDiasExtra&quot; value=&quot;0&quot; style=&quot;width:60px;text-align:center;&quot;&gt;'
+  +     '&lt;p id=&quot;displayNuevaFecha&quot; style=&quot;margin:5px 0 0 0;font-weight:bold;&quot;&gt;Nueva fecha: '+fechaVence+'&lt;/p&gt;'
+  +   '&lt;/div&gt;'
+  +   '&lt;div style=&quot;margin-bottom:15px;&quot;&gt;'
+  +     '&lt;label&gt;📺 Estado TV:&lt;/label&gt;'
+  +     '&lt;select id=&quot;selectEstadoTV&quot; style=&quot;width:100%;padding:8px;margin-top:5px;&quot;&gt;'
+  +       optsEstado
+  +     '&lt;/select&gt;'
+  +     '&lt;div style=&quot;display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;&quot; id=&quot;btnsEstadoTV&quot;&gt;&lt;/div&gt;'
+  +   '&lt;/div&gt;'
+  +   '&lt;textarea id=&quot;notaCambioTV&quot; placeholder=&quot;Nota de cambio...&quot; style=&quot;width:100%;height:60px;margin-bottom:15px;&quot;&gt;&lt;/textarea&gt;'
+  +   '&lt;button id=&quot;btnGuardarTV&quot;  style=&quot;width:100%;padding:12px;background:#007bff;color:white;border:none;border-radius:5px;font-size:16px;&quot;&gt;Finalizar y Guardar Venta&lt;/button&gt;'
+  +   '&lt;button id=&quot;btnCancelarTV&quot; style=&quot;width:100%;padding:10px;background:#6c757d;color:white;border:none;border-radius:5px;margin-top:5px;&quot;&gt;Cancelar&lt;/button&gt;'
+  + '&lt;/div&gt;';
+
+  document.body.appendChild(div);
+
+  const $sel    = div.querySelector('#selectCuentaTV');
+  const $clave  = div.querySelector('#claveTV');
+  const $perf   = div.querySelector('#perfilTV');
+  const $pin    = div.querySelector('#pinTV');
+  const $dias   = div.querySelector('#inputDiasExtra');
+  const $fecha  = div.querySelector('#displayNuevaFecha');
+  const $estado = div.querySelector('#selectEstadoTV');
+  const $nota   = div.querySelector('#notaCambioTV');
+  const $btnsEs = div.querySelector('#btnsEstadoTV');
+
+  /* Botones rápidos para estado */
+  const coloresEstado = {
+    'procesando':'#ffc107',
+    'tv-activo':'#28a745',
+    'error-netflix':'#dc3545',
+    'error-conexion':'#fd7e14',
+    'desconectado':'#6c757d'
+  };
+  estados.forEach(function(e){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.innerText = e.t;
+    b.dataset.val = e.v;
+    b.style.cssText = 'flex:1;min-width:110px;padding:6px;border:none;border-radius:4px;color:white;cursor:pointer;background:'+coloresEstado[e.v]+';opacity:'+(e.v===estadoActual?'1':'0.55')+';';
+    b.addEventListener('click', function(){
+      $estado.value = e.v;
+      $btnsEs.querySelectorAll('button').forEach(function(x){ x.style.opacity = (x.dataset.val===e.v?'1':'0.55'); });
+    });
+    $btnsEs.appendChild(b);
+  });
+
+  /* 3) Cargar cuentas base y preseleccionar la del cliente */
+  let listaCuentas = [];
+  try {
+    const snap = await db.collection('cuentas_base').where('plataforma','==','Netflix TV').get();
+    let html = '&lt;option value=&quot;&quot;&gt;Selecciona una cuenta...&lt;/option&gt;';
+    snap.forEach(function(doc){
+      const d = doc.data();
+      listaCuentas.push(d);
+      const sel = (d.correo === correoActual) ? ' selected' : '';
+      html += '&lt;option value=&quot;'+d.correo+'&quot;'+sel+'&gt;'+d.correo+'&lt;/option&gt;';
+    });
+    $sel.innerHTML = html;
+  } catch(e){ console.warn(e); }
+
+  function autoCompletar() {
+    const correo = $sel.value;
+    const info = listaCuentas.find(function(c){ return c.correo === correo; });
+    if (!info) return;
+    $clave.value = info.clave || '';
+    if (correo === datosCliente.correo) {
+      $perf.value = datosCliente.perfil || '';
+      $pin.value  = datosCliente.pin    || '';
+    } else {
+      $perf.value = '';
+      $pin.value  = info.pin || '';
+    }
+  }
+  if (correoActual) autoCompletar();
+  $sel.addEventListener('change', autoCompletar);
+
+  $dias.addEventListener('input', function(){
+    if (!fechaVence) { $fecha.innerText = 'Nueva fecha: '; return; }
+    const extra = parseInt($dias.value) || 0;
+    const f = new Date(fechaVence + 'T00:00:00');
+    f.setDate(f.getDate() + extra);
+    $fecha.innerText = 'Nueva fecha: ' + f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0');
+  });
+
+  div.querySelector('#btnCancelarTV').addEventListener('click', function(){ div.remove(); });
+
+  div.querySelector('#btnGuardarTV').addEventListener('click', async function(){
+    try {
+      const nuevoCorreo = $sel.value;
+      if (!nuevoCorreo) return alert('⚠️ Selecciona una cuenta');
+
+      const extra = parseInt($dias.value) || 0;
+      let fechaFinal = fechaVence;
+      if (fechaVence) {
+        const f = new Date(fechaVence + 'T00:00:00');
+        f.setDate(f.getDate() + extra);
+        fechaFinal = f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0');
+      }
+
+      const prevSnap = await db.collection('cuentas').doc(primerId).get();
+      const prev = prevSnap.exists ? prevSnap.data() : {};
+      const nombreCli = prev.perfil_etiqueta
+        ? (prev.perfil_etiqueta.split('. ')[1] || prev.cliente || '')
+        : (prev.cliente || '');
+      const nuevaEtiqueta = $perf.value ? ($perf.value + '. ' + nombreCli) : (prev.perfil_etiqueta || '');
+
+      await db.collection('cuentas').doc(primerId).update({
+        correo: nuevoCorreo,
+        clave:  $clave.value,
+        perfil: $perf.value,
+        pin:    $pin.value,
+        perfil_etiqueta: nuevaEtiqueta,
+        fin:    fechaFinal,
+        nota_cuenta: $nota.value,
+        estado: $estado.value
+      });
+
+      alert('✅ Venta Netflix TV actualizada con éxito');
+      div.remove();
+      if (typeof actualizarTodo === 'function') actualizarTodo();
+    } catch(e) {
+      alert('Error al actualizar: ' + e.message);
+    }
+  });
 }
 
 async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
@@ -1131,7 +1510,7 @@ function renderizarTablaClientes(){
 
 
 function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = &quot;✏️ Editando Cliente&quot;; btnGuardar.innerText = &quot;Actualizar Cliente&quot;; btnCancel.style.display = &quot;inline-block&quot;; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(&quot; &quot;); if (partes.length &gt; 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
-function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + &quot; &quot; + c_whatsapp.value }; if(!data.nombre || !c_whatsapp.value) return alert(&quot;Completa los datos&quot;); if(id) { db.collection(&quot;clientes&quot;).doc(id).update(data).then(() =&gt; { alert(&quot;Cliente actualizado&quot;); cancelarEdicion(); actualizarTodo(); }).catch(e =&gt; alert(&quot;Error: &quot; + e.message)); } else { db.collection(&quot;clientes&quot;).add(data).then(() =&gt; { c_nombre.value = &quot;&quot;; c_whatsapp.value = &quot;&quot;; actualizarTodo(); }); } }
+function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + &quot; &quot; + c_whatsapp.value }; if(!data.nombre || !c_whatsapp.value) return alert(&quot;Completa los datos&quot;); if(id) { db.collection(&quot;clientes&quot;).doc(id).update(data).then(() =&gt; { alert(&quot;Cliente actualizado&quot;); cancelarEdicion(); actualizarTodo(); }).catch(e =&gt; alert(&quot;Error 1002: &quot; + e.message)); } else { db.collection(&quot;clientes&quot;).add(data).then(() =&gt; { c_nombre.value = &quot;&quot;; c_whatsapp.value = &quot;&quot;; actualizarTodo(); }); } }
 function cancelarEdicion(){ c_id_hidden.value=&quot;&quot;; c_nombre.value=&quot;&quot;; c_whatsapp.value=&quot;&quot;; formTitle.innerText=&quot;✨ Registrar Nuevo Cliente&quot;; btnGuardar.innerText=&quot;Guardar Cliente&quot;; btnCancel.style.display=&quot;none&quot;; }
 function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
     marcarComoRenovadoEnBD(listaIds, rowId);
@@ -1201,6 +1580,7 @@ items.forEach((it, i) => {
         &lt;select class=&quot;tipo&quot; onchange=&quot;cargarCorreosParaEstaFila(this)&quot; style=&quot;padding:4px; background:#333; color:white; border:1px solid #555;&quot;&gt;
             &lt;option value=&quot;${it.plat}&quot;&gt;${it.plat}&lt;/option&gt;
             &lt;option value=&quot;Netflix&quot;&gt;Netflix&lt;/option&gt;
+            &lt;option value=&quot;NetflixTV&quot;&gt;Netflix TV&lt;/option&gt;
             &lt;option value=&quot;Disney&quot;&gt;Disney&lt;/option&gt;
             &lt;option value=&quot;HBO&quot;&gt;HBO&lt;/option&gt;
             &lt;option value=&quot;Amazon Prime&quot;&gt;Amazon Prime&lt;/option&gt;
@@ -1267,7 +1647,7 @@ async function eliminarSuscripcionDirecto(idFirebase, idFilaHTML) {
             }
             
         } catch (e) {
-            alert('Error: ' + e.message);
+            alert('Error 1003: ' + e.message);
         }
     }
 }
@@ -1279,6 +1659,8 @@ function enviarWhatsAppLote(idsStr) {
     if(ventas.length === 0) return; 
     const c = listaClientesLocal.find(cl => cl.id === ventas[0].clienteId); 
     if(!c) return; 
+    
+    const esNetflixTV = ventas.some(v => v.plataforma === &quot;Netflix TV&quot;);
 
     const hoy = new Date();
     const fechaHoy = hoy.toLocaleDateString('es-ES');
@@ -1300,6 +1682,22 @@ function enviarWhatsAppLote(idsStr) {
     }
 
     let detalleMsg = ''; 
+    
+    
+    if (esNetflixTV) {
+    // MENSAJE ESPECIAL NETFLIX TV: Solo link
+        ventas.forEach(v => {
+            if (v.plataforma === &quot;Netflix TV&quot;) {
+                detalleMsg += `%0A%0A📺 *Servicio:* ${v.plataforma}`;
+                detalleMsg += `%0A🔗 *Accede a tus datos aquí:* https://multibc2025.github.io/codigosNT-bc/tv-netflix/?id=${v.id}`;
+            } else {
+                // Si vendiste Netflix TV junto con otro servicio, ponemos el otro normal
+                detalleMsg += `%0A%0A*Información De La Cuenta de: ${v.plataforma}* %0A📧 : ${v.correo} %0A🔐 : *${v.clave}*`;
+            }
+        });
+    } else {
+    
+
 
     ventas.forEach(v => { 
         // TRUCO MAESTRO: Limpiamos + y # en correo y clave
@@ -1313,7 +1711,8 @@ function enviarWhatsAppLote(idsStr) {
         detalleMsg += `%0A👤 : ${v.perfil || ''}) ${c.nombre}`;
         detalleMsg += `%0A🔒 : ${v.pin || '---'}`;
         detalleMsg += `%0A------------------------------------------------`;
-    }); 
+    });
+    }
 
     const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
 
@@ -1538,7 +1937,7 @@ async function corregirFallaCuenta(idVenta) {
         actualizarTodo();
 
     } catch (e) {
-        alert(&quot;❌ Error: &quot; + e.message);
+        alert(&quot;❌ Error 1004 &quot; + e.message);
     }
 }
 function abrirModalEditarCuenta(id, correo, clave) {
@@ -1585,7 +1984,7 @@ async function guardarEdicionModal() {
         alert(&quot;✅ Servicio actualizado correctamente&quot;);
 
     } catch (e) {
-        alert(&quot;❌ Error: &quot; + e.message);
+        alert(&quot;❌ Error 1005: &quot; + e.message);
     }
 }
 
@@ -1832,10 +2231,16 @@ async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
 }
 
 function actualizarPin(sel) { const it = sel.closest(&quot;.item-perfil&quot;); const val = parseInt(sel.value); it.querySelector(&quot;.pin&quot;).value = isNaN(val) ? &quot;&quot; : 1000 + val; }
+
 async function guardarCuentas() {
     try {
-        var elCliId = document.getElementById('clienteIdSeleccionado');
-        var idCli = (elCliId != null) ? elCliId.value : '';
+        
+        var elCliId = document.getElementById(&quot;clienteIdSeleccionado&quot;);
+        var idCli = (elCliId &amp;&amp; elCliId.value != &quot;&quot;) ? elCliId.value : &quot;&quot;;
+        if (idCli == &quot;&quot;) {
+            var inputBusca = document.getElementById(&quot;inputBuscarCliente&quot;);
+            idCli = inputBusca ? inputBusca.getAttribute(&quot;data-id&quot;) : &quot;&quot;;
+        }
         if (idCli == '') return alert('Selecciona un cliente');
 
         var nombreCli = document.getElementById('inputBuscarCliente')?.value || '';
@@ -1864,11 +2269,11 @@ async function guardarCuentas() {
         }
 
         var marcaTiempoUnica = Date.now();
-        var filas = document.querySelectorAll('.fila-plataforma');
+        var filas = document.querySelectorAll('.fila-plataforma, .fila-plataformaTV');
 
         var contadorFilasValidas = 0;
         for (var j = 0; j < filas.length; j++) {
-            var cSel = filas[j].querySelector('.correo-select');
+            var cSel = filas[j].querySelector('.correo-select, .tipo');
             var correoTemp = cSel?.tagName == 'SELECT' ? cSel.options[cSel.selectedIndex].text : (cSel?.value || filas[j].querySelector('.cont-correo')?.innerText || '');
             if (correoTemp != '' && correoTemp != 'Seleccione...') {
                 contadorFilasValidas++;
@@ -1901,6 +2306,8 @@ async function guardarCuentas() {
             } else if (idModificando) {
                 await db.collection('cuentas').doc(idModificando).delete();
             }
+            
+            
 
             var objetoNuevo = new Object();
             objetoNuevo.clienteId = idCli;
@@ -1922,6 +2329,7 @@ async function guardarCuentas() {
         }
 
         alert('✅ Venta procesada con éxito');
+        reiniciarFormVentas(); 
 
         var fueGarantia = (idModificando != null); 
         idModificando = null;
@@ -1932,7 +2340,20 @@ async function guardarCuentas() {
 
         // --- LÓGICA DE REINICIO DE FORMULARIO (SÓLO SI NO ES GARANTÍA) ---
         if (!fueGarantia) {
+        
+        
             var hoy = new Date();
+            var f = new Date();
+            var formatearFecha = function(fecha) {
+    var anio = fecha.getFullYear();
+    var mes = (&quot;0&quot; + (fecha.getMonth() + 1)).slice(-2);
+    var dia = (&quot;0&quot; + fecha.getDate()).slice(-2);
+    return anio + &quot;-&quot; + mes + &quot;-&quot; + dia;
+};
+
+var fechaHoyStr = formatearFecha(f);
+            
+            
             var fechaHoyStr = hoy.toISOString().split('T')[0];
             
             var fechaVence = new Date();
@@ -1953,11 +2374,118 @@ async function guardarCuentas() {
         if (typeof actualizarTodo == 'function') actualizarTodo();
 
     } catch (error) {
-        alert('Error: ' + error.message);
+        alert('Error 1006: ' + error.message);
     }
 }
 
+async function guardarCuentasTV() {
+    try {
+        // 1. Obtención de datos del cliente
+        var idCli = document.getElementById(&quot;clienteIdSeleccionadoTV&quot;)?.value;
+        var nombreCli = document.getElementById(&quot;inputBuscarClienteTV&quot;)?.value || &quot;Sin Nombre&quot;;
+        
+        if (!idCli || idCli === &quot;&quot;) {
+            return alert(&quot;❌ Selecciona un cliente de la lista primero&quot;);
+        }
+
+        // 2. Obtención de datos de cuenta y formulario
+        var selCorreo = document.getElementById(&quot;selectNetflixTVBase&quot;);
+        var idCuentaBase = selCorreo.value;
+        var correo = selCorreo.options[selCorreo.selectedIndex].text;
+        
+        var clave = document.getElementById(&quot;inputClaveTV&quot;).value;
+        var perfil = document.getElementById(&quot;selectPerfilTV&quot;).value;
+        var pin = document.getElementById(&quot;inputPinTV&quot;).value;
+        var estadoTV = document.getElementById(&quot;estadoTvLista&quot;).value; // &#39;true&#39; o &#39;false&#39;
+        
+        // Validación básica de campos vacíos
+        if (!idCuentaBase || !perfil) {
+            return alert(&quot;⚠️ Por favor selecciona una cuenta y un perfil&quot;);
+        }
+        
+        // 2.1. Definir estado según el selector de TV lista
+        var estadoGuardar = (estadoTV === &quot;false&quot;) ? &quot;desconectado&quot; : &quot;tv-activo&quot;;
+
+        // 3. Generación del ID único y creación del objeto
+        var codigoAleatorio = Math.floor(100000 + Math.random() * 900000);
+        var idDocumento = &quot;01NetflixTV&quot; + codigoAleatorio;
+
+        var objetoVenta = {
+            clienteId: idCli,
+            cuenta_base_id: idCuentaBase,
+            plataforma: &quot;Netflix TV&quot;,
+            correo: correo,
+            clave: clave,
+            perfil: perfil,
+            perfil_etiqueta: perfil + &quot;. &quot; + nombreCli, 
+            pin: pin,
+            estado: estadoGuardar,
+            activado_por_cliente: (estadoTV === &quot;true&quot;), // Conversión a booleano real
+            fechaRegistro: Date.now(),
+            inicio: document.getElementById(&quot;fechaInicioTV&quot;).value,
+            fin: document.getElementById(&quot;fechaFinTV&quot;).value
+        };
+
+        // 4. Guardado en Firebase
+        await db.collection(&quot;cuentas&quot;).doc(idDocumento).set(objetoVenta);
+
+        alert(&quot;✅ Venta de Netflix TV guardada con éxito (ID: &quot; + idDocumento + &quot;)&quot;);
+        
+        // 5. Limpieza y refresco
+        reiniciarFormTV();
+        if (typeof actualizarTodo === &quot;function&quot;) {
+            actualizarTodo();
+        }
+
+    } catch (error) {
+        console.error(&quot;Error al guardar:&quot;, error);
+        alert(&quot;Error 1007: &quot; + error.message);
+    }
+}function reiniciarFormTV() { reiniciarFormtvc(); }
+function reiniciarFormtvc() {
+
+var f = new Date();
+var anio = f.getFullYear();
+var mes = (&quot;0&quot; + (f.getMonth() + 1)).slice(-2);
+var dia = (&quot;0&quot; + f.getDate()).slice(-2);
+var hoyFormateado = anio + &quot;-&quot; + mes + &quot;-&quot; + dia;
+
+// Fecha de inicio al día de hoy
+document.getElementById(&quot;fechaInicioTV&quot;).value = hoyFormateado;
+
+// Calcular 30 días para vencimiento local
+f.setDate(f.getDate() + 30);
+var anioV = f.getFullYear();
+var mesV = (&quot;0&quot; + (f.getMonth() + 1)).slice(-2);
+var diaV = (&quot;0&quot; + f.getDate()).slice(-2);
+document.getElementById(&quot;fechaFinTV&quot;).value = anioV + &quot;-&quot; + mesV + &quot;-&quot; + diaV;
+    
+    
+    
+    document.getElementById(&quot;inputBuscarClienteTV&quot;).value = &quot;&quot;;
+    document.getElementById(&quot;clienteIdSeleccionadoTV&quot;).value = &quot;&quot;;
+    document.getElementById(&quot;txtElegidoTV&quot;).innerText = &quot;&quot;;
+    
+    document.getElementById(&quot;estadoTvLista&quot;).value = &quot;false&quot;;
+    var hoy = new Date().toISOString().split(&quot;T&quot;)[0];
+
+    var selectCuentas = document.getElementById(&quot;selectNetflixTVBase&quot;);
+    selectCuentas.selectedIndex = 0;
+    document.getElementById(&quot;inputClaveTV&quot;).value = &quot;&quot;;
+    document.getElementById(&quot;inputPinTV&quot;).value = &quot;&quot;;
+    
+    var selectPerfil = document.getElementById(&quot;selectPerfilTV&quot;);
+    selectPerfil.innerHTML = &#39;&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;&#39;;
+    
+    // PRESELECCIONAR 30 DÍAS POR DEFECTO
+            var elDias = document.getElementById('diasTV'); // Asegúrate que el ID sea 'dias'
+            if (elDias) {
+                elDias.value = '30';
+            }
+}
+
 function dibujarSeccionOtrosAdmin(plataforma, cuentasBase, ventasActivas) {
+
     let html = `&lt;div class=&quot;seccion-servicio&quot; style=&quot;margin-bottom: 30px; font-family: Arial, sans-serif;&quot;&gt;
         &lt;div style=&quot;background: #2c3e50; color: white; padding: 12px; font-weight: bold; border-radius: 8px 8px 0 0; text-align: center;&quot;&gt;
             🖥️ MONITOREO GLOBAL: ${plataforma.toUpperCase()}
@@ -2028,17 +2556,100 @@ function dibujarSeccionOtrosAdmin(plataforma, cuentasBase, ventasActivas) {
     html += `&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;`;
     return html;
 }
-function buscarClienteHibrido(){ const txt=inputBuscarCliente.value.toLowerCase(); listaSugerencias.innerHTML=&quot;&quot;; const filtrados=listaClientesLocal.filter(c=&gt;c.nombre.toLowerCase().includes(txt) || c.whatsapp.includes(txt)); if(filtrados.length&gt;0){ filtrados.forEach(c=&gt;{ const div=document.createElement(&quot;div&quot;); div.className=&quot;sugerencia-item&quot;; div.style=&quot;padding:10px; cursor:pointer; border-bottom:1px solid #eee&quot;; div.innerHTML=`👤 &lt;b&gt;${c.nombre}&lt;/b&gt; &lt;span style=&quot;float:right; color:gray; font-size:15px;&quot;&gt;${c.whatsapp}&lt;/span&gt;`; div.onclick=()=&gt;{ clienteIdSeleccionado.value=c.id; inputBuscarCliente.value=c.nombre; txtElegido.innerText=`✅ Seleccionado: ${c.nombre} (${c.whatsapp})`; listaSugerencias.style.display=&quot;none&quot;; }; listaSugerencias.appendChild(div); }); listaSugerencias.style.display=&quot;block&quot;; } else { listaSugerencias.style.display=&quot;none&quot;; } }
+
+function buscarClienteHibrido(idInput, idLista, idSeleccionado, idTxtElegido) {
+    const input = document.getElementById(idInput);
+    const lista = document.getElementById(idLista);
+    const hiddenId = document.getElementById(idSeleccionado);
+    const txtElegido = document.getElementById(idTxtElegido);
+    
+    const txt = input.value.toLowerCase();
+    lista.innerHTML = &quot;&quot;;
+    
+    const filtrados = listaClientesLocal.filter(c =&gt; 
+        c.nombre.toLowerCase().includes(txt) || c.whatsapp.includes(txt)
+    );
+
+    if (filtrados.length &gt; 0) {
+        filtrados.forEach(c =&gt; {
+            const div = document.createElement(&quot;div&quot;);
+            div.className = &quot;sugerencia-item&quot;;
+            div.style = &quot;padding:10px; cursor:pointer; border-bottom:1px solid #eee&quot;;
+            div.innerHTML = `👤 &lt;b&gt;${c.nombre}&lt;/b&gt; &lt;span style=&quot;float:right; color:gray; font-size:15px;&quot;&gt;${c.whatsapp}&lt;/span&gt;`;
+            
+            div.onclick = () =&gt; {
+                hiddenId.value = c.id;
+                input.value = c.nombre;
+                txtElegido.innerText = `✅ Seleccionado: ${c.nombre} (${c.whatsapp})`;
+                lista.style.display = &quot;none&quot;;
+            };
+            lista.appendChild(div);
+        });
+        lista.style.display = &quot;block&quot;;
+    } else {
+        lista.style.display = &quot;none&quot;;
+    }
+}
+
+
+
 function confirmarReinicioForm() { if(confirm(&quot;¿Limpiar formulario?&quot;)) reiniciarFormVentas(); }
 function reiniciarFormVentas() { idModificando = null; // Limpiamos el ID de edición
     inputBuscarCliente.value = &quot;&quot;;
     inputBuscarCliente.disabled = false; // &lt;-- ESTA LÍNEA DESBLOQUEA EL BUSCADOR
-    clienteIdSeleccionado.value = &quot;&quot;; plataformas.innerHTML = &quot;&quot;; inputBuscarCliente.value = &quot;&quot;; clienteIdSeleccionado.value = &quot;&quot;; txtElegido.innerText = &quot;&quot;; valorPago.value = &quot;&quot;; metodoPago.value = &quot;Transferencia&quot;; tipoCompra.value = &quot;individual&quot;; cambiarModoCompra(); }
+    clienteIdSeleccionado.value = &quot;&quot;; plataformas.innerHTML = &quot;&quot;; inputBuscarCliente.value = &quot;&quot;; clienteIdSeleccionado.value = &quot;&quot;; txtElegido.innerText = &quot;&quot;; valorPago.value = &quot;&quot;; metodoPago.value = &quot;Transferencia&quot;; tipoCompra.value = &quot;individual&quot;; 
+    
+    // 1. Obtener fecha local de Colombia (día actual)
+var f = new Date();
+var anio = f.getFullYear();
+var mes = (&quot;0&quot; + (f.getMonth() + 1)).slice(-2);
+var dia = (&quot;0&quot; + f.getDate()).slice(-2);
+var hoyFormateado = anio + &quot;-&quot; + mes + &quot;-&quot; + dia;
+
+// 2. Asignar fecha de inicio y calcular vencimiento inicial (30 días)
+document.getElementById(&quot;fechaInicio&quot;).value = hoyFormateado;
+document.getElementById(&quot;dias&quot;).value = &quot;30&quot;;
+
+// 3. Ejecutar el cálculo para que la fecha de vencimiento (fechaFin) se actualice sola
+if (typeof calcularFechaFin === &quot;function&quot;) {
+    calcularFechaFin();
+}
+
+cambiarModoCompra(); }
 function validarDisponibilidad(sel){ const f=sel.parentElement.parentElement; f.querySelector(&quot;.clave&quot;).value=sel.value; f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it=&gt;renderizarSelectPerfil(it, f.querySelector(&quot;.tipo&quot;).value, sel.options[sel.selectedIndex].text)); }
 function crearNuevaFilaPerfil(btn){ const bloque=btn.closest(&quot;.bloque-perfiles&quot;); const divExtra=document.createElement(&quot;div&quot;); divExtra.className=&quot;item-perfil extra-perfil&quot;; divExtra.innerHTML=`&lt;span class=&quot;cont-perfil&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cont-pin&quot;&gt;&lt;/span&gt;&lt;button class=&quot;delete-btn&quot; style=&quot;padding:4px 8px; margin-left:5px&quot; onclick=&quot;this.parentElement.remove()&quot;&gt;x&lt;/button&gt;`; bloque.appendChild(divExtra); renderizarSelectPerfil(divExtra, btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.tipo&quot;).value, btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.correo-select&quot;).options[btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.correo-select&quot;).selectedIndex].text); }
 function cargarClientes(){ db.collection(&quot;clientes&quot;).get().then(s=&gt;{ listaClientesLocal=[]; s.forEach(d=&gt;{ const c=d.data(); const servs=listaSuscripcionesGlobal.filter(s=&gt;s.clienteId===d.id); const activos=servs.filter(ser=&gt;Math.ceil((new Date(ser.fin+&quot;T12:00:00&quot;)-hoy)/(1000*60*60*24))&gt;-3).length; listaClientesLocal.push({id:d.id,...c,cantServiciosActivos:activos,servsData:servs}); }); renderizarTablaClientes(); cargarVentasVencimientos(); }); }
 function cambiarModoCompra(){ plataformas.innerHTML=&quot;&quot;; document.getElementById(&quot;btnMasPlat&quot;).style.display=tipoCompra.value===&quot;combo&quot;?&quot;inline-block&quot;:&quot;none&quot;; agregarPlataforma(); calcularFechaFin(); }
 function calcularFechaFin(){ if(!fechaInicio.value) return; const f=new Date(fechaInicio.value+&quot;T12:00:00&quot;); f.setDate(f.getDate()+Number(dias.value)); fechaFin.value=f.toISOString().split(&quot;T&quot;)[0]; }
+function calcularFechaFinTV() {
+    const inicio = document.getElementById(&quot;fechaInicioTV&quot;);
+    const dias = document.getElementById(&quot;diasTV&quot;);
+    const vence = document.getElementById(&quot;fechaFinTV&quot;);
+
+    if (!inicio.value || !dias.value) return;
+
+// Obtenemos la fecha local separando por guiones (evita el desfase UTC)
+const partes = inicio.value.split(&quot;-&quot;);
+const f = new Date(partes[0], partes[1] - 1, partes[2]); 
+
+// Sumamos los días
+f.setDate(f.getDate() + Number(dias.value));
+
+// Formateamos manualmente a YYYY-MM-DD local
+const anio = f.getFullYear();
+const mes = (&quot;0&quot; + (f.getMonth() + 1)).slice(-2);
+const dia = (&quot;0&quot; + f.getDate()).slice(-2);
+
+vence.value = anio + &quot;-&quot; + mes + &quot;-&quot; + dia;
+}
+
+// Esto pone la fecha de hoy al cargar la página y calcula el vencimiento
+window.onload = function() {
+    const hoy = new Date().toISOString().split(&quot;T&quot;)[0];
+    document.getElementById(&quot;fechaInicioTV&quot;).value = hoy;
+    calcularFechaFinTV();
+    cargarCuentasNetflixTV();
+};
 /* --- 1. FUNCIÓN PARA CREAR LA FILA (Asegura los contenedores correctos) --- */
 function agregarPlataforma(){ 
     const div=document.createElement(&quot;div&quot;); 
@@ -2071,7 +2682,6 @@ function agregarPlataforma(){
     &lt;div class=&quot;bloque-perfiles&quot; style=&quot;display:inline-block&quot;&gt;&lt;/div&gt;`; 
     plataformas.appendChild(div); 
 }
-
 function mostrar(id, esRenovacion = false){ 
     document.querySelectorAll(&quot;.content&gt;div&quot;).forEach(d=&gt;d.style.display=&quot;none&quot;); 
     document.getElementById(id).style.display=&quot;block&quot;; 
@@ -2092,6 +2702,7 @@ function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase
 async function cargarAdminPerfiles() {
     const tablas = { 
         &quot;Netflix&quot;: document.getElementById(&quot;tablaNetflixBody&quot;), 
+        &quot;Netflix TV&quot;: document.getElementById(&quot;tablaNetflixTVBody&quot;), 
         &quot;Disney&quot;: document.getElementById(&quot;tablaDisneyBody&quot;),
         &quot;HBO&quot;: document.getElementById(&quot;tablaHBOBody&quot;),
         &quot;OTROS&quot;: document.getElementById(&quot;tablaOtrosBody&quot;)
@@ -2550,7 +3161,7 @@ function mostrarSeccion(id) {
 
             console.error(&quot;Error en logs_codigos:&quot;, error);
 
-            visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; color:red; padding:20px;'&gt;⚠️ ERROR: Revisa el índice de Firestore en la consola (F12)&lt;/td&gt;&lt;/tr&gt;&quot;;
+            visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; color:red; padding:20px;'&gt;⚠️ ERROR 1008: Revisa el índice de Firestore en la consola (F12)&lt;/td&gt;&lt;/tr&gt;&quot;;
 
         });
 
@@ -2573,6 +3184,12 @@ function abrirModalNuevaCuenta(plat) {
 }document.addEventListener(&quot;DOMContentLoaded&quot;, function() {
     // Esto precarga los datos en memoria apenas abre la web
     cargarCuentasBase();
+});
+// Al cargar el panel, ponemos la fecha de hoy y calculamos el vencimiento
+window.addEventListener('load', () =&gt; {
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById(&quot;fechaInicioTV&quot;).value = hoy;
+    calcularFechaFinTV();
 });
 
 // --- ANULADOR DE BLOQUEOS ---
