@@ -1229,6 +1229,8 @@ async function abrirNuevoEditorNetflixTV(ids) {
   let correoActual='', nombreCliente='Cliente', fechaVence='';
   let perfilActual='', pinActual='', claveActual='';
   let estadoActual = 'tv-activo';
+  let codigoTVActual = &#39;&#39;;
+  let modeloTVActual = &#39;&#39;;
   try {
     const s = await db.collection('cuentas').doc(primerId).get();
     if (s.exists) {
@@ -1242,6 +1244,8 @@ async function abrirNuevoEditorNetflixTV(ids) {
       nombreCliente = d.perfil_etiqueta
         ? (d.perfil_etiqueta.split('. ')[1] || d.cliente || 'Cliente')
         : (d.cliente || 'Cliente');
+        codigoTVActual = d.codigo_tv || &#39;&#39;;
+        modeloTVActual = d.modeloTV || &#39;&#39;;
     }
   } catch(e){ console.warn('No se pudo leer venta', e); }
 
@@ -1250,7 +1254,8 @@ async function abrirNuevoEditorNetflixTV(ids) {
   /* 2) Construir modal */
   const div = document.createElement('div');
   div.id = 'modalNetflixTV';
-  div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;justify-content:center;align-items:center;';
+div.style.cssText = &#39;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px 0;&#39;;
+
 
   const estados = [
   { v:'desconectado',   t:'❌ Desconectado' },
@@ -1265,8 +1270,9 @@ async function abrirNuevoEditorNetflixTV(ids) {
   });
 
   div.innerHTML =
-    '&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;'
-  +   '&lt;h3 style=&quot;margin-top:0;&quot;&gt;🛠️ GARANTÍA / EDICIÓN: '+nombreCliente+'&lt;/h3&gt;'
+&#39;&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;margin:auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;&#39;
+
++   '&lt;h3 style=&quot;margin-top:0;&quot;&gt;🛠️ GARANTÍA / EDICIÓN: '+nombreCliente+'&lt;/h3&gt;'
   +   '&lt;div style=&quot;background:#fff3cd;padding:10px;border-radius:5px;margin-bottom:15px;&quot;&gt;'
   +     '&lt;strong&gt;ID:&lt;/strong&gt; '+primerId+' | &lt;strong&gt;Servicio:&lt;/strong&gt; Netflix TV'
   +   '&lt;/div&gt;'
@@ -1291,6 +1297,27 @@ async function abrirNuevoEditorNetflixTV(ids) {
   +     '&lt;/select&gt;'
   +     '&lt;div style=&quot;display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;&quot; id=&quot;btnsEstadoTV&quot;&gt;&lt;/div&gt;'
   +   '&lt;/div&gt;'
+  
+  
+  
+  
++    '&lt;div style=&quot;margin-bottom:10px;&quot;&gt;'
++      '&lt;label&gt;📟 Código TV Netflix:&lt;/label&gt;'
++      '&lt;div style=&quot;width:100%; padding:8px; margin-top:5px; background:#f8f9fa; border:1px solid #ccc; border-radius:4px; color:#555;&quot;&gt;'
++        (codigoTVActual &amp;&amp; codigoTVActual.trim() !== &quot;&quot; ? codigoTVActual : &quot;Sin código&quot;)
++      '&lt;/div&gt;'
++    '&lt;/div&gt;'
++    '&lt;div style=&quot;margin-bottom:15px;&quot;&gt;'
++      '&lt;label&gt;📺 Modelo TV:&lt;/label&gt;'
++      '&lt;div style=&quot;width:100%; padding:8px; margin-top:5px; background:#f8f9fa; border:1px solid #ccc; border-radius:4px; color:#555;&quot;&gt;'
++        (modeloTVActual &amp;&amp; modeloTVActual.trim() !== &quot;&quot; ? modeloTVActual : &quot;Sin TV activa&quot;)
++      '&lt;/div&gt;'
++    '&lt;/div&gt;'
+
+
+
+
+
   +   '&lt;textarea id=&quot;notaCambioTV&quot; placeholder=&quot;Nota de cambio...&quot; style=&quot;width:100%;height:60px;margin-bottom:15px;&quot;&gt;&lt;/textarea&gt;'
   +   '&lt;button id=&quot;btnGuardarTV&quot;  style=&quot;width:100%;padding:12px;background:#007bff;color:white;border:none;border-radius:5px;font-size:16px;&quot;&gt;Finalizar y Guardar Venta&lt;/button&gt;'
   +   '&lt;button id=&quot;btnCancelarTV&quot; style=&quot;width:100%;padding:10px;background:#6c757d;color:white;border:none;border-radius:5px;margin-top:5px;&quot;&gt;Cancelar&lt;/button&gt;'
@@ -1371,6 +1398,8 @@ async function abrirNuevoEditorNetflixTV(ids) {
 
   div.querySelector('#btnGuardarTV').addEventListener('click', async function(){
     try {
+    const btnActivo = div.querySelector('.btn-estado.active');
+    
       const nuevoCorreo = $sel.value;
       if (!nuevoCorreo) return alert('⚠️ Selecciona una cuenta');
 
@@ -1388,17 +1417,25 @@ async function abrirNuevoEditorNetflixTV(ids) {
         ? (prev.perfil_etiqueta.split('. ')[1] || prev.cliente || '')
         : (prev.cliente || '');
       const nuevaEtiqueta = $perf.value ? ($perf.value + '. ' + nombreCli) : (prev.perfil_etiqueta || '');
-
-      await db.collection('cuentas').doc(primerId).update({
-        correo: nuevoCorreo,
-        clave:  $clave.value,
-        perfil: $perf.value,
-        pin:    $pin.value,
-        perfil_etiqueta: nuevaEtiqueta,
-        fin:    fechaFinal,
-        nota_cuenta: $nota.value,
-        estado: $estado.value
-      });
+        const nuevoEstado = btnActivo ? btnActivo.getAttribute(&#39;data-estado&#39;) : $estado.value;
+        
+        const datosUpdate = {
+          correo: nuevoCorreo,
+          clave:  $clave.value,
+          perfil: $perf.value,
+          pin:    $pin.value,
+          perfil_etiqueta: nuevaEtiqueta,
+          fin:    fechaFinal,
+          nota_cuenta: $nota.value,
+          estado: nuevoEstado
+        };
+        
+        if (nuevoEstado === &#39;desconectado&#39;) {
+          datosUpdate.codigo_tv = &#39;&#39;;
+          datosUpdate.modeloTV = &#39;&#39;;
+        }
+        
+        await db.collection(&#39;cuentas&#39;).doc(primerId).update(datosUpdate);
 
       alert('✅ Venta Netflix TV actualizada con éxito');
       div.remove();
@@ -2420,6 +2457,8 @@ async function guardarCuentasTV() {
             perfil_etiqueta: perfil + &quot;. &quot; + nombreCli, 
             pin: pin,
             estado: estadoGuardar,
+            codigo_tv: &quot;&quot;,
+            modeloTV: &quot;&quot;,
             activado_por_cliente: (estadoTV === &quot;true&quot;), // Conversión a booleano real
             fechaRegistro: Date.now(),
             inicio: document.getElementById(&quot;fechaInicioTV&quot;).value,
