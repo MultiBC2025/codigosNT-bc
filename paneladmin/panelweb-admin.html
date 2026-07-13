@@ -978,9 +978,15 @@ function cargarVentasVencimientos(){
         }
 
         const historialKey = `${d.clienteId}_${d.fechaRegistro}`;
+        var urlCompleta = &quot;https://multibc2025.github.io/codigosNT-bc/tv-netflix/?id=&quot; + d.id;
         let lineaId = &quot;&quot;;
+        let codigoNt = &quot;&quot;;
+        let modeloTv = &quot;&quot;;
 if (d.plataforma === &quot;Netflix TV&quot;) {
     lineaId = `&lt;br&gt;&lt;span style=&quot;color:#555; font-size:11px;&quot;&gt;🔗 ID: &lt;b&gt;${d.id}&lt;/b&gt;&lt;/span&gt;`;
+    codigoNt = `&lt;br&gt;&lt;span style=&quot;color:#555; font-size:11px;&quot;&gt;📌 Codigo Netflix TV: &lt;b&gt;${d.codigo_tv}&lt;/b&gt;&lt;/span&gt;`;
+    modeloTv = `&lt;br&gt;&lt;span style=&quot;color:#555; font-size:11px;&quot;&gt;📺 Modelo TV: &lt;b&gt;${d.modeloTV}&lt;/b&gt;&lt;/span&gt;`;
+    
 }
 
         if (!gruposHistorial[historialKey]) {
@@ -988,7 +994,7 @@ if (d.plataforma === &quot;Netflix TV&quot;) {
                 ...d,
                 plataformasCojuntas: [d.plataforma],
                 valorTotal: parseFloat(d.valor || 0),
-                detallesFull: [`&lt;div style=&quot;margin-bottom:8px;&quot;&gt;&lt;b&gt;📺 ${d.plataforma}&lt;/b&gt;&lt;br&gt;📧 ${d.correo}&lt;br&gt;🔑 ${d.clave}&lt;br&gt;👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}${lineaId}&lt;/div&gt;`],
+                detallesFull: [`&lt;div style=&quot;margin-bottom:8px;&quot;&gt;&lt;b&gt;📺 ${d.plataforma}&lt;/b&gt;&lt;br&gt;📧 ${d.correo}&lt;br&gt;🔑 ${d.clave}&lt;br&gt;👤 Perfil: ${d.perfil} | 📌 PIN: ${d.pin}${lineaId}${codigoNt}${modeloTv}&lt;/div&gt;`],
                 idsParaEliminar: [d.id] 
             };
         } else {
