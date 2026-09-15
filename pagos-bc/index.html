@@ -39,7 +39,7 @@
 
     .input-group { margin-bottom: 15px; position: relative; }
     .input-group label { display: block; font-weight: 800; font-size: 0.8rem; margin-bottom: 5px; color: var(--p); }
-    input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 1rem; outline: none; }
+input[type="text"], input[type="email"], input[type="password"], input[type="tel"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 1rem; outline: none; box-sizing: border-box; }
 
     .sugerencias { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--line); border-radius: 0 0 12px 12px; z-index: 100; max-height: 150px; overflow-y: auto; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .sug-item { padding: 12px; cursor: pointer; border-bottom: 1px solid #f9f9f9; font-weight: 600; }
@@ -87,18 +87,59 @@
 </div>
 
 <div id="login-container">
-  <div class="login-card">
+  <!-- VISTA 1: Iniciar Sesión -->
+  <div class="login-card" id="card-credenciales">
     <img src="https://raw.githubusercontent.com/MultiBC2025/codigosNT-bc/main/Icon_BC_1280x1280x300dpi.png" style="width: 70px; margin-bottom: 15px;">
     <h2 style="color:var(--p); margin: 0 0 20px 0;">Iniciar Sesión</h2>
+    
     <div class="input-group">
       <input type="email" id="email" placeholder="Correo electrónico">
     </div>
     <div class="input-group">
       <input type="password" id="pass" placeholder="Contraseña">
     </div>
+
+    <div style="text-align: right; margin-top: -6px; margin-bottom: 16px;">
+      <a href="javascript:void(0)" id="link-abrir-recuperar" style="color: var(--p); font-size: 0.85rem; text-decoration: none; font-weight: 600;">
+        ¿Olvidaste tu contraseña?
+      </a>
+    </div>
+
     <button class="btn btn-primary" id="btn-login-fire">ENTRAR</button>
   </div>
+
+  <!-- VISTA 2: Recuperar Contraseña (Integrada en la tarjeta) -->
+  <div class="login-card" id="card-recuperar" style="display: none;">
+    <img src="https://raw.githubusercontent.com/MultiBC2025/codigosNT-bc/main/Icon_BC_1280x1280x300dpi.png" style="width: 70px; margin-bottom: 15px;">
+    <h2 style="color:var(--p); margin: 0 0 10px 0;">Recuperar Acceso</h2>
+    <p style="color:#6b7280; font-size: 0.85rem; margin-bottom: 20px;">Ingresa tu correo registrado y te enviaremos el enlace para restablecer tu contraseña.</p>
+    
+    <div class="input-group">
+      <input type="email" id="email-recuperar" placeholder="tucorreo@ejemplo.com">
+    </div>
+
+    <div id="msg-recuperar" style="font-size: 0.85rem; margin-bottom: 12px; display: none;"></div>
+
+    <button class="btn btn-primary" id="btn-enviar-recuperar" style="width: 100%; margin-bottom: 10px;">ENVIAR ENLACE</button>
+    <button class="btn" id="btn-volver-login" style="width: 100%; background: #e5e7eb; color: #4b5563;">Volver al inicio</button>
+  </div>
+
+  <!-- VISTA 3: Verificación 2FA Google Authenticator -->
+  <div class="login-card" id="card-2fa" style="display: none;">
+    <img src="https://raw.githubusercontent.com/MultiBC2025/codigosNT-bc/main/Icon_BC_1280x1280x300dpi.png" style="width: 70px; margin-bottom: 15px;">
+    <h2 style="color:var(--p); margin: 0 0 10px 0;">Seguridad 2FA</h2>
+    <p style="color:#6b7280; font-size: 0.85rem; margin-bottom: 20px;">Ingresa el código de 6 dígitos de tu app Google Authenticator</p>
+    
+    <div class="input-group">
+      <input type="tel" id="codigo2fa" maxlength="6" placeholder="000000" style="text-align: center; font-size: 1.8rem; letter-spacing: 6px; font-weight: bold; width: 100%; box-sizing: border-box;">
+    </div>
+    
+    <button class="btn btn-primary" id="btn-verificar-2fa" style="width: 100%; margin-bottom: 10px;">VERIFICAR</button>
+    <button class="btn" id="btn-cancelar-2fa" style="width: 100%; background: #e5e7eb; color: #4b5563;">Cancelar</button>
+  </div>
 </div>
+
+
 
 <nav id="app-nav">
   <button class="nav-btn active" id="btn-reg" onclick="showSection('registrar')">📝 REGISTRAR</button>
@@ -189,7 +230,7 @@
 <script type="module">
   import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot, deleteDoc, doc, updateDoc, getDoc, where, setDoc } from "firebase/firestore";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendPasswordResetEmail } from "firebase/auth";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBQS672x-Pe9Idd1eGMbCt5tHoZ8CTu98c",
@@ -204,39 +245,154 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from
   const db = getFirestore(app);
   const auth = getAuth(app);
 
+    // Pega aquí la URL de tu Google Apps Script creada en el Paso 2
+  const URL_APPS_SCRIPT_2FA = "https://script.google.com/macros/s/AKfycbxnE6ngh-sOBlrJr7z6aH3MNGZCmWPgZvRiOqvb_IG1ZYGmds8R5MoRB6kjuQkMgLVb/exec";
+
+  let dosFactoresAprobado = false;
+
+  function mostrarTarjeta(idTarjeta) {
+    document.getElementById("card-credenciales").style.display = idTarjeta === "card-credenciales" ? "block" : "none";
+    document.getElementById("card-recuperar").style.display = idTarjeta === "card-recuperar" ? "block" : "none";
+    document.getElementById("card-2fa").style.display = idTarjeta === "card-2fa" ? "block" : "none";
+  }
+
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-        cargarNombresClientes();
-    window.escucharRecibosPendientes();
+    if (user && dosFactoresAprobado) {
       document.getElementById("login-container").style.display = "none";
       document.getElementById("app-nav").style.display = "flex";
       document.getElementById("app-container").style.display = "flex";
       cargarNombresClientes();
-    } else {
+      window.escucharRecibosPendientes();
+    } else if (user && !dosFactoresAprobado) {
       document.getElementById("login-container").style.display = "flex";
+      mostrarTarjeta("card-2fa");
+      document.getElementById("app-nav").style.display = "none";
+      document.getElementById("app-container").style.display = "none";
+      setTimeout(() => document.getElementById("codigo2fa").focus(), 100);
+    } else {
+      dosFactoresAprobado = false;
+      document.getElementById("login-container").style.display = "flex";
+      mostrarTarjeta("card-credenciales");
       document.getElementById("app-nav").style.display = "none";
       document.getElementById("app-container").style.display = "none";
     }
   });
 
+  // 1. Iniciar sesión con Correo y Contraseña
   document.getElementById("btn-login-fire").onclick = async () => {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("pass").value;
-    if(!email || !pass) return alert("Completa los datos");
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("pass").value.trim();
+    if (!email || !pass) return alert("Completa los datos");
     document.getElementById("loader").style.display = "flex";
     try {
       await signInWithEmailAndPassword(auth, email, pass);
-    } catch (e) { alert("Error: Credenciales inválidas"); }
-    finally { document.getElementById("loader").style.display = "none"; }
+    } catch (e) {
+      alert("Error: Credenciales inválidas");
+    } finally {
+      document.getElementById("loader").style.display = "none";
+    }
   };
-  
+
   [document.getElementById("email"), document.getElementById("pass")].forEach(input => {
     input.addEventListener("keypress", (e) => {
       if (e.key === "Enter") document.getElementById("btn-login-fire").click();
     });
   });
 
-  document.getElementById("btn-logout-fire").onclick = () => signOut(auth);
+  // 2. Navegación a la vista integrada de Recuperar Contraseña
+  document.getElementById("link-abrir-recuperar").onclick = () => {
+    const correoActual = document.getElementById("email").value.trim();
+    if (correoActual) document.getElementById("email-recuperar").value = correoActual;
+    const msg = document.getElementById("msg-recuperar");
+    msg.style.display = "none";
+    mostrarTarjeta("card-recuperar");
+    document.getElementById("email-recuperar").focus();
+  };
+
+  document.getElementById("btn-volver-login").onclick = () => {
+    mostrarTarjeta("card-credenciales");
+  };
+
+  // Enviar correo de restablecimiento con mensajes amigables
+  document.getElementById("btn-enviar-recuperar").onclick = async () => {
+    const email = document.getElementById("email-recuperar").value.trim();
+    const msg = document.getElementById("msg-recuperar");
+    
+    if (!email) {
+      msg.style.display = "block";
+      msg.style.color = "#dc2626";
+      msg.innerHTML = "⚠️ Escribe tu correo electrónico.";
+      return;
+    }
+
+    document.getElementById("loader").style.display = "flex";
+    try {
+      await sendPasswordResetEmail(auth, email);
+      msg.style.display = "block";
+      msg.style.color = "#16a34a";
+      msg.innerHTML = "✅ Enlace enviado. Revisa tu bandeja de entrada o spam.";
+    } catch (error) {
+      msg.style.display = "block";
+      msg.style.color = "#dc2626";
+      if (error.code === "auth/user-not-found" || error.code === "auth/invalid-email") {
+        msg.innerHTML = "❌ Correo incorrecto o no registrado.";
+      } else {
+        msg.innerHTML = "❌ Error: " + (error.message || "No se pudo enviar");
+      }
+    } finally {
+      document.getElementById("loader").style.display = "none";
+    }
+  };
+
+  document.getElementById("email-recuperar").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") document.getElementById("btn-enviar-recuperar").click();
+  });
+
+  // 3. Verificación de Código 2FA
+  async function confirmar2FA() {
+    const token = document.getElementById("codigo2fa").value.trim();
+    if (token.length !== 6) return alert("Ingresa los 6 dígitos");
+
+    document.getElementById("loader").style.display = "flex";
+    try {
+      const resp = await fetch(URL_APPS_SCRIPT_2FA + "?codigo=" + encodeURIComponent(token) + "&t=" + Date.now());
+      const data = await resp.json();
+
+      if (data.valido) {
+        dosFactoresAprobado = true;
+        document.getElementById("codigo2fa").value = "";
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("app-nav").style.display = "flex";
+        document.getElementById("app-container").style.display = "flex";
+        cargarNombresClientes();
+        window.escucharRecibosPendientes();
+      } else {
+        alert("❌ Código incorrecto o expirado");
+        document.getElementById("codigo2fa").value = "";
+        document.getElementById("codigo2fa").focus();
+      }
+    } catch (err) {
+      alert("Error al verificar código con el servidor");
+    } finally {
+      document.getElementById("loader").style.display = "none";
+    }
+  }
+
+  document.getElementById("btn-verificar-2fa").onclick = confirmar2FA;
+  document.getElementById("codigo2fa").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") confirmar2FA();
+  });
+
+  document.getElementById("btn-cancelar-2fa").onclick = async () => {
+    dosFactoresAprobado = false;
+    await signOut(auth);
+  };
+
+  document.getElementById("btn-logout-fire").onclick = async () => {
+    dosFactoresAprobado = false;
+    await signOut(auth);
+  };
+
 
   const secreto = "8P2zfuCXImWpgSdurhsJKPstKKi5NW2gBySazIA";
   const GEMINI_KEY = secreto.split("").reverse().join("");
