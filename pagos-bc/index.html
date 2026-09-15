@@ -248,7 +248,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendP
     // Pega aquí la URL de tu Google Apps Script creada en el Paso 2
   const URL_APPS_SCRIPT_2FA = "https://script.google.com/macros/s/AKfycbxnE6ngh-sOBlrJr7z6aH3MNGZCmWPgZvRiOqvb_IG1ZYGmds8R5MoRB6kjuQkMgLVb/exec";
 
-  let dosFactoresAprobado = false;
+    let esperando2FA = false;
 
   function mostrarTarjeta(idTarjeta) {
     document.getElementById("card-credenciales").style.display = idTarjeta === "card-credenciales" ? "block" : "none";
@@ -257,20 +257,24 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendP
   }
 
   onAuthStateChanged(auth, (user) => {
-    if (user && dosFactoresAprobado) {
-      document.getElementById("login-container").style.display = "none";
-      document.getElementById("app-nav").style.display = "flex";
-      document.getElementById("app-container").style.display = "flex";
-      cargarNombresClientes();
-      window.escucharRecibosPendientes();
-    } else if (user && !dosFactoresAprobado) {
-      document.getElementById("login-container").style.display = "flex";
-      mostrarTarjeta("card-2fa");
-      document.getElementById("app-nav").style.display = "none";
-      document.getElementById("app-container").style.display = "none";
-      setTimeout(() => document.getElementById("codigo2fa").focus(), 100);
+    if (user) {
+      if (esperando2FA) {
+        // Viene de escribir correo y contraseña -> pedir 2FA
+        document.getElementById("login-container").style.display = "flex";
+        mostrarTarjeta("card-2fa");
+        document.getElementById("app-nav").style.display = "none";
+        document.getElementById("app-container").style.display = "none";
+        setTimeout(() => document.getElementById("codigo2fa").focus(), 100);
+      } else {
+        // Página recargada (F5) o sesión ya verificada -> entrar directo
+        document.getElementById("login-container").style.display = "none";
+        document.getElementById("app-nav").style.display = "flex";
+        document.getElementById("app-container").style.display = "flex";
+        cargarNombresClientes();
+        window.escucharRecibosPendientes();
+      }
     } else {
-      dosFactoresAprobado = false;
+      esperando2FA = false;
       document.getElementById("login-container").style.display = "flex";
       mostrarTarjeta("card-credenciales");
       document.getElementById("app-nav").style.display = "none";
@@ -278,20 +282,24 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendP
     }
   });
 
+
   // 1. Iniciar sesión con Correo y Contraseña
-  document.getElementById("btn-login-fire").onclick = async () => {
+    document.getElementById("btn-login-fire").onclick = async () => {
     const email = document.getElementById("email").value.trim();
     const pass = document.getElementById("pass").value.trim();
     if (!email || !pass) return alert("Completa los datos");
     document.getElementById("loader").style.display = "flex";
+    esperando2FA = true; // <-- AGREGA ESTA LÍNEA
     try {
       await signInWithEmailAndPassword(auth, email, pass);
     } catch (e) {
+      esperando2FA = false; // <-- AGREGA ESTA LÍNEA
       alert("Error: Credenciales inválidas");
     } finally {
       document.getElementById("loader").style.display = "none";
     }
   };
+
 
   [document.getElementById("email"), document.getElementById("pass")].forEach(input => {
     input.addEventListener("keypress", (e) => {
@@ -359,7 +367,7 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendP
       const data = await resp.json();
 
       if (data.valido) {
-        dosFactoresAprobado = true;
+        esperando2FA = false;
         document.getElementById("codigo2fa").value = "";
         document.getElementById("login-container").style.display = "none";
         document.getElementById("app-nav").style.display = "flex";
@@ -384,14 +392,15 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendP
   });
 
   document.getElementById("btn-cancelar-2fa").onclick = async () => {
-    dosFactoresAprobado = false;
+    esperando2FA = false;
     await signOut(auth);
   };
 
   document.getElementById("btn-logout-fire").onclick = async () => {
-    dosFactoresAprobado = false;
+    esperando2FA = false;
     await signOut(auth);
   };
+
 
 
   const secreto = "8P2zfuCXImWpgSdurhsJKPstKKi5NW2gBySazIA";
