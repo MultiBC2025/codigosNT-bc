@@ -261,7 +261,11 @@
                     <option value="52">+52 🇲🇽</option>
                     <option value="1">+1 🇺🇸</option>
                 </select>
-                <input type="tel" id="inputTel" class="form-control form-control-lg" placeholder="3001234567">
+                <input type="tel" id="inputTel" class="form-control form-control-lg" placeholder="3001234567" 
+       oninput="limpiarInputTel(this)" 
+       onpaste="setTimeout(() => limpiarInputTel(this), 10)"
+       onkeydown="if(event.key === 'Enter' || event.keyCode === 13){ event.preventDefault(); verificarAcceso(); }">
+
             </div>
             <button onclick="verificarAcceso()" id="btnAcceder" class="btn btn-primary btn-lg w-100 shadow-sm">Consultar Mis Servicios</button>
             
@@ -598,39 +602,78 @@
         return diff + "d";
     }
 
+// Función para limpiar en tiempo real (quita +, espacios, guiones, etc.)
+function limpiarInputTel(input) {
+    let valor = input.value;
+    if (!valor) return;
+
+    let soloNumeros = valor.replace(/\D/g, '');
+
+    // Si viene con prefijo como +57, +58, +51, +52 (números de más de 10 dígitos)
+    const select = document.getElementById("selectPais");
+    const prefijos = ["58", "57", "51", "52"];
+    
+    // Si empieza por 1 (USA) y tiene 11 dígitos
+    if (soloNumeros.startsWith("1") && soloNumeros.length === 11) {
+        if (select) select.value = "1";
+        soloNumeros = soloNumeros.substring(1);
+    } else {
+        for (let p of prefijos) {
+            if (soloNumeros.startsWith(p) && soloNumeros.length > 9) {
+                if (select) select.value = p;
+                soloNumeros = soloNumeros.substring(p.length);
+                break;
+            }
+        }
+    }
+
+    if (input.value !== soloNumeros) {
+        input.value = soloNumeros;
+    }
+}
+
 async function verificarAcceso() {
-    const tel = document.getElementById("inputTel").value.trim();
-    if(!tel) return alert("Ingresa tu número.");
+    // Tomamos el valor y forzamos a quitarle cualquier espacio o símbolo
+    const input = document.getElementById("inputTel");
+    limpiarInputTel(input);
+    const tel = input.value.replace(/\D/g, '').trim();
+
+    if (!tel || tel.length < 7) {
+        return alert("Ingresa un número válido.");
+    }
+
     const btn = document.getElementById("btnAcceder");
-    btn.disabled = true; btn.innerText = "Buscando...";
+    btn.disabled = true; 
+    btn.innerText = "Buscando...";
 
     try {
         const snapClientes = await db.collection("clientes").get();
-        // Definimos la lista de clientes encontrados (con S al final)
         let clientesEncontrados = []; 
 
         snapClientes.forEach(doc => {
             const c = doc.data();
-            const numBD = (c.whatsapp || "").replace(/\D/g, '');
-            // Si el número coincide, lo agregamos a la lista
-            if(numBD.includes(tel) && tel.length >= 7) {
+            const numBD = (c.whatsapp || "").toString().replace(/\D/g, '');
+            // Ahora compara los números 100% limpios de ambos lados
+            if (numBD.includes(tel) && tel.length >= 7) {
                 clientesEncontrados.push({ id: doc.id, ...c });
             }
         });
 
-        // Si la lista tiene al menos un cliente
-        if(clientesEncontrados.length > 0) {
+        if (clientesEncontrados.length > 0) {
             cargarPanelCliente(clientesEncontrados); 
         } else { 
             alert("No registrado."); 
             btn.disabled = false; 
-            btn.innerText = "Consultar"; 
+            btn.innerText = "Consultar Mis Servicios"; 
         }
     } catch (e) { 
-        alert("Error"); 
+        console.error(e);
+        alert("Error de conexión"); 
         btn.disabled = false; 
+        btn.innerText = "Consultar Mis Servicios"; 
     }
 }
+
 async function cargarPanelCliente(clientesEncontrados) {
     const hoyLocal = new Date();
     const hora = hoyLocal.getHours();
@@ -705,13 +748,13 @@ async function cargarPanelCliente(clientesEncontrados) {
 
             if(pName.includes("NETFLIX")) {
                 // Botón de Autogestión original
-                btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion">Autogestión</a>`;
+                //btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion"//>Autogestión</a>`;
                 
                 // BOTÓN AZUL: Ver Código (Con icono y estilo mejorado)
                 btnLink += `<button type="button" onclick="pedirCodigo('${s.correo}', this)" 
                             class="btn-autogestion" 
                             style="background: #0d6efd !important; color: white !important; border: none; margin-left: 5px; font-weight: bold;">
-                            🔑 Ver Código
+                            🔑 Ver Código Inicio de Sesion
                             </button>`;
                             
                  // NUEVO BOTÓN UNIFICADO: Busca Temporal y Hogar usando el perfil dinámico
@@ -1034,7 +1077,7 @@ function pedirCodigoDisney(correoCliente, boton) {
 
 function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
     const visor = botonPresionado.parentElement.querySelector('.contenedor-codigo');
-    const urlApi = "https://script.google.com/macros/s/AKfycby_vB6FkeA2eq0-CV3-oIA7fpzCINkUDijE0irHC744e3Wzby7-QVaJTuyNhS8nkSoOMg/exec";
+    const urlApi = "https://script.google.com/macros/s/AKfycby1QrfLpChf1MK7UvDpYtPOQ15MxNmiLNI3DE51xTaZ5pXJRMDNIxQ2CeeBNzQRFjUxdw/exec";
 
     if (!visor) return;
 
@@ -1142,7 +1185,81 @@ function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
     }
 }
 
-    
+    // ========================================================
+// LIMPIEZA INTELIGENTE MULTIPAÍS Y SOPORTE DE TECLA ENTER
+// ========================================================
+document.addEventListener("DOMContentLoaded", function () {
+    const inputTel = document.getElementById("inputTel");
+    const selectPais = document.getElementById("selectPais");
+
+    if (!inputTel) return;
+
+    // Prefijos que tienes en tu selector ordenados por longitud
+    const prefijosSoportados = ["58", "57", "51", "52", "1"];
+
+    function limpiarNumero() {
+        let valor = inputTel.value;
+        if (!valor) return;
+
+        // 1. Quita paréntesis, signos +, guiones, espacios y cualquier letra
+        let soloDigitos = valor.replace(/\D/g, '');
+
+        // 2. Si el texto original traía "+" o era un número largo con código de país
+        let detectoPrefijo = false;
+
+        for (const pref of prefijosSoportados) {
+            // Caso especial USA / Canadá (+1 con 11 dígitos, ej: +1 305 555 1234)
+            if (pref === "1" && soloDigitos.startsWith("1") && soloDigitos.length === 11) {
+                if (selectPais) selectPais.value = "1";
+                soloDigitos = soloDigitos.substring(1);
+                detectoPrefijo = true;
+                break;
+            }
+            // Casos Colombia, Venezuela, Perú, México (prefijos de 2 dígitos y longitud > 9 o 10)
+            else if (pref !== "1" && soloDigitos.startsWith(pref) && soloDigitos.length > 9) {
+                if (selectPais) selectPais.value = pref;
+                soloDigitos = soloDigitos.substring(pref.length);
+                // Si es México y trae el '1' móvil de WhatsApp (+52 1 ...), también lo limpia
+                if (pref === "52" && soloDigitos.startsWith("1") && soloDigitos.length === 11) {
+                    soloDigitos = soloDigitos.substring(1);
+                }
+                detectoPrefijo = true;
+                break;
+            }
+        }
+
+        // Si no detectó prefijo nuevo pero empieza por el prefijo actualmente seleccionado
+        if (!detectoPrefijo && selectPais) {
+            const actual = selectPais.value;
+            if (actual === "1" && soloDigitos.startsWith("1") && soloDigitos.length === 11) {
+                soloDigitos = soloDigitos.substring(1);
+            } else if (actual !== "1" && soloDigitos.startsWith(actual) && soloDigitos.length > 10) {
+                soloDigitos = soloDigitos.substring(actual.length);
+            }
+        }
+
+        // 3. Aplica el número limpio en la caja
+        if (inputTel.value !== soloDigitos) {
+            inputTel.value = soloDigitos;
+        }
+    }
+
+    // Se ejecuta al escribir y al pegar
+    inputTel.addEventListener("input", limpiarNumero);
+    inputTel.addEventListener("paste", function () {
+        setTimeout(limpiarNumero, 20);
+    });
+
+    // Detecta la tecla ENTER en ordenador o botón "Ir / Buscar" en teclado de celular
+    inputTel.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.keyCode === 13) {
+            e.preventDefault();
+            limpiarNumero();
+            verificarAcceso();
+        }
+    });
+});
+
 </script>
 
 <footer class="main-footer">
