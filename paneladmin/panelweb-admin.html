@@ -323,14 +323,87 @@
 
 &lt;div id=&quot;tooltip-flotante&quot;&gt;&lt;/div&gt;
 
-&lt;div id=&quot;login&quot;&gt;
-    &lt;div style=&quot;padding:100px; text-align:center;&quot;&gt;
-        &lt;h2&gt;🔐 Acceso al Sistema&lt;/h2&gt;
-        &lt;input id=&quot;email&quot; type=&quot;email&quot; placeholder=&quot;Correo&quot;&gt;&lt;br&gt;
-        &lt;input id=&quot;password&quot; type=&quot;password&quot; placeholder=&quot;Contraseña&quot;&gt;&lt;br&gt;
-        &lt;button class=&quot;save-btn&quot; onclick=&quot;loginUser()&quot;&gt;Entrar al Panel&lt;/button&gt;
+&lt;!-- CONTENEDOR DE LOGIN ELEGANTE - MODO CLARO CÁLIDO (CENTRADO TOTAL) --&gt;
+&lt;div id=&quot;login&quot; style=&quot;display:none; position:fixed; top:0; left:0; width:100%; height:100%; min-height:100vh; background:linear-gradient(135deg, #fbf9f5 0%, #f3ede2 50%, #eae3d5 100%); justify-content:center; align-items:center; padding:20px; box-sizing:border-box; z-index:99999; font-family:Segoe UI, sans-serif;&quot;&gt;
+    &lt;div style=&quot;width:100%; max-width:420px; background:#ffffff; border:1px solid #e7ded3; border-radius:22px; padding:38px 32px; box-shadow:0 22px 50px -12px rgba(112, 85, 52, 0.15), 0 8px 20px -6px rgba(0,0,0,0.04); color:#2d3748; box-sizing:border-box;&quot;&gt;
+        
+        &lt;!-- 1. TARJETA PRINCIPAL: INICIO DE SESIÓN --&gt;
+        &lt;div id=&quot;tarjetaLogin&quot;&gt;
+            &lt;div style=&quot;text-align:center; margin-bottom:28px;&quot;&gt;
+                &lt;div style=&quot;width:64px; height:64px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px; box-shadow:0 6px 14px rgba(34,197,94,0.12);&quot;&gt;🔐&lt;/div&gt;
+                &lt;h2 style=&quot;margin:0; font-size:23px; font-weight:700; color:#1e293b; letter-spacing:-0.3px;&quot;&gt;Acceso al Sistema&lt;/h2&gt;
+                &lt;p style=&quot;margin:8px 0 0; font-size:13.5px; color:#64748b;&quot;&gt;Ingresa tus credenciales autorizadas&lt;/p&gt;
+            &lt;/div&gt;
+
+            &lt;div style=&quot;display:flex; flex-direction:column; gap:16px;&quot;&gt;
+                &lt;div&gt;
+                    &lt;label style=&quot;display:block; font-size:12.5px; font-weight:600; color:#475569; margin-bottom:6px;&quot;&gt;Correo electrónico&lt;/label&gt;
+                    &lt;input id=&quot;email&quot; type=&quot;email&quot; placeholder=&quot;admin@ejemplo.com&quot; 
+                        style=&quot;width:100%; box-sizing:border-box; padding:12px 14px; background:#faf8f5; border:1.5px solid #e2d9ce; border-radius:10px; color:#1e293b; font-size:14px; outline:none;&quot;&gt;
+                &lt;/div&gt;
+
+                &lt;div&gt;
+                    &lt;label style=&quot;display:block; font-size:12.5px; font-weight:600; color:#475569; margin-bottom:6px;&quot;&gt;Contraseña&lt;/label&gt;
+                    &lt;input id=&quot;password&quot; type=&quot;password&quot; placeholder=&quot;••••••••&quot; 
+                        style=&quot;width:100%; box-sizing:border-box; padding:12px 14px; background:#faf8f5; border:1.5px solid #e2d9ce; border-radius:10px; color:#1e293b; font-size:14px; outline:none;&quot;&gt;
+                &lt;/div&gt;
+
+                &lt;div style=&quot;text-align:right; margin-top:-4px;&quot;&gt;
+                    &lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;mostrarTarjetaAuth(&apos;recuperar&apos;)&quot; style=&quot;font-size:12.5px; color:#2563eb; text-decoration:none; font-weight:500;&quot;&gt;¿Olvidaste tu contraseña?&lt;/a&gt;
+                &lt;/div&gt;
+
+                &lt;div id=&quot;errorLogin&quot; style=&quot;display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
+
+                &lt;button id=&quot;btnLogin&quot; class=&quot;save-btn&quot; onclick=&quot;loginUser()&quot; style=&quot;width:100%; padding:13px; font-size:15px; font-weight:600; border-radius:10px; border:none; cursor:pointer; background:#16a34a; color:#ffffff; margin-top:6px; box-shadow:0 4px 12px rgba(22,163,74,0.25);&quot;&gt;Entrar al Panel&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- 2. TARJETA DE RECUPERACIÓN DE CONTRASEÑA --&gt;
+        &lt;div id=&quot;tarjetaRecuperar&quot; style=&quot;display:none;&quot;&gt;
+            &lt;div style=&quot;text-align:center; margin-bottom:24px;&quot;&gt;
+                &lt;div style=&quot;width:64px; height:64px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px; box-shadow:0 6px 14px rgba(37,99,235,0.12);&quot;&gt;🔑&lt;/div&gt;
+                &lt;h2 style=&quot;margin:0; font-size:21px; font-weight:700; color:#1e293b;&quot;&gt;Recuperar Contraseña&lt;/h2&gt;
+                &lt;p style=&quot;margin:8px 0 0; font-size:13.5px; color:#64748b;&quot;&gt;Te enviaremos un enlace seguro a tu correo&lt;/p&gt;
+            &lt;/div&gt;
+
+            &lt;div style=&quot;display:flex; flex-direction:column; gap:16px;&quot;&gt;
+                &lt;div&gt;
+                    &lt;label style=&quot;display:block; font-size:12.5px; font-weight:600; color:#475569; margin-bottom:6px;&quot;&gt;Correo registrado&lt;/label&gt;
+                    &lt;input id=&quot;emailRecuperar&quot; type=&quot;email&quot; placeholder=&quot;admin@ejemplo.com&quot; 
+                        style=&quot;width:100%; box-sizing:border-box; padding:12px 14px; background:#faf8f5; border:1.5px solid #e2d9ce; border-radius:10px; color:#1e293b; font-size:14px; outline:none;&quot;&gt;
+                &lt;/div&gt;
+
+                &lt;div id=&quot;errorRecuperar&quot; style=&quot;display:none; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
+
+                &lt;button id=&quot;btnRecuperar&quot; onclick=&quot;enviarRecuperacion()&quot; style=&quot;width:100%; padding:13px; font-size:14.5px; font-weight:600; border-radius:10px; border:none; cursor:pointer; background:#2563eb; color:#ffffff; box-shadow:0 4px 12px rgba(37,99,235,0.25);&quot;&gt;Enviar Enlace&lt;/button&gt;
+                &lt;button onclick=&quot;mostrarTarjetaAuth(&apos;login&apos;)&quot; style=&quot;width:100%; padding:11px; font-size:13.5px; font-weight:500; border-radius:10px; border:1px solid #d1d5db; background:#ffffff; color:#64748b; cursor:pointer;&quot;&gt;← Volver al Inicio de Sesión&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;!-- 3. TARJETA DE VERIFICACIÓN 2FA (GOOGLE AUTHENTICATOR) --&gt;
+        &lt;div id=&quot;tarjeta2FA&quot; style=&quot;display:none;&quot;&gt;
+            &lt;div style=&quot;text-align:center; margin-bottom:24px;&quot;&gt;
+                &lt;div style=&quot;width:64px; height:64px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:14px; box-shadow:0 6px 14px rgba(34,197,94,0.12);&quot;&gt;🛡️&lt;/div&gt;
+                &lt;h2 style=&quot;margin:0; font-size:21px; font-weight:700; color:#1e293b;&quot;&gt;Seguridad en 2 Pasos&lt;/h2&gt;
+                &lt;p style=&quot;margin:8px 0 0; font-size:13.5px; color:#64748b;&quot;&gt;Código de 6 dígitos de Google Authenticator&lt;/p&gt;
+            &lt;/div&gt;
+
+            &lt;div style=&quot;display:flex; flex-direction:column; gap:16px;&quot;&gt;
+                &lt;div&gt;
+                    &lt;input id=&quot;inputCodigo2FA&quot; type=&quot;text&quot; maxlength=&quot;6&quot; inputmode=&quot;numeric&quot; placeholder=&quot;000000&quot; autocomplete=&quot;one-time-code&quot; 
+                        style=&quot;width:100%; box-sizing:border-box; padding:12px; background:#faf8f5; border:1.5px solid #e2d9ce; border-radius:10px; color:#1e293b; font-size:28px; font-weight:700; letter-spacing:10px; text-align:center; outline:none;&quot;&gt;
+                &lt;/div&gt;
+
+                &lt;div id=&quot;error2FA&quot; style=&quot;display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
+
+                &lt;button id=&quot;btnVerificar2FA&quot; onclick=&quot;verificarCodigo2FA()&quot; style=&quot;width:100%; padding:13px; font-size:15px; font-weight:600; border-radius:10px; border:none; cursor:pointer; background:#16a34a; color:#ffffff; box-shadow:0 4px 12px rgba(22,163,74,0.25);&quot;&gt;Verificar y Entrar&lt;/button&gt;
+                &lt;button onclick=&quot;cancelar2FA()&quot; style=&quot;width:100%; padding:11px; font-size:13.5px; font-weight:500; border-radius:10px; border:1px solid #d1d5db; background:#ffffff; color:#64748b; cursor:pointer;&quot;&gt;Cancelar&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
     &lt;/div&gt;
 &lt;/div&gt;
+
 
 &lt;div id=&quot;panel&quot;&gt;
     &lt;div class=&quot;sidebar&quot;&gt;
@@ -720,16 +793,36 @@ function formatearDiasTexto(diff) {
 }
 const tooltip = document.getElementById('tooltip-flotante');
 
-auth.onAuthStateChanged(u=&gt;{
-    if(u){ 
-        login.style.display=&quot;none&quot;; panel.style.display=&quot;block&quot;; 
-        const ahora = new Date(); const offset = ahora.getTimezoneOffset() * 60000;
-        fechaInicio.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
-        fechaInicioTV.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
-        actualizarTodo();
+let esperando2FA = false;
+
+auth.onAuthStateChanged(u =&gt; {
+    if (u) {
+        if (esperando2FA) {
+            login.style.display = &quot;flex&quot;;
+            panel.style.display = &quot;none&quot;;
+            mostrarTarjetaAuth(&quot;2fa&quot;);
+            setTimeout(() =&gt; {
+                const inp = document.getElementById(&quot;inputCodigo2FA&quot;);
+                if (inp) inp.focus();
+            }, 100);
+        } else {
+            login.style.display = &quot;none&quot;;
+            panel.style.display = &quot;block&quot;;
+            const ahora = new Date();
+            const offset = ahora.getTimezoneOffset() * 60000;
+            fechaInicio.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
+            fechaInicioTV.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
+            actualizarTodo();
+        }
+    } else {
+        esperando2FA = false;
+        login.style.display = &quot;flex&quot;;
+        panel.style.display = &quot;none&quot;;
+        mostrarTarjetaAuth(&quot;login&quot;);
     }
-    else{ login.style.display=&quot;block&quot;; panel.style.display=&quot;none&quot;; }
 });
+
+
 
 async function migrarDesdeExcel() {
     const areaTexto = document.getElementById(&quot;areaJson&quot;).value.trim();
@@ -2735,8 +2828,195 @@ function mostrar(id, esRenovacion = false){
     }
 }
 
-function loginUser(){ auth.signInWithEmailAndPassword(email.value,password.value).catch(e=&gt;alert(e.message)); }
-function logout(){ auth.signOut(); }
+const URL_APPS_SCRIPT_2FA = &quot;https://script.google.com/macros/s/AKfycbxnE6ngh-sOBlrJr7z6aH3MNGZCmWPgZvRiOqvb_IG1ZYGmds8R5MoRB6kjuQkMgLVb/exec&quot;;
+
+function mostrarTarjetaAuth(tarjeta) {
+    const tLogin = document.getElementById(&quot;tarjetaLogin&quot;);
+    const tRecup = document.getElementById(&quot;tarjetaRecuperar&quot;);
+    const t2FA = document.getElementById(&quot;tarjeta2FA&quot;);
+
+    tLogin.style.display = &quot;none&quot;;
+    tRecup.style.display = &quot;none&quot;;
+    t2FA.style.display = &quot;none&quot;;
+
+    document.getElementById(&quot;errorLogin&quot;).style.display = &quot;none&quot;;
+    document.getElementById(&quot;errorRecuperar&quot;).style.display = &quot;none&quot;;
+    document.getElementById(&quot;error2FA&quot;).style.display = &quot;none&quot;;
+
+    if (tarjeta === &quot;login&quot;) {
+        tLogin.style.display = &quot;block&quot;;
+    } else if (tarjeta === &quot;recuperar&quot;) {
+        tRecup.style.display = &quot;block&quot;;
+        const emailOriginal = document.getElementById(&quot;email&quot;).value.trim();
+        const inputRecup = document.getElementById(&quot;emailRecuperar&quot;);
+        if (emailOriginal) inputRecup.value = emailOriginal;
+        inputRecup.focus();
+    } else if (tarjeta === &quot;2fa&quot;) {
+        t2FA.style.display = &quot;block&quot;;
+        const inputCode = document.getElementById(&quot;inputCodigo2FA&quot;);
+        inputCode.value = &quot;&quot;;
+        inputCode.focus();
+    }
+}
+
+function loginUser() {
+    const correo = document.getElementById(&quot;email&quot;).value.trim();
+    const pass = document.getElementById(&quot;password&quot;).value;
+    const btn = document.getElementById(&quot;btnLogin&quot;);
+    const err = document.getElementById(&quot;errorLogin&quot;);
+
+    err.style.display = &quot;none&quot;;
+
+    if (!correo || !pass) {
+        err.innerText = &quot;Por favor ingresa tu correo y contraseña.&quot;;
+        err.style.display = &quot;block&quot;;
+        return;
+    }
+
+    btn.innerText = &quot;Validando credenciales...&quot;;
+    btn.disabled = true;
+
+    esperando2FA = true;
+
+    auth.signInWithEmailAndPassword(correo, pass)
+        .catch(error =&gt; {
+            esperando2FA = false;
+            btn.innerText = &quot;Entrar al Panel&quot;;
+            btn.disabled = false;
+            let msg = &quot;Error al iniciar sesión.&quot;;
+            if (error.code === &quot;auth/user-not-found&quot; || error.code === &quot;auth/wrong-password&quot; || error.code === &quot;auth/invalid-credential&quot;) {
+                msg = &quot;Correo o contraseña incorrectos.&quot;;
+            } else if (error.code === &quot;auth/invalid-email&quot;) {
+                msg = &quot;El formato del correo no es válido.&quot;;
+            } else if (error.code === &quot;auth/too-many-requests&quot;) {
+                msg = &quot;Muchos intentos fallidos. Intenta más tarde.&quot;;
+            }
+            err.innerText = msg;
+            err.style.display = &quot;block&quot;;
+        });
+}
+function enviarRecuperacion() {
+    const correo = document.getElementById(&quot;emailRecuperar&quot;).value.trim();
+    const btn = document.getElementById(&quot;btnRecuperar&quot;);
+    const msgBox = document.getElementById(&quot;errorRecuperar&quot;);
+
+    msgBox.style.display = &quot;none&quot;;
+
+    if (!correo) {
+        msgBox.style.background = &quot;rgba(248,81,73,0.15)&quot;;
+        msgBox.style.border = &quot;1px solid #f85149&quot;;
+        msgBox.style.color = &quot;#ff7b72&quot;;
+        msgBox.innerText = &quot;Escribe tu correo electrónico.&quot;;
+        msgBox.style.display = &quot;block&quot;;
+        return;
+    }
+
+    btn.innerText = &quot;Enviando enlace...&quot;;
+    btn.disabled = true;
+
+    auth.sendPasswordResetEmail(correo)
+        .then(() =&gt; {
+            btn.innerText = &quot;Enviar Enlace de Recuperación&quot;;
+            btn.disabled = false;
+            msgBox.style.background = &quot;rgba(35,134,54,0.15)&quot;;
+            msgBox.style.border = &quot;1px solid #238636&quot;;
+            msgBox.style.color = &quot;#7ee787&quot;;
+            msgBox.innerText = &quot;¡Enlace enviado! Revisa tu bandeja de entrada o la carpeta de spam.&quot;;
+            msgBox.style.display = &quot;block&quot;;
+        })
+        .catch(error =&gt; {
+            btn.innerText = &quot;Enviar Enlace de Recuperación&quot;;
+            btn.disabled = false;
+            msgBox.style.background = &quot;rgba(248,81,73,0.15)&quot;;
+            msgBox.style.border = &quot;1px solid #f85149&quot;;
+            msgBox.style.color = &quot;#ff7b72&quot;;
+
+            if (error.code === &quot;auth/user-not-found&quot;) {
+                msgBox.innerText = &quot;Ese correo no está registrado en el sistema.&quot;;
+            } else if (error.code === &quot;auth/invalid-email&quot;) {
+                msgBox.innerText = &quot;El formato de correo no es válido.&quot;;
+            } else {
+                msgBox.innerText = &quot;Error: &quot; + error.message;
+            }
+            msgBox.style.display = &quot;block&quot;;
+        });
+}
+
+async function verificarCodigo2FA() {
+    const input = document.getElementById(&quot;inputCodigo2FA&quot;);
+    const codigo = input.value.trim().replace(/\s+/g, &quot;&quot;);
+    const err = document.getElementById(&quot;error2FA&quot;);
+    const btn = document.getElementById(&quot;btnVerificar2FA&quot;);
+
+    err.style.display = &quot;none&quot;;
+
+    if (codigo.length !== 6 || !/^\d{6}$/.test(codigo)) {
+        err.innerText = &quot;El código debe contener exactamente 6 números.&quot;;
+        err.style.display = &quot;block&quot;;
+        input.focus();
+        return;
+    }
+
+    btn.innerText = &quot;Verificando...&quot;;
+    btn.disabled = true;
+
+    try {
+        const respuesta = await fetch(URL_APPS_SCRIPT_2FA + &quot;?codigo=&quot; + encodeURIComponent(codigo) + &quot;&amp;t=&quot; + Date.now());
+        const data = await respuesta.json();
+
+        if (data &amp;&amp; data.valido === true) {
+            esperando2FA = false;
+            login.style.display = &quot;none&quot;;
+            panel.style.display = &quot;block&quot;;
+            const ahora = new Date();
+            const offset = ahora.getTimezoneOffset() * 60000;
+            fechaInicio.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
+            fechaInicioTV.value = (new Date(ahora - offset)).toISOString().split(&quot;T&quot;)[0];
+            actualizarTodo();
+        } else {
+            err.innerText = &quot;Código incorrecto o expirado. Genera uno nuevo.&quot;;
+            err.style.display = &quot;block&quot;;
+            input.select();
+        }
+    } catch (e) {
+        console.error(&quot;Error al validar 2FA:&quot;, e);
+        err.innerText = &quot;No se pudo conectar con el servidor 2FA. Revisa tu conexión.&quot;;
+        err.style.display = &quot;block&quot;;
+    } finally {
+        btn.innerText = &quot;Verificar y Entrar&quot;;
+        btn.disabled = false;
+    }
+}
+function cancelar2FA() {
+    esperando2FA = false;
+    auth.signOut();
+}
+
+function logout() {
+    esperando2FA = false;
+    auth.signOut();
+}
+
+
+document.addEventListener(&quot;DOMContentLoaded&quot;, () =&gt; {
+    const bindEnter = (id, callback) =&gt; {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener(&quot;keydown&quot;, (e) =&gt; {
+                if (e.key === &quot;Enter&quot;) {
+                    e.preventDefault();
+                    callback();
+                }
+            });
+        }
+    };
+
+    bindEnter(&quot;email&quot;, loginUser);
+    bindEnter(&quot;password&quot;, loginUser);
+    bindEnter(&quot;emailRecuperar&quot;, enviarRecuperacion);
+    bindEnter(&quot;inputCodigo2FA&quot;, verificarCodigo2FA);
+});
+
 function eliminarCliente(id){ if(confirm(&quot;¿Eliminar?&quot;)) db.collection(&quot;clientes&quot;).doc(id).delete().then(()=&gt;actualizarTodo()); }
 function filtrarTablaClientes(){ const bus=filtroCliente.value.toLowerCase(); const filas=bodyClientes.getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
 function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase(); const filas=document.getElementById(&quot;bodyVentasHistorial&quot;).getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
