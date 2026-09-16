@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiEntretenimiento BC - Aviso Importante</title>
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+            --primary-green: #28a745;
+            --accent-blue: #0056b3;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Cabecera idéntica */
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .greeting {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Tarjeta principal con estilo idéntico a tus servicios */
+        .notice-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border-left: 6px solid var(--primary-green);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .notice-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-status {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Cuerpo del mensaje estilo panel */
+        .notice-body {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .notice-message {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .notice-message a {
+            color: var(--accent-blue);
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        /* Botón de acción idéntico a tus estilos */
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #6c5ce7;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(108, 92, 231, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background-color: #5b4cc4;
+            transform: translateY(-1px);
+        }
+
+        /* Barra de aviso inferior */
+        .info-bar {
+            background-color: #212529;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Botón flotante de WhatsApp idéntico */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #25d366;
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Cabecera -->
+        <div class="header-top">
+            <div class="greeting">👋 ¡Hola, estimado cliente de MultiEntretenimiento BC!</div>
+        </div>
+
+        <!-- Tarjeta Central de Aviso -->
+        <div class="notice-card">
+            <div class="notice-header">
+                <div class="notice-title">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #f59e0b;"></i> AVISO DE ACTUALIZACIÓN
+                </div>
+                <div class="badge-status">Versión 2.0 Disponible</div>
+            </div>
+
+            <div class="notice-body">
+                <p class="notice-message" id="dynamic-message">
+                    <!-- Aquí se inyectará el mensaje aleatorio -->
+                </p>
+                <!-- Sin target="_blank" para que abra en la misma pestaña -->
+                <a href="https://multibc2025.github.io/codigosNT-bc/inicio-clientes/" class="btn-action">
+                    <i class="fa-solid fa-rocket"></i> Ir a la Versión 2.0
+                </a>
+            </div>
+
+            <div class="info-bar">
+                🚀 ¡Migra ahora y disfruta de una plataforma más rápida y automatizada!
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante WhatsApp (este sí se mantiene en otra pestaña por ser chat externo) -->
+    <a href="https://wa.me/573503938788" class="whatsapp-float" target="_blank">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        // Lista con 20 mensajes únicos y aleatorios (enlaces sin target="_blank")
+        const mensajes = [
+            "Apreciado cliente, la página web <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> a partir del 15 de septiembre del 2026 queda inhabilitada. Te invitamos a usar la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> donde puedes seguir autogestionando tus servicios, códigos, suscripciones y mucho más.",
+            "¡Atención! A partir del 15 de septiembre del 2026, la web anterior <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> dejará de funcionar. Cámbiate ya mismo a nuestro nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus suscripciones, servicios, códigos y mucho más.",
+            "Estimado usuario, este portal <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> quedará deshabilitado desde el 15 de septiembre del 2026. Te esperamos en el nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para continuar autogestionando tus códigos, servicios, suscripciones y mucho más sin interrupciones.",
+            "Aviso importante: El sitio web <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> cerrará operaciones el 15 de septiembre del 2026. Te recomendamos usar la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus suscripciones, códigos, servicios y mucho más.",
+            "Apreciado cliente, renovamos nuestra plataforma. La dirección <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> finalizará su ciclo el 15 de septiembre del 2026. Entra a nuestro nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> y empieza a autogestionar tus servicios, códigos, suscripciones y mucho más.",
+            "¡Evolución total! A partir del 15 de septiembre del 2026 la página <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> queda inhabilitada. Visita la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> donde podrás seguir autogestionando tus códigos, suscripciones, servicios y mucho más.",
+            "Estimado suscriptor, el dominio <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> dejará de estar activo este 15 de septiembre del 2026. Continúa autogestionando tus suscripciones, servicios, códigos y mucho más ingresando a <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a>.",
+            "Nota informativa: El sitio <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> caduca el 15 de septiembre del 2026. Te invitamos a usar la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus códigos, servicios, suscripciones y mucho más.",
+            "Apreciado cliente, mejoramos para ti. A partir del 15 de septiembre del 2026, <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> quedará inhabilitada. Accede a nuestro nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus servicios, suscripciones, códigos y mucho más.",
+            "¡Importante! Este portal <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> cerrará el 15 de septiembre del 2026. Sigue autogestionando tus códigos, servicios, suscripciones y mucho más de manera fácil en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a>.",
+            "Estimado usuario, el sitio web <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> quedará inhabilitado este 15 de septiembre del 2026. Da el salto al nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> y continúa autogestionando tus suscripciones, códigos, servicios y mucho más.",
+            "Aviso de migración: La página <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> dejará de funcionar el 15 de septiembre del 2026. Usa la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus servicios, suscripciones, códigos y mucho más.",
+            "Apreciado cliente, esta plataforma <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> se inhabilitará el 15 de septiembre del 2026. Conoce nuestro nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus códigos, suscripciones, servicios y mucho más.",
+            "¡Atención! El sitio <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> concluirá su etapa el 15 de septiembre del 2026. Sigue autogestionando tus suscripciones, códigos, servicios y mucho más ingresando a <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a>.",
+            "Estimado suscriptor, cerramos este espacio web el 15 de septiembre del 2026 (<a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a>). Te esperamos en la versión 2.0 vía <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus servicios, códigos, suscripciones y mucho más.",
+            "Aviso técnico: A partir del 15 de septiembre del 2026 el enlace <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> quedará inhabilitado. Usa la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus códigos, servicios, suscripciones y mucho más.",
+            "Apreciado cliente, la dirección web <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> dejará de operar el 15 de septiembre del 2026. Te invitamos a la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus suscripciones, códigos, servicios y mucho más.",
+            "¡Renovación de plataforma! Desde el 15 de septiembre del 2026, la página <a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a> queda inhabilitada. Ingresa al nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus servicios, códigos, suscripciones y mucho más.",
+            "Estimado usuario, este portal web finalizará su ciclo el 15 de septiembre del 2026 (<a href='https://multibc2025.github.io/codigosNT-bc'>https://multibc2025.github.io/codigosNT-bc</a>). Sigue autogestionando tus códigos, servicios, suscripciones y mucho más migrando al nuevo enlace <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a>.",
+            "Aviso definitivo: A partir del 15 de septiembre del 2026 este sitio web cerrará permanentemente. Te invitamos cordialmente a usar la versión 2.0 en <a href='https://multibc2025.github.io/codigosNT-bc/inicio-clientes/'>https://multibc2025.github.io/codigosNT-bc/inicio-clientes/</a> para seguir autogestionando tus suscripciones, servicios, códigos y mucho más de forma óptima."
+        ];
+
+        // Seleccionar un mensaje aleatorio al recargar la página
+        const randomIndex = Math.floor(Math.random() * mensajes.length);
+        document.getElementById('dynamic-message').innerHTML = mensajes[randomIndex];
+    </script>
+
+</body>
+</html>
