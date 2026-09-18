@@ -995,16 +995,16 @@ function pedirCodigo(correoCliente, boton) {
                     
                     // Buscamos la fila de información para extraer el nombre real
                     const infoRow = tarjeta.querySelector('.info-row');
-                    let nombreReal = "Cliente Panel";
+                    let perfilEtiqueta = "Cliente Panel";
                     
                     if (infoRow) {
                         const textoInfo = infoRow.innerText;
                         // Extraemos lo que está entre "Titular:" y "Correo:"
-                        nombreReal = textoInfo.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
+                        perfilEtiqueta = textoInfo.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
                     }
 
                     // Llamamos a la función de registro (Usando 'resultado' que es el código)
-                    registrarEventoCodigo(nombreReal, correoCliente, "NETFLIX", resultado);
+                    registrarEventoCodigo(perfilEtiqueta, correoCliente, "NETFLIX", resultado);
                     
                 } catch(e) { 
                     console.log("No se pudo registrar el log, pero el código se muestra."); 
@@ -1049,16 +1049,16 @@ function pedirCodigoDisney(correoCliente, boton) {
                     
                     // Buscamos la fila de información para extraer el nombre real
                     const infoRow = tarjeta.querySelector('.info-row');
-                    let nombreReal = "Cliente Panel";
+                    let perfilEtiqueta = "Cliente Panel";
                     
                     if (infoRow) {
                         const textoInfo = infoRow.innerText;
                         // Extraemos lo que está entre "Titular:" y "Correo:"
-                        nombreReal = textoInfo.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
+                        perfilEtiqueta = textoInfo.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
                     }
 
                     // Llamamos a la función de registro (Usando 'resultado' que es el código)
-                    registrarEventoCodigo(nombreReal, correoCliente, "DISNEY", resultado);
+                    registrarEventoCodigo(perfilEtiqueta, correoCliente, "DISNEY", resultado);
                     
                 } catch(e) { 
                     console.log("No se pudo registrar el log, pero el código se muestra."); 
@@ -1109,9 +1109,26 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
                     textoBoton = "SÍ, LA ENVIÉ YO";
                 }
                 
+                // --- EXTRACCIÓN DEL TITULAR DE LA TARJETA ---
+                let nombreTitularLog = "Cliente Panel";
+                try {
+                    const tarjetaCard = botonPresionado.closest('.card-body');
+                    const infoRowCard = tarjetaCard ? tarjetaCard.querySelector('.info-row') : null;
+                    if (infoRowCard) {
+                        const textoInfoCard = infoRowCard.innerText;
+                        // Extrae lo que se encuentra entre "Titular:" y "Correo:" de la tarjeta
+                        nombreTitularLog = textoInfoCard.split('Titular:')[1]?.split('Correo:')[0]?.trim() || "Cliente Panel";
+                    }
+                } catch(err) {
+                    console.log("No se pudo extraer el titular para el log");
+                }
+
+                // Combinamos el perfil de la solicitud con el titular entre paréntesis
+                const nombreClienteFinal = `${data.nombre} (${nombreTitularLog})`;
+                
                 // 2. ENVIAR REGISTRO AL HISTORIAL (Solo si hay éxito)
                 // Usamos los datos que devolvió el servidor para que el registro sea exacto
-                registrarEventoCodigo(data.nombre, correo, "NETFLIX: " + tipoSolicitud, "Solicitud Procesada");
+                registrarEventoCodigo(nombreClienteFinal, correo, "NETFLIX: " + tipoSolicitud, "Solicitud Procesada");
                 
                 visor.innerHTML = `
                     <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(218, 165, 32, 0.4)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding:20px; border-radius:18px; border: 1px solid rgba(255, 215, 0, 0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.2); margin-top:15px; font-family: 'Segoe UI', Roboto, sans-serif; position: relative;">
