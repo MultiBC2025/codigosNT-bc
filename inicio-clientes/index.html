@@ -2,11 +2,60 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0614">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Mi Panel - MultiEntretenimiento BC</title>
     <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Mountains+of+Christmas:wght@700&family=Playfair+Display:wght@800&family=Pacifico&family=Fredoka:wght@600;700&family=Bungee&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+    /* =====================================================================
+       🎉 CALENDARIO DE TEMÁTICAS (DISEÑOS POR TEMPORADA)
+       ===================================================================== */
+    var TEMATICAS = [
+        { id: "halloween",    nombre: "🎃 Halloween",                inicio: "2026-10-30 18:00", fin: "2026-11-01 00:01" },
+        { id: "blackfriday",  nombre: "🛒 Black Friday / Cyber Monday", inicio: "2026-11-23 00:00", fin: "2026-11-30 23:59" },
+        { id: "navidad",      nombre: "🎄 Navidad",                  inicio: "2026-12-01 00:00", fin: "2026-12-26 23:59" },
+        { id: "anonuevo",     nombre: "🎆 Fin de Año y Año Nuevo",   inicio: "2026-12-27 00:00", fin: "2027-01-12 23:59" },
+        { id: "sanvalentin",  nombre: "❤️ San Valentín",             inicio: "2027-02-07 00:00", fin: "2027-02-15 23:59" },
+        { id: "semanasanta",  nombre: "🐣 Semana Santa / Pascua",    inicio: "2027-03-21 00:00", fin: "2027-03-28 23:59" },
+        { id: "vacaciones",   nombre: "🏖️ Vacaciones de mitad de año", inicio: "2027-06-15 00:00", fin: "2027-07-31 23:59" },
+        { id: "amoryamistad", nombre: "💛 Amor y Amistad (Colombia)", inicio: "2027-09-11 00:00", fin: "2027-09-19 23:59" }
+    ];
+
+    (function () {
+        // Convierte "AAAA-MM-DD HH:MM" (hora de Bogotá, GMT-5) a un instante exacto
+        function horaBogota(texto) {
+            var m = String(texto || "").trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?$/);
+            if (!m) return NaN;
+            return Date.UTC(+m[1], +m[2] - 1, +m[3], +(m[4] || 0) + 5, +(m[5] || 0));
+        }
+        var ahora = Date.now();
+        var tema = "";
+        for (var i = 0; i < TEMATICAS.length; i++) {
+            var inicio = horaBogota(TEMATICAS[i].inicio);
+            var fin = horaBogota(TEMATICAS[i].fin) + 59999; // incluye el último minuto
+            if (ahora >= inicio && ahora <= fin) { tema = TEMATICAS[i].id; break; }
+        }
+        try {
+            var t = new URLSearchParams(window.location.search).get("tema");
+            if (t === "basico") tema = "";
+            for (var j = 0; j < TEMATICAS.length; j++) if (TEMATICAS[j].id === t) tema = t;
+        } catch (e) {}
+        window.TEMA = tema;
+        window.HW_ON = !!tema; // hay alguna temática activa
+        window.TEMA_OSCURO = tema === "halloween" || tema === "blackfriday" || tema === "navidad" || tema === "anonuevo";
+        var cl = document.documentElement.classList;
+        cl.add(tema ? "hw-on" : "hw-off");
+        if (tema) cl.add("tema-" + tema);
+        if (tema && tema !== "halloween") cl.add("tema-fiesta");
+    })();
+    </script>
+    <!-- 🚀 DISEÑO BÁSICO -->
+    <style id="estilo-basico">
         /* VARIABLES DE COLOR PARA MODO CLARO/OSCURO */
         :root {
             --bg-body: #f4f6f8;
@@ -231,16 +280,852 @@
               scroll-behavior: smooth;
             }
 
+
+        /* ===== Clases compartidas: versión del diseño básico ===== */
+        .hw-decor, .hw-monster, .hw-pumpkins, .hw-only { display: none !important; }
+        .hw-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+        .hw-modal-card { background: var(--bg-card); color: var(--text-main); padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative; }
+        .hw-modal-close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted); }
+        .btn-autogestion.hw-btn-code { background: #0d6efd !important; color: white !important; border: none !important; margin-left: 5px; font-weight: bold; }
+        .btn-autogestion.hw-btn-hogar { background: #D000D4 !important; color: white !important; border: none !important; margin-left: 5px; font-weight: bold; }
+        .hw-cod-visor { font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px; }
+        .hw-note { background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left; }
+        .hw-note b { color: #bc9105; }
     </style>
+    <!-- 🎃 DISEÑO HALLOWEEN -->
+    <style id="estilo-halloween">
+        /* =========================================================
+           🎃 TEMA HALLOWEEN — VARIABLES (MODO CLARO = ATARDECER, OSCURO = NOCHE)
+           ========================================================= */
+        :root {
+            --bg-body: #fff1e0;
+            --bg-card: rgba(255, 250, 244, 0.94);
+            --text-main: #2a1636;
+            --text-muted: #6e5a78;
+            --info-row-bg: rgba(255, 117, 24, 0.09);
+            --border-color: rgba(123, 44, 191, 0.25);
+
+            --hw-pumpkin: #f76707;
+            --hw-pumpkin-2: #ffa94d;
+            --hw-pumpkin-deep: #d9480f;
+            --hw-purple: #7b2cbf;
+            --hw-purple-2: #9d4edd;
+            --hw-slime: #2f9e44;
+            --hw-blood: #c1121f;
+            --hw-gold: #b8860b;
+            --hw-on-accent: #ffffff;
+            --hw-sky: linear-gradient(180deg, #ffc78a 0%, #ff9a4d 30%, #e0607e 62%, #6a2c91 100%);
+            --hw-stars-opacity: 0;
+            --hw-moon: #fff3d1;
+            --hw-moon-glow: rgba(255, 220, 150, 0.55);
+            --hw-silhouette: #2a1636;
+            --hw-spider: #241330;
+            --hw-web: rgba(42, 22, 54, 0.32);
+            --hw-ghost: rgba(255, 255, 255, 0.75);
+            --hw-fog: rgba(255, 240, 230, 0.55);
+            --hw-input-bg: #ffffff;
+            --hw-card-border: rgba(247, 103, 7, 0.35);
+            --hw-shadow: 0 14px 40px -12px rgba(106, 44, 145, 0.35), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(247, 103, 7, 0.35);
+            --hw-note-bg: rgba(255, 193, 7, 0.16);
+            --hw-note-text: #7a4b00;
+            --hw-panel-bg: #ffffff;
+            --hw-panel-text: #2a1636;
+            --hw-panel-label: #7b2cbf;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0b0614;
+            --bg-card: rgba(24, 13, 38, 0.86);
+            --text-main: #f7eeff;
+            --text-muted: #bba8cf;
+            --info-row-bg: rgba(123, 44, 191, 0.20);
+            --border-color: rgba(176, 114, 255, 0.28);
+
+            --hw-pumpkin: #ff7a1a;
+            --hw-pumpkin-2: #ffb36b;
+            --hw-pumpkin-deep: #e8590c;
+            --hw-purple: #b072ff;
+            --hw-purple-2: #c79bff;
+            --hw-slime: #8ce04f;
+            --hw-blood: #ff4d5e;
+            --hw-gold: #ffd166;
+            --hw-on-accent: #ffffff;
+            --hw-sky:
+                radial-gradient(ellipse 70% 50% at 15% 0%, rgba(90, 40, 140, 0.55) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 90% 100%, rgba(150, 50, 10, 0.35) 0%, transparent 70%),
+                linear-gradient(180deg, #160a28 0%, #0d0619 55%, #07030d 100%);
+            --hw-stars-opacity: 1;
+            --hw-moon: #fff4cc;
+            --hw-moon-glow: rgba(255, 210, 120, 0.35);
+            --hw-silhouette: #05020a;
+            --hw-spider: #1a0d26;
+            --hw-web: rgba(225, 210, 255, 0.22);
+            --hw-ghost: rgba(240, 230, 255, 0.22);
+            --hw-fog: rgba(150, 110, 200, 0.22);
+            --hw-input-bg: rgba(8, 4, 16, 0.75);
+            --hw-card-border: rgba(255, 122, 26, 0.32);
+            --hw-shadow: 0 18px 50px -14px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--hw-card-border), 0 0 30px -10px rgba(176, 114, 255, 0.35);
+            --hw-glow: 0 0 26px rgba(255, 122, 26, 0.45);
+            --hw-note-bg: rgba(255, 209, 102, 0.12);
+            --hw-note-text: #ffe1a1;
+            --hw-panel-bg: rgba(10, 5, 18, 0.75);
+            --hw-panel-text: #ffffff;
+            --hw-panel-label: #ffb36b;
+        }
+
+        /* =========================================================
+           BASE
+           ========================================================= */
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+        * { -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg-body);
+            font-family: 'Nunito', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+            color: var(--text-main);
+            transition: background-color 0.4s, color 0.4s;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+
+        .text-muted { color: var(--text-muted) !important; }
+        .border-start { border-color: var(--border-color) !important; }
+        hr { border-color: var(--border-color); opacity: 1; }
+
+        #app { position: relative; z-index: 2; }
+
+        /* =========================================================
+           🦇 CAPA DECORATIVA (fondo, luna, arañas, murciélagos, fantasmas)
+           ========================================================= */
+        .hw-decor { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .hw-sky { position: absolute; inset: 0; background: var(--hw-sky); transition: opacity 0.4s; }
+        .hw-stars {
+            position: absolute; inset: 0; opacity: var(--hw-stars-opacity); transition: opacity 0.6s;
+            background-image:
+                radial-gradient(1.5px 1.5px at 10% 20%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 25% 65%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 40% 12%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 55% 45%, #fff 50%, transparent 51%),
+                radial-gradient(2px 2px at 70% 22%, #ffe9b0 50%, transparent 51%),
+                radial-gradient(1px 1px at 85% 60%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 92% 8%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 5% 85%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 62% 82%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 33% 38%, #d8c4ff 50%, transparent 51%);
+            animation: hwTwinkle 4s ease-in-out infinite alternate;
+        }
+        .hw-moon {
+            position: absolute; top: 6vh; right: 10vw; width: 130px; height: 130px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, var(--hw-moon) 0%, var(--hw-moon) 55%, #f1d79a 100%);
+            box-shadow: 0 0 60px 20px var(--hw-moon-glow), 0 0 140px 50px var(--hw-moon-glow);
+        }
+        .hw-moon::before, .hw-moon::after {
+            content: ""; position: absolute; border-radius: 50%; background: rgba(200, 170, 110, 0.35);
+        }
+        .hw-moon::before { width: 22px; height: 22px; top: 30%; left: 55%; }
+        .hw-moon::after { width: 14px; height: 14px; top: 60%; left: 30%; }
+
+        /* Telarañas en esquinas */
+        .hw-web { position: absolute; width: 210px; height: 210px; color: var(--hw-web); }
+        .hw-web.tl { top: 0; left: 0; }
+        .hw-web.tr { top: 0; right: 0; transform: scaleX(-1); }
+        .hw-web.bl { bottom: 0; left: 0; transform: scaleY(-1); width: 150px; height: 150px; opacity: 0.7; }
+
+        /* Arañas colgando */
+        .hw-spider { position: absolute; top: 0; width: 46px; color: var(--hw-spider); animation: hwSpiderDrop 7s ease-in-out infinite alternate; transform-origin: top center; }
+        .hw-spider .hw-thread { display: block; width: 1.5px; height: 160px; margin: -60px auto 0; background: linear-gradient(var(--hw-web), var(--hw-web)); background-color: var(--hw-web); }
+        .hw-spider svg { width: 46px; height: 46px; display: block; margin-top: -4px; animation: hwSpiderWiggle 1.8s ease-in-out infinite; }
+        [data-theme="dark"] .hw-spider svg { filter: drop-shadow(0 0 6px rgba(176, 114, 255, 0.7)); }
+        [data-theme="dark"] .hw-spider .hw-thread { background-color: rgba(230, 215, 255, 0.45); }
+        .hw-spider.s1 { left: 7%; }
+        .hw-spider.s2 { left: 46%; animation-duration: 9s; animation-delay: -3s; }
+        .hw-spider.s2 .hw-thread { height: 110px; }
+        .hw-spider.s3 { right: 22%; animation-duration: 6s; animation-delay: -1.5s; }
+        .hw-spider.s3 .hw-thread { height: 210px; }
+
+        /* Murciélagos volando */
+        .hw-bat { position: absolute; left: 0; width: 70px; color: var(--hw-silhouette); animation: hwBatFly 18s linear infinite; will-change: transform; }
+        .hw-bat svg { width: 100%; height: auto; display: block; animation: hwFlap 0.28s ease-in-out infinite alternate; transform-origin: center 40%; }
+        [data-theme="dark"] .hw-bat svg { filter: drop-shadow(0 0 5px rgba(255, 122, 26, 0.45)); }
+        .hw-bat.b1 { top: 14%; animation-duration: 16s; }
+        .hw-bat.b2 { top: 30%; width: 46px; animation-duration: 22s; animation-delay: -8s; }
+        .hw-bat.b3 { top: 8%; width: 36px; animation-duration: 26s; animation-delay: -15s; }
+        .hw-bat.b4 { top: 52%; width: 54px; animation-duration: 20s; animation-delay: -4s; animation-direction: reverse; }
+        .hw-bat.b4 svg { transform: scaleX(-1); }
+        .hw-bat.b5 { top: 70%; width: 40px; animation-duration: 28s; animation-delay: -19s; }
+
+        /* Fantasmas flotando */
+        .hw-ghost { position: absolute; width: 70px; color: var(--hw-ghost); animation: hwGhostFloat 7s ease-in-out infinite; }
+        .hw-ghost svg { width: 100%; height: auto; display: block; }
+        .hw-ghost.g1 { left: 4%; top: 42%; }
+        .hw-ghost.g2 { right: 5%; top: 62%; width: 54px; animation-duration: 9s; animation-delay: -3s; }
+
+        /* Ojos de monstruo en la oscuridad */
+        .hw-eyes { position: absolute; display: flex; gap: 10px; opacity: 0; transition: opacity 0.6s; }
+        [data-theme="dark"] .hw-eyes { opacity: 1; }
+        .hw-eyes span { width: 12px; height: 7px; border-radius: 50%; background: #ffe066; box-shadow: 0 0 10px 3px rgba(255, 220, 80, 0.7); animation: hwBlink 5s infinite; }
+        .hw-eyes.e1 { left: 3%; bottom: 22%; }
+        .hw-eyes.e2 { right: 6%; top: 36%; }
+        .hw-eyes.e2 span { background: #9dff6b; box-shadow: 0 0 10px 3px rgba(140, 255, 90, 0.6); animation-delay: -2.2s; }
+        .hw-eyes.e3 { left: 40%; bottom: 6%; gap: 6px; }
+        .hw-eyes.e3 span { width: 8px; height: 5px; background: #ff6b6b; box-shadow: 0 0 8px 2px rgba(255, 80, 80, 0.7); animation-delay: -3.6s; }
+
+        /* Niebla */
+        .hw-fog { position: absolute; left: -20%; right: -20%; bottom: -40px; height: 220px;
+            background:
+                radial-gradient(ellipse 30% 60% at 20% 70%, var(--hw-fog) 0%, transparent 70%),
+                radial-gradient(ellipse 35% 55% at 55% 80%, var(--hw-fog) 0%, transparent 70%),
+                radial-gradient(ellipse 30% 60% at 85% 70%, var(--hw-fog) 0%, transparent 70%);
+            animation: hwFog 22s ease-in-out infinite alternate; filter: blur(6px); }
+        .hw-fog.f2 { bottom: -80px; opacity: 0.7; animation-duration: 30s; animation-direction: alternate-reverse; }
+
+        @keyframes hwTwinkle { from { opacity: calc(var(--hw-stars-opacity) * 0.55); } to { opacity: var(--hw-stars-opacity); } }
+        @keyframes hwSpiderDrop { 0% { transform: translateY(-70px); } 60% { transform: translateY(40px); } 100% { transform: translateY(15px); } }
+        @keyframes hwSpiderWiggle { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+        @keyframes hwBatFly {
+            0% { transform: translate(-15vw, 0); }
+            25% { transform: translate(22vw, -30px); }
+            50% { transform: translate(55vw, 20px); }
+            75% { transform: translate(85vw, -25px); }
+            100% { transform: translate(115vw, 10px); }
+        }
+        @keyframes hwFlap { from { transform: scaleY(1); } to { transform: scaleY(0.45); } }
+        @keyframes hwGhostFloat { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-26px) rotate(4deg); } }
+        @keyframes hwBlink { 0%, 44%, 50%, 100% { transform: scaleY(1); } 47% { transform: scaleY(0.1); } }
+        @keyframes hwFog { from { transform: translateX(-6%); } to { transform: translateX(6%); } }
+        @keyframes hwFadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes hwPulseGlow { 0%, 100% { box-shadow: var(--hw-glow); } 50% { box-shadow: 0 0 34px rgba(247, 103, 7, 0.6); } }
+
+        /* =========================================================
+           LOGIN
+           ========================================================= */
+        .login-container { max-width: 450px; margin: 120px auto 40px; padding: 20px; position: relative; }
+        .card-auth {
+            position: relative; border: none; border-radius: 22px; padding: 34px 28px 28px;
+            background: var(--bg-card); color: var(--text-main);
+            box-shadow: var(--hw-shadow);
+            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+            animation: hwFadeUp 0.7s ease both;
+        }
+        .card-auth::before {
+            content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; border-radius: 22px 22px 0 0;
+            background: repeating-linear-gradient(90deg, var(--hw-pumpkin) 0 22px, var(--hw-purple) 22px 44px);
+        }
+        .card-auth h4 { font-weight: 800; }
+
+        /* Monstruo asomándose */
+        .hw-monster { position: absolute; top: -78px; left: 50%; width: 150px; transform: translateX(-50%); z-index: 3; pointer-events: none; }
+        .hw-monster svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35)); }
+        .hw-monster .hw-m-eyes { animation: hwBlink 4.5s infinite; transform-origin: center 48px; transform-box: view-box; }
+        .hw-monster .hw-m-pupils { animation: hwLook 6s ease-in-out infinite; }
+        @keyframes hwLook { 0%, 100% { transform: translateX(0); } 30% { transform: translateX(-5px); } 60% { transform: translateX(5px); } }
+
+        .hw-pumpkins { display: flex; justify-content: center; align-items: flex-end; gap: 6px; margin-top: 14px; }
+        .hw-pumpkins svg { width: 42px; height: auto; filter: drop-shadow(0 0 10px rgba(255, 140, 0, 0.55)); }
+        .hw-pumpkins svg:nth-child(2) { width: 54px; }
+
+        .header-logo {
+            font-family: 'Creepster', 'Nunito', cursive; font-weight: 400; letter-spacing: 1.5px;
+            color: var(--hw-pumpkin); margin-bottom: 20px; font-size: 1.9rem; line-height: 1.15;
+            text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 0 18px rgba(247, 103, 7, 0.45);
+        }
+        .card-auth .header-logo.mt-4 {
+            font-family: 'Nunito', sans-serif; font-weight: 800; letter-spacing: 0; font-size: 0.95rem !important;
+            color: var(--text-muted); text-shadow: none;
+        }
+
+        /* Inputs */
+        .form-control, .form-select {
+            background-color: var(--hw-input-bg); color: var(--text-main);
+            border: 1.5px solid var(--border-color); font-size: 16px; /* evita zoom en iOS */
+        }
+        .form-control::placeholder { color: var(--text-muted); opacity: 0.7; }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--hw-input-bg); color: var(--text-main);
+            border-color: var(--hw-pumpkin); box-shadow: 0 0 0 0.25rem rgba(247, 103, 7, 0.25);
+        }
+        [data-theme="dark"] .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffb36b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        }
+        [data-theme="dark"] .form-select option { background: #1a0d2a; color: #fff; }
+        #selectPais { min-width: 96px; }
+
+        /* Botones Bootstrap con tema */
+        .btn { font-weight: 800; border-radius: 12px; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--hw-pumpkin) 0%, var(--hw-pumpkin-deep) 100%);
+            border: none; color: var(--hw-on-accent);
+            box-shadow: 0 8px 20px -8px rgba(247, 103, 7, 0.7);
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:disabled {
+            background: linear-gradient(135deg, var(--hw-pumpkin-deep) 0%, #c2410c 100%) !important; color: var(--hw-on-accent) !important; border: none;
+        }
+        #btnAcceder { animation: hwPulseGlow 3s ease-in-out infinite; }
+
+        .btn-outline-primary { color: var(--hw-pumpkin); border-color: var(--hw-pumpkin); border-width: 1.5px; }
+        .btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active { background: var(--hw-pumpkin) !important; border-color: var(--hw-pumpkin) !important; color: #fff !important; }
+        .btn-outline-secondary { color: var(--hw-purple); border-color: var(--hw-purple); border-width: 1.5px; }
+        .btn-outline-secondary:hover { background: var(--hw-purple); border-color: var(--hw-purple); color: #fff; }
+        .btn-outline-info { color: var(--hw-slime); border-color: var(--hw-slime); border-width: 1.5px; }
+        .btn-outline-info:hover { background: var(--hw-slime); border-color: var(--hw-slime); color: #0b1a05; }
+        .btn-outline-danger { color: var(--hw-blood); border-color: var(--hw-blood); border-width: 1.5px; }
+        .btn-outline-danger:hover { background: var(--hw-blood); border-color: var(--hw-blood); color: #fff; }
+
+        .link-soporte { font-size: 0.88rem; display: block; margin-top: 16px; color: var(--hw-purple); text-decoration: none; }
+        .link-soporte b { color: var(--hw-pumpkin); }
+        .link-soporte:hover { text-decoration: underline; }
+
+        /* =========================================================
+           PANEL
+           ========================================================= */
+        #sectionPanel { padding-top: 10px; padding-bottom: 20px; animation: hwFadeUp 0.6s ease both; }
+        #panelHeader h4 { font-weight: 900; }
+        #panelHeader h2 {
+            font-family: 'Creepster', 'Nunito', cursive; font-weight: 400 !important; letter-spacing: 1.5px;
+            color: var(--hw-pumpkin); font-size: clamp(1.7rem, 5vw, 2.6rem);
+            text-shadow: 0 0 18px rgba(247, 103, 7, 0.4);
+        }
+        #panelHeader .text-success { color: var(--hw-slime) !important; }
+        #panelHeader > .d-flex > .d-flex { flex-wrap: wrap; gap: 6px; }
+        #panelHeader > .d-flex > .d-flex .btn { margin-left: 0 !important; }
+
+        .servicio-card {
+            position: relative; overflow: hidden; border: none; border-radius: 16px; margin-bottom: 16px;
+            transition: transform 0.3s, box-shadow 0.3s; border-left: 6px solid #ccc;
+            background: var(--bg-card); color: var(--text-main);
+            box-shadow: var(--hw-shadow) !important;
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            animation: hwFadeUp 0.6s ease both;
+        }
+        /* Mini telaraña en la esquina de cada tarjeta */
+        .servicio-card::after {
+            content: ""; position: absolute; top: 0; right: 0; width: 70px; height: 70px; pointer-events: none; opacity: 0.5;
+            transform: scaleX(-1);
+            background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%239d4edd' stroke-width='3'%3e%3cpath d='M0 0L200 0M0 0L175 97M0 0L141 141M0 0L97 175M0 0L0 200M55 0Q44 5 53 13M53 13Q41 16 48 27M48 27Q35 26 39 39M39 39Q26 35 27 48M27 48Q16 41 13 53M13 53Q5 44 0 55M110 0Q88 11 106 27M106 27Q82 32 96 54M96 54Q70 53 78 78M78 78Q53 70 54 96M54 96Q32 82 27 106M27 106Q11 88 0 110M170 0Q135 16 165 41M165 41Q126 50 149 82M149 82Q109 82 120 120M120 120Q82 109 82 149M82 149Q50 126 41 165M41 165Q16 135 0 170'/%3e%3c/svg%3e") no-repeat center / contain;
+        }
+        .servicio-card .card-body { position: relative; z-index: 1; }
+        @media (hover: hover) {
+            .servicio-card:hover { transform: translateY(-3px); box-shadow: var(--hw-shadow), var(--hw-glow) !important; }
+        }
+        .vencido { border-left-color: var(--hw-blood); }
+        .proximo { border-left-color: var(--hw-pumpkin); }
+        .activo { border-left-color: var(--hw-slime); }
+
+        .servicio-card h5 { font-weight: 900; letter-spacing: 0.5px; flex: 1 1 auto; min-width: 0; }
+        .servicio-card .card-body > .d-flex:first-child { gap: 8px; flex-wrap: wrap; }
+        .servicio-card .border-end { border-color: var(--border-color) !important; }
+
+        .badge-status { font-size: 0.8rem; padding: 6px 12px; border-radius: 50px; font-weight: 800; white-space: nowrap; }
+        .badge-status.bg-success { background: var(--hw-slime) !important; color: #0b1a05 !important; }
+        .badge-status.bg-warning { background: var(--hw-pumpkin) !important; color: #fff !important; }
+        .badge-status.bg-danger { background: var(--hw-blood) !important; color: #fff !important; }
+
+        .info-row { background: var(--info-row-bg); border-radius: 12px; padding: 12px; margin-top: 10px; border: 1px dashed var(--border-color); }
+        .pin-box { background: #120821; color: var(--hw-pumpkin-2); padding: 2px 9px; border-radius: 6px; font-weight: 900; border: 1px solid rgba(255, 122, 26, 0.5); letter-spacing: 1px; }
+
+        h6.column-title {
+            font-weight: 900; color: var(--hw-pumpkin); text-transform: uppercase; letter-spacing: 1.5px;
+            margin-bottom: 20px; margin-top: 10px; padding-bottom: 8px; border-bottom: 2px dashed var(--border-color);
+        }
+
+        .banner-largo {
+            position: relative; overflow: hidden; width: 100%; min-height: 100px; border-radius: 16px; margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center; text-align: center; padding: 14px 70px;
+            color: #fff; font-size: 1.05rem;
+            background:
+                radial-gradient(circle at 12% 50%, rgba(255, 200, 80, 0.35) 0%, transparent 35%),
+                linear-gradient(120deg, #3c096c 0%, #7b2cbf 45%, #e85d04 100%);
+            box-shadow: 0 12px 30px -12px rgba(123, 44, 191, 0.6);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+        }
+        .banner-largo::before, .banner-largo::after { position: absolute; font-size: 2.2rem; top: 50%; transform: translateY(-50%); }
+        .banner-largo::before { content: "🦇"; left: 16px; animation: hwGhostFloat 4s ease-in-out infinite; }
+        .banner-largo::after { content: "👻"; right: 16px; animation: hwGhostFloat 5s ease-in-out infinite reverse; }
+        .mini-banner { width: 100%; height: 70px; background: var(--info-row-bg); border-radius: 12px; margin-top: 15px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); border: 1px dashed var(--border-color); }
+
+        /* Botones de autogestión */
+        .btn-autogestion {
+            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+            font-size: 0.72rem; padding: 6px 10px; border-radius: 10px; text-decoration: none; font-weight: 800;
+            margin: 6px 6px 0 0; border: 1.5px solid var(--hw-purple); color: var(--hw-purple); background: transparent;
+            white-space: normal; line-height: 1.2; vertical-align: middle; cursor: pointer; transition: transform 0.2s, filter 0.2s;
+        }
+        .btn-autogestion:hover { background: var(--hw-purple); color: #fff; }
+        .btn-autogestion:active { transform: scale(0.97); }
+        .btn-autogestion:disabled { opacity: 0.65; cursor: wait; }
+        .btn-autogestion.hw-btn-code { background: linear-gradient(135deg, var(--hw-pumpkin), var(--hw-pumpkin-deep)); color: #fff; border: none; }
+        .btn-autogestion.hw-btn-hogar { background: linear-gradient(135deg, #7b2cbf, #3c096c); color: #fff; border: none; }
+        .btn-autogestion.hw-btn-code:hover, .btn-autogestion.hw-btn-hogar:hover { filter: brightness(1.12); }
+        .hw-cod-visor { font-size: 16px; color: var(--hw-pumpkin); font-weight: 800; margin-top: 8px; text-align: center; min-height: 24px; }
+        .contenedor-codigo { text-transform: none; font-weight: 700; }
+
+        .hw-note {
+            background: var(--hw-note-bg); color: var(--hw-note-text); padding: 10px 12px; border-radius: 10px; font-size: 0.8rem;
+            border-left: 4px solid var(--hw-gold); margin-top: 10px; text-align: left;
+        }
+        .hw-note b { color: var(--hw-gold); }
+
+        .theme-toggle {
+            position: fixed; top: calc(16px + env(safe-area-inset-top)); right: calc(16px + env(safe-area-inset-right)); z-index: 1000;
+            background: var(--bg-card); border: 2px solid var(--hw-pumpkin); border-radius: 50%; width: 48px; height: 48px; cursor: pointer;
+            box-shadow: var(--hw-glow); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; transition: transform 0.3s;
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+        }
+        .theme-toggle:hover { transform: rotate(-15deg) scale(1.06); }
+
+        .oferta-renovacion {
+            background: rgba(247, 103, 7, 0.12); border: 1.5px dashed var(--hw-pumpkin); border-radius: 12px; padding: 10px;
+            margin-top: 10px; font-size: 0.85rem; color: var(--hw-note-text); text-align: center;
+        }
+
+        @media (max-width: 991px) { .order-mobile-1 { order: 1; } .order-mobile-2 { order: 2; } }
+
+        /* =========================================================
+           MODAL
+           ========================================================= */
+        .hw-modal {
+            position: fixed; inset: 0; width: 100%; height: 100%; background: rgba(5, 2, 10, 0.75); z-index: 2000;
+            align-items: center; justify-content: center; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+        }
+        .hw-modal-card {
+            background: var(--bg-card); color: var(--text-main); padding: 30px 26px; border-radius: 20px; max-width: 600px; width: 100%;
+            max-height: 82vh; max-height: 82dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative;
+            box-shadow: var(--hw-shadow), var(--hw-glow); border-top: 6px solid var(--hw-pumpkin);
+            animation: hwFadeUp 0.35s ease both;
+        }
+        [data-theme="dark"] .hw-modal-card { background: #170c26; }
+        .hw-modal-card h3 { font-family: 'Creepster', 'Nunito', cursive; letter-spacing: 1px; color: var(--hw-pumpkin); }
+        .hw-modal-close { position: absolute; top: 10px; right: 16px; font-size: 32px; line-height: 1; cursor: pointer; color: var(--text-muted); padding: 4px 8px; }
+        .hw-modal-close:hover { color: var(--hw-pumpkin); }
+        #customModal .text-primary { color: var(--hw-pumpkin) !important; }
+        .resultado-item { background: var(--info-row-bg); border-left: 3px solid var(--hw-pumpkin); border-radius: 10px; padding: 10px 12px; text-align: left; }
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+        .main-footer {
+            opacity: 1; animation: hwFadeUp 0.8s ease 0.3s both;
+            position: relative; z-index: 100; width: 100%;
+            margin: 50px auto 0; padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+            display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px;
+            text-align: center; font-size: 0.9rem;
+            background: #120821; color: #f3e8ff;
+            border-top: 3px solid var(--hw-pumpkin); border-radius: 40px 40px 0 0;
+            box-shadow: 0 -6px 24px -6px rgba(247, 103, 7, 0.45);
+        }
+        .main-footer p { margin: 0; }
+        .main-footer strong { color: #ffb36b; }
+        .main-footer span[style] { border-left-color: rgba(255, 179, 107, 0.4) !important; }
+        .footer-text { color: #555; font-size: 5em; }
+        .footer-visible { opacity: 1 !important; }
+
+        /* =========================================================
+           WHATSAPP
+           ========================================================= */
+        .whatsapp-button {
+            position: fixed; bottom: calc(26px + env(safe-area-inset-bottom)); left: calc(18px + env(safe-area-inset-left));
+            width: 64px; height: 64px; border-radius: 50%; z-index: 1500;
+            border: 3px solid var(--hw-pumpkin);
+            background-color: #fff;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1280px-WhatsApp.svg.png?_=20220228223904');
+            background-size: 86%; background-position: center; background-repeat: no-repeat;
+            box-shadow: 0 0 0 4px rgba(123, 44, 191, 0.35), 0 0 22px rgba(247, 103, 7, 0.6);
+            animation: floatAnimation 3s ease-in-out infinite;
+        }
+        .whatsapp-button::after { content: "🎃"; position: absolute; top: -14px; right: -10px; font-size: 22px; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); }
+        .whatsapp-button:hover { background-color: #fff; }
+        .whatsapp-button img { width: 50px; height: 50px; }
+
+        .wpp-message {
+            background-color: #170c26; color: #ffb36b; border: 2px solid var(--hw-pumpkin); border-radius: 20px;
+            padding: 8px 15px; font-size: 14px; font-weight: 800; position: fixed; left: 0%;
+            bottom: calc(100px + env(safe-area-inset-bottom)); transform: translateX(10%) scaleX(1);
+            white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); z-index: 2002;
+        }
+        .whatsapp-button:hover .robot-message { opacity: 1; visibility: visible; }
+        @keyframes floatAnimation {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(-4deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .whatsapp-widget-container:hover .wpp-message { opacity: 1; visibility: visible; }
+
+        /* =========================================================
+           BOTÓN SUBIR (progreso)
+           ========================================================= */
+        #scrollTopBtn {
+            position: fixed; bottom: calc(30px + env(safe-area-inset-bottom)); right: calc(24px + env(safe-area-inset-right));
+            width: 60px; height: 60px; background: var(--bg-card); border: none; border-radius: 50%;
+            display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 9999;
+            transition: transform 0.3s ease; box-shadow: var(--hw-glow);
+        }
+        #scrollTopBtn:hover { transform: scale(1.1); }
+        #scrollProgress {
+            position: absolute; width: 60px; height: 60px; border-radius: 50%;
+            background: conic-gradient(var(--hw-pumpkin) var(--scroll, 0%), rgba(157, 78, 221, 0.35) 0%);
+            mask: radial-gradient(farthest-side, transparent 72%, black 74%);
+            -webkit-mask: radial-gradient(farthest-side, transparent 72%, black 74%);
+        }
+        .arrow-wrapper { transform: rotate(45deg); margin-top: 6px; }
+        .arrow-up {
+            width: 14px; height: 14px; border-left: 3px solid var(--hw-pumpkin); border-top: 3px solid var(--hw-pumpkin);
+            animation: pulseArrow 1.5s infinite ease-in-out;
+        }
+        @keyframes pulseArrow { 0%, 100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.2); opacity: 1; } }
+
+        /* =========================================================
+           📱 RESPONSIVE (iOS / Android / PC)
+           ========================================================= */
+        @media (max-width: 767px) {
+            .hw-moon { width: 74px; height: 74px; top: 78px; right: -18px; opacity: 0.6; }
+            .main-footer { padding-left: 84px; padding-right: 12px; font-size: 0.82rem; }
+            .hw-web { width: 130px; height: 130px; }
+            .hw-web.bl { display: none; }
+            .hw-spider.s2, .hw-bat.b4, .hw-bat.b5, .hw-ghost.g2, .hw-eyes.e3 { display: none; }
+            .hw-spider { width: 34px; }
+            .hw-spider svg { width: 34px; height: 34px; }
+            .hw-bat.b1 { width: 50px; }
+            .hw-ghost.g1 { width: 46px; top: 70%; }
+            .banner-largo { padding: 14px 52px; font-size: 0.95rem; }
+            .banner-largo::before, .banner-largo::after { font-size: 1.6rem; }
+        }
+        @media (max-width: 575px) {
+            .login-container { margin: 110px auto 30px; padding: 14px; }
+            .card-auth { padding: 30px 18px 22px; border-radius: 20px; }
+            .header-logo { font-size: 1.6rem; }
+            .hw-monster { width: 124px; top: -64px; }
+            #sectionPanel { padding-left: 14px; padding-right: 14px; }
+            #panelHeader h4 { font-size: 1.2rem; padding-right: 52px; }
+            .servicio-card .card-body { padding: 14px !important; }
+            .servicio-card h5 { flex-basis: 100%; }
+            .btn-autogestion { display: flex; width: 100%; margin: 8px 0 0; min-height: 42px; font-size: 0.8rem; }
+            .whatsapp-button { width: 56px; height: 56px; }
+            #scrollTopBtn { width: 52px; height: 52px; }
+            #scrollProgress { width: 52px; height: 52px; }
+            .hw-modal-card { padding: 26px 16px; }
+            .wpp-message { white-space: normal; max-width: 70vw; }
+        }
+
+        /* Accesibilidad: menos movimiento si el usuario lo prefiere */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+            .hw-bat { display: none; }
+            html { scroll-behavior: auto; }
+        }
+
+        /* Textos que solo se ven en el diseño básico */
+        .hw-basic { display: none !important; }
+    </style>
+    <style id="estilo-temporadas">
+        /* =========================================================
+           🎉 TEMÁTICAS DE TEMPORADA (usan la base del diseño festivo)
+           Cada temática cambia colores, letras, emojis y decoración.
+           ========================================================= */
+        /* Ocultar lo que es solo de Halloween */
+        .tema-fiesta .hw-web, .tema-fiesta .hw-spider, .tema-fiesta .hw-bat, .tema-fiesta .hw-ghost,
+        .tema-fiesta .hw-eyes, .tema-fiesta .hw-monster, .tema-fiesta .hw-pumpkins svg { display: none !important; }
+        .tema-fiesta .servicio-card::after { background: none; content: var(--tm-e1); font-size: 34px; opacity: 0.18; width: auto; height: auto; top: 6px; right: 10px; transform: rotate(12deg); }
+        .tema-fiesta .hw-pumpkins::before { content: var(--tm-fila); font-size: 2rem; letter-spacing: 6px; line-height: 1; }
+        .tema-fiesta .whatsapp-button::after { content: var(--tm-e1); }
+        .tema-fiesta .banner-largo { background: var(--tm-banner); }
+        .tema-fiesta .banner-largo::before { content: var(--tm-e2); }
+        .tema-fiesta .banner-largo::after { content: var(--tm-e3); }
+        .tema-fiesta .header-logo, .tema-fiesta #panelHeader h2, .tema-fiesta .hw-modal-card h3 {
+            font-family: var(--tm-font); text-shadow: 0 2px 0 rgba(0,0,0,0.15), 0 0 18px var(--tm-glow-color);
+        }
+        .tema-fiesta .card-auth .header-logo.mt-4 { font-family: 'Nunito', sans-serif; text-shadow: none; }
+        .tema-fiesta .btn-primary { box-shadow: 0 8px 20px -8px var(--tm-glow-color); }
+        .tema-fiesta .btn-primary:hover, .tema-fiesta .btn-primary:focus, .tema-fiesta .btn-primary:active, .tema-fiesta .btn-primary:disabled {
+            background: linear-gradient(135deg, var(--hw-pumpkin-deep) 0%, var(--hw-pumpkin-deep) 100%) !important;
+        }
+        .tema-fiesta #btnAcceder { animation: tmPulse 3s ease-in-out infinite; }
+        @keyframes tmPulse { 0%, 100% { box-shadow: 0 0 18px var(--tm-glow-color); } 50% { box-shadow: 0 0 34px var(--tm-glow-color); } }
+        .tema-fiesta .btn-outline-primary:hover, .tema-fiesta .btn-outline-primary:active { color: var(--hw-on-accent) !important; }
+        .tema-fiesta .btn-autogestion.hw-btn-code { color: var(--hw-on-accent); }
+        .tema-fiesta .btn-autogestion.hw-btn-hogar { background: linear-gradient(135deg, var(--hw-purple), var(--hw-purple-2)); }
+        .tema-fiesta .form-control:focus, .tema-fiesta .form-select:focus { box-shadow: 0 0 0 0.25rem var(--tm-glow-color); }
+        .tema-fiesta .main-footer { background: var(--tm-footer); box-shadow: 0 -6px 24px -6px var(--tm-glow-color); }
+        .tema-fiesta .main-footer strong { color: var(--hw-pumpkin-2); }
+        .tema-fiesta .pin-box { background: var(--tm-footer); }
+        .tema-fiesta .oferta-renovacion { background: var(--info-row-bg); }
+        .tema-fiesta .whatsapp-button { box-shadow: 0 0 0 4px var(--border-color), 0 0 22px var(--tm-glow-color); }
+        .tema-fiesta .hw-moon { display: none; }
+        .tema-fiesta .hw-modal-card, [data-theme="dark"] .tema-fiesta .hw-modal-card { background: var(--bg-card); }
+        [data-theme="dark"].tema-fiesta .hw-modal-card { background: var(--tm-modal-dark); }
+
+        .tema-blackfriday .card-auth > .header-logo:not(.mt-4) { font-size: 1.45rem; }
+        /* Lluvia de emojis (nieve, corazones, confeti...) */
+        .tm-particulas { position: absolute; inset: 0; overflow: hidden; }
+        .tm-particulas span { position: absolute; top: -60px; opacity: 0.85; animation: tmCaer linear infinite; will-change: transform; filter: drop-shadow(0 2px 3px rgba(0,0,0,.2)); }
+        .tm-sube .tm-particulas span { top: auto; bottom: -60px; animation-name: tmSubir; }
+        @keyframes tmCaer { 0% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(30px, 55vh) rotate(180deg); } 100% { transform: translate(-20px, 115vh) rotate(360deg); } }
+        @keyframes tmSubir { 0% { transform: translate(0, 0) scale(.8); opacity: 0; } 15% { opacity: .9; } 100% { transform: translate(25px, -115vh) scale(1.1); opacity: 0; } }
+
+        /* ---------- 🛒 BLACK FRIDAY: negro con dorado y neón ---------- */
+        .tema-blackfriday {
+            --bg-body: #f1f1f1; --bg-card: rgba(255,255,255,0.96); --text-main: #111; --text-muted: #555;
+            --info-row-bg: rgba(255, 196, 0, 0.12); --border-color: rgba(0,0,0,0.18);
+            --hw-pumpkin: #e0a800; --hw-pumpkin-2: #ffd43b; --hw-pumpkin-deep: #b88a00; --hw-purple: #e6007a; --hw-purple-2: #ff2e88;
+            --hw-slime: #12b886; --hw-blood: #e03131; --hw-gold: #b88a00; --hw-on-accent: #111;
+            --hw-sky: linear-gradient(160deg, #ffffff 0%, #ececec 55%, #d9d9d9 100%); --hw-stars-opacity: 0; --hw-fog: transparent;
+            --hw-input-bg: #fff; --hw-card-border: rgba(224,168,0,0.45);
+            --hw-shadow: 0 14px 40px -14px rgba(0,0,0,0.35), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(255, 196, 0, 0.45); --hw-note-bg: rgba(255,196,0,0.15); --hw-note-text: #5c4400;
+            --hw-panel-bg: #fff; --hw-panel-text: #111; --hw-panel-label: #b88a00;
+            --tm-font: 'Bungee', 'Nunito', sans-serif; --tm-glow-color: rgba(255, 196, 0, 0.45);
+            --tm-banner: linear-gradient(120deg, #000 0%, #1f1f1f 55%, #b88a00 100%); --tm-footer: #0a0a0a; --tm-modal-dark: #141414;
+            --tm-e1: "🛒"; --tm-e2: "⚡"; --tm-e3: "💸"; --tm-fila: "🏷️🛒💸";
+        }
+        [data-theme="dark"].tema-blackfriday {
+            --bg-body: #050505; --bg-card: rgba(20,20,20,0.92); --text-main: #f5f5f5; --text-muted: #aaa;
+            --info-row-bg: rgba(255, 212, 59, 0.08); --border-color: rgba(255, 212, 59, 0.25);
+            --hw-pumpkin: #ffd43b; --hw-pumpkin-deep: #f59f00; --hw-purple: #ff2e88; --hw-purple-2: #c2005f; --hw-slime: #38ffb0; --hw-blood: #ff4d5e; --hw-gold: #ffd43b;
+            --hw-sky: radial-gradient(ellipse 60% 40% at 10% 0%, rgba(255,46,136,0.25) 0%, transparent 70%), radial-gradient(ellipse 60% 40% at 90% 100%, rgba(255,212,59,0.18) 0%, transparent 70%), linear-gradient(180deg, #0d0d0d, #000);
+            --hw-input-bg: rgba(0,0,0,0.7); --hw-card-border: rgba(255,212,59,0.35);
+            --hw-shadow: 0 18px 50px -14px rgba(0,0,0,0.9), 0 0 0 1px var(--hw-card-border), 0 0 30px -10px rgba(255,46,136,0.35);
+            --hw-note-text: #ffe8a1; --hw-panel-bg: rgba(0,0,0,0.6); --hw-panel-text: #fff; --hw-panel-label: #ffd43b;
+            --tm-banner: linear-gradient(120deg, #000 0%, #2b0016 50%, #ffd43b 130%);
+        }
+
+        /* ---------- 🎄 NAVIDAD: rojo, verde y nieve ---------- */
+        .tema-navidad {
+            --bg-body: #f4fbff; --bg-card: rgba(255,255,255,0.95); --text-main: #1b2a22; --text-muted: #5b6b62;
+            --info-row-bg: rgba(201, 42, 42, 0.07); --border-color: rgba(43, 138, 62, 0.28);
+            --hw-pumpkin: #c92a2a; --hw-pumpkin-2: #ff8787; --hw-pumpkin-deep: #a61e1e; --hw-purple: #2b8a3e; --hw-purple-2: #1b5e2a;
+            --hw-slime: #2b8a3e; --hw-blood: #c92a2a; --hw-gold: #c7a008; --hw-on-accent: #fff;
+            --hw-sky: linear-gradient(180deg, #dff3ff 0%, #f4fbff 60%, #ffffff 100%); --hw-stars-opacity: 0; --hw-fog: rgba(255,255,255,0.9);
+            --hw-input-bg: #fff; --hw-card-border: rgba(201,42,42,0.3);
+            --hw-shadow: 0 14px 40px -12px rgba(27, 94, 42, 0.3), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(201, 42, 42, 0.35); --hw-note-bg: rgba(199,160,8,0.14); --hw-note-text: #6b5300;
+            --hw-panel-bg: #fff; --hw-panel-text: #1b2a22; --hw-panel-label: #c92a2a;
+            --tm-font: 'Mountains of Christmas', 'Nunito', cursive; --tm-glow-color: rgba(201, 42, 42, 0.35);
+            --tm-banner: linear-gradient(120deg, #1b5e2a 0%, #2b8a3e 45%, #c92a2a 100%); --tm-footer: #12301c; --tm-modal-dark: #0f2419;
+            --tm-e1: "🎄"; --tm-e2: "🎅"; --tm-e3: "🎁"; --tm-fila: "🎁🎄⛄";
+        }
+        [data-theme="dark"].tema-navidad {
+            --bg-body: #07140e; --bg-card: rgba(12, 32, 22, 0.88); --text-main: #f1fff6; --text-muted: #a9c4b4;
+            --info-row-bg: rgba(255,255,255,0.06); --border-color: rgba(255,255,255,0.18);
+            --hw-pumpkin: #ff4d4d; --hw-pumpkin-2: #ffa8a8; --hw-pumpkin-deep: #d62828; --hw-purple: #40c057; --hw-purple-2: #2b8a3e; --hw-slime: #69db7c; --hw-blood: #ff6b6b; --hw-gold: #ffd43b;
+            --hw-sky: radial-gradient(ellipse 70% 50% at 20% 0%, rgba(64,192,87,0.25) 0%, transparent 70%), linear-gradient(180deg, #0b1f17 0%, #07140e 100%);
+            --hw-stars-opacity: 1; --hw-fog: rgba(255,255,255,0.12); --hw-input-bg: rgba(0,0,0,0.4);
+            --hw-shadow: 0 18px 50px -14px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,77,77,0.3);
+            --hw-note-text: #ffe8a1; --hw-panel-bg: rgba(0,0,0,0.45); --hw-panel-text: #fff; --hw-panel-label: #ffa8a8;
+        }
+        [data-theme="dark"].tema-navidad .hw-moon { display: block; }
+
+        /* ---------- 🎆 AÑO NUEVO: dorado, noche y fuegos artificiales ---------- */
+        .tema-anonuevo {
+            --bg-body: #fffaf0; --bg-card: rgba(255,255,255,0.95); --text-main: #1a1d33; --text-muted: #5f637a;
+            --info-row-bg: rgba(212, 160, 23, 0.1); --border-color: rgba(26, 29, 51, 0.18);
+            --hw-pumpkin: #c99700; --hw-pumpkin-2: #ffd43b; --hw-pumpkin-deep: #a67c00; --hw-purple: #1c2a6b; --hw-purple-2: #364fc7;
+            --hw-slime: #2f9e44; --hw-blood: #c92a2a; --hw-gold: #a67c00; --hw-on-accent: #fff;
+            --hw-sky: linear-gradient(180deg, #fff3d6 0%, #fffaf0 60%, #ffffff 100%); --hw-stars-opacity: 0; --hw-fog: transparent;
+            --hw-input-bg: #fff; --hw-card-border: rgba(201,151,0,0.4);
+            --hw-shadow: 0 14px 40px -12px rgba(28,42,107,0.3), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(255, 196, 0, 0.45); --hw-note-bg: rgba(255,196,0,0.14); --hw-note-text: #5c4400;
+            --hw-panel-bg: #fff; --hw-panel-text: #1a1d33; --hw-panel-label: #a67c00;
+            --tm-font: 'Playfair Display', Georgia, serif; --tm-glow-color: rgba(255, 196, 0, 0.45);
+            --tm-banner: linear-gradient(120deg, #0b1026 0%, #1c2a6b 50%, #c99700 100%); --tm-footer: #0b1026; --tm-modal-dark: #10163a;
+            --tm-e1: "🥂"; --tm-e2: "🎆"; --tm-e3: "🍇"; --tm-fila: "🍇🥂🎆";
+        }
+        [data-theme="dark"].tema-anonuevo {
+            --bg-body: #060918; --bg-card: rgba(14, 20, 52, 0.88); --text-main: #f5f3ff; --text-muted: #aab0d6;
+            --info-row-bg: rgba(255, 212, 59, 0.08); --border-color: rgba(255, 212, 59, 0.25);
+            --hw-pumpkin: #ffd43b; --hw-pumpkin-deep: #f0b400; --hw-purple: #748ffc; --hw-purple-2: #364fc7; --hw-on-accent: #111;
+            --hw-sky: radial-gradient(ellipse 60% 40% at 80% 0%, rgba(116,143,252,0.3) 0%, transparent 70%), linear-gradient(180deg, #0b1026 0%, #04060f 100%);
+            --hw-stars-opacity: 1; --hw-input-bg: rgba(0,0,0,0.45);
+            --hw-shadow: 0 18px 50px -14px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,212,59,0.3);
+            --hw-note-text: #ffe8a1; --hw-panel-bg: rgba(0,0,0,0.5); --hw-panel-text: #fff; --hw-panel-label: #ffd43b;
+        }
+        [data-theme="dark"].tema-anonuevo .hw-moon { display: block; }
+
+        /* ---------- ❤️ SAN VALENTÍN: rosado y rojo ---------- */
+        .tema-sanvalentin, .tema-amoryamistad {
+            --bg-body: #fff0f5; --bg-card: rgba(255,255,255,0.95); --text-main: #3d1426; --text-muted: #7d5566;
+            --info-row-bg: rgba(230, 73, 128, 0.08); --border-color: rgba(230, 73, 128, 0.28);
+            --hw-pumpkin: #e64980; --hw-pumpkin-2: #faa2c1; --hw-pumpkin-deep: #c2255c; --hw-purple: #e03131; --hw-purple-2: #a61e1e;
+            --hw-slime: #2f9e44; --hw-blood: #c92a2a; --hw-gold: #c2255c; --hw-on-accent: #fff;
+            --hw-sky: linear-gradient(180deg, #ffdeeb 0%, #fff0f5 60%, #ffffff 100%); --hw-stars-opacity: 0; --hw-fog: rgba(255,255,255,0.7);
+            --hw-input-bg: #fff; --hw-card-border: rgba(230,73,128,0.35);
+            --hw-shadow: 0 14px 40px -12px rgba(194,37,92,0.3), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(230, 73, 128, 0.35); --hw-note-bg: rgba(230,73,128,0.1); --hw-note-text: #8a1c47;
+            --hw-panel-bg: #fff; --hw-panel-text: #3d1426; --hw-panel-label: #c2255c;
+            --tm-font: 'Pacifico', 'Nunito', cursive; --tm-glow-color: rgba(230, 73, 128, 0.35);
+            --tm-banner: linear-gradient(120deg, #a61e1e 0%, #e03131 45%, #f783ac 100%); --tm-footer: #4a0f27; --tm-modal-dark: #2a0b19;
+            --tm-e1: "❤️"; --tm-e2: "💕"; --tm-e3: "🌹"; --tm-fila: "🍫❤️🌹";
+        }
+        [data-theme="dark"].tema-sanvalentin, [data-theme="dark"].tema-amoryamistad {
+            --bg-body: #1a0610; --bg-card: rgba(45, 12, 28, 0.88); --text-main: #fff0f6; --text-muted: #d4a5b8;
+            --info-row-bg: rgba(247,131,172,0.1); --border-color: rgba(247,131,172,0.28);
+            --hw-pumpkin: #f06595; --hw-pumpkin-deep: #d6336c; --hw-purple: #ff6b6b; --hw-purple-2: #c92a2a;
+            --hw-sky: radial-gradient(ellipse 60% 40% at 20% 0%, rgba(240,101,149,0.3) 0%, transparent 70%), linear-gradient(180deg, #2a0b19 0%, #12030a 100%);
+            --hw-fog: rgba(240,101,149,0.12); --hw-input-bg: rgba(0,0,0,0.4);
+            --hw-shadow: 0 18px 50px -14px rgba(0,0,0,0.8), 0 0 0 1px rgba(240,101,149,0.3);
+            --hw-note-text: #ffc9de; --hw-panel-bg: rgba(0,0,0,0.45); --hw-panel-text: #fff; --hw-panel-label: #faa2c1;
+        }
+
+        /* ---------- 💛 AMOR Y AMISTAD: rojo con amarillo, regalos ---------- */
+        .tema-amoryamistad {
+            --hw-pumpkin: #e03131; --hw-pumpkin-2: #ffa8a8; --hw-pumpkin-deep: #b02525; --hw-purple: #e8a400; --hw-purple-2: #c78c00;
+            --bg-body: #fff7ed; --info-row-bg: rgba(250, 176, 5, 0.12);
+            --hw-sky: linear-gradient(180deg, #ffe8cc 0%, #fff7ed 60%, #ffffff 100%);
+            --tm-banner: linear-gradient(120deg, #c92a2a 0%, #f03e3e 50%, #fab005 100%); --tm-glow-color: rgba(250, 176, 5, 0.4);
+            --tm-e1: "💛"; --tm-e2: "🎁"; --tm-e3: "🤝"; --tm-fila: "🎁💛❤️";
+        }
+        [data-theme="dark"].tema-amoryamistad { --hw-pumpkin: #ff6b6b; --hw-purple: #fcc419; --hw-purple-2: #e8a400; }
+
+        /* ---------- 🐣 SEMANA SANTA: pasteles y descanso ---------- */
+        .tema-semanasanta {
+            --bg-body: #f6fbf8; --bg-card: rgba(255,255,255,0.95); --text-main: #23343a; --text-muted: #62777d;
+            --info-row-bg: rgba(99, 197, 168, 0.12); --border-color: rgba(99, 197, 168, 0.35);
+            --hw-pumpkin: #20a184; --hw-pumpkin-2: #96f2d7; --hw-pumpkin-deep: #12806a; --hw-purple: #e8779e; --hw-purple-2: #d6336c;
+            --hw-slime: #2f9e44; --hw-blood: #e03131; --hw-gold: #e8a400; --hw-on-accent: #fff;
+            --hw-sky: linear-gradient(180deg, #e6fcf5 0%, #fff9db 55%, #fff0f6 100%); --hw-stars-opacity: 0; --hw-fog: rgba(255,255,255,0.6);
+            --hw-input-bg: #fff; --hw-card-border: rgba(32,161,132,0.3);
+            --hw-shadow: 0 14px 40px -12px rgba(18,128,106,0.25), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(99, 197, 168, 0.4); --hw-note-bg: rgba(255,212,59,0.18); --hw-note-text: #6b5300;
+            --hw-panel-bg: #fff; --hw-panel-text: #23343a; --hw-panel-label: #12806a;
+            --tm-font: 'Fredoka', 'Nunito', sans-serif; --tm-glow-color: rgba(99, 197, 168, 0.4);
+            --tm-banner: linear-gradient(120deg, #63c5a8 0%, #f7b2c8 55%, #ffd43b 100%); --tm-footer: #1d4a40; --tm-modal-dark: #13302a;
+            --tm-e1: "🐣"; --tm-e2: "🌷"; --tm-e3: "🥚"; --tm-fila: "🥚🐣🌷";
+        }
+        [data-theme="dark"].tema-semanasanta {
+            --bg-body: #0d1f1b; --bg-card: rgba(19, 48, 42, 0.88); --text-main: #effcf8; --text-muted: #a6c9bf;
+            --info-row-bg: rgba(150,242,215,0.08); --border-color: rgba(150,242,215,0.25);
+            --hw-pumpkin: #63e6be; --hw-pumpkin-deep: #20c997; --hw-purple: #f783ac; --hw-on-accent: #0d1f1b;
+            --hw-sky: radial-gradient(ellipse 60% 40% at 20% 0%, rgba(247,131,172,0.2) 0%, transparent 70%), linear-gradient(180deg, #13302a 0%, #08140f 100%);
+            --hw-fog: rgba(150,242,215,0.1); --hw-input-bg: rgba(0,0,0,0.35); --hw-stars-opacity: 0.6;
+            --hw-note-text: #ffe8a1; --hw-panel-bg: rgba(0,0,0,0.4); --hw-panel-text: #fff; --hw-panel-label: #96f2d7;
+        }
+
+        /* ---------- 🏖️ VACACIONES: sol, playa y mar ---------- */
+        .tema-vacaciones {
+            --bg-body: #f0faff; --bg-card: rgba(255,255,255,0.94); --text-main: #0b2c4a; --text-muted: #557089;
+            --info-row-bg: rgba(28, 126, 214, 0.08); --border-color: rgba(28, 126, 214, 0.25);
+            --hw-pumpkin: #1c7ed6; --hw-pumpkin-2: #74c0fc; --hw-pumpkin-deep: #1864ab; --hw-purple: #f76707; --hw-purple-2: #d9480f;
+            --hw-slime: #2f9e44; --hw-blood: #e03131; --hw-gold: #e8a400; --hw-on-accent: #fff;
+            --hw-sky: linear-gradient(180deg, #a5d8ff 0%, #d0ebff 45%, #fff3bf 85%, #ffe8a1 100%); --hw-stars-opacity: 0; --hw-fog: rgba(255,255,255,0.6);
+            --hw-input-bg: #fff; --hw-card-border: rgba(28,126,214,0.3);
+            --hw-shadow: 0 14px 40px -12px rgba(24,100,171,0.3), 0 0 0 1px var(--hw-card-border);
+            --hw-glow: 0 0 22px rgba(28, 126, 214, 0.35); --hw-note-bg: rgba(255,212,59,0.2); --hw-note-text: #6b5300;
+            --hw-panel-bg: #fff; --hw-panel-text: #0b2c4a; --hw-panel-label: #1864ab;
+            --tm-font: 'Fredoka', 'Nunito', sans-serif; --tm-glow-color: rgba(28, 126, 214, 0.35);
+            --tm-banner: linear-gradient(120deg, #1864ab 0%, #22b8cf 50%, #ffa94d 100%); --tm-footer: #0b2c4a; --tm-modal-dark: #0c2238;
+            --tm-e1: "🌴"; --tm-e2: "☀️"; --tm-e3: "🏖️"; --tm-fila: "🍹🌴🏖️";
+        }
+        [data-theme="dark"].tema-vacaciones {
+            --bg-body: #061726; --bg-card: rgba(10, 34, 56, 0.88); --text-main: #eaf6ff; --text-muted: #9fbbd2;
+            --info-row-bg: rgba(116,192,252,0.08); --border-color: rgba(116,192,252,0.25);
+            --hw-pumpkin: #4dabf7; --hw-pumpkin-deep: #1c7ed6; --hw-purple: #ff922b;
+            --hw-sky: radial-gradient(ellipse 60% 40% at 85% 0%, rgba(255,146,43,0.25) 0%, transparent 70%), linear-gradient(180deg, #0c2238 0%, #04101c 100%);
+            --hw-fog: rgba(116,192,252,0.1); --hw-input-bg: rgba(0,0,0,0.35); --hw-stars-opacity: 0.7;
+            --hw-note-text: #ffe8a1; --hw-panel-bg: rgba(0,0,0,0.4); --hw-panel-text: #fff; --hw-panel-label: #74c0fc;
+        }
+        /* El "sol" de vacaciones reemplaza la luna */
+        .tema-vacaciones .hw-moon { display: block; background: radial-gradient(circle at 40% 40%, #fff3bf 0%, #ffd43b 55%, #fab005 100%); box-shadow: 0 0 60px 20px rgba(255, 212, 59, 0.5), 0 0 140px 50px rgba(255, 212, 59, 0.3); }
+        .tema-vacaciones .hw-moon::before, .tema-vacaciones .hw-moon::after { display: none; }
+
+        @media (max-width: 767px) {
+            .tema-fiesta .servicio-card::after { font-size: 26px; }
+            .tema-fiesta .hw-pumpkins::before { font-size: 1.6rem; }
+        }
+
+    </style>
+    <script>
+        // Activa solo el diseño que corresponde según la fecha programada
+        document.getElementById(window.HW_ON ? "estilo-basico" : "estilo-halloween").media = "not all";
+        if (!window.HW_ON) document.getElementById("estilo-temporadas").media = "not all";
+        (function () {
+            var hwMeta = document.querySelector('meta[name="theme-color"]');
+            var colores = { halloween: "#0b0614", blackfriday: "#0a0a0a", navidad: "#0b1f17", anonuevo: "#0b1026",
+                            sanvalentin: "#c2255c", semanasanta: "#63c5a8", vacaciones: "#1c7ed6", amoryamistad: "#e03131" };
+            if (!hwMeta) return;
+            if (!window.HW_ON) hwMeta.parentNode.removeChild(hwMeta);
+            else hwMeta.setAttribute("content", colores[window.TEMA] || "#0b0614");
+        })();
+    </script>
 </head>
 <body>
+
+<!-- 🎃 Dibujos reutilizables de Halloween (arañas, murciélagos, fantasmas, calabazas) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+        <symbol id="hw-sym-web" viewBox="0 0 200 200">
+            <path fill="none" stroke="currentColor" stroke-width="1.4" d="M0 0L200 0M0 0L194 48M0 0L175 97M0 0L141 141M0 0L97 175M0 0L48 194M0 0L0 200M26 0Q21 3 25 6M25 6Q19 8 23 13M23 13Q17 13 18 18M18 18Q13 17 13 23M13 23Q8 19 6 25M6 25Q3 21 0 26M55 0Q44 5 53 13M53 13Q41 16 48 27M48 27Q35 26 39 39M39 39Q26 35 27 48M27 48Q16 41 13 53M13 53Q5 44 0 55M90 0Q71 9 87 22M87 22Q67 26 79 44M79 44Q58 43 64 64M64 64Q43 58 44 79M44 79Q26 67 22 87M22 87Q9 71 0 90M130 0Q103 13 126 31M126 31Q97 38 114 63M114 63Q83 63 92 92M92 92Q63 83 63 114M63 114Q38 97 31 126M31 126Q13 103 0 130M178 0Q141 17 173 43M173 43Q132 52 156 86M156 86Q114 86 126 126M126 126Q86 114 86 156M86 156Q52 132 43 173M43 173Q17 141 0 178"/>
+        </symbol>
+        <symbol id="hw-sym-spider" viewBox="0 0 64 64">
+            <g stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round">
+                <path d="M27 27 Q18 12 10 8"/><path d="M26 31 Q14 22 4 26"/><path d="M26 36 Q12 36 4 44"/><path d="M28 40 Q18 48 12 58"/>
+                <path d="M37 27 Q46 12 54 8"/><path d="M38 31 Q50 22 60 26"/><path d="M38 36 Q52 36 60 44"/><path d="M36 40 Q46 48 52 58"/>
+            </g>
+            <ellipse cx="32" cy="39" rx="9" ry="11" fill="currentColor"/>
+            <circle cx="32" cy="25" r="6.5" fill="currentColor"/>
+            <circle cx="29.5" cy="24" r="1.8" fill="#ff3b3b"/><circle cx="34.5" cy="24" r="1.8" fill="#ff3b3b"/>
+        </symbol>
+        <symbol id="hw-sym-bat" viewBox="0 0 120 50">
+            <path fill="currentColor" d="M62 18 C72 8 92 4 118 10 C110 14 108 20 110 26 C102 22 94 24 90 30 C84 25 76 26 72 32 C70 26 66 24 62 26 Z"/>
+            <path fill="currentColor" d="M58 18 C48 8 28 4 2 10 C10 14 12 20 10 26 C18 22 26 24 30 30 C36 25 44 26 48 32 C50 26 54 24 58 26 Z"/>
+            <ellipse cx="60" cy="24" rx="6" ry="10" fill="currentColor"/>
+            <circle cx="60" cy="13" r="5" fill="currentColor"/>
+            <path fill="currentColor" d="M56 11 L55 3 L59 8 Z M64 11 L65 3 L61 8 Z"/>
+        </symbol>
+        <symbol id="hw-sym-ghost" viewBox="0 0 64 80">
+            <path fill="currentColor" d="M32 4 C16 4 6 16 6 32 V72 l8-6 8 6 10-6 10 6 8-6 8 6 V32 C58 16 48 4 32 4z"/>
+            <ellipse cx="24" cy="32" rx="4" ry="5" fill="#1a0d2a"/><ellipse cx="40" cy="32" rx="4" ry="5" fill="#1a0d2a"/>
+            <ellipse cx="32" cy="47" rx="5" ry="6" fill="#1a0d2a"/>
+        </symbol>
+        <symbol id="hw-sym-pumpkin" viewBox="0 0 100 90">
+            <path d="M47 18 q-3-11 6-15 l4 4 q-6 3-5 11z" fill="#4f7a28"/>
+            <ellipse cx="30" cy="54" rx="24" ry="31" fill="#d9480f"/>
+            <ellipse cx="70" cy="54" rx="24" ry="31" fill="#d9480f"/>
+            <ellipse cx="50" cy="54" rx="27" ry="34" fill="#f76707"/>
+            <g fill="#ffd43b">
+                <path d="M28 46 l9-12 l9 12z"/><path d="M54 46 l9-12 l9 12z"/>
+                <path d="M46 56 l4-6 l4 6z"/>
+                <path d="M24 62 q26 22 52 0 l-6 4 -5-4 -5 5 -6-5 -6 5 -5-5 -5 5 -6-5 -5 4z"/>
+            </g>
+        </symbol>
+    </defs>
+</svg>
+
+<!-- 🕸️ Fondo decorativo (no interfiere con botones ni textos) -->
+<div class="hw-decor" aria-hidden="true">
+    <div class="hw-sky"></div>
+    <div class="hw-stars"></div>
+    <div class="hw-moon"></div>
+    <svg class="hw-web tl"><use href="#hw-sym-web" xlink:href="#hw-sym-web"/></svg>
+    <svg class="hw-web tr"><use href="#hw-sym-web" xlink:href="#hw-sym-web"/></svg>
+    <svg class="hw-web bl"><use href="#hw-sym-web" xlink:href="#hw-sym-web"/></svg>
+    <div class="hw-spider s1"><span class="hw-thread"></span><svg><use href="#hw-sym-spider" xlink:href="#hw-sym-spider"/></svg></div>
+    <div class="hw-spider s2"><span class="hw-thread"></span><svg><use href="#hw-sym-spider" xlink:href="#hw-sym-spider"/></svg></div>
+    <div class="hw-spider s3"><span class="hw-thread"></span><svg><use href="#hw-sym-spider" xlink:href="#hw-sym-spider"/></svg></div>
+    <div class="hw-bat b1"><svg viewBox="0 0 120 50"><use href="#hw-sym-bat" xlink:href="#hw-sym-bat"/></svg></div>
+    <div class="hw-bat b2"><svg viewBox="0 0 120 50"><use href="#hw-sym-bat" xlink:href="#hw-sym-bat"/></svg></div>
+    <div class="hw-bat b3"><svg viewBox="0 0 120 50"><use href="#hw-sym-bat" xlink:href="#hw-sym-bat"/></svg></div>
+    <div class="hw-bat b4"><svg viewBox="0 0 120 50"><use href="#hw-sym-bat" xlink:href="#hw-sym-bat"/></svg></div>
+    <div class="hw-bat b5"><svg viewBox="0 0 120 50"><use href="#hw-sym-bat" xlink:href="#hw-sym-bat"/></svg></div>
+    <div class="hw-ghost g1"><svg viewBox="0 0 64 80"><use href="#hw-sym-ghost" xlink:href="#hw-sym-ghost"/></svg></div>
+    <div class="hw-ghost g2"><svg viewBox="0 0 64 80"><use href="#hw-sym-ghost" xlink:href="#hw-sym-ghost"/></svg></div>
+    <div class="hw-eyes e1"><span></span><span></span></div>
+    <div class="hw-eyes e2"><span></span><span></span></div>
+    <div class="hw-eyes e3"><span></span><span></span></div>
+    <div class="hw-fog"></div>
+    <div class="hw-fog f2"></div>
+</div>
     
-<div id="customModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-    <div style="background: var(--bg-card); color: var(--text-main); padding: 30px; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; position: relative;">
-        <span onclick="cerrarModal()" style="position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted);">&times;</span>
+<div id="customModal" class="hw-modal" style="display: none;">
+    <div class="hw-modal-card">
+        <span onclick="cerrarModal()" class="hw-modal-close">&times;</span>
         <div id="modalBody"></div>
         <div class="text-center mt-4">
-            <button class="btn btn-primary" onclick="cerrarModal()">Cerrar</button>
+            <button class="btn btn-primary" onclick="cerrarModal()"><span class="hw-only">🎃 </span>Cerrar</button>
         </div>
     </div>
 </div>
@@ -250,7 +1135,28 @@
 <div id="app">
     <div id="sectionLogin" class="container login-container">
         <div class="card-auth text-center">
-            <div class="header-logo">🚀 MultiEntretenimiento BC</div>
+            <!-- Monstruo asomándose -->
+            <div class="hw-monster" aria-hidden="true">
+                <svg viewBox="0 0 160 84">
+                    <path d="M44 32 L34 4 L58 24z" fill="#e9d8ff"/>
+                    <path d="M116 32 L126 4 L102 24z" fill="#e9d8ff"/>
+                    <path d="M30 84 V52 C30 24 54 12 80 12 C106 12 130 24 130 52 V84z" fill="#6bcf3f"/>
+                    <path d="M30 84 V52 C30 24 54 12 80 12 C62 16 44 30 44 56 V84z" fill="#58b52f" opacity="0.6"/>
+                    <g class="hw-m-eyes">
+                        <circle cx="62" cy="48" r="13" fill="#fff"/>
+                        <circle cx="98" cy="48" r="13" fill="#fff"/>
+                        <g class="hw-m-pupils" fill="#1a0d2a">
+                            <circle cx="64" cy="50" r="6"/><circle cx="100" cy="50" r="6"/>
+                        </g>
+                    </g>
+                    <path d="M66 70 q14 8 28 0" stroke="#1a0d2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M71 72 l3 5 l3-4z M84 72 l3 5 l3-5z" fill="#fff"/>
+                    <g fill="#58b52f">
+                        <ellipse cx="22" cy="78" rx="17" ry="8"/><ellipse cx="138" cy="78" rx="17" ry="8"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="header-logo"><span class="hw-only">🎃</span><span class="hw-basic">🚀</span> MultiEntretenimiento BC</div>
             <h4 class="mb-3">Bienvenido a tu Panel</h4>
             <p class="text-muted mb-4">Ingresa tu número de WhatsApp para ver tus servicios.</p>
             <div class="input-group mb-3">
@@ -273,7 +1179,13 @@
                 ¿Olvidaste o tienes problemas para ingresar? <b>Clic aquí</b>
             </a>
 
-            <div class="header-logo mt-4" style="font-size: 1rem;">🚀 Variedades y MultiEntretenimiento BC <br> El mejor entretenimiento 🍿 para todos 📱</div>
+            <div class="hw-pumpkins" aria-hidden="true">
+                <svg viewBox="0 0 100 90"><use href="#hw-sym-pumpkin" xlink:href="#hw-sym-pumpkin"/></svg>
+                <svg viewBox="0 0 100 90"><use href="#hw-sym-pumpkin" xlink:href="#hw-sym-pumpkin"/></svg>
+                <svg viewBox="0 0 100 90"><use href="#hw-sym-pumpkin" xlink:href="#hw-sym-pumpkin"/></svg>
+            </div>
+
+            <div class="header-logo mt-4" style="font-size: 1rem;"><span class="hw-only">🎃</span><span class="hw-basic">🚀</span> Variedades y MultiEntretenimiento BC <br> El mejor entretenimiento 🍿 para todos 📱</div>
         </div>
     </div>
 
@@ -516,7 +1428,7 @@
         const currentTheme = localStorage.getItem('theme') === 'dark' ? 'light' : 'dark';
         setTheme(currentTheme);
     }
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    const savedTheme = localStorage.getItem('theme') || (window.TEMA_OSCURO ? 'dark' : 'light');
     setTheme(savedTheme);
 
     const firebaseConfig = { 
@@ -727,7 +1639,7 @@ async function cargarPanelCliente(clientesEncontrados) {
                  </div>
             <div id="publi-larga" style="width:100%; text-align:center; margin-bottom:15px;"</p>
             </div>
-            <div class="banner-largo"><p class="mb-0 fw-bold">🚀 ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! 🚀</p>
+            <div class="banner-largo"><p class="mb-0 fw-bold"><span class="hw-only">🎃</span><span class="hw-basic">🚀</span> ¡RENUEVA A TIEMPO Y OBTÉN GRANDES DESCUENTOS! <span class="hw-only">🎃</span><span class="hw-basic">🚀</span></p>
             
             
             
@@ -752,21 +1664,19 @@ async function cargarPanelCliente(clientesEncontrados) {
                 
                 // BOTÓN AZUL: Ver Código (Con icono y estilo mejorado)
                 btnLink += `<button type="button" onclick="pedirCodigo('${s.correo}', this)" 
-                            class="btn-autogestion" 
-                            style="background: #0d6efd !important; color: white !important; border: none; margin-left: 5px; font-weight: bold;">
+                            class="btn-autogestion hw-btn-code">
                             🔑 Ver Código Inicio de Sesion
                             </button>`;
                             
                  // NUEVO BOTÓN UNIFICADO: Busca Temporal y Hogar usando el perfil dinámico
                  btnLink += `<button type="button" onclick="solicitarAccesoNetflix('${s.correo}','${s.perfil}', this)" 
-                            class="btn-autogestion" 
-                            style="background: #620AA6 !important; color: white !important; border: none; margin-left: 5px; font-weight: bold;">
+                            class="btn-autogestion hw-btn-hogar">
                             🔑 Activar Hogar / Código temp
                             </button>`;
                 
                 // Espacio para el resultado
                 btnLink += `<div id="cod-${s.correo.replace(/[^a-zA-Z0-9]/g, '')}" 
-                            style="font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px;"></div>`;
+                            class="hw-cod-visor"></div>`;
                             
                             
                 btnLink += `<div class="contenedor-codigo" style="margin-top:10px;"></div>`;            
@@ -778,7 +1688,7 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                 
                 // Visor específico para Disney
                 btnLink += `<div id="cod-${s.correo.replace(/[^a-zA-Z0-9]/g, '')}" 
-                            style="font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px;"></div>`;
+                            class="hw-cod-visor"></div>`;
                             
                             
                 btnLink += `<div class="contenedor-codigo" style="margin-top:10px;"></div>`; 
@@ -833,8 +1743,8 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
             
             let htmlNotas = "";
             if (s.nota_cuenta && s.nota_cuenta !== "") {
-                htmlNotas = `<div style="background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left;">
-                                <b style="color: #bc9105;">📌 NOTA DE SOPORTE:</b><br>${s.nota_cuenta}</div>`;
+                htmlNotas = `<div class="hw-note">
+                                <b>📌 NOTA DE SOPORTE:</b><br>${s.nota_cuenta}</div>`;
             }
 
             let btnWA = s.diff <= 5 ? `<div class="mt-3">${htmlModificacion}<a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>${avisoOferta}</div>` : `<div class="mt-3">${htmlModificacion}</div>`;
@@ -971,7 +1881,7 @@ function pedirCodigo(correoCliente, boton) {
     if (!visor) return;
 
     visor.innerText = "⏳ Verificando su cuenta...";
-    visor.style.color = "#0d6efd";
+    visor.style.color = HW_ON ? "var(--hw-pumpkin)" : "#0d6efd";
     boton.disabled = true;
 
     // Sistema Anti-Caché
@@ -981,13 +1891,17 @@ function pedirCodigo(correoCliente, boton) {
         .then(response => response.text())
         .then(resultado => {
             if (resultado === "No encontrado") {
-                visor.innerHTML = "<span style='color:red;'>❌ Sin código reciente de Netflix</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo</small>";
+                visor.innerHTML = HW_ON
+                    ? "<span style='color:var(--hw-blood);'>❌ Sin código reciente de Netflix</span><br><small style='color:var(--text-muted); font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo, si solicitas activacion hogar o codigo temporal hogar netflix, por favor </small>"
+                    : "<span style='color:red;'>❌ Sin código reciente de Netflix</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo</small>";
             } else if (resultado === "Pendiente...") {
                 visor.innerText = "📩 Buscando código de Netflix...";
                 visor.style.color = "orange";
             } else {
                 // ÉXITO: Mostramos el código
-                visor.innerHTML = "🔑 CÓDIGO ACTUAL:<br><span style='font-size: 24px; color: #198754; font-weight: 800;'>" + resultado + "</span>";
+                visor.innerHTML = HW_ON
+                    ? "🔑 CÓDIGO ACTUAL:<br><span style='font-size: 26px; color: var(--hw-slime); font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 12px rgba(140,224,79,.45);'>" + resultado + "</span>"
+                    : "🔑 CÓDIGO ACTUAL:<br><span style='font-size: 24px; color: #198754; font-weight: 800;'>" + resultado + "</span>";
                 
                 // --- REGISTRO SILENCIOSO CON NOMBRE LIMPIO ---
                 try {
@@ -1029,19 +1943,23 @@ function pedirCodigoDisney(correoCliente, boton) {
 
     if (!visor) return;
     visor.innerText = "⏳ Buscando código de Disney+...";
-    visor.style.color = "#0063e5";
+    visor.style.color = HW_ON ? "var(--hw-purple)" : "#0063e5";
     boton.disabled = true;
 
     fetch(urlApiDisney + "?correo=" + encodeURIComponent(correoCliente) + "&v=" + Math.random())
         .then(response => response.text())
         .then(resultado => {
             if (resultado.includes("No encontrado")) {
-                visor.innerHTML = "<span style='color:red;'>❌ Sin código reciente de Disney</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo</small>";
+                visor.innerHTML = HW_ON
+                    ? "<span style='color:var(--hw-blood);'>❌ Sin código reciente de Disney</span><br><small style='color:var(--text-muted); font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo</small>"
+                    : "<span style='color:red;'>❌ Sin código reciente de Disney</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo</small>";
             } else if (resultado === "Pendiente...") {
                 visor.innerText = "📩 Código ya usado... Solicitelo nuevamente si se trató de un error";
                 visor.style.color = "orange";
             } else {
-                visor.innerHTML = "✨ CÓDIGO ACTUAL:<br><span style='font-size: 28px; color: #0063e5; font-weight: bold;'>" + resultado + "</span>";
+                visor.innerHTML = HW_ON
+                    ? "✨ CÓDIGO ACTUAL:<br><span style='font-size: 28px; color: var(--hw-purple); font-weight: 900; letter-spacing: 2px; text-shadow: 0 0 12px rgba(176,114,255,.5);'>" + resultado + "</span>"
+                    : "✨ CÓDIGO ACTUAL:<br><span style='font-size: 28px; color: #0063e5; font-weight: bold;'>" + resultado + "</span>";
                 
                 // --- REGISTRO SILENCIOSO CON NOMBRE LIMPIO ---
                 try {
@@ -1086,7 +2004,11 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
     botonPresionado.innerHTML = "⏳Buscando correos...";
     
     // Cargador sólido en tono ámbar
-    visor.innerHTML = `
+    visor.innerHTML = HW_ON ? `
+        <div style="margin-top:15px; padding:15px; text-align:center; background: var(--info-row-bg); border-radius: 12px; border: 1px dashed var(--hw-pumpkin);">
+            <div style="color:var(--hw-pumpkin); font-size:12px; font-weight:800; letter-spacing:1px;">🕸️ BUSCANDO SOLICITUD PREMIUM...</div>
+        </div>`
+        : `
         <div style="margin-top:15px; padding:15px; text-align:center; background: #fffcf0; border-radius: 12px; border: 1px dashed #daa520;">
             <div style="color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;">🔍 BUSCANDO SOLICITUD PREMIUM...</div>
         </div>`;
@@ -1130,7 +2052,46 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
                 // Usamos los datos que devolvió el servidor para que el registro sea exacto
                 registrarEventoCodigo(nombreClienteFinal, correo, "NETFLIX: " + tipoSolicitud, "Solicitud Procesada");
                 
-                visor.innerHTML = `
+                visor.innerHTML = HW_ON ? `
+                    <div style="background: linear-gradient(135deg, rgba(247, 103, 7, 0.18), rgba(123, 44, 191, 0.28)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding:20px; border-radius:18px; border: 1px solid rgba(255, 122, 26, 0.55); box-shadow: 0 8px 32px rgba(0,0,0,0.25), 0 0 24px rgba(247, 103, 7, 0.25); margin-top:15px; font-family: 'Nunito', 'Segoe UI', Roboto, sans-serif; position: relative;">
+                        
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="background: linear-gradient(90deg, #E50914, #b20710); color: white; display: inline-block; padding: 10px 25px; border-radius: 25px; font-size: 15px; font-weight: 800; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); text-transform: uppercase;">
+                                🎃 ${tipoSolicitud}
+                            </div>
+                        </div>
+
+                        <div style="background: var(--hw-panel-bg); padding: 15px; border-radius: 12px; border: 1px dashed var(--border-color);">
+                            <p style="margin:0 0 12px 0; font-size:13px; color: var(--hw-panel-label); text-transform: uppercase; letter-spacing: 0.5px;">
+                                <b>SOLICITUD DE:</b> 
+                                <span style="color: var(--hw-panel-text); font-weight: 900; font-style: italic; font-size: 16px; margin-left: 5px;">
+                                    ${data.nombre}
+                                </span>
+                            </p>
+                            
+                            <p style="margin:0 0 12px 0; font-size:13px; color: var(--hw-panel-label); text-transform: uppercase; letter-spacing: 0.5px;">
+                                <b>ENVIADA DESDE:</b> 
+                                <span style="color: var(--hw-panel-text); font-weight: 900; font-style: italic; font-size: 16px; margin-left: 5px;">
+                                    ${data.dispositivo}
+                                </span>
+                            </p>
+                            
+                            <p style="margin:0; font-size:13px; color: var(--hw-panel-label); text-transform: uppercase; letter-spacing: 0.5px;">
+                                <b>FECHA/HORA:</b> 
+                                <span style="color: var(--hw-panel-text); font-weight: 900; font-style: italic; font-size: 16px; margin-left: 5px;">
+                                    ${data.fecha}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div style="margin-top:20px;">
+                            <a href="${data.enlace}" target="_blank" rel="noopener noreferrer" 
+                               style="background: linear-gradient(135deg, #E50914, #9d0208); color:white; display:block; text-align:center; padding:16px; border-radius:12px; text-decoration:none; font-weight:bold; font-size:15px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 5px 18px rgba(229, 9, 20, 0.4);">
+                               ${textoBoton}
+                            </a>
+                        </div>
+                    </div>`
+                    : `
                     <div style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(218, 165, 32, 0.4)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding:20px; border-radius:18px; border: 1px solid rgba(255, 215, 0, 0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.2); margin-top:15px; font-family: 'Segoe UI', Roboto, sans-serif; position: relative;">
                         
                         <div style="text-align: center; margin-bottom: 20px;">
@@ -1170,7 +2131,12 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
                         </div>
                     </div>`;
             } else {
-                visor.innerHTML = `
+                visor.innerHTML = HW_ON ? `
+                    <div style="background: rgba(193, 18, 31, 0.12); color: var(--hw-blood); font-size:12px; margin-top:15px; padding:15px; border:1px dashed var(--hw-blood); border-radius:12px; text-align: center;">
+                        <b>🕷️ SIN RESULTADOS</b><br>
+                        <span style="color: var(--text-muted);">No hay solicitudes nuevas para este perfil, si necesitas codigo de inicio de sesion, oprime por favor el boton azul "🔑 Ver Código Inicio de Sesion".</span>
+                    </div>`
+                    : `
                     <div style="background: #fff5f5; color:#E50914; font-size:12px; margin-top:15px; padding:15px; border:1px solid #E50914; border-radius:12px; text-align: center;">
                         <b>⚠️ SIN RESULTADOS</b><br>
                         <span style="color:#555;">No hay solicitudes nuevas para este perfil.</span>
@@ -1178,7 +2144,9 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
             }
         })
         .catch(error => {
-            visor.innerHTML = "<div style='color:#E50914; font-size:11px; margin-top:15px; text-align:center;'>⚠️ ERROR DE CONEXIÓN.</div>";
+            visor.innerHTML = HW_ON
+                ? "<div style='color:var(--hw-blood); font-size:11px; margin-top:15px; text-align:center; font-weight:800;'>⚠️ ERROR DE CONEXIÓN.</div>"
+                : "<div style='color:#E50914; font-size:11px; margin-top:15px; text-align:center;'>⚠️ ERROR DE CONEXIÓN.</div>";
         })
         .finally(() => {
             botonPresionado.disabled = false;
@@ -1280,15 +2248,74 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 <footer class="main-footer">
-    <p>
+    <p><span class="hw-only">🦇 </span>
         &copy; <span id="year"></span> <strong>MultiEntretenimiento BC</strong> 
-        <span style="margin-left: 8px; border-left: 1px solid #ccc; padding-left: 8px;">Todos los derechos reservados</span>
+        <span style="margin-left: 8px; border-left: 1px solid #ccc; padding-left: 8px;">Todos los derechos reservados</span><span class="hw-only"> 🎃</span>
     </p>
 </footer>
 
 <script>
     // Se asegura de poner el año actual
     document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+<script>
+/* 🎉 Decoración de cada temática: lluvia de emojis y cambio de los emojis de Halloween */
+(function () {
+    var tema = window.TEMA;
+    if (!tema || tema === "halloween") return;
+    var cfg = {
+        blackfriday:  { lluvia: ["🏷️", "💸", "⚡", "🛒", "💰"], cambio: ["🛒", "⚡", "💸"] },
+        navidad:      { lluvia: ["❄️", "❄️", "❅", "❆", "🎁", "⭐"], cambio: ["🎄", "🎅", "🎁"] },
+        anonuevo:     { lluvia: ["✨", "🎆", "🎇", "🥂", "🍇", "🎊"], cambio: ["🥂", "🎆", "🍇"], sube: true },
+        sanvalentin:  { lluvia: ["❤️", "💕", "💖", "🌹", "🍫"], cambio: ["❤️", "💕", "🌹"], sube: true },
+        amoryamistad: { lluvia: ["💛", "❤️", "🎁", "🎈", "💌"], cambio: ["💛", "🎁", "🤝"], sube: true },
+        semanasanta:  { lluvia: ["🌷", "🌸", "🥚", "🐣", "🕊️"], cambio: ["🐣", "🌷", "🥚"] },
+        vacaciones:   { lluvia: ["🌴", "🫧", "🐚", "🍹", "🌊", "🏐"], cambio: ["🌴", "☀️", "🏖️"], sube: true }
+    }[tema];
+    if (!cfg) return;
+
+    // Cambia 🎃 🦇 👻 por los emojis de la temática (también en textos que aparecen después)
+    var mapa = { "🎃": cfg.cambio[0], "🦇": cfg.cambio[1], "👻": cfg.cambio[2] };
+    var patron = /🎃|🦇|👻/g;
+    function cambiar(nodo) {
+        if (nodo.nodeType === 3) {
+            if (patron.test(nodo.nodeValue)) nodo.nodeValue = nodo.nodeValue.replace(patron, function (m) { return mapa[m]; });
+            patron.lastIndex = 0;
+            return;
+        }
+        if (nodo.nodeType !== 1 || nodo.tagName === "SCRIPT" || nodo.tagName === "STYLE") return;
+        for (var c = nodo.firstChild; c; c = c.nextSibling) cambiar(c);
+    }
+
+    function iniciar() {
+        cambiar(document.body);
+        new MutationObserver(function (cambios) {
+            cambios.forEach(function (m) {
+                if (m.type === "characterData") cambiar(m.target);
+                m.addedNodes && m.addedNodes.forEach(cambiar);
+            });
+        }).observe(document.body, { childList: true, subtree: true, characterData: true });
+
+        var decor = document.querySelector(".hw-decor");
+        if (!decor) return;
+        if (cfg.sube) decor.classList.add("tm-sube");
+        var capa = document.createElement("div");
+        capa.className = "tm-particulas";
+        var total = window.innerWidth < 768 ? 12 : 22;
+        for (var i = 0; i < total; i++) {
+            var s = document.createElement("span");
+            s.textContent = cfg.lluvia[i % cfg.lluvia.length];
+            s.style.left = (Math.random() * 100) + "%";
+            s.style.fontSize = (14 + Math.random() * 18) + "px";
+            s.style.animationDuration = (10 + Math.random() * 14) + "s";
+            s.style.animationDelay = (-Math.random() * 24) + "s";
+            capa.appendChild(s);
+        }
+        decor.appendChild(capa);
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
+    else iniciar();
+})();
 </script>
 </body>
 </html>
