@@ -1892,8 +1892,8 @@ function pedirCodigo(correoCliente, boton) {
         .then(resultado => {
             if (resultado === "No encontrado") {
                 visor.innerHTML = HW_ON
-                    ? "<span style='color:var(--hw-blood);'>❌ Sin código reciente de Netflix</span><br><small style='color:var(--text-muted); font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo, si solicitas activacion hogar o codigo temporal hogar netflix, por favor </small>"
-                    : "<span style='color:red;'>❌ Sin código reciente de Netflix</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo</small>";
+                    ? "<span style='color:var(--hw-blood);'>❌ Sin código reciente de Netflix</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo. Si necesitas codigo de Netflix Hogar, por favor oprime el boton *🔑 Activar Hogar / Código temp* para solicitarlo correctamente</small>"
+                    : "<span style='color:red;'>❌ Sin código reciente de Netflix</span><br><small style='color:#666; font-size:10px;'>Espera 10 segundos o solicítelo de nuevo en su dispositivo. Si necesitas codigo de Netflix Hogar, por favor oprime el boton *🔑 Activar Hogar / Código temp* para solicitarlo correctamente</small>";
             } else if (resultado === "Pendiente...") {
                 visor.innerText = "📩 Buscando código de Netflix...";
                 visor.style.color = "orange";
@@ -2006,11 +2006,11 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
     // Cargador sólido en tono ámbar
     visor.innerHTML = HW_ON ? `
         <div style="margin-top:15px; padding:15px; text-align:center; background: var(--info-row-bg); border-radius: 12px; border: 1px dashed var(--hw-pumpkin);">
-            <div style="color:var(--hw-pumpkin); font-size:12px; font-weight:800; letter-spacing:1px;">🕸️ BUSCANDO SOLICITUD PREMIUM...</div>
+            <div style="color:var(--hw-pumpkin); font-size:12px; font-weight:800; letter-spacing:1px;">🕸️ BUSCANDO SOLICITUD DE HOGAR...</div>
         </div>`
         : `
         <div style="margin-top:15px; padding:15px; text-align:center; background: #fffcf0; border-radius: 12px; border: 1px dashed #daa520;">
-            <div style="color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;">🔍 BUSCANDO SOLICITUD PREMIUM...</div>
+            <div style="color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;">🔍 BUSCANDO SOLICITUD DE HOGAR...</div>
         </div>`;
 
     const urlFinal = urlApi + "?correo=" + encodeURIComponent(correo) + 
@@ -2133,13 +2133,13 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
             } else {
                 visor.innerHTML = HW_ON ? `
                     <div style="background: rgba(193, 18, 31, 0.12); color: var(--hw-blood); font-size:12px; margin-top:15px; padding:15px; border:1px dashed var(--hw-blood); border-radius:12px; text-align: center;">
-                        <b>🕷️ SIN RESULTADOS</b><br>
-                        <span style="color: var(--text-muted);">No hay solicitudes nuevas para este perfil, si necesitas codigo de inicio de sesion, oprime por favor el boton azul "🔑 Ver Código Inicio de Sesion".</span>
+                        <b>🕷️ SIN RESULTADO RECIENTES</b><br>
+                        <span style="color: var(--text-muted);">No hay solicitudes nuevas para este perfil, si necesitas codigo de inicio de sesion, oprime por favor el boton "🔑 Ver Código Inicio de Sesion.</span>
                     </div>`
                     : `
                     <div style="background: #fff5f5; color:#E50914; font-size:12px; margin-top:15px; padding:15px; border:1px solid #E50914; border-radius:12px; text-align: center;">
-                        <b>⚠️ SIN RESULTADOS</b><br>
-                        <span style="color:#555;">No hay solicitudes nuevas para este perfil.</span>
+                        <b>⚠️ SIN RESULTADOS RECIENTES</b><br>
+                        <span style="color:#555;">No hay solicitudes nuevas para este perfil, si necesitas codigo de inicio de sesion, oprime por favor el boton "🔑 Ver Código Inicio de Sesion"</span>
                     </div>`;
             }
         })
