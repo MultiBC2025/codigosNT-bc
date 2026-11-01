@@ -460,7 +460,7 @@
         &lt;button class=&quot;save-btn&quot; id=&quot;btnCancel&quot; style=&quot;display:none; background:#6c757d;&quot; onclick=&quot;cancelarEdicion()&quot;&gt;Cancelar&lt;/button&gt;
     &lt;/div&gt;
     &lt;div class=&quot;section&quot;&gt;
-        &lt;input type=&quot;text&quot; id=&quot;filtroCliente&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Filtrar por nombre o servicio...&quot; onkeyup=&quot;filtrarTablaClientes()&quot;&gt;
+        &lt;input type=&quot;text&quot; id=&quot;filtroCliente&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Filtrar por nombre o número...&quot; onkeyup=&quot;filtrarTablaClientes()&quot;&gt;
         &lt;table id=&quot;tablaMaestraClientes&quot;&gt;
             &lt;thead&gt;
                 &lt;tr&gt;
@@ -598,7 +598,7 @@
 &lt;div id=&quot;seccionVentas&quot; style=&quot;display:none&quot;&gt;
     &lt;h3&gt;💰 Historial Global de Ventas&lt;/h3&gt;
     &lt;div class=&quot;section&quot;&gt;
-        &lt;input type=&quot;text&quot; id=&quot;busquedaHistorial&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Buscar por nombre...&quot; onkeyup=&quot;filtrarHistorialVentas()&quot;&gt;
+        &lt;input type=&quot;text&quot; id=&quot;busquedaHistorial&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Buscar por nombre, servicio o correo/contraseña...&quot; onkeyup=&quot;filtrarHistorialVentas()&quot;&gt;
         &lt;table id=&quot;tablaVentasGlobal&quot;&gt;
             &lt;thead style=&quot;background: #1e1e2f; color: white;&quot;&gt;
                 &lt;tr&gt;
@@ -1901,8 +1901,9 @@ function enviarWhatsAppLote(idsStr) {
 
     ventas.forEach(v =&gt; { 
         // TRUCO MAESTRO: Limpiamos + y # en correo y clave
-        let correoLimpio = v.correo ? v.correo.toString().replace(/\+/g, '%2B').replace(/#/g, '%23') : '';
-        let claveLimpia = v.clave ? v.clave.toString().replace(/\+/g, '%2B').replace(/#/g, '%23') : '';
+        let correoLimpio = v.correo ? v.correo.toString() : '';
+let claveLimpia = v.clave ? v.clave.toString() : '';
+
         
         detalleMsg += `%0A------------------------------------------------`;
         detalleMsg += `%0A*Información De La Cuenta de: ${v.plataforma}*`;
@@ -1914,7 +1915,7 @@ function enviarWhatsAppLote(idsStr) {
     });
     }
 
-    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
+    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN AUTOMATTIZADA* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel de autgestión correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes consultar códigos de inicio, códigos hogar, revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso al panel es con tu numero de WhatsApp.)*`; 
 
     const cod = c.codigo ? c.codigo.toString().replace(/\D/g, '') : '';
     const num = c.whatsapp ? c.whatsapp.toString().replace(/\D/g, '') : '';
@@ -1922,7 +1923,7 @@ function enviarWhatsAppLote(idsStr) {
 
     // ABRIR WHATSAPP: El replace final asegura que nada se rompa
     // Reemplazamos # por %23 globalmente en el mensaje final
-    let mensajeFinal = msg.replace(/#/g, '%23');
+    let mensajeFinal = encodeURIComponent(msg.split('%0A').join('\n'));
     
     window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&amp;text=${mensajeFinal}`); 
 }
@@ -2769,11 +2770,13 @@ function buscarClienteHibrido(idInput, idLista, idSeleccionado, idTxtElegido) {
     const hiddenId = document.getElementById(idSeleccionado);
     const txtElegido = document.getElementById(idTxtElegido);
     
-    const txt = input.value.toLowerCase();
+    function quitarTildes(t){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+const txt = quitarTildes(input.value);
+
     lista.innerHTML = &quot;&quot;;
     
     const filtrados = listaClientesLocal.filter(c =&gt; 
-        c.nombre.toLowerCase().includes(txt) || c.whatsapp.includes(txt)
+        quitarTildes(c.nombre).includes(txt) || String(c.whatsapp || '').includes(txt)
     );
 
     if (filtrados.length &gt; 0) {
@@ -3097,8 +3100,12 @@ document.addEventListener(&quot;DOMContentLoaded&quot;, () =&gt; {
 });
 
 function eliminarCliente(id){ if(confirm(&quot;¿Eliminar?&quot;)) db.collection(&quot;clientes&quot;).doc(id).delete().then(()=&gt;actualizarTodo()); }
-function filtrarTablaClientes(){ const bus=filtroCliente.value.toLowerCase(); const filas=bodyClientes.getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
-function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase(); const filas=document.getElementById(&quot;bodyVentasHistorial&quot;).getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
+function quitarTildesTabla(t){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+function filtrarTablaClientes(){ const bus=quitarTildesTabla(filtroCliente.value); const filas=bodyClientes.getElementsByTagName('tr'); for(let f of filas) f.style.display=quitarTildesTabla(f.innerText).includes(bus)?'':'none'; }
+function filtrarHistorialVentas(){ const bus=quitarTildesTabla(busquedaHistorial.value); const filas=document.getElementById('bodyVentasHistorial').getElementsByTagName('tr'); for(let f of filas) f.style.display=quitarTildesTabla(f.innerText).includes(bus)?'':'none'; }
+function limpiarWhatsApp(campo, pegado){ const t = String(campo.value || '').trim(); const conMas = t.charAt(0) === '+'; let n = t.replace(/\D/g, ''); const codigos = ['57', '58', '52', '34', '1']; for (const c of codigos) { if (n.indexOf(c) === 0) { const resto = n.slice(c.length); const quitar = conMas || (pegado ? (n.length > 10 ? (resto.length === 10 || resto.length === 9) : false) : false); if (quitar) { n = resto; document.getElementById('c_codigo').value = '+' + c; } break; } } if (campo.value !== n) campo.value = n; }
+document.getElementById('c_whatsapp').addEventListener('input', function(e){ limpiarWhatsApp(this, e.inputType === 'insertFromPaste'); });
+
 
 // -------------------------------------------------------------------------
 // CARGAR ADMIN PERFILES (CON LOS CAMBIOS SOLICITADOS)
