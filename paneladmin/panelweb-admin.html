@@ -12,7 +12,7 @@
 &lt;meta charset=&quot;UTF-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
 &lt;title&gt;Panel Administrativo - Premium&lt;/title&gt;
-<!-- TODO TU CÓDIGO SIGUE IGUAL, NO SE TOCA -->
+&lt;!-- TODO TU CÓDIGO SIGUE IGUAL, NO SE TOCA --&gt;
 &lt;/head&gt;
 &lt;body&gt;
 
@@ -349,7 +349,7 @@
                 &lt;/div&gt;
 
                 &lt;div style=&quot;text-align:right; margin-top:-4px;&quot;&gt;
-                    &lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;mostrarTarjetaAuth(&apos;recuperar&apos;)&quot; style=&quot;font-size:12.5px; color:#2563eb; text-decoration:none; font-weight:500;&quot;&gt;¿Olvidaste tu contraseña?&lt;/a&gt;
+                    &lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;mostrarTarjetaAuth('recuperar')&quot; style=&quot;font-size:12.5px; color:#2563eb; text-decoration:none; font-weight:500;&quot;&gt;¿Olvidaste tu contraseña?&lt;/a&gt;
                 &lt;/div&gt;
 
                 &lt;div id=&quot;errorLogin&quot; style=&quot;display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
@@ -376,7 +376,7 @@
                 &lt;div id=&quot;errorRecuperar&quot; style=&quot;display:none; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
 
                 &lt;button id=&quot;btnRecuperar&quot; onclick=&quot;enviarRecuperacion()&quot; style=&quot;width:100%; padding:13px; font-size:14.5px; font-weight:600; border-radius:10px; border:none; cursor:pointer; background:#2563eb; color:#ffffff; box-shadow:0 4px 12px rgba(37,99,235,0.25);&quot;&gt;Enviar Enlace&lt;/button&gt;
-                &lt;button onclick=&quot;mostrarTarjetaAuth(&apos;login&apos;)&quot; style=&quot;width:100%; padding:11px; font-size:13.5px; font-weight:500; border-radius:10px; border:1px solid #d1d5db; background:#ffffff; color:#64748b; cursor:pointer;&quot;&gt;← Volver al Inicio de Sesión&lt;/button&gt;
+                &lt;button onclick=&quot;mostrarTarjetaAuth('login')&quot; style=&quot;width:100%; padding:11px; font-size:13.5px; font-weight:500; border-radius:10px; border:1px solid #d1d5db; background:#ffffff; color:#64748b; cursor:pointer;&quot;&gt;← Volver al Inicio de Sesión&lt;/button&gt;
             &lt;/div&gt;
         &lt;/div&gt;
 
@@ -773,6 +773,22 @@
 const firebaseConfig={ apiKey:&quot;AIzaSyBZKmJQ7TcszQeBu--3jK4sxA3F3tAF_N8&quot;, authDomain:&quot;panel-cuentas-clientes.firebaseapp.com&quot;, projectId:&quot;panel-cuentas-clientes&quot; };
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(); const auth=firebase.auth();
+// ⚡ RAPIDEZ: guarda una copia local de los datos para mostrar todo al instante
+db.enablePersistence({ synchronizeTabs: true }).catch(e =&gt; console.warn(&quot;Sin caché local:&quot;, e.code));
+// ⚡ RAPIDEZ: aviso que NO bloquea la página (reemplaza alert de éxito)
+function avisoRapido(texto) {
+    let caja = document.getElementById(&quot;avisoRapidoCaja&quot;);
+    if (!caja) {
+        caja = document.createElement(&quot;div&quot;);
+        caja.id = &quot;avisoRapidoCaja&quot;;
+        caja.style.cssText = &quot;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#28a745;color:#fff;padding:12px 22px;border-radius:8px;font-weight:bold;font-size:15px;z-index:99999;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:opacity .3s;&quot;;
+        document.body.appendChild(caja);
+    }
+    caja.textContent = texto;
+    caja.style.opacity = &quot;1&quot;;
+    clearTimeout(caja._t);
+    caja._t = setTimeout(() =&gt; { caja.style.opacity = &quot;0&quot;; }, 2200);
+}
 
 let clienteActualId = null; // ← ID del cliente que se está editando
 let ventaActualId = null;   // ← ID del registro/venta (MUY IMPORTANTE)
@@ -847,7 +863,7 @@ async function migrarDesdeExcel() {
             }
 
             // 3. Esperamos 1 segundo para que Firebase procese antes de seguir
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve =&gt; setTimeout(resolve, 1000));
         }
 
         alert(&quot;✅ Proceso terminado. Revisa la tabla abajo.&quot;);
@@ -857,12 +873,37 @@ async function migrarDesdeExcel() {
     }
 }
 
-async function actualizarTodo() {
-    const snap = await db.collection(&quot;cuentas&quot;).get();
-    listaSuscripcionesGlobal = [];
-    snap.forEach(doc =&gt; { listaSuscripcionesGlobal.push({id: doc.id, ...doc.data()}); });
-    cargarClientes(); 
-    cargarAdminPerfiles();
+// ⚡ RAPIDEZ: en vez de descargar TODA la base cada vez, la página &quot;escucha&quot; los cambios.
+// Lo que guardas aparece al instante y solo se descargan los cambios nuevos.
+let _escuchandoBD = false, _listoCuentas = false, _listoClientes = false;
+let _clientesBD = [];
+let _timerRender = null, _timerPerfiles = null;
+function programarRender() {
+    if (!_listoCuentas || !_listoClientes) return;
+    clearTimeout(_timerRender);
+    _timerRender = setTimeout(() =&gt; {
+        cargarClientes();
+        clearTimeout(_timerPerfiles);
+        _timerPerfiles = setTimeout(() =&gt; {
+            // No refrescar perfiles si estás editando una fila en este momento
+            if (document.querySelector('[id^=&quot;edit-cor-&quot;]:not([readonly])')) return;
+            cargarAdminPerfiles();
+        }, 400);
+    }, 30);
+}
+function actualizarTodo() {
+    if (_escuchandoBD) { programarRender(); return; }
+    _escuchandoBD = true;
+    db.collection(&quot;cuentas&quot;).onSnapshot(snap =&gt; {
+        listaSuscripcionesGlobal = snap.docs.map(doc =&gt; ({ id: doc.id, ...doc.data() }));
+        _listoCuentas = true;
+        programarRender();
+    }, e =&gt; console.error(&quot;Error 1010: &quot;, e));
+    db.collection(&quot;clientes&quot;).onSnapshot(snap =&gt; {
+        _clientesBD = snap.docs.map(doc =&gt; ({ id: doc.id, ...doc.data() }));
+        _listoClientes = true;
+        programarRender();
+    }, e =&gt; console.error(&quot;Error 1011: &quot;, e));
 }
 function chequearIPTV(val) {
     document.getElementById(&quot;divUrlIptv&quot;).style.display = (val === &quot;IPTV&quot;) ? &quot;block&quot; : &quot;none&quot;;
@@ -1052,6 +1093,9 @@ function cargarVentasVencimientos(){
     const gruposVencimiento = {};
     const gruposHistorial = {}; 
     var notaFinal = String();
+    // ⚡ RAPIDEZ: búsqueda instantánea de clientes y tablas pintadas de una sola vez
+    const mapaClientes = new Map(listaClientesLocal.map(c =&gt; [c.id, c]));
+    const htmlVencidas = [], htmlProximas = [], htmlVigentes = [], htmlHistorial = [];
 
     listaSuscripcionesGlobal.forEach(d =&gt; {
         const batchKey = `${d.clienteId}_${d.fechaRegistro || 0}`;
@@ -1158,7 +1202,7 @@ listaOrdenada.forEach(g =&gt; {
 
     let diff = g.diff;
 
-    const clienteObj = listaClientesLocal.find(c =&gt; c.id === g.clienteId);
+    const clienteObj = mapaClientes.get(g.clienteId);
     const nomC = clienteObj?.nombre || &quot;---&quot;;
     const telC = clienteObj?.whatsapp || &quot;&quot;;
 
@@ -1218,14 +1262,17 @@ listaOrdenada.forEach(g =&gt; {
         &lt;td&gt;${btnRenovar}&lt;/td&gt;
     &lt;/tr&gt;`;
 
-    if(diff &lt; 0) bodyVencidas.innerHTML += row;
-    else if(diff &lt;= 5) bodyProximas.innerHTML += row;
-    else bodyVigentes.innerHTML += row;
+    if(diff &lt; 0) htmlVencidas.push(row);
+    else if(diff &lt;= 5) htmlProximas.push(row);
+    else htmlVigentes.push(row);
 
 });
+    bodyVencidas.innerHTML = htmlVencidas.join(&quot;&quot;);
+    bodyProximas.innerHTML = htmlProximas.join(&quot;&quot;);
+    bodyVigentes.innerHTML = htmlVigentes.join(&quot;&quot;);
 
     Object.values(gruposHistorial).sort((a,b)=&gt; (b.fechaRegistro||0)-(a.fechaRegistro||0)).forEach(d =&gt; {
-        const nomC = listaClientesLocal.find(c =&gt; c.id === d.clienteId)?.nombre || &quot;---&quot;;
+        const nomC = mapaClientes.get(d.clienteId)?.nombre || &quot;---&quot;;
         const diff = Math.ceil((new Date(d.fin + &quot;T12:00:00&quot;) - hoy) / (1000 * 60 * 60 * 24))-1;
         let rowColorClass = diff &lt; 0 ? &quot;row-vencido&quot; : (diff &lt;= 5 ? &quot;row-proximo&quot; : &quot;row-activo&quot;);
         let fechaFull = &quot;---&quot;;
@@ -1238,7 +1285,7 @@ var notaTexto = d.nota_cuenta || d.nota_cambio || '';
 
 if (notaTexto !== '') {
     var estiloNota = 'cursor:help; background:#007bff; color:white; border-radius:50%; padding:2px 7px; font-size:11px; margin-right:5px; font-weight:bold; display:inline-block;';
-    iconoNota = '<span title=\'' + notaTexto + '\' style=\'' + estiloNota + '\'>?</span>';
+    iconoNota = '&lt;span title=\'' + notaTexto + '\' style=\'' + estiloNota + '\'&gt;?&lt;/span&gt;';
 }
         var iconoNota = '';
 if (d.nota_cambio != null) {
@@ -1291,7 +1338,7 @@ function verNota(texto) {
 }
         
         
-        document.getElementById(&quot;bodyVentasHistorial&quot;).innerHTML += `&lt;tr class=&quot;${rowColorClass}&quot;&gt;
+        htmlHistorial.push(`&lt;tr class=&quot;${rowColorClass}&quot;&gt;
     &lt;td style=&quot;font-size:15px;&quot;&gt;${iconoNota}${fechaFull}&lt;/td&gt;
     &lt;td&gt;&lt;b&gt;${nomC}&lt;/b&gt;&lt;/td&gt;
     &lt;td&gt;${d.plataformasCojuntas.join(&quot;&lt;br&gt;&quot;)}&lt;/td&gt;
@@ -1306,8 +1353,9 @@ function verNota(texto) {
             &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarLoteHistorial('${d.idsParaEliminar.join(',')}')&quot; style=&quot;padding:6px; font-size:16px;&quot;&gt;🗑️&lt;/button&gt;
         &lt;/div&gt;
     &lt;/td&gt;
-&lt;/tr&gt;`;
+&lt;/tr&gt;`);
     });
+    document.getElementById(&quot;bodyVentasHistorial&quot;).innerHTML = htmlHistorial.join(&quot;&quot;);
 }
 
 function gestionarEdicionLote(ids, plataforma) {
@@ -1328,8 +1376,8 @@ async function abrirNuevoEditorNetflixTV(ids) {
   let correoActual='', nombreCliente='Cliente', fechaVence='';
   let perfilActual='', pinActual='', claveActual='';
   let estadoActual = 'tv-activo';
-  let codigoTVActual = &#39;&#39;;
-  let modeloTVActual = &#39;&#39;;
+  let codigoTVActual = '';
+  let modeloTVActual = '';
   try {
     const s = await db.collection('cuentas').doc(primerId).get();
     if (s.exists) {
@@ -1343,8 +1391,8 @@ async function abrirNuevoEditorNetflixTV(ids) {
       nombreCliente = d.perfil_etiqueta
         ? (d.perfil_etiqueta.split('. ')[1] || d.cliente || 'Cliente')
         : (d.cliente || 'Cliente');
-        codigoTVActual = d.codigo_tv || &#39;&#39;;
-        modeloTVActual = d.modeloTV || &#39;&#39;;
+        codigoTVActual = d.codigo_tv || '';
+        modeloTVActual = d.modeloTV || '';
     }
   } catch(e){ console.warn('No se pudo leer venta', e); }
 
@@ -1353,7 +1401,7 @@ async function abrirNuevoEditorNetflixTV(ids) {
   /* 2) Construir modal */
   const div = document.createElement('div');
   div.id = 'modalNetflixTV';
-div.style.cssText = &#39;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px 0;&#39;;
+div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px 0;';
 
 
   const estados = [
@@ -1369,7 +1417,7 @@ div.style.cssText = &#39;position:fixed;top:0;left:0;width:100%;height:100%;back
   });
 
   div.innerHTML =
-&#39;&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;margin:auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;&#39;
+'&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;margin:auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;'
 
 +   '&lt;h3 style=&quot;margin-top:0;&quot;&gt;🛠️ GARANTÍA / EDICIÓN: '+nombreCliente+'&lt;/h3&gt;'
   +   '&lt;div style=&quot;background:#fff3cd;padding:10px;border-radius:5px;margin-bottom:15px;&quot;&gt;'
@@ -1516,7 +1564,7 @@ div.style.cssText = &#39;position:fixed;top:0;left:0;width:100%;height:100%;back
         ? (prev.perfil_etiqueta.split('. ')[1] || prev.cliente || '')
         : (prev.cliente || '');
       const nuevaEtiqueta = $perf.value ? ($perf.value + '. ' + nombreCli) : (prev.perfil_etiqueta || '');
-        const nuevoEstado = btnActivo ? btnActivo.getAttribute(&#39;data-estado&#39;) : $estado.value;
+        const nuevoEstado = btnActivo ? btnActivo.getAttribute('data-estado') : $estado.value;
         
         const datosUpdate = {
           correo: nuevoCorreo,
@@ -1529,12 +1577,12 @@ div.style.cssText = &#39;position:fixed;top:0;left:0;width:100%;height:100%;back
           estado: nuevoEstado
         };
         
-        if (nuevoEstado === &#39;desconectado&#39;) {
-          datosUpdate.codigo_tv = &#39;&#39;;
-          datosUpdate.modeloTV = &#39;&#39;;
+        if (nuevoEstado === 'desconectado') {
+          datosUpdate.codigo_tv = '';
+          datosUpdate.modeloTV = '';
         }
         
-        await db.collection(&#39;cuentas&#39;).doc(primerId).update(datosUpdate);
+        await db.collection('cuentas').doc(primerId).update(datosUpdate);
 
       alert('✅ Venta Netflix TV actualizada con éxito');
       div.remove();
@@ -1549,7 +1597,7 @@ async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar es
 async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
 
 function renderizarTablaClientes(){ 
-    bodyClientes.innerHTML=&quot;&quot;; 
+    const filasClientes = []; // ⚡ RAPIDEZ: se arma todo y se pinta una sola vez
     listaClientesLocal.sort((a,b)=&gt;a.nombre.localeCompare(b.nombre)).forEach(c=&gt;{ 
         let hServ=&quot;&quot;; 
         c.servsData.forEach(ser=&gt;{ 
@@ -1578,7 +1626,7 @@ function renderizarTablaClientes(){
                 &lt;/span&gt;`; 
         }); 
 
-        bodyClientes.innerHTML += `
+        filasClientes.push(`
             &lt;tr&gt;
                 &lt;td style=&quot;text-align:left; padding-left:15px;&quot;&gt;
                     &lt;span class=&quot;service-count&quot;&gt;${c.cantServiciosActivos}&lt;/span&gt;
@@ -1590,15 +1638,16 @@ function renderizarTablaClientes(){
                     &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')&quot;&gt;✏️&lt;/button&gt;
                     &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente('${c.id}')&quot;&gt;🗑️&lt;/button&gt;
                 &lt;/td&gt;
-            &lt;/tr&gt;`; 
+            &lt;/tr&gt;`); 
     }); 
+    bodyClientes.innerHTML = filasClientes.join(&quot;&quot;);
 }
 
 async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
 async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
 
 function renderizarTablaClientes(){ 
-    bodyClientes.innerHTML=&quot;&quot;; 
+    const filasClientes = []; // ⚡ RAPIDEZ: se arma todo y se pinta una sola vez
     listaClientesLocal.sort((a,b)=&gt;a.nombre.localeCompare(b.nombre)).forEach(c=&gt;{ 
         let hServ=&quot;&quot;; 
         c.servsData.forEach(ser=&gt;{ 
@@ -1627,7 +1676,7 @@ function renderizarTablaClientes(){
                 &lt;/span&gt;`; 
         }); 
 
-        bodyClientes.innerHTML += `
+        filasClientes.push(`
             &lt;tr&gt;
                 &lt;td style=&quot;text-align:left; padding-left:15px;&quot;&gt;
                     &lt;span class=&quot;service-count&quot;&gt;${c.cantServiciosActivos}&lt;/span&gt;
@@ -1639,18 +1688,33 @@ function renderizarTablaClientes(){
                     &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')&quot;&gt;✏️&lt;/button&gt;
                     &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente('${c.id}')&quot;&gt;🗑️&lt;/button&gt;
                 &lt;/td&gt;
-            &lt;/tr&gt;`; 
+            &lt;/tr&gt;`); 
     }); 
+    bodyClientes.innerHTML = filasClientes.join(&quot;&quot;);
 }
 
 
 
 function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = &quot;✏️ Editando Cliente&quot;; btnGuardar.innerText = &quot;Actualizar Cliente&quot;; btnCancel.style.display = &quot;inline-block&quot;; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(&quot; &quot;); if (partes.length &gt; 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
-function guardarCliente(){ const id = c_id_hidden.value; const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + &quot; &quot; + c_whatsapp.value }; if(!data.nombre || !c_whatsapp.value) return alert(&quot;Completa los datos&quot;); if(id) { db.collection(&quot;clientes&quot;).doc(id).update(data).then(() =&gt; { alert(&quot;Cliente actualizado&quot;); cancelarEdicion(); actualizarTodo(); }).catch(e =&gt; alert(&quot;Error 1002: &quot; + e.message)); } else { db.collection(&quot;clientes&quot;).add(data).then(() =&gt; { c_nombre.value = &quot;&quot;; c_whatsapp.value = &quot;&quot;; actualizarTodo(); }); } }
+function guardarCliente(){
+    const id = c_id_hidden.value;
+    const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + &quot; &quot; + c_whatsapp.value };
+    if(!data.nombre || !c_whatsapp.value) return alert(&quot;Completa los datos&quot;);
+    // ⚡ RAPIDEZ: no se espera a la base de datos; el cliente aparece al instante en la tabla
+    if(id) {
+        db.collection(&quot;clientes&quot;).doc(id).update(data).catch(e =&gt; alert(&quot;Error 1002: &quot; + e.message));
+        cancelarEdicion();
+        avisoRapido(&quot;✅ Cliente actualizado&quot;);
+    } else {
+        db.collection(&quot;clientes&quot;).add(data).catch(e =&gt; alert(&quot;Error 1008: &quot; + e.message));
+        c_nombre.value = &quot;&quot;; c_whatsapp.value = &quot;&quot;;
+        avisoRapido(&quot;✅ Cliente guardado&quot;);
+    }
+}
 function cancelarEdicion(){ c_id_hidden.value=&quot;&quot;; c_nombre.value=&quot;&quot;; c_whatsapp.value=&quot;&quot;; formTitle.innerText=&quot;✨ Registrar Nuevo Cliente&quot;; btnGuardar.innerText=&quot;Guardar Cliente&quot;; btnCancel.style.display=&quot;none&quot;; }
 function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
     marcarComoRenovadoEnBD(listaIds, rowId);
-    document.querySelectorAll('tr').forEach(r => r.classList.remove('row-selected-renew'));
+    document.querySelectorAll('tr').forEach(r =&gt; r.classList.remove('row-selected-renew'));
 
     if (rowId) {
         const fila = document.getElementById(rowId);
@@ -1659,7 +1723,7 @@ function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
     }
 
     mostrar('cuentas', true);
-    const cliente = listaClientesLocal.find(c => c.id === cliId);
+    const cliente = listaClientesLocal.find(c =&gt; c.id === cliId);
     clienteIdSeleccionado.value = cliId;
     inputBuscarCliente.value = cliente.nombre;
     txtElegido.innerText = '✅ Renovando Lote de ' + cliente.nombre;
@@ -1676,7 +1740,7 @@ function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
     const diasRestantes = Math.floor(diffMilis / (1000 * 60 * 60 * 24));
 
     let diasParaSumar = 30;
-    if (diasRestantes > 0) {
+    if (diasRestantes &gt; 0) {
         // Si le sobraban días, se le abonan a su nueva suscripción
         diasParaSumar += diasRestantes;
     }
@@ -1694,13 +1758,13 @@ function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
     if (document.getElementById('dias')) document.getElementById('dias').value = '30';
     // ---------------------------------------------------------
 
-    tipoCompra.value = (items.length > 1) ? 'combo' : 'individual';
-    document.getElementById('btnMasPlat').style.display = (items.length > 1) ? 'inline-block' : 'none';
+    tipoCompra.value = (items.length &gt; 1) ? 'combo' : 'individual';
+    document.getElementById('btnMasPlat').style.display = (items.length &gt; 1) ? 'inline-block' : 'none';
     
     plataformas.innerHTML = '';
 
 // Usamos el índice (i) para emparejar cada item con su ID real de la listaIds
-items.forEach((it, i) => {
+items.forEach((it, i) =&gt; {
     const div = document.createElement('div');
     div.className = 'fila-plataforma';
     const idFilaHTML = 'renov-' + Math.random().toString(36).substring(2, 9);
@@ -1710,7 +1774,7 @@ items.forEach((it, i) => {
     
     // IMPORTANTE: listaIds viene de la función cargarLoteParaRenovar(cliId, items, rowId, listaIds)
     // Extraemos el ID que corresponde a esta suscripción específica
-    const idSuscripcionReal = (listaIds && listaIds[i]) ? listaIds[i] : (it.id || '');
+    const idSuscripcionReal = (listaIds &amp;&amp; listaIds[i]) ? listaIds[i] : (it.id || '');
 
     div.innerHTML = `
         &lt;select class=&quot;tipo&quot; onchange=&quot;cargarCorreosParaEstaFila(this)&quot; style=&quot;padding:4px; background:#333; color:white; border:1px solid #555;&quot;&gt;
@@ -1743,7 +1807,7 @@ items.forEach((it, i) => {
         &lt;/div&gt;
 
         &lt;!-- Pasamos el idSuscripcionReal que ahora sí está garantizado --&gt;
-        &lt;button onclick=&quot;eliminarSuscripcionDirecto(&apos;${idSuscripcionReal}&apos;, &apos;${idFilaHTML}&apos;)&quot; 
+        &lt;button onclick=&quot;eliminarSuscripcionDirecto('${idSuscripcionReal}', '${idFilaHTML}')&quot; 
                 style=&quot;background:#ff4d4d; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;&quot; 
                 title=&quot;Eliminar servicio&quot;&gt;
             🗑️
@@ -1791,12 +1855,12 @@ async function eliminarSuscripcionDirecto(idFirebase, idFilaHTML) {
 /* --- FUNCION WHATSAPP PARA LOTES --- */
 function enviarWhatsAppLote(idsStr) {
     const ids = idsStr.split(','); 
-    const ventas = listaSuscripcionesGlobal.filter(v => ids.includes(v.id)); 
+    const ventas = listaSuscripcionesGlobal.filter(v =&gt; ids.includes(v.id)); 
     if(ventas.length === 0) return; 
-    const c = listaClientesLocal.find(cl => cl.id === ventas[0].clienteId); 
+    const c = listaClientesLocal.find(cl =&gt; cl.id === ventas[0].clienteId); 
     if(!c) return; 
     
-    const esNetflixTV = ventas.some(v => v.plataforma === &quot;Netflix TV&quot;);
+    const esNetflixTV = ventas.some(v =&gt; v.plataforma === &quot;Netflix TV&quot;);
 
     const hoy = new Date();
     const fechaHoy = hoy.toLocaleDateString('es-ES');
@@ -1806,10 +1870,10 @@ function enviarWhatsAppLote(idsStr) {
     const metodo = ventas[0].metodoPago || 'Otro';
     const fechaCompra = ventas[0].inicio || fechaHoy;
     const fechaVence = ventas[0].fin || '---';
-    const valorTotal = ventas.reduce((acc, v) => acc + (parseFloat(v.valor) || 0), 0);
+    const valorTotal = ventas.reduce((acc, v) =&gt; acc + (parseFloat(v.valor) || 0), 0);
     
     const totalDispositivos = ventas.length;
-    const reglaUso = totalDispositivos > 1 ? `${totalDispositivos} DISPOSITIVOS, 1 PANTALLA EN SIMULTANEO POR SERVICIO Y/O PERFIL ADQUIRIDO` : '1 DISPOSITIVO EN SIMULTANEO';
+    const reglaUso = totalDispositivos &gt; 1 ? `${totalDispositivos} DISPOSITIVOS, 1 PANTALLA EN SIMULTANEO POR SERVICIO Y/O PERFIL ADQUIRIDO` : '1 DISPOSITIVO EN SIMULTANEO';
 
     const fVence = new Date(fechaVence);
     let diasGarantizados = ventas[0].dias || '30';
@@ -1822,7 +1886,7 @@ function enviarWhatsAppLote(idsStr) {
     
     if (esNetflixTV) {
     // MENSAJE ESPECIAL NETFLIX TV: Solo link
-        ventas.forEach(v => {
+        ventas.forEach(v =&gt; {
             if (v.plataforma === &quot;Netflix TV&quot;) {
                 detalleMsg += `%0A%0A📺 *Servicio:* ${v.plataforma}`;
                 detalleMsg += `%0A🔗 *Accede a tus datos aquí:* https://multibc2025.github.io/codigosNT-bc/tv-netflix/?id=${v.id}`;
@@ -1835,7 +1899,7 @@ function enviarWhatsAppLote(idsStr) {
     
 
 
-    ventas.forEach(v => { 
+    ventas.forEach(v =&gt; { 
         // TRUCO MAESTRO: Limpiamos + y # en correo y clave
         let correoLimpio = v.correo ? v.correo.toString().replace(/\+/g, '%2B').replace(/#/g, '%23') : '';
         let claveLimpia = v.clave ? v.clave.toString().replace(/\+/g, '%2B').replace(/#/g, '%23') : '';
@@ -1860,7 +1924,7 @@ function enviarWhatsAppLote(idsStr) {
     // Reemplazamos # por %23 globalmente en el mensaje final
     let mensajeFinal = msg.replace(/#/g, '%23');
     
-    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&text=${mensajeFinal}`); 
+    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&amp;text=${mensajeFinal}`); 
 }
 
 /* --- FUNCION EDITAR MANUAL (INDIVIDUAL O LOTE) --- */
@@ -2225,7 +2289,7 @@ var valorTotalCalculado = valorUnitario * cantidadDeCuentas;
         if (document.getElementById(&quot;valorPago&quot;)) document.getElementById(&quot;valorPago&quot;).value = base.valor || &quot;0&quot;;
 
         // Ajustar el combo de días
-        if (base.inicio && base.fin && document.getElementById(&quot;dias&quot;)) {
+        if (base.inicio &amp;&amp; base.fin &amp;&amp; document.getElementById(&quot;dias&quot;)) {
             var f1 = new Date(base.inicio);
             var f2 = new Date(base.fin);
             var dif = Math.ceil(Math.abs(f2 - f1) / (1000 * 60 * 60 * 24));
@@ -2240,7 +2304,7 @@ var idD = String.fromCharCode(100, 105, 97, 115);
     }
     
     // Calculamos los dias que ya tenia (f2 - f1)
-    if (base.fin && document.getElementById(idD)) {
+    if (base.fin &amp;&amp; document.getElementById(idD)) {
         var f1 = new Date(base.inicio);
         var f2 = new Date(base.fin);
         var dif = Math.ceil(Math.abs(f2 - f1) / 86400000);
@@ -2251,9 +2315,9 @@ var idD = String.fromCharCode(100, 105, 97, 115);
     var objF = new Date();
     var yyyy = objF.getFullYear();
     var mm = objF.getMonth() + 1;
-    if (mm < 10) { mm = String.fromCharCode(48) + mm; }
+    if (mm &lt; 10) { mm = String.fromCharCode(48) + mm; }
     var dd = objF.getDate();
-    if (dd < 10) { dd = String.fromCharCode(48) + dd; }
+    if (dd &lt; 10) { dd = String.fromCharCode(48) + dd; }
     var g = String.fromCharCode(45);
     var hoy = yyyy + g + mm + g + dd;
 
@@ -2281,7 +2345,7 @@ if (document.getElementById(idVPago)) {
         btnGuardar.innerText = &quot;Actualizar y Guardar&quot;;
 
         // 4. BLOQUES POR CADA CUENTA (Tu estructura visual)
-        for (var i = 0; i < listaIds.length; i++) {
+        for (var i = 0; i &lt; listaIds.length; i++) {
             const idDoc = listaIds[i].trim();
             const docSnap = await db.collection(&quot;cuentas&quot;).doc(idDoc).get();
             if (!docSnap.exists) continue;
@@ -2395,7 +2459,7 @@ async function guardarCuentas() {
 
         // LÓGICA DE DÍAS EXTRA
         var fechaFinalCalculada = fFin;
-        if (diasExtra > 0 && fFin != '') {
+        if (diasExtra &gt; 0 &amp;&amp; fFin != '') {
             var fechaAux = new Date(fFin + 'T00:00:00');
             fechaAux.setDate(fechaAux.getDate() + diasExtra);
             var anio = fechaAux.getFullYear();
@@ -2408,18 +2472,20 @@ async function guardarCuentas() {
         var filas = document.querySelectorAll('.fila-plataforma, .fila-plataformaTV');
 
         var contadorFilasValidas = 0;
-        for (var j = 0; j < filas.length; j++) {
+        for (var j = 0; j &lt; filas.length; j++) {
             var cSel = filas[j].querySelector('.correo-select, .tipo');
             var correoTemp = cSel?.tagName == 'SELECT' ? cSel.options[cSel.selectedIndex].text : (cSel?.value || filas[j].querySelector('.cont-correo')?.innerText || '');
-            if (correoTemp != '' && correoTemp != 'Seleccione...') {
+            if (correoTemp != '' &amp;&amp; correoTemp != 'Seleccione...') {
                 contadorFilasValidas++;
             }
         }
 
-        var valorPorPlataforma = contadorFilasValidas > 0 ? (vPagoTotal / contadorFilasValidas) : 0;
+        var valorPorPlataforma = contadorFilasValidas &gt; 0 ? (vPagoTotal / contadorFilasValidas) : 0;
 
         // GUARDAR EN BASE DE DATOS
-        for (var i = 0; i < filas.length; i++) {
+        // ⚡ RAPIDEZ: todos los cambios se mandan juntos en un solo envío
+        var lote = db.batch();
+        for (var i = 0; i &lt; filas.length; i++) {
             var f = filas[i];
             var idDocViejo = f.getAttribute('data-id');
             var elTipo = f.querySelector('.tipo');
@@ -2429,7 +2495,7 @@ async function guardarCuentas() {
             var elCSel = f.querySelector('.correo-select');
 
             var correoF = '';
-            if (elCSel != null && elCSel.tagName == 'SELECT') {
+            if (elCSel != null &amp;&amp; elCSel.tagName == 'SELECT') {
                 correoF = elCSel.options[elCSel.selectedIndex].text;
             } else {
                 correoF = elCSel?.value || f.querySelector('.cont-correo')?.innerText || '';
@@ -2438,9 +2504,9 @@ async function guardarCuentas() {
             if (correoF == '' || correoF == 'Seleccione...') continue;
 
             if (idDocViejo) {
-                await db.collection('cuentas').doc(idDocViejo).delete();
+                lote.delete(db.collection('cuentas').doc(idDocViejo));
             } else if (idModificando) {
-                await db.collection('cuentas').doc(idModificando).delete();
+                lote.delete(db.collection('cuentas').doc(idModificando));
             }
             
             
@@ -2461,9 +2527,11 @@ async function guardarCuentas() {
             objetoNuevo.estado = 'Activa';
             objetoNuevo.nota_cuenta = notaTexto; 
 
-            await db.collection('cuentas').add(objetoNuevo);
+            lote.set(db.collection('cuentas').doc(), objetoNuevo);
         }
 
+        lote.commit().catch(function (e) { alert('Error 1006: ' + e.message); });
+        avisoRapido('✅ Venta procesada con éxito');
         alert('✅ Venta procesada con éxito');
         reiniciarFormVentas(); 
 
@@ -2532,7 +2600,7 @@ async function guardarCuentasTV() {
         var clave = document.getElementById(&quot;inputClaveTV&quot;).value;
         var perfil = document.getElementById(&quot;selectPerfilTV&quot;).value;
         var pin = document.getElementById(&quot;inputPinTV&quot;).value;
-        var estadoTV = document.getElementById(&quot;estadoTvLista&quot;).value; // &#39;true&#39; o &#39;false&#39;
+        var estadoTV = document.getElementById(&quot;estadoTvLista&quot;).value; // 'true' o 'false'
         
         // Validación básica de campos vacíos
         if (!idCuentaBase || !perfil) {
@@ -2565,7 +2633,7 @@ async function guardarCuentasTV() {
         };
 
         // 4. Guardado en Firebase
-        await db.collection(&quot;cuentas&quot;).doc(idDocumento).set(objetoVenta);
+        db.collection(&quot;cuentas&quot;).doc(idDocumento).set(objetoVenta).catch(e =&gt; alert(&quot;Error 1007: &quot; + e.message));
 
         alert(&quot;✅ Venta de Netflix TV guardada con éxito (ID: &quot; + idDocumento + &quot;)&quot;);
         
@@ -2613,7 +2681,7 @@ document.getElementById(&quot;fechaFinTV&quot;).value = anioV + &quot;-&quot; + 
     document.getElementById(&quot;inputPinTV&quot;).value = &quot;&quot;;
     
     var selectPerfil = document.getElementById(&quot;selectPerfilTV&quot;);
-    selectPerfil.innerHTML = &#39;&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;&#39;;
+    selectPerfil.innerHTML = '&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;';
     
     // PRESELECCIONAR 30 DÍAS POR DEFECTO
             var elDias = document.getElementById('diasTV'); // Asegúrate que el ID sea 'dias'
@@ -2756,7 +2824,18 @@ if (typeof calcularFechaFin === &quot;function&quot;) {
 cambiarModoCompra(); }
 function validarDisponibilidad(sel){ const f=sel.parentElement.parentElement; f.querySelector(&quot;.clave&quot;).value=sel.value; f.querySelectorAll(&quot;.item-perfil&quot;).forEach(it=&gt;renderizarSelectPerfil(it, f.querySelector(&quot;.tipo&quot;).value, sel.options[sel.selectedIndex].text)); }
 function crearNuevaFilaPerfil(btn){ const bloque=btn.closest(&quot;.bloque-perfiles&quot;); const divExtra=document.createElement(&quot;div&quot;); divExtra.className=&quot;item-perfil extra-perfil&quot;; divExtra.innerHTML=`&lt;span class=&quot;cont-perfil&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cont-pin&quot;&gt;&lt;/span&gt;&lt;button class=&quot;delete-btn&quot; style=&quot;padding:4px 8px; margin-left:5px&quot; onclick=&quot;this.parentElement.remove()&quot;&gt;x&lt;/button&gt;`; bloque.appendChild(divExtra); renderizarSelectPerfil(divExtra, btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.tipo&quot;).value, btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.correo-select&quot;).options[btn.closest(&quot;.fila-plataforma&quot;).querySelector(&quot;.correo-select&quot;).selectedIndex].text); }
-function cargarClientes(){ db.collection(&quot;clientes&quot;).get().then(s=&gt;{ listaClientesLocal=[]; s.forEach(d=&gt;{ const c=d.data(); const servs=listaSuscripcionesGlobal.filter(s=&gt;s.clienteId===d.id); const activos=servs.filter(ser=&gt;Math.ceil((new Date(ser.fin+&quot;T12:00:00&quot;)-hoy)/(1000*60*60*24))&gt;-3).length; listaClientesLocal.push({id:d.id,...c,cantServiciosActivos:activos,servsData:servs}); }); renderizarTablaClientes(); cargarVentasVencimientos(); }); }
+function cargarClientes(){
+    // ⚡ RAPIDEZ: agrupa las cuentas por cliente una sola vez (antes se recorría todo por cada cliente)
+    const porCliente = new Map();
+    listaSuscripcionesGlobal.forEach(sv =&gt; { if (!porCliente.has(sv.clienteId)) porCliente.set(sv.clienteId, []); porCliente.get(sv.clienteId).push(sv); });
+    listaClientesLocal = _clientesBD.map(c =&gt; {
+        const servs = porCliente.get(c.id) || [];
+        const activos = servs.filter(ser =&gt; Math.ceil((new Date(ser.fin + &quot;T12:00:00&quot;) - hoy) / (1000*60*60*24)) &gt; -3).length;
+        return { ...c, cantServiciosActivos: activos, servsData: servs };
+    });
+    renderizarTablaClientes();
+    setTimeout(cargarVentasVencimientos, 0); // deja que la pantalla respire entre tabla y tabla
+}
 function cambiarModoCompra(){ plataformas.innerHTML=&quot;&quot;; document.getElementById(&quot;btnMasPlat&quot;).style.display=tipoCompra.value===&quot;combo&quot;?&quot;inline-block&quot;:&quot;none&quot;; agregarPlataforma(); calcularFechaFin(); }
 function calcularFechaFin(){ if(!fechaInicio.value) return; const f=new Date(fechaInicio.value+&quot;T12:00:00&quot;); f.setDate(f.getDate()+Number(dias.value)); fechaFin.value=f.toISOString().split(&quot;T&quot;)[0]; }
 function calcularFechaFinTV() {
@@ -3033,7 +3112,6 @@ async function cargarAdminPerfiles() {
         &quot;OTROS&quot;: document.getElementById(&quot;tablaOtrosBody&quot;)
     };
 
-    Object.values(tablas).forEach(t => { if(t) t.innerHTML = &quot;&quot;; });
     const hoy = new Date();
 
     // ESTILOS DE COLOR Y TAMAÑO
@@ -3048,12 +3126,22 @@ async function cargarAdminPerfiles() {
             db.collection(&quot;cuentas_base&quot;).get(),
             db.collection(&quot;suscripciones&quot;).get()
         ]);
+        // ⚡ RAPIDEZ: se limpia la tabla solo cuando ya llegaron los datos (sin pantallazo en blanco)
+        Object.values(tablas).forEach(t =&gt; { if(t) t.innerHTML = &quot;&quot;; });
+        // ⚡ RAPIDEZ: índice correo|plataforma|perfil -&gt; venta más reciente
+        const indicePerfiles = new Map();
+        listaSuscripcionesGlobal.forEach(sv =&gt; {
+            if (!sv.correo || !sv.plataforma) return;
+            const k = sv.correo.trim().toLowerCase() + &quot;|&quot; + sv.plataforma.trim().toLowerCase() + &quot;|&quot; + parseInt(sv.perfil);
+            const prev = indicePerfiles.get(k);
+            if (!prev || new Date(sv.fin || 0) &gt; new Date(prev.fin || 0)) indicePerfiles.set(k, sv);
+        });
 
         let todosLosDocs = [];
-        snapBase.forEach(doc => todosLosDocs.push({ id: doc.id, d: doc.data(), col: &quot;cuentas_base&quot; }));
-        snapSusc.forEach(doc => todosLosDocs.push({ id: doc.id, d: doc.data(), col: &quot;suscripciones&quot; }));
+        snapBase.forEach(doc =&gt; todosLosDocs.push({ id: doc.id, d: doc.data(), col: &quot;cuentas_base&quot; }));
+        snapSusc.forEach(doc =&gt; todosLosDocs.push({ id: doc.id, d: doc.data(), col: &quot;suscripciones&quot; }));
 
-        todosLosDocs.forEach(item => {
+        todosLosDocs.forEach(item =&gt; {
             const d = item.d;
             const id = item.id;
             const colOrigen = item.col;
@@ -3064,18 +3152,8 @@ async function cargarAdminPerfiles() {
             let numP = d.plataforma === &quot;Disney&quot; ? 7 : (body === tablas[&quot;OTROS&quot;] ? 6 : 5);
             let celdas = &quot;&quot;;
 
-            for (let i = 1; i <= numP; i++) {
-                const historial = listaSuscripcionesGlobal
-    .filter(s =>
-        s.correo.trim().toLowerCase() === d.correo.trim().toLowerCase() &&
-        s.plataforma.trim().toLowerCase() === d.plataforma.trim().toLowerCase() &&
-        parseInt(s.perfil) === i
-    )
-    .sort((a,b) =>
-        new Date(b.fin || 0) - new Date(a.fin || 0)
-    );
-
-const asig = historial[0];
+            for (let i = 1; i &lt;= numP; i++) {
+const asig = indicePerfiles.get(String(d.correo || &quot;&quot;).trim().toLowerCase() + &quot;|&quot; + String(d.plataforma || &quot;&quot;).trim().toLowerCase() + &quot;|&quot; + i);
 // Código para: let cl = String.fromCharCode(112, 45, 108, 105, 98, 114, 101);
 let cl = String.fromCharCode(112, 45, 108, 105, 98, 114, 101); 
 // Código para: let txt = String.fromCharCode(76, 105, 98, 114, 101);
@@ -3085,7 +3163,7 @@ if (asig) {
     const fechaFin = new Date(asig.fin + String.fromCharCode(84, 49, 50, 58, 48, 48, 58, 48, 48));
     const diff = Math.ceil((fechaFin - hoy) / 86400000);
 
-    if (diff < -3) {
+    if (diff &lt; -3) {
         // Ejecuta la eliminacion en Firebase sin usar comillas
         db.collection(String.fromCharCode(115, 117, 115, 99, 114, 105, 112, 99, 105, 111, 114, 101, 115))
           .doc(asig.id)
@@ -3094,20 +3172,20 @@ if (asig) {
         // Mantenemos el estado original: fondo blanco y texto Libre
         cl = String.fromCharCode(112, 45, 108, 105, 98, 114, 101); 
         txt = String.fromCharCode(76, 105, 98, 114, 101); 
-    } else if (diff < 0) {
+    } else if (diff &lt; 0) {
         cl = String.fromCharCode(112, 45, 114, 111, 106, 111); 
         const nC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split(String.fromCharCode(46, 32))[1] || String.fromCharCode(79, 99)) : String.fromCharCode(79, 99);
         txt = diff + String.fromCharCode(100) + String.fromCharCode(60, 98, 114, 62) + String.fromCharCode(60, 115, 109, 97, 108, 108, 62) + nC + String.fromCharCode(60, 47, 115, 109, 97, 108, 108, 62); 
     }
     
-    else if (diff > -7) {
+    else if (diff &gt; -7) {
         // Solo si esta cerca de vencer, mostramos dias y color
-        cl = diff > 5 ? String.fromCharCode(112, 45, 118, 101, 114, 100, 101) : String.fromCharCode(112, 45, 97, 109, 97, 114, 105, 108, 108, 111);
+        cl = diff &gt; 5 ? String.fromCharCode(112, 45, 118, 101, 114, 100, 101) : String.fromCharCode(112, 45, 97, 109, 97, 114, 105, 108, 108, 111);
         const nC = asig.perfil_etiqueta ? (asig.perfil_etiqueta.split(String.fromCharCode(46, 32))[1] || String.fromCharCode(79, 99)) : String.fromCharCode(79, 99);
         txt = diff + String.fromCharCode(100) + String.fromCharCode(60, 98, 114, 62) + String.fromCharCode(60, 115, 109, 97, 108, 108, 62) + nC + String.fromCharCode(60, 47, 115, 109, 97, 108, 108, 62);
     }
 }
-                celdas += `<td class=&quot;celda-perfil ${cl}&quot; style=&quot;${stPerf}&quot;>${txt}</td>`;
+                celdas += `&lt;td class=&quot;celda-perfil ${cl}&quot; style=&quot;${stPerf}&quot;&gt;${txt}&lt;/td&gt;`;
             }
 
             const fMod = d.ultimaModificacion ? new Date(d.ultimaModificacion).toLocaleString(&quot;es-CO&quot;) : &quot;---&quot;;
@@ -3118,7 +3196,7 @@ if (asig) {
     'style=&quot;background:none; border:none; cursor:pointer; font-size:16px;&quot; ' +
     'title=&quot;Eliminar cuenta&quot;&gt;🗑️&lt;/button&gt;' 
     : &quot;&quot;;
-            let colPlataforma = (body === tablas[&quot;OTROS&quot;]) ? `<td style=&quot;padding:10px; font-weight:bold; font-size:13px;&quot;>${d.plataforma}</td>` : &quot;&quot;;
+            let colPlataforma = (body === tablas[&quot;OTROS&quot;]) ? `&lt;td style=&quot;padding:10px; font-weight:bold; font-size:13px;&quot;&gt;${d.plataforma}&lt;/td&gt;` : &quot;&quot;;
 
             row.innerHTML = `
                 ${colPlataforma}
@@ -3431,7 +3509,7 @@ async function actualizarCuentaBase(idCuenta) {
 
 function mostrarSeccion(id) {
     const secciones = document.querySelectorAll('.content-section');
-    secciones.forEach(s => { s.style.display = 'none'; });
+    secciones.forEach(s =&gt; { s.style.display = 'none'; });
 
     const activa = document.getElementById(id);
     if (activa) {
