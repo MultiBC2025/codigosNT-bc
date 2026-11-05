@@ -288,6 +288,7 @@
         .hw-modal-close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted); }
         .btn-autogestion.hw-btn-code { background: #0d6efd !important; color: white !important; border: none !important; margin-left: 5px; font-weight: bold; }
         .btn-autogestion.hw-btn-hogar { background: #D000D4 !important; color: white !important; border: none !important; margin-left: 5px; font-weight: bold; }
+        .btn-autogestion.hw-btn-auto { background: #ffc107 !important; color: #212529 !important; border: none !important; margin-left: 5px; font-weight: bold; font-size: 0.62em !important; padding: 4px 6px !important; min-height: 30px !important; line-height: 1.2 !important; }
         .hw-cod-visor { font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px; }
         .hw-note { background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left; }
         .hw-note b { color: #bc9105; }
@@ -660,6 +661,8 @@
         .btn-autogestion:disabled { opacity: 0.65; cursor: wait; }
         .btn-autogestion.hw-btn-code { background: linear-gradient(135deg, var(--hw-pumpkin), var(--hw-pumpkin-deep)); color: #fff; border: none; }
         .btn-autogestion.hw-btn-hogar { background: linear-gradient(135deg, #7b2cbf, #3c096c); color: #fff; border: none; }
+        .btn-autogestion.hw-btn-auto { background: linear-gradient(135deg, #ffd60a, #e6a800); color: #212529; border: none; font-size: 0.62em; padding: 4px 6px; min-height: 30px; line-height: 1.2; }
+        .btn-autogestion.hw-btn-auto:hover { filter: brightness(1.12); }
         .btn-autogestion.hw-btn-code:hover, .btn-autogestion.hw-btn-hogar:hover { filter: brightness(1.12); }
         .hw-cod-visor { font-size: 16px; color: var(--hw-pumpkin); font-weight: 800; margin-top: 8px; text-align: center; min-height: 24px; }
         .contenedor-codigo { text-transform: none; font-weight: 700; }
@@ -806,6 +809,7 @@
             .servicio-card .card-body { padding: 14px !important; }
             .servicio-card h5 { flex-basis: 100%; }
             .btn-autogestion { display: flex; width: 100%; margin: 8px 0 0; min-height: 42px; font-size: 0.8rem; }
+            .btn-autogestion.hw-btn-auto { font-size: 0.62rem !important; min-height: 30px !important; padding: 4px 6px !important; }
             .whatsapp-button { width: 56px; height: 56px; }
             #scrollTopBtn { width: 52px; height: 52px; }
             #scrollProgress { width: 52px; height: 52px; }
@@ -1053,6 +1057,7 @@
     </script>
 </head>
 <body>
+<script>var URL_APPS_SCRIPT_AUTOMATIZADO = "https://script.google.com/macros/s/AKfycbwLLr3D7nZnWx1_oa0P6qMk5_BZvNuCR-xsWBTc4-PX3IZ3pXVPsYqZvo06d7N5nfClTQ/exec";</script>
 
 <!-- 🎃 Dibujos reutilizables de Halloween (arañas, murciélagos, fantasmas, calabazas) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
@@ -1658,7 +1663,7 @@ async function cargarPanelCliente(clientesEncontrados) {
             const linkNetflix = "https://multibc2025.github.io/codigosNT-bc/";
             const linkDisney = "https://multibc2025.github.io/disney/";
 
-            if(pName.includes("NETFLIX")) {
+            if(pName.includes("NETFLIX") && !pName.includes("TV")) {
                 // Botón de Autogestión original
                 //btnLink = `<a href="${linkNetflix}" target="_blank" class="btn-autogestion"//>Autogestión</a>`;
                 
@@ -1672,6 +1677,14 @@ async function cargarPanelCliente(clientesEncontrados) {
                  btnLink += `<button type="button" onclick="solicitarAccesoNetflix('${s.correo}','${s.perfil}', this)" 
                             class="btn-autogestion hw-btn-hogar">
                             🔑 Activar Hogar / Código temp
+                            </button>`;
+
+                 // BOTON AMARILLO AUTOMATIZADO: solo Netflix, no Netflix TV.
+                 // El clic pasa por clicAutomatizado(), que muestra BUSCANDO
+                 // de inmediato y nunca deja el boton muerto sin mensaje.
+                 btnLink += `<button type="button" onclick="clicAutomatizado('${s.correo}','${s.perfil}', this)" 
+                            class="btn-autogestion hw-btn-auto">
+                            🔑 Activar Hogar / Código temp - Automatizado
                             </button>`;
                 
                 // Espacio para el resultado
@@ -2152,6 +2165,189 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
             botonPresionado.disabled = false;
             botonPresionado.innerHTML = textoOriginal;
         });
+}
+
+
+// ========================================================
+// NETFLIX AUTOMATIZADO (boton amarillo) - NUEVO, desde 0
+// Solo Netflix, no Netflix TV. No usa Firebase/Firestore
+// para el trabajo: la pagina llama al proyecto nuevo de
+// Apps Script, la Raspberry (navegador 3) pregunta por el
+// trabajo, lo autoriza en el navegador y devuelve solo el
+// resultado. La URL de Netflix NUNCA llega a esta pagina.
+// El registro en vivo usa la misma funcion registrarEventoCodigo
+// que ya usan los otros botones (una escritura por resultado).
+// ========================================================
+var URL_APPS_SCRIPT_AUTOMATIZADO = "https://script.google.com/macros/s/AKfycbwLLr3D7nZnWx1_oa0P6qMk5_BZvNuCR-xsWBTc4-PX3IZ3pXVPsYqZvo06d7N5nfClTQ/exec";
+window.URL_APPS_SCRIPT_AUTOMATIZADO = URL_APPS_SCRIPT_AUTOMATIZADO;
+
+function buscarVisorAuto(boton, correo) {
+    var visor = null;
+    try {
+        if (boton && boton.parentElement) visor = boton.parentElement.querySelector('.contenedor-codigo');
+    } catch (e) {}
+    if (!visor) {
+        try {
+            var tarjeta = boton ? boton.closest('.card-body') : null;
+            if (tarjeta) visor = tarjeta.querySelector('.contenedor-codigo');
+        } catch (e) {}
+    }
+    if (!visor) {
+        try { visor = document.getElementById('cod-' + String(correo).replace(/[^a-zA-Z0-9]/g, '')); } catch (e) {}
+    }
+    return visor;
+}
+
+function mostrarBuscandoAuto(visor) {
+    if (!visor) return;
+    var hwOn = (typeof HW_ON !== 'undefined') ? HW_ON : false;
+    visor.innerHTML = hwOn
+        ? "<div style='margin-top:15px; padding:15px; text-align:center; background: var(--info-row-bg); border-radius: 12px; border: 1px dashed var(--hw-pumpkin);'><div style='color:var(--hw-pumpkin); font-size:12px; font-weight:800; letter-spacing:1px;'>BUSCANDO Y AUTORIZANDO HOGAR... (AUTOMATIZADO)</div><div style='font-size:11px; margin-top:6px;'>Por favor no cierres esta página. Máximo 2 minutos.</div></div>"
+        : "<div style='margin-top:15px; padding:15px; text-align:center; background: #fffcf0; border-radius: 12px; border: 1px dashed #daa520;'><div style='color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;'>BUSCANDO Y AUTORIZANDO HOGAR... (AUTOMATIZADO)</div><div style='font-size:11px; color:#666; margin-top:6px;'>Por favor no cierres esta página. Máximo 2 minutos.</div></div>";
+}
+
+// El clic del boton amarillo pasa SIEMPRE por aqui primero, para que
+// el cliente vea BUSCANDO de inmediato, aunque algo falle despues.
+// Antes el boton podia quedarse muerto sin mostrar nada si el visor
+// no se encontraba; ahora el mensaje aparece si o si.
+function clicAutomatizado(correo, perfil, boton) {
+    var visor = buscarVisorAuto(boton, correo);
+    mostrarBuscandoAuto(visor);
+    try {
+        if (typeof solicitarAccesoNetflixAutomatizado === 'function') {
+            solicitarAccesoNetflixAutomatizado(correo, perfil, boton);
+        } else if (visor) {
+            visor.innerHTML = "<div style='color:#E50914; font-size:12px; margin-top:15px; text-align:center; font-weight:800;'>Esta copia de la página es vieja. Descarga la copia nueva de la página y vuelve a intentarlo.</div>";
+        }
+    } catch (err) {
+        if (visor) {
+            visor.innerHTML = "<div style='color:#E50914; font-size:12px; margin-top:15px; text-align:center;'>ERROR: " + (err && err.message ? err.message : "intenta de nuevo") + "</div>";
+        }
+        if (boton) { boton.disabled = false; }
+    }
+}
+window.clicAutomatizado = clicAutomatizado;
+
+function solicitarAccesoNetflixAutomatizado(correo, perfil, botonPresionado) {
+    var visor = buscarVisorAuto(botonPresionado, correo);
+    if (!visor) return;
+    if (!URL_APPS_SCRIPT_AUTOMATIZADO || URL_APPS_SCRIPT_AUTOMATIZADO.indexOf("PEGA_AQUI") !== -1) {
+        visor.innerHTML = "<div style='color:#E50914; font-size:12px; margin-top:15px; text-align:center; font-weight:800;'>Aún no está configurada la URL del proyecto Netflix Automatizado.</div>";
+        return;
+    }
+    var textoOriginal = botonPresionado.innerHTML;
+    botonPresionado.disabled = true;
+    botonPresionado.innerHTML = "Autorizando...";
+    mostrarBuscandoAuto(visor);
+
+    var nombreTitularAuto = "Cliente Panel";
+    try {
+        var tarjetaCard = botonPresionado.closest('.card-body');
+        var infoRowCard = tarjetaCard ? tarjetaCard.querySelector('.info-row') : null;
+        if (infoRowCard) {
+            nombreTitularAuto = infoRowCard.innerText.split('Titular:')[1].split('Correo:')[0].trim() || "Cliente Panel";
+        }
+    } catch (err) { console.log("No se pudo extraer el titular para el log"); }
+
+    var urlCrear = URL_APPS_SCRIPT_AUTOMATIZADO + "?accion=crear&correo=" + encodeURIComponent(correo) +
+                     "&perfil=" + encodeURIComponent(perfil) + "&t=" + new Date().getTime();
+
+    fetch(urlCrear)
+        .then(function (response) { return response.json(); })
+        .then(async function (dataCrear) {
+            if (!dataCrear.success || !dataCrear.jobId) {
+                throw new Error(dataCrear.motivo || "No se pudo crear la solicitud");
+            }
+            var jobId = dataCrear.jobId;
+            for (var intento = 0; intento < 24; intento++) {
+                await new Promise(function (res) { setTimeout(res, 5000); });
+                var resp = await fetch(URL_APPS_SCRIPT_AUTOMATIZADO + "?accion=estado&jobId=" + encodeURIComponent(jobId) + "&t=" + new Date().getTime());
+                var data = await resp.json();
+                if (!data.success) throw new Error(data.motivo || "No se pudo leer el resultado");
+                if (data.estado === "listo") {
+                    mostrarResultadoAutomatizado(visor, data, correo, nombreTitularAuto, jobId);
+                    return;
+                }
+            }
+            mostrarResultadoAutomatizado(visor, { resultado: "error", tipo: "", nombre: "", dispositivo: "", fecha: "", codigo: "", motivo: "No se recibió respuesta en 2 minutos. Por favor intenta de nuevo o hazlo manual." }, correo, nombreTitularAuto, jobId);
+        })
+        .catch(function (error) {
+            visor.innerHTML = "<div style='color:#E50914; font-size:12px; margin-top:15px; text-align:center;'>ERROR DE CONEXIÓN: " + (error && error.message ? error.message : "intenta de nuevo") + "</div>";
+        })
+        .finally(function () {
+            botonPresionado.disabled = false;
+            botonPresionado.innerHTML = textoOriginal;
+        });
+}
+
+function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId) {
+    var tipoTexto = data.tipo === "codigo-temporal" ? "CÓDIGO DE ACCESO TEMPORAL" : "ACTUALIZACIÓN DE HOGAR";
+    var plataformaLog = "NETFLIX HOGAR AUTOMATIZADO (" + tipoTexto + ")";
+    var nombreClienteFinal = (data.nombre ? data.nombre + " (" + nombreTitular + ")" : nombreTitular);
+
+    if (data.resultado === "codigo" && data.codigo) {
+        visor.innerHTML = "<div style='margin-top:15px; padding:20px; text-align:center; background: #fffcf0; border-radius: 18px; border: 1px solid rgba(255, 215, 0, 0.5);'>"
+            + "<div style='background: linear-gradient(90deg, #E50914, #b20710); color: white; display: inline-block; padding: 10px 25px; border-radius: 25px; font-size: 15px; font-weight: 800;'>" + tipoTexto + " - AUTOMATIZADO</div>"
+            + "<div style='margin-top:15px; font-size:13px; color:#555;'>CÓDIGO ACTUAL:<br><span style='font-size: 28px; color: #198754; font-weight: 900; letter-spacing: 2px;'>" + data.codigo + "</span></div>"
+            + "<div style='font-size:12px; color:#666; margin-top:8px;'>Usa este código para ver Netflix en tu dispositivo.</div>"
+            + "</div>"
+            + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, data.codigo);
+        try { registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, data.codigo); } catch (e) { console.log("No se pudo registrar el log, pero el código se muestra."); }
+    } else if (data.resultado === "autorizado") {
+        visor.innerHTML = "<div style='margin-top:15px; padding:20px; text-align:center; background: #f0fff4; border-radius: 18px; border: 1px solid #198754;'>"
+            + "<div style='font-size:16px; font-weight:900; color:#198754;'>SOLICITUD APROBADA</div>"
+            + "<div style='font-size:13px; color:#333; margin-top:10px;'>Ingresa para revisar la solicitud ya aprobada.</div>"
+            + (data.nombre ? "<div style='font-size:12px; color:#555; margin-top:8px;'>Solicitud de: <b>" + data.nombre + "</b>" + (data.dispositivo ? " - desde: <b>" + data.dispositivo + "</b>" : "") + (data.fecha ? "<br>Fecha/hora: <b>" + data.fecha + "</b>" : "") + "</div>" : "")
+            + "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>"
+            + "</div>"
+            + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, "Solicitud Procesada - Automatizado");
+        try { registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Solicitud Procesada - Automatizado"); } catch (e) { console.log("No se pudo registrar el log."); }
+    } else {
+        var motivo = data.motivo || "El enlace pudo haber caducado, por favor vuelve a solicitarlo.";
+        visor.innerHTML = "<div style='margin-top:15px; padding:20px; text-align:center; background: #fff5f5; border-radius: 18px; border: 1px solid #E50914;'>"
+            + "<div style='font-size:15px; font-weight:900; color:#E50914;'>NO SE PUDO AUTORIZAR</div>"
+            + "<div style='font-size:13px; color:#555; margin-top:10px;'>" + motivo + "</div>"
+            + "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>"
+            + "</div>"
+            + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, "Error - Automatizado");
+        try { registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Error - Automatizado"); } catch (e) { console.log("No se pudo registrar el log."); }
+    }
+}
+
+function mostrarEncuestaAutomatizado(jobId, correo, nombreCliente, plataformaLog, codigoLog) {
+    var idSeguro = String(jobId).replace(/[^a-zA-Z0-9]/g, '');
+    return "<div id='enc-auto-" + idSeguro + "' style='margin-top:15px; padding:15px; text-align:left; background: #ffffff; border-radius: 12px; border: 1px solid #ddd;'>"
+        + "<div style='font-size:13px; font-weight:800; text-align:center;'>Por favor, responde la siguiente encuesta, nos ayuda a mejorar nuestros servicios.</div>"
+        + "<div style='font-size:13px; margin-top:12px;'>¿Funcionó?<br>"
+        + "<label style='margin-right:12px;'><input type='radio' name='funciono-" + idSeguro + "' value='Sí'> Sí</label>"
+        + "<label><input type='radio' name='funciono-" + idSeguro + "' value='No'> No</label></div>"
+        + "<div style='font-size:13px; margin-top:10px;'>¿Te gustaría que se implementara este nuevo método de aprobación automática?<br>"
+        + "<label style='margin-right:12px;'><input type='radio' name='gustaria-" + idSeguro + "' value='Sí'> Sí</label>"
+        + "<label><input type='radio' name='gustaria-" + idSeguro + "' value='No'> No</label></div>"
+        + "<div style='font-size:13px; margin-top:10px;'>Comentarios: ¿qué puede estar fallando?<br>"
+        + "<textarea id='coment-" + idSeguro + "' rows='2' style='width:100%; font-size:13px;' placeholder='Escribe aquí tu comentario...'></textarea></div>"
+        + "<div style='text-align:center; margin-top:12px;'><button type='button' onclick=\"enviarEncuestaAutomatizado('" + jobId + "', '" + correo.replace(/'/g, "") + "', this)\" style='background:#ffc107; color:#212529; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer;'>Enviar encuesta</button></div>"
+        + "<div id='msg-enc-" + idSeguro + "' style='font-size:12px; text-align:center; margin-top:8px;'></div>"
+        + "</div>";
+}
+
+function enviarEncuestaAutomatizado(jobId, correo, botonEnviar) {
+    var idSeguro = String(jobId).replace(/[^a-zA-Z0-9]/g, '');
+    var funciono = document.querySelector("input[name='funciono-" + idSeguro + "']:checked");
+    var gustaria = document.querySelector("input[name='gustaria-" + idSeguro + "']:checked");
+    var msg = document.getElementById("msg-enc-" + idSeguro);
+    if (!funciono || !gustaria) {
+        if (msg) { msg.style.color = "#E50914"; msg.innerText = "Por favor responde las dos preguntas."; }
+        return;
+    }
+    var comentario = document.getElementById("coment-" + idSeguro);
+    var textoComentario = comentario ? comentario.value.trim() : "";
+    botonEnviar.disabled = true;
+    var encuestaTexto = "Encuesta Automatizado: ¿Funcionó? " + funciono.value + " | ¿Implementar? " + gustaria.value + (textoComentario ? " | Comentario: " + textoComentario : "");
+    try {
+        registrarEventoCodigo("Encuesta Automatizado", correo, "NETFLIX HOGAR AUTOMATIZADO (ENCUESTA)", encuestaTexto);
+    } catch (e) { console.log("No se pudo registrar la encuesta."); }
+    if (msg) { msg.style.color = "#198754"; msg.innerText = "Gracias por responder, nos ayuda a mejorar nuestros servicios."; }
 }
 
 function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
