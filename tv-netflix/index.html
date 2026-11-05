@@ -8,13 +8,54 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f4f4f9; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        .header-info { font-size: 12px; color: #666; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: #e50914; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #b20710; }
-        .footer { margin-top: 20px; font-size: 12px; color: #888; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; background-color: #0b0b0b; margin: 0; padding: 24px 12px; color: #fff; }
+        .card { background: #1c1c1e; padding: 28px 24px; border-radius: 16px; width: 100%; max-width: 460px; text-align: center; box-shadow: 0 14px 34px rgba(0,0,0,.55); border: 1px solid #2e2e30; border-top: 4px solid #e50914; animation: aparecer .35s ease; }
+        @keyframes aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes girar { to { transform: rotate(360deg); } }
+        @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+        @keyframes sacudir { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+        @keyframes puntos { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+        h1, h2, h3 { margin: 8px 0 10px; line-height: 1.25; }
+        h2 { font-size: 24px; }
+        p { color: #d4d4d8; line-height: 1.5; }
+        .header-info { font-size: 12px; color: #a1a1aa; margin-bottom: 18px; border-bottom: 1px solid #2e2e30; padding-bottom: 12px; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+        .badge-vence { display: inline-block; padding: 6px 12px; border-radius: 999px; font-weight: 800; font-size: 13px; color: #fff; white-space: nowrap; }
+        .badge-verde { background: #16a34a; }
+        .badge-amarillo { background: #eab308; color: #1c1c1e; }
+        .badge-rojo { background: #dc2626; }
+        input { width: 100%; padding: 14px 12px; margin: 14px 0 6px; border: 2px solid #3f3f46; border-radius: 10px; background: #0b0b0b; color: #fff; text-align: center; font-size: 26px; letter-spacing: 6px; font-weight: 800; outline: none; }
+        input:focus { border-color: #e50914; }
+        input::placeholder { color: #52525b; letter-spacing: 2px; font-size: 18px; }
+        .contador { font-size: 13px; color: #a1a1aa; margin: 4px 0 10px; }
+        button { width: 100%; padding: 13px; background: #e50914; color: white; border: none; border-radius: 10px; font-weight: 800; font-size: 16px; cursor: pointer; transition: .25s; margin-top: 8px; }
+        button:hover:not(:disabled) { background: #b20710; transform: translateY(-1px); }
+        button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+        .btn-hogar { background: linear-gradient(135deg, #d63384, #a61e6b); }
+        .btn-hogar:hover:not(:disabled) { background: linear-gradient(135deg, #c2257a, #8e1a5c); }
+        .btn-secundario { background: #2e2e30; border: 1px solid #3f3f46; }
+        .aviso { background: #26262a; border-left: 4px solid #e50914; border-radius: 10px; padding: 13px 14px; text-align: left; font-size: 14px; color: #e4e4e7; margin: 14px 0; line-height: 1.55; }
+        .aviso strong { color: #fff; }
+        .aviso ol { margin: 8px 0 0; padding-left: 20px; }
+        .alerta { background: #422006; border: 1px solid #eab308; color: #fde68a; border-radius: 10px; padding: 12px 14px; font-size: 14px; font-weight: 700; margin: 14px 0; line-height: 1.5; }
+        .detalle { background: #0b0b0b; border: 1px solid #2e2e30; border-radius: 12px; padding: 6px 16px; margin: 16px 0; text-align: left; }
+        .detalle p { display: flex; justify-content: space-between; gap: 12px; margin: 12px 0; font-size: 15px; }
+        .detalle b { color: #a1a1aa; font-weight: 600; }
+        .detalle span { color: #fff; font-weight: 700; text-align: right; word-break: break-word; }
+        .spinner { width: 64px; height: 64px; margin: 18px auto 10px; border-radius: 50%; border: 5px solid #2e2e30; border-top-color: #e50914; animation: girar .9s linear infinite; }
+        .spinner-chico { width: 34px; height: 34px; margin: 12px auto 6px; border-width: 4px; }
+        .cargando-texto { animation: pulso 1.4s ease-in-out infinite; }
+        .icono-error { font-size: 52px; display: inline-block; animation: sacudir .55s ease; margin-top: 8px; }
+        .icono-ok { font-size: 52px; }
+        .seccion-hogar { margin-top: 20px; border-top: 1px solid #2e2e30; padding-top: 18px; }
+        .hogar-titulo { font-size: 15px; font-weight: 800; color: #fff; margin: 0 0 6px; }
+        .hogar-texto { font-size: 14px; color: #d4d4d8; margin: 6px 0; }
+        .codigo-hogar { font-size: 44px; font-weight: 900; letter-spacing: 12px; background: #000; border: 2px solid #e50914; border-radius: 12px; padding: 14px 10px 14px 22px; margin: 12px 0 6px; }
+        .caja-ok { background: #052e16; border: 1px solid #16a34a; border-radius: 10px; padding: 13px; font-weight: 700; }
+        .caja-error { background: #450a0a; border: 1px solid #dc2626; border-radius: 10px; padding: 13px; font-weight: 700; }
+        .footer { margin-top: 20px; font-size: 12px; color: #71717a; }
+        a { color: #f87171; }
+        .enlace-volver { display: inline-block; margin-top: 14px; }
     </style>
 </head>
 <body>
@@ -35,74 +76,365 @@
     const urlParams = new URLSearchParams(window.location.search);
     const idVenta = urlParams.get('id');
 
+    // Estado local: no se guarda en Firestore. Sirve para no reenviar
+    // dos veces la misma solicitud y para medir los 10 minutos / 3 minutos
+    // aunque la fecha del servidor todavía no haya llegado.
+    let ultimoDoc = null;
+    let ultimoId = null;
+    let enviandoTV = false;
+    let hogarEnCurso = false;
+    let hogarIntentos = 0;
+    let ultimoClickHogarMs = 0;
+    let hogarClickLocalMs = 0;
+    let mostrarAdvertenciaHogar = false;
+    let ultimaVistaHogar = "";
+
     if (idVenta) {
         iniciarEscucha(idVenta);
     } else {
         mostrarFormulario();
     }
 
+    function esc(s) {
+        return String(s ?? "").replace(/[&<>"']/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+    }
+
     function mostrarFormulario() {
         document.getElementById('contenido').innerHTML = `
             <h3>Acceso de Cliente</h3>
-            <input type="text" id="codigoInput" placeholder="Ingresa tu código de servicio">
+            <p>Escribe tu código de servicio para ver tu cuenta.</p>
+            <input type="text" id="codigoInput" placeholder="Ingresa tu código de servicio" style="font-size:16px; letter-spacing:1px;">
             <button onclick="buscarPorCodigo()">Ver mi Servicio</button>
         `;
     }
 
     async function buscarPorCodigo() {
-        const codigo = document.getElementById('codigoInput').value;
-        if(codigo) window.location.href = `?id=${codigo}`;
+        const codigo = document.getElementById('codigoInput').value.trim();
+        if (codigo) window.location.href = `?id=${encodeURIComponent(codigo)}`;
     }
 
     function iniciarEscucha(id) {
         db.collection("cuentas").doc(id).onSnapshot((doc) => {
             if (!doc.exists) {
-                document.getElementById('contenido').innerHTML = "<h3>Código no válido.</h3><a href='.'>Volver</a>";
+                document.getElementById('contenido').innerHTML = "<h3>Código no válido.</h3><a class='enlace-volver' href='.'>Volver</a>";
                 return;
             }
-            renderizar(doc.data(), doc.id);
+            ultimoDoc = doc.data();
+            ultimoId = doc.id;
+            renderizar(ultimoDoc, ultimoId);
+        }, (error) => {
+            document.getElementById('contenido').innerHTML = "<h3>Error de conexión</h3><p>No pudimos cargar tu servicio. Revisa tu conexión e inténtalo de nuevo.</p>";
         });
+    }
+
+    function titularTexto(d) {
+        const etiqueta = String(d.perfil_etiqueta || "").trim();
+        if (!etiqueta) return "Cliente";
+        const partes = etiqueta.split(". ");
+        return (partes.length > 1 ? partes[1] : etiqueta).trim() || "Cliente";
+    }
+
+    function nombreCliente(d) {
+        const titular = titularTexto(d);
+        const partes = titular.split(" - ");
+        const nombre = (partes.length > 1 ? partes[partes.length - 1] : titular).trim();
+        return nombre || "Cliente";
+    }
+
+    function fechaToMs(valor) {
+        if (valor == null) return null;
+        if (typeof valor.toDate === "function") return valor.toDate().getTime();
+        if (typeof valor === "object" && typeof valor.seconds === "number") return valor.seconds * 1000;
+        if (valor instanceof Date) return valor.getTime();
+        const t = new Date(valor).getTime();
+        return isNaN(t) ? null : t;
+    }
+
+    function parseFechaFin(valor) {
+        if (valor == null) return null;
+        if (typeof valor.toDate === "function") return valor.toDate();
+        if (valor instanceof Date) return valor;
+        if (typeof valor === "number") return new Date(valor);
+        const texto = String(valor).trim();
+        // Formato guardado en la página: DD/MM/YYYY (ej. 03/12/2026)
+        const m = texto.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), 23, 59, 59);
+        const f = new Date(texto);
+        return isNaN(f.getTime()) ? null : f;
+    }
+
+    function badgeVence(d) {
+        const fin = parseFechaFin(d.fin);
+        if (!fin) return { clase: "badge-verde", texto: "Vence en —" };
+        const dias = Math.ceil((fin.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        if (dias > 5) return { clase: "badge-verde", texto: "Vence en " + dias + "d" };
+        if (dias >= 1) return { clase: "badge-amarillo", texto: "Vence en " + dias + "d" };
+        if (dias === 0) return { clase: "badge-rojo", texto: "Vence hoy" };
+        return { clase: "badge-rojo", texto: "Vencido" };
+    }
+
+    // --- Código TV: solo números, máximo 8 ---
+    function soloNumerosTV(input) {
+        const limpio = input.value.replace(/\D/g, "").slice(0, 8);
+        if (input.value !== limpio) input.value = limpio;
+        const contador = document.getElementById("contadorTv");
+        if (contador) contador.textContent = limpio.length + " / 8 dígitos";
+        const boton = document.getElementById("btnContinuarTv");
+        if (boton) boton.disabled = limpio.length !== 8;
+    }
+
+    function bloquearTeclaTV(e) {
+        const permitidas = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"];
+        if (permitidas.includes(e.key) || e.ctrlKey || e.metaKey) return;
+        if (!/^[0-9]$/.test(e.key)) e.preventDefault();
+    }
+
+    function pegarCodigoTV(e) {
+        e.preventDefault();
+        const texto = (e.clipboardData || window.clipboardData).getData("text") || "";
+        const input = e.target;
+        input.value = texto.replace(/\D/g, "").slice(0, 8);
+        soloNumerosTV(input);
+        input.focus();
     }
 
     function renderizar(d, id) {
         const contenido = document.getElementById('contenido');
-        const fFin = new Date(d.fin);
-        const dias = Math.ceil((fFin - new Date()) / (1000 * 60 * 60 * 24));
-        
-        const header = `<div class="header-info">Inicio: ${d.inicio} | Fin: ${d.fin} | Días: ${dias}</div>`;
+        const badge = badgeVence(d);
+        const header = `<div class="header-info"><span>Inicio: ${esc(d.inicio || "—")}</span><span>Fin: ${esc(d.fin || "—")}</span><span class="badge-vence ${badge.clase}">${esc(badge.texto)}</span></div>`;
 
-        switch(d.estado) {
+        switch (d.estado) {
             case "desconectado":
                 contenido.innerHTML = `${header}
-                    <img src="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" style="width:80px;">
-                    <h2>Hola, ${d.perfil_etiqueta ? d.perfil_etiqueta.split('. ')[1] : 'Cliente'}</h2>
-                    <p>Confirma el código que aparece en tu TV Netflix:</p>
-                    <input type="text" id="codeTv" placeholder="--- ---">
-                    <button onclick="actualizarEstado('${id}', 'procesando')">Continuar</button>`;
+                    <h2>Hola, ${esc(nombreCliente(d))}</h2>
+                    <p>Confirma el código TV que aparece en tu TV Netflix:</p>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" id="codeTv" placeholder="12345678" maxlength="8" oninput="soloNumerosTV(this)" onkeydown="bloquearTeclaTV(event)" onpaste="pegarCodigoTV(event)">
+                    <div class="contador" id="contadorTv">0 / 8 dígitos</div>
+                    <div class="aviso">
+                        <strong>¿Dónde está el código?</strong>
+                        <ol>
+                            <li>En tu televisor, abre Netflix.</li>
+                            <li>Dale en <strong>Iniciar sesión</strong>.</li>
+                            <li>Elige usar el <strong>código TV</strong>.</li>
+                            <li>Escribe aquí, en esta sección, el código de <strong>8 números</strong> que te muestra el televisor y dale en <strong>Continuar</strong>.</li>
+                        </ol>
+                        Solo se permiten números, sin letras ni espacios.
+                    </div>
+                    <button id="btnContinuarTv" disabled onclick="actualizarEstado('${esc(id)}', 'procesando')">Continuar</button>
+                    <div class="footer">MultiEntretenimiento BC</div>`;
                 break;
             case "procesando":
-                contenido.innerHTML = `<h3>Cargando, por favor espera...</h3>`;
+                contenido.innerHTML = `${header}
+                    <div class="spinner" role="status" aria-label="Cargando"></div>
+                    <h2 class="cargando-texto">Conectando con nuestro servidor...</h2>
+                    <p>Estamos conectándonos con nuestro servidor para vincular tu cuenta a tu televisor.</p>
+                    <p><strong>Te estaremos avisando cuando quede listo.</strong><br>No cierres esta página.</p>
+                    <div class="footer">MultiEntretenimiento BC</div>`;
                 break;
             case "tv-activo":
-                contenido.innerHTML = `${header}<h2>¡Configurado!</h2>
-                    <p><b>Perfil:</b> ${d.perfil}</p>
-                    <p><b>PIN:</b> ${d.pin}</p>`;
+                contenido.innerHTML = `${header}
+                    <h2>¡Bienvenido, ${esc(nombreCliente(d))}!</h2>
+                    <p><strong>Tu cuenta está configurada exitosamente en tu televisor.</strong></p>
+                    <div class="detalle">
+                        <p><b>Titular:</b> <span>${esc(titularTexto(d))}</span></p>
+                        <p><b>Perfil:</b> <span>${esc(d.perfil || "—")}</span></p>
+                        <p><b>PIN:</b> <span>${esc(d.pin || "—")}</span></p>
+                        <p><b>Inicio:</b> <span>${esc(d.inicio || "—")}</span></p>
+                        <p><b>Fin:</b> <span>${esc(d.fin || "—")}</span></p>
+                    </div>
+                    ${seccionHogar(d, id)}
+                    <div class="footer">MultiEntretenimiento BC</div>`;
                 break;
             case "error-netflix":
-                contenido.innerHTML = `<h3>Código incorrecto</h3><p>Intenta de nuevo.</p>
-                    <button onclick="actualizarEstado('${id}', 'desconectado')">Continuar</button>`;
+                contenido.innerHTML = `${header}
+                    <div class="icono-error">⚠️</div>
+                    <h2>Código incorrecto o error de servidor</h2>
+                    <p><strong>Por favor intenta de nuevo.</strong></p>
+                    <p>Recuerda escribir correctamente, abajo, el código de 8 números que muestra tu televisor, sin letras ni espacios.</p>
+                    <button onclick="actualizarEstado('${esc(id)}', 'desconectado')">Continuar</button>
+                    <div class="footer">MultiEntretenimiento BC</div>`;
                 break;
             case "error-conexion":
-                contenido.innerHTML = `<h3>Servidor caído</h3><p>Intenta en 1 minuto.</p>
-                    <button onclick="actualizarEstado('${id}', 'desconectado')">Aceptar</button>`;
+                contenido.innerHTML = `${header}
+                    <div class="icono-error">⚠️</div>
+                    <h2>Código incorrecto o error de servidor</h2>
+                    <p><strong>Por favor intenta de nuevo.</strong></p>
+                    <p>No pudimos conectar con el servidor. Recuerda escribir correctamente el código de 8 números que muestra tu televisor.</p>
+                    <button onclick="actualizarEstado('${esc(id)}', 'desconectado')">Continuar</button>
+                    <div class="footer">MultiEntretenimiento BC</div>`;
+                break;
+            default:
+                contenido.innerHTML = `${header}
+                    <h2>Hola, ${esc(nombreCliente(d))}</h2>
+                    <p>Confirma el código TV que aparece en tu TV Netflix:</p>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" id="codeTv" placeholder="12345678" maxlength="8" oninput="soloNumerosTV(this)" onkeydown="bloquearTeclaTV(event)" onpaste="pegarCodigoTV(event)">
+                    <div class="contador" id="contadorTv">0 / 8 dígitos</div>
+                    <button id="btnContinuarTv" disabled onclick="actualizarEstado('${esc(id)}', 'procesando')">Continuar</button>`;
                 break;
         }
     }
 
+    function vistaHogar(d) {
+        const estadoHogar = d.estado_hogar || "";
+        let fechaMs = fechaToMs(d.fechaRegistroHogar);
+        if (!fechaMs && estadoHogar === "procesando" && hogarClickLocalMs) fechaMs = hogarClickLocalMs;
+        const edadMin = fechaMs ? (Date.now() - fechaMs) / 60000 : 0;
+        if (estadoHogar === "procesando" && edadMin > 10) return "timeout";
+        if (estadoHogar === "procesando") return "buscando";
+        if (estadoHogar === "codigo-temporal") {
+            const edadSeg = fechaMs ? (Date.now() - fechaMs) / 1000 : 0;
+            return edadSeg <= 180 ? "codigo" : "codigo-expirado";
+        }
+        if (estadoHogar === "confirmado") return "confirmado";
+        if (estadoHogar === "error-hogar") return "error-hogar";
+        return "boton";
+    }
+
+    function botonHogar(id) {
+        return `<button id="btnHogar" class="btn-hogar" onclick="solicitarHogar('${esc(id)}')">🔑 Activar Hogar / Código temp</button>`;
+    }
+
+    function alertaHogar() {
+        if (!mostrarAdvertenciaHogar) return "";
+        return `<div class="alerta">⚠️ Por favor, solamente una solicitud a la vez para evitar bloqueos en la cuenta y en el servidor.</div>`;
+    }
+
+    function seccionHogar(d, id) {
+        const estadoHogar = d.estado_hogar || "";
+        const vista = vistaHogar(d);
+        ultimaVistaHogar = vista;
+
+        if (estadoHogar === "confirmado") hogarEnCurso = false;
+        if (estadoHogar === "error-hogar" || estadoHogar === "codigo-expirado") hogarEnCurso = false;
+        if (vista === "timeout" || vista === "codigo-expirado") hogarEnCurso = false;
+
+        let cuerpo = "";
+
+        if (vista === "buscando") {
+            cuerpo = `
+                <div class="spinner spinner-chico" role="status" aria-label="Buscando hogar"></div>
+                <p class="hogar-titulo cargando-texto">Buscando y autorizando hogar...</p>
+                <p class="hogar-texto">Estamos buscando la solicitud en tu correo y autorizándola. No cierres esta página.</p>
+                ${alertaHogar()}`;
+        } else if (vista === "timeout") {
+            cuerpo = `
+                <p class="hogar-texto">La solicitud tardó más de 10 minutos. Puedes intentarlo de nuevo.</p>
+                ${botonHogar(id)}
+                ${alertaHogar()}`;
+        } else if (vista === "codigo") {
+            let fechaMs = fechaToMs(d.fechaRegistroHogar) || hogarClickLocalMs;
+            const restantes = fechaMs ? Math.max(0, 180 - Math.floor((Date.now() - fechaMs) / 1000)) : 180;
+            cuerpo = `
+                <p class="hogar-titulo">✅ Código temporal listo</p>
+                <p class="hogar-texto">Usa este código para ver Netflix en tu televisor. No compartas ninguna URL, solo este código.</p>
+                <div class="codigo-hogar">${esc(d.codigo_temporal || "••••")}</div>
+                <p class="hogar-texto" id="hogarCuenta">Este código se ocultará en ${restantes} segundos.</p>
+                ${alertaHogar()}`;
+        } else if (vista === "codigo-expirado") {
+            cuerpo = `
+                <p class="hogar-texto">El código temporal ya no se muestra porque pasaron 3 minutos. Si lo necesitas de nuevo, pide otra solicitud.</p>
+                ${botonHogar(id)}
+                ${alertaHogar()}`;
+        } else if (vista === "confirmado") {
+            cuerpo = `
+                <div class="caja-ok">✅ Hogar autorizado. Tu hogar ya quedó actualizado, puedes volver a ver Netflix en tu televisor.</div>
+                <div style="margin-top:12px;">${botonHogar(id)}</div>
+                ${alertaHogar()}`;
+        } else if (vista === "error-hogar") {
+            cuerpo = `
+                <div class="caja-error">❌ No se pudo autorizar el hogar. Por favor intenta de nuevo.</div>
+                <div style="margin-top:12px;">${botonHogar(id)}</div>
+                ${alertaHogar()}`;
+        } else {
+            cuerpo = `${botonHogar(id)}${alertaHogar()}`;
+        }
+
+        return `<div class="seccion-hogar">${cuerpo}</div>`;
+    }
+
+    // Revisa cada 5 segundos si ya pasaron los 10 minutos buscando
+    // o los 3 minutos del código, sin hacer lecturas nuevas a Firestore.
+    setInterval(function () {
+        if (!ultimoDoc || !ultimoId || ultimoDoc.estado !== "tv-activo") return;
+        const vistaAhora = vistaHogar(ultimoDoc);
+        if (vistaAhora !== ultimaVistaHogar) {
+            renderizar(ultimoDoc, ultimoId);
+            return;
+        }
+        if (vistaAhora === "codigo") {
+            const el = document.getElementById("hogarCuenta");
+            let fechaMs = fechaToMs(ultimoDoc.fechaRegistroHogar) || hogarClickLocalMs;
+            if (el && fechaMs) {
+                const restantes = Math.max(0, 180 - Math.floor((Date.now() - fechaMs) / 1000));
+                el.textContent = "Este código se ocultará en " + restantes + " segundos.";
+            }
+        }
+    }, 5000);
+
     async function actualizarEstado(id, est) {
-        const payload = { estado: est };
-        if(est === 'procesando') payload.codigo_tv = document.getElementById('codeTv').value;
-        await db.collection("cuentas").doc(id).update(payload);
+        if (est === "procesando") {
+            if (enviandoTV) return;
+            const input = document.getElementById("codeTv");
+            const codigo = input ? input.value.replace(/\D/g, "").slice(0, 8) : "";
+            if (codigo.length !== 8) {
+                if (input) input.focus();
+                return;
+            }
+            enviandoTV = true;
+            const boton = document.getElementById("btnContinuarTv");
+            if (boton) boton.disabled = true;
+            try {
+                await db.collection("cuentas").doc(id).update({ estado: est, codigo_tv: codigo });
+            } catch (e) {
+                enviandoTV = false;
+                if (boton) boton.disabled = false;
+            }
+            return;
+        }
+        enviandoTV = false;
+        await db.collection("cuentas").doc(id).update({ estado: est });
+    }
+
+    async function solicitarHogar(id) {
+        const ahora = Date.now();
+
+        // Segunda solicitud seguida: no se vuelve a escribir, solo se avisa.
+        if (hogarEnCurso) {
+            mostrarAdvertenciaHogar = true;
+            if (ultimoDoc && ultimoId) renderizar(ultimoDoc, ultimoId);
+            return;
+        }
+        if (hogarIntentos > 0 && ahora - ultimoClickHogarMs < 60000) {
+            mostrarAdvertenciaHogar = true;
+            if (ultimoDoc && ultimoId) renderizar(ultimoDoc, ultimoId);
+            return;
+        }
+        if (ahora - ultimoClickHogarMs > 60000) hogarIntentos = 0;
+
+        hogarIntentos += 1;
+        ultimoClickHogarMs = ahora;
+        hogarClickLocalMs = ahora;
+        hogarEnCurso = true;
+        mostrarAdvertenciaHogar = false;
+
+        const boton = document.getElementById("btnHogar");
+        if (boton) boton.disabled = true;
+
+        try {
+            // Solo se escribe el aviso para la Raspberry. No se llama a
+            // ningún servicio externo desde el navegador y no se recibe
+            // ninguna URL. La Raspberry es la que lee el correo y autoriza.
+            await db.collection("cuentas").doc(id).update({
+                estado_hogar: "procesando",
+                fechaRegistroHogar: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } catch (e) {
+            hogarEnCurso = false;
+            mostrarAdvertenciaHogar = true;
+            if (ultimoDoc && ultimoId) renderizar(ultimoDoc, ultimoId);
+        }
     }
 </script>
 </body>
