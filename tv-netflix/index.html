@@ -24,6 +24,12 @@
         .badge-verde { background: #16a34a; }
         .badge-amarillo { background: #eab308; color: #1c1c1e; }
         .badge-rojo { background: #dc2626; }
+        .banner-vence { background: #422006; border: 1px solid #eab308; border-radius: 10px; padding: 13px 14px; font-size: 14px; font-weight: 700; color: #fde68a; margin: 0 0 16px; line-height: 1.55; }
+        .btn-whatsapp { display: inline-block; width: 100%; padding: 13px; background: #25d366; color: #06281a; border-radius: 10px; font-weight: 800; font-size: 16px; text-decoration: none; margin-top: 10px; text-align: center; }
+        .btn-whatsapp:hover { background: #1eb85a; }
+        .btn-whatsapp-chico { width: auto; padding: 9px 16px; font-size: 14px; }
+        .icono-suspendida { font-size: 56px; margin-top: 8px; }
+        .caja-suspendida { background: #450a0a; border: 1px solid #dc2626; border-radius: 12px; padding: 16px; margin: 14px 0; }
         input { width: 100%; padding: 14px 12px; margin: 14px 0 6px; border: 2px solid #3f3f46; border-radius: 10px; background: #0b0b0b; color: #fff; text-align: center; font-size: 26px; letter-spacing: 6px; font-weight: 800; outline: none; }
         input:focus { border-color: #e50914; }
         input::placeholder { color: #52525b; letter-spacing: 2px; font-size: 18px; }
@@ -175,6 +181,50 @@
         return { clase: "badge-rojo", texto: "Vencido" };
     }
 
+    // --- Vencimiento: bloqueo total y advertencia ---
+    // Vencida = hoy ya pasó el último día completo de "fin".
+    // Ej.: fin 03/12/2026 y hoy 04/12/2026 -> vencida. Fin hoy -> todavía no.
+    // Si "fin" no se puede leer, no se bloquea: no se castiga por un dato malo.
+    function estaVencida(d) {
+        const fin = parseFechaFin(d.fin);
+        if (!fin) return false;
+        return Date.now() > fin.getTime();
+    }
+
+    function diasRestantes(d) {
+        const fin = parseFechaFin(d.fin);
+        if (!fin) return null;
+        return Math.ceil((fin.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    }
+
+    function urlRenovar() {
+        return "https://wa.me/573503938788?text=" + encodeURIComponent("Hola, quiero renovar mi cuenta Netflix TV.");
+    }
+
+    // Advertencia solo cuando faltan 5 días o menos (5, 4, 3, 2, 1 y hoy).
+    function bannerVencimiento(d) {
+        if (estaVencida(d)) return "";
+        const dias = diasRestantes(d);
+        if (dias == null || dias > 5) return "";
+        const texto = dias <= 0 ? "Tu cuenta vence hoy." : "Tu cuenta vence en " + dias + (dias === 1 ? " día." : " días.");
+        return `<div class="banner-vence">⚠️ ${texto} Renuévala a tiempo para no perder el acceso.<br><a class="btn-whatsapp btn-whatsapp-chico" href="${urlRenovar()}" target="_blank" rel="noopener">💬 Renovar por WhatsApp</a></div>`;
+    }
+
+    // Pantalla de bloqueo total: sin código TV, sin perfil, sin PIN y sin hogar.
+    function pantallaSuspendida(d) {
+        return `
+            <div class="icono-suspendida">⛔</div>
+            <h2>Cuenta suspendida por falta de pago</h2>
+            <p>Hola, ${esc(nombreCliente(d))}.</p>
+            <div class="caja-suspendida">
+                <p><strong>Tu cuenta está suspendida por falta de pago.</strong></p>
+                <p>Por favor, contáctate con nosotros para renovar la cuenta.</p>
+                <p>Fecha fin: <strong>${esc(d.fin || "—")}</strong></p>
+            </div>
+            <a class="btn-whatsapp" href="${urlRenovar()}" target="_blank" rel="noopener">💬 Renovar por WhatsApp</a>
+            <div class="footer">MultiEntretenimiento BC</div>`;
+    }
+
     // --- Código TV: solo números, máximo 8 ---
     function soloNumerosTV(input) {
         const limpio = input.value.replace(/\D/g, "").slice(0, 8);
@@ -202,12 +252,19 @@
 
     function renderizar(d, id) {
         const contenido = document.getElementById('contenido');
+        // Bloqueo total si ya venció: no importa el estado, no se muestra
+        // código TV, perfil, PIN ni hogar. Solo la pantalla de suspendida.
+        if (estaVencida(d)) {
+            contenido.innerHTML = pantallaSuspendida(d);
+            return;
+        }
         const badge = badgeVence(d);
         const header = `<div class="header-info"><span>Inicio: ${esc(d.inicio || "—")}</span><span>Fin: ${esc(d.fin || "—")}</span><span class="badge-vence ${badge.clase}">${esc(badge.texto)}</span></div>`;
 
         switch (d.estado) {
             case "desconectado":
                 contenido.innerHTML = `${header}
+                    ${bannerVencimiento(d)}
                     <h2>Hola, ${esc(nombreCliente(d))}</h2>
                     <p>Confirma el código TV que aparece en tu TV Netflix:</p>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" id="codeTv" placeholder="12345678" maxlength="8" oninput="soloNumerosTV(this)" onkeydown="bloquearTeclaTV(event)" onpaste="pegarCodigoTV(event)">
@@ -227,6 +284,7 @@
                 break;
             case "procesando":
                 contenido.innerHTML = `${header}
+                    ${bannerVencimiento(d)}
                     <div class="spinner" role="status" aria-label="Cargando"></div>
                     <h2 class="cargando-texto">Conectando con nuestro servidor...</h2>
                     <p>Estamos conectándonos con nuestro servidor para vincular tu cuenta a tu televisor.</p>
@@ -237,6 +295,7 @@
                 contenido.innerHTML = `${header}
                     <h2>¡Bienvenido, ${esc(nombreCliente(d))}!</h2>
                     <p><strong>Tu cuenta está configurada exitosamente en tu televisor.</strong></p>
+                    ${bannerVencimiento(d)}
                     <div class="detalle">
                         <p><b>Titular:</b> <span>${esc(titularTexto(d))}</span></p>
                         <p><b>Perfil:</b> <span>${esc(d.perfil || "—")}</span></p>
@@ -249,6 +308,7 @@
                 break;
             case "error-netflix":
                 contenido.innerHTML = `${header}
+                    ${bannerVencimiento(d)}
                     <div class="icono-error">⚠️</div>
                     <h2>Código incorrecto o error de servidor</h2>
                     <p><strong>Por favor intenta de nuevo.</strong></p>
@@ -258,6 +318,7 @@
                 break;
             case "error-conexion":
                 contenido.innerHTML = `${header}
+                    ${bannerVencimiento(d)}
                     <div class="icono-error">⚠️</div>
                     <h2>Código incorrecto o error de servidor</h2>
                     <p><strong>Por favor intenta de nuevo.</strong></p>
@@ -267,6 +328,7 @@
                 break;
             default:
                 contenido.innerHTML = `${header}
+                    ${bannerVencimiento(d)}
                     <h2>Hola, ${esc(nombreCliente(d))}</h2>
                     <p>Confirma el código TV que aparece en tu TV Netflix:</p>
                     <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" id="codeTv" placeholder="12345678" maxlength="8" oninput="soloNumerosTV(this)" onkeydown="bloquearTeclaTV(event)" onpaste="pegarCodigoTV(event)">
