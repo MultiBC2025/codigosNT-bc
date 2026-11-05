@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; background-color: #0b0b0b; margin: 0; padding: 24px 12px; color: #fff; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; gap: 12px; min-height: 100vh; background-color: #0b0b0b; margin: 0; padding: 24px 12px; color: #fff; }
         .card { background: #1c1c1e; padding: 28px 24px; border-radius: 16px; width: 100%; max-width: 460px; text-align: center; box-shadow: 0 14px 34px rgba(0,0,0,.55); border: 1px solid #2e2e30; border-top: 4px solid #e50914; animation: aparecer .35s ease; }
         @keyframes aparecer { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes girar { to { transform: rotate(360deg); } }
@@ -62,13 +62,50 @@
         .footer { margin-top: 20px; font-size: 12px; color: #71717a; }
         a { color: #f87171; }
         .enlace-volver { display: inline-block; margin-top: 14px; }
+        .tema-switch { display: flex; gap: 6px; background: #1c1c1e; border: 1px solid #2e2e30; border-radius: 999px; padding: 6px; }
+        .tema-btn { width: auto; padding: 8px 16px; font-size: 13px; margin-top: 0; background: transparent; color: #a1a1aa; }
+        .tema-btn:hover:not(.activo) { background: #2e2e30; color: #fff; }
+        .tema-btn.activo { background: #e50914; color: #fff; }
+        .btn-soporte { display: block; width: 100%; max-width: 460px; padding: 13px; background: #25d366; color: #06281a; border-radius: 10px; font-weight: 800; font-size: 15px; text-align: center; text-decoration: none; }
+        .btn-soporte:hover { background: #1eb85a; }
+        /* Tema claro: fondo claro y letras oscuras */
+        body.tema-claro { background-color: #f4f4f9; color: #1c1c1e; }
+        body.tema-claro .card { background: #fff; color: #1c1c1e; border-color: #e5e7eb; box-shadow: 0 10px 25px rgba(0,0,0,.1); }
+        body.tema-claro h1, body.tema-claro h2, body.tema-claro h3, body.tema-claro .hogar-titulo { color: #111; }
+        body.tema-claro p, body.tema-claro .hogar-texto { color: #374151; }
+        body.tema-claro .header-info { color: #666; border-color: #eee; }
+        body.tema-claro input { background: #fff; color: #111; border-color: #ddd; }
+        body.tema-claro input::placeholder { color: #9ca3af; }
+        body.tema-claro .aviso { background: #f9fafb; color: #374151; }
+        body.tema-claro .aviso strong { color: #111; }
+        body.tema-claro .detalle { background: #f4f4f9; border-color: #e5e7eb; }
+        body.tema-claro .detalle b { color: #6b7280; }
+        body.tema-claro .detalle span { color: #111; }
+        body.tema-claro .spinner { border-color: #e5e7eb; border-top-color: #e50914; }
+        body.tema-claro .seccion-hogar { border-color: #e5e7eb; }
+        body.tema-claro .footer { color: #888; }
+        body.tema-claro .tema-switch { background: #fff; border-color: #e5e7eb; }
+        body.tema-claro .tema-btn { color: #6b7280; }
+        body.tema-claro .tema-btn.activo { background: #e50914; color: #fff; }
+        body.tema-claro .caja-ok { background: #e8f5e9; color: #2e7d32; }
+        body.tema-claro .caja-error, body.tema-claro .caja-suspendida { background: #fdecea; color: #b71c1c; }
+        body.tema-claro .banner-vence, body.tema-claro .alerta { background: #fef3c7; color: #92400e; border-color: #eab308; }
+        body.tema-claro a { color: #b20710; }
+        body.tema-claro .btn-whatsapp, body.tema-claro .btn-soporte { color: #06281a; }
     </style>
 </head>
 <body>
 
+<div class="tema-switch" role="group" aria-label="Tema de la página">
+    <button type="button" class="tema-btn" data-tema="claro" onclick="cambiarTema('claro')">☀️ Claro</button>
+    <button type="button" class="tema-btn" data-tema="oscuro" onclick="cambiarTema('oscuro')">🌙 Oscuro</button>
+</div>
+
 <div class="card" id="contenido">
     <h1>Cargando...</h1>
 </div>
+
+<a class="btn-soporte" href="https://wa.me/573503938788?text=Hola%2C%20tengo%20problemas%20para%20acceder%20a%20mi%20cuenta%20Netflix%20TV%2C%20%C2%BFme%20puedes%20ayudar%3F" target="_blank" rel="noopener">🆘 Tengo problemas para acceder a mi cuenta</a>
 
 <script>
     const firebaseConfig = { 
@@ -106,6 +143,27 @@
             return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
         });
     }
+
+    // Tema claro / oscuro: se guarda en el navegador para que quede igual
+    // la próxima vez que abra la página. Por defecto, oscuro.
+    function actualizarBotonesTema() {
+        const tema = document.body.classList.contains("tema-claro") ? "claro" : "oscuro";
+        document.querySelectorAll(".tema-btn").forEach(function (b) {
+            b.classList.toggle("activo", b.dataset.tema === tema);
+        });
+    }
+    function cambiarTema(tema) {
+        document.body.classList.toggle("tema-claro", tema === "claro");
+        try { localStorage.setItem("temaMultiBC", tema); } catch (e) {}
+        actualizarBotonesTema();
+    }
+    (function () {
+        let guardado = "oscuro";
+        try { guardado = localStorage.getItem("temaMultiBC") || "oscuro"; } catch (e) {}
+        if (guardado !== "claro" && guardado !== "oscuro") guardado = "oscuro";
+        document.body.classList.toggle("tema-claro", guardado === "claro");
+        actualizarBotonesTema();
+    })();
 
     function mostrarFormulario() {
         document.getElementById('contenido').innerHTML = `
@@ -167,6 +225,11 @@
         // Formato guardado en la página: DD/MM/YYYY (ej. 03/12/2026)
         const m = texto.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
         if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), 23, 59, 59);
+        // Formato real de Firestore en tus documentos: YYYY-MM-DD (ej. 2026-12-03).
+        // Se lee como día local completo (hasta las 23:59), no como medianoche UTC,
+        // para que no marque vencida un día antes en hora de Colombia.
+        const iso = texto.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]), 23, 59, 59);
         const f = new Date(texto);
         return isNaN(f.getTime()) ? null : f;
     }
@@ -350,7 +413,14 @@
             return edadSeg <= 180 ? "codigo" : "codigo-expirado";
         }
         if (estadoHogar === "confirmado") return "confirmado";
-        if (estadoHogar === "error-hogar") return "error-hogar";
+        // Error viejo: si fechaRegistroHogar (fecha y hora completas) ya tiene
+        // más de 10 minutos, no se muestra el error, vuelve el botón.
+        // Si tiene menos de 10 minutos, sí se muestra. Sin fecha, se muestra
+        // porque no se puede saber si ya pasaron 10 minutos.
+        if (estadoHogar === "error-hogar") {
+            if (fechaMs && edadMin > 10) return "boton";
+            return "error-hogar";
+        }
         return "boton";
     }
 
