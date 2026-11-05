@@ -61,7 +61,7 @@
 &lt;script src=&quot;https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js&quot;&gt;&lt;/script&gt;
 &lt;script src=&quot;https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js&quot;&gt;&lt;/script&gt;
 &lt;style&gt;
-    body{margin:0;font-family:'Segoe UI', sans-serif;background:#f4f6f8;font-size:18px;}
+    body{margin:0;font-family:&#x27;Segoe UI&#x27;, sans-serif;background:#f4f6f8;font-size:18px;}
     #login,#panel{display:none}
     .sidebar{width:230px;background:#1e1e2f;height:100vh;position:fixed;color:#fff;z-index: 100;}
     .sidebar h2{text-align:center;padding:15px; border-bottom: 3px solid #333; font-size: 1.3em;}
@@ -349,7 +349,7 @@
                 &lt;/div&gt;
 
                 &lt;div style=&quot;text-align:right; margin-top:-4px;&quot;&gt;
-                    &lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;mostrarTarjetaAuth('recuperar')&quot; style=&quot;font-size:12.5px; color:#2563eb; text-decoration:none; font-weight:500;&quot;&gt;¿Olvidaste tu contraseña?&lt;/a&gt;
+                    &lt;a href=&quot;javascript:void(0)&quot; onclick=&quot;mostrarTarjetaAuth(&#x27;recuperar&#x27;)&quot; style=&quot;font-size:12.5px; color:#2563eb; text-decoration:none; font-weight:500;&quot;&gt;¿Olvidaste tu contraseña?&lt;/a&gt;
                 &lt;/div&gt;
 
                 &lt;div id=&quot;errorLogin&quot; style=&quot;display:none; background:#fef2f2; border:1px solid #fecaca; color:#b91c1c; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
@@ -376,7 +376,7 @@
                 &lt;div id=&quot;errorRecuperar&quot; style=&quot;display:none; font-size:12.5px; padding:11px; border-radius:10px; text-align:center;&quot;&gt;&lt;/div&gt;
 
                 &lt;button id=&quot;btnRecuperar&quot; onclick=&quot;enviarRecuperacion()&quot; style=&quot;width:100%; padding:13px; font-size:14.5px; font-weight:600; border-radius:10px; border:none; cursor:pointer; background:#2563eb; color:#ffffff; box-shadow:0 4px 12px rgba(37,99,235,0.25);&quot;&gt;Enviar Enlace&lt;/button&gt;
-                &lt;button onclick=&quot;mostrarTarjetaAuth('login')&quot; style=&quot;width:100%; padding:11px; font-size:13.5px; font-weight:500; border-radius:10px; border:1px solid #d1d5db; background:#ffffff; color:#64748b; cursor:pointer;&quot;&gt;← Volver al Inicio de Sesión&lt;/button&gt;
+                &lt;button onclick=&quot;mostrarTarjetaAuth(&#x27;login&#x27;)&quot; style=&quot;width:100%; padding:11px; font-size:13.5px; font-weight:500; border-radius:10px; border:1px solid #d1d5db; background:#ffffff; color:#64748b; cursor:pointer;&quot;&gt;← Volver al Inicio de Sesión&lt;/button&gt;
             &lt;/div&gt;
         &lt;/div&gt;
 
@@ -409,18 +409,18 @@
     &lt;div class=&quot;sidebar&quot;&gt;
         &lt;h2 onclick=&quot;location.reload();&quot; 
         style=&quot;cursor: pointer; user-select: none; transition: 0.3s;&quot; 
-        onmouseover=&quot;this.style.color='#25d366'&quot; 
-        onmouseout=&quot;this.style.color=''&quot;
+        onmouseover=&quot;this.style.color=&#x27;#25d366&#x27;&quot; 
+        onmouseout=&quot;this.style.color=&#x27;&#x27;&quot;
         title=&quot;Click para reiniciar todo el panel&quot;&gt;
         🚀 Mi Panel
     &lt;/h2&gt;
-        &lt;button onclick=&quot;mostrar('clientes')&quot;&gt;👤 Gestión Clientes&lt;/button&gt;
-        &lt;button onclick=&quot;mostrar('cuentas')&quot;&gt;🔑 Asignar Cuentas&lt;/button&gt;
-        &lt;button onclick=&quot;mostrar('cuentasNetflixTV')&quot;&gt;🔑 Asignar Netflix TVs&lt;/button&gt;
-        &lt;button onclick=&quot;mostrar('seccionVentas')&quot;&gt;💰 Ventas (Historial)&lt;/button&gt;
-        &lt;button onclick=&quot;mostrar('seccionVencimientos')&quot;&gt;📅 Vencimientos&lt;/button&gt;
-        &lt;button onclick=&quot;mostrar('adminCuentas')&quot;&gt;⚙️ Admin. Perfiles&lt;/button&gt;
-        &lt;button onclick=&quot;mostrar('seccionLogs')&quot;&gt;📧 Historial de códigos&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar(&#x27;clientes&#x27;)&quot;&gt;👤 Gestión Clientes&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar(&#x27;cuentas&#x27;)&quot;&gt;🔑 Asignar Cuentas&lt;/button&gt;
+        &lt;button onclick=&quot;idRenovacionTV = null; mostrar(&#x27;cuentasNetflixTV&#x27;)&quot;&gt;🔑 Asignar Netflix TVs&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar(&#x27;seccionVentas&#x27;)&quot;&gt;💰 Ventas (Historial)&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar(&#x27;seccionVencimientos&#x27;)&quot;&gt;📅 Vencimientos&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar(&#x27;adminCuentas&#x27;)&quot;&gt;⚙️ Admin. Perfiles&lt;/button&gt;
+        &lt;button onclick=&quot;mostrar(&#x27;seccionLogs&#x27;)&quot;&gt;📧 Historial de códigos&lt;/button&gt;
         &lt;button onclick=&quot;logout()&quot;&gt;🚪 Cerrar sesión&lt;/button&gt;
     &lt;/div&gt;
 
@@ -452,21 +452,21 @@
         &lt;h4 id=&quot;formTitle&quot;&gt;✨ Registrar Nuevo Cliente&lt;/h4&gt;
         &lt;input id=&quot;c_id_hidden&quot; type=&quot;hidden&quot;&gt;
         &lt;input id=&quot;c_nombre&quot; placeholder=&quot;Nombre Completo&quot; style=&quot;width: 250px;&quot;&gt;
-        &lt;select id=&quot;c_codigo&quot;&gt;
+        &lt;select id=&quot;c_codigo&quot; onchange=&quot;limpiarWhatsApp()&quot;&gt;
             &lt;option value=&quot;+57&quot;&gt;+57&lt;/option&gt;&lt;option value=&quot;+58&quot;&gt;+58&lt;/option&gt;&lt;option value=&quot;+52&quot;&gt;+52&lt;/option&gt;&lt;option value=&quot;+1&quot;&gt;+1&lt;/option&gt;&lt;option value=&quot;+34&quot;&gt;+34&lt;/option&gt;
         &lt;/select&gt;
-        &lt;input id=&quot;c_whatsapp&quot; placeholder=&quot;WhatsApp&quot;&gt;
+        &lt;input id=&quot;c_whatsapp&quot; placeholder=&quot;WhatsApp&quot; oninput=&quot;limpiarWhatsApp()&quot;&gt;
         &lt;button class=&quot;save-btn&quot; id=&quot;btnGuardar&quot; onclick=&quot;guardarCliente()&quot;&gt;Guardar Cliente&lt;/button&gt;
         &lt;button class=&quot;save-btn&quot; id=&quot;btnCancel&quot; style=&quot;display:none; background:#6c757d;&quot; onclick=&quot;cancelarEdicion()&quot;&gt;Cancelar&lt;/button&gt;
     &lt;/div&gt;
     &lt;div class=&quot;section&quot;&gt;
-        &lt;input type=&quot;text&quot; id=&quot;filtroCliente&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Filtrar por nombre o número...&quot; onkeyup=&quot;filtrarTablaClientes()&quot;&gt;
+        &lt;input type=&quot;text&quot; id=&quot;filtroCliente&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Filtrar por nombre o servicio...&quot; onkeyup=&quot;filtrarTablaClientes()&quot;&gt;
         &lt;table id=&quot;tablaMaestraClientes&quot;&gt;
             &lt;thead&gt;
                 &lt;tr&gt;
-                    &lt;th class=&quot;sortable&quot; onclick=&quot;ordenarTabla('nombre')&quot;&gt;Nombre Cliente ↑↓&lt;/th&gt;
+                    &lt;th class=&quot;sortable&quot; onclick=&quot;ordenarTabla(&#x27;nombre&#x27;)&quot;&gt;Nombre Cliente ↑↓&lt;/th&gt;
                     &lt;th&gt;WhatsApp&lt;/th&gt;
-                    &lt;th class=&quot;sortable&quot; onclick=&quot;ordenarTabla('servicios')&quot;&gt;Servicios ↑↓&lt;/th&gt;
+                    &lt;th class=&quot;sortable&quot; onclick=&quot;ordenarTabla(&#x27;servicios&#x27;)&quot;&gt;Servicios ↑↓&lt;/th&gt;
                     &lt;th&gt;Acciones&lt;/th&gt;
                 &lt;/tr&gt;
             &lt;/thead&gt;
@@ -489,7 +489,7 @@
         &lt;div style=&quot;display: grid; grid-template-columns: 1fr 1fr; gap: 20px;&quot;&gt;
             &lt;div style=&quot;position: relative; width: 100%;&quot;&gt;
                 &lt;label&gt;&lt;b&gt;1. Buscar Cliente (Nombre o Teléfono):&lt;/b&gt;&lt;/label&gt;&lt;br&gt;
-                &lt;input type=&quot;text&quot; id=&quot;inputBuscarCliente&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onclick=&quot;buscarClienteHibrido()&quot; onkeyup=&quot;buscarClienteHibrido('inputBuscarCliente', 'listaSugerencias', 'clienteIdSeleccionado', 'txtElegido')&quot;&gt;
+                &lt;input type=&quot;text&quot; id=&quot;inputBuscarCliente&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onclick=&quot;buscarClienteHibrido()&quot; onkeyup=&quot;buscarClienteHibrido(&#x27;inputBuscarCliente&#x27;, &#x27;listaSugerencias&#x27;, &#x27;clienteIdSeleccionado&#x27;, &#x27;txtElegido&#x27;)&quot;&gt;
                 &lt;div id=&quot;listaSugerencias&quot; style=&quot;position: absolute; background: white; border: 1px solid #ccc; width: 100%; z-index: 2000; max-height: 250px; overflow-y: auto; display: none;&quot;&gt;&lt;/div&gt;
                 &lt;input type=&quot;hidden&quot; id=&quot;clienteIdSeleccionado&quot;&gt;
                 &lt;p id=&quot;txtElegido&quot; style=&quot;font-size:15px; color:green; font-weight:bold;&quot;&gt;&lt;/p&gt;
@@ -527,7 +527,7 @@
         &lt;div style=&quot;display: grid; grid-template-columns: 1fr 1fr; gap: 20px;&quot;&gt;
             &lt;div style=&quot;position: relative; width: 100%;&quot;&gt;
                 &lt;label&gt;&lt;b&gt;1. Buscar Cliente:&lt;/b&gt;&lt;/label&gt;&lt;br&gt;
-                &lt;input type=&quot;text&quot; id=&quot;inputBuscarClienteTV&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onkeyup=&quot;buscarClienteHibrido('inputBuscarClienteTV', 'listaSugerenciasTV', 'clienteIdSeleccionadoTV', 'txtElegidoTV')&quot;&gt;
+                &lt;input type=&quot;text&quot; id=&quot;inputBuscarClienteTV&quot; autocomplete=&quot;off&quot; style=&quot;width:100%&quot; placeholder=&quot;Escribe nombre o número...&quot; onkeyup=&quot;buscarClienteHibrido(&#x27;inputBuscarClienteTV&#x27;, &#x27;listaSugerenciasTV&#x27;, &#x27;clienteIdSeleccionadoTV&#x27;, &#x27;txtElegidoTV&#x27;)&quot;&gt;
                 &lt;div id=&quot;listaSugerenciasTV&quot; style=&quot;position: absolute; background: white; border: 1px solid #ccc; width: 100%; z-index: 2000; max-height: 250px; overflow-y: auto; display: none;&quot;&gt;&lt;/div&gt;
                 &lt;input type=&quot;hidden&quot; id=&quot;clienteIdSeleccionadoTV&quot;&gt;
                 &lt;p id=&quot;txtElegidoTV&quot; style=&quot;font-size:15px; color:green; font-weight:bold;&quot;&gt;&lt;/p&gt;
@@ -598,7 +598,7 @@
 &lt;div id=&quot;seccionVentas&quot; style=&quot;display:none&quot;&gt;
     &lt;h3&gt;💰 Historial Global de Ventas&lt;/h3&gt;
     &lt;div class=&quot;section&quot;&gt;
-        &lt;input type=&quot;text&quot; id=&quot;busquedaHistorial&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Buscar por nombre, servicio o correo/contraseña...&quot; onkeyup=&quot;filtrarHistorialVentas()&quot;&gt;
+        &lt;input type=&quot;text&quot; id=&quot;busquedaHistorial&quot; class=&quot;search-input&quot; placeholder=&quot;🔍 Buscar por nombre...&quot; onkeyup=&quot;filtrarHistorialVentas()&quot;&gt;
         &lt;table id=&quot;tablaVentasGlobal&quot;&gt;
             &lt;thead style=&quot;background: #1e1e2f; color: white;&quot;&gt;
                 &lt;tr&gt;
@@ -650,7 +650,7 @@
                 &lt;tbody id=&quot;tablaNetflixBody&quot;&gt;&lt;/tbody&gt;
             &lt;/table&gt;
         &lt;/div&gt;
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#e50914;&quot; onclick=&quot;abrirModalNuevaCuenta('Netflix')&quot;&gt;➕ Añadir Cuenta Netflix&lt;/button&gt;
+        &lt;button class=&quot;save-btn&quot; style=&quot;background:#e50914;&quot; onclick=&quot;abrirModalNuevaCuenta(&#x27;Netflix&#x27;)&quot;&gt;➕ Añadir Cuenta Netflix&lt;/button&gt;
     &lt;/div&gt;
     
     &lt;div class=&quot;section&quot; style=&quot;border-top: 5px solid #e50914;&quot;&gt;
@@ -667,7 +667,7 @@
                 &lt;tbody id=&quot;tablaNetflixTVBody&quot;&gt;&lt;/tbody&gt;
             &lt;/table&gt;
         &lt;/div&gt;
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#e50914;&quot; onclick=&quot;abrirModalNuevaCuenta('Netflix TV')&quot;&gt;➕ Añadir Cuenta Netflix TV&lt;/button&gt;
+        &lt;button class=&quot;save-btn&quot; style=&quot;background:#e50914;&quot; onclick=&quot;abrirModalNuevaCuenta(&#x27;Netflix TV&#x27;)&quot;&gt;➕ Añadir Cuenta Netflix TV&lt;/button&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;section&quot; style=&quot;border-top: 5px solid #006e99;&quot;&gt;
@@ -684,7 +684,7 @@
                 &lt;tbody id=&quot;tablaDisneyBody&quot;&gt;&lt;/tbody&gt;
             &lt;/table&gt;
         &lt;/div&gt;
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#006e99;&quot; onclick=&quot;abrirModalNuevaCuenta('Disney')&quot;&gt;➕ Añadir Disney&lt;/button&gt;
+        &lt;button class=&quot;save-btn&quot; style=&quot;background:#006e99;&quot; onclick=&quot;abrirModalNuevaCuenta(&#x27;Disney&#x27;)&quot;&gt;➕ Añadir Disney&lt;/button&gt;
     &lt;/div&gt;
 
     &lt;div class=&quot;section&quot; style=&quot;border-top: 5px solid #5822b4;&quot;&gt;
@@ -703,7 +703,7 @@
 &lt;/table&gt;
             &lt;/table&gt;
         &lt;/div&gt;
-        &lt;button class=&quot;save-btn&quot; style=&quot;background:#5822b4;&quot; onclick=&quot;abrirModalNuevaCuenta('HBO')&quot;&gt;➕ Añadir HBO&lt;/button&gt;
+        &lt;button class=&quot;save-btn&quot; style=&quot;background:#5822b4;&quot; onclick=&quot;abrirModalNuevaCuenta(&#x27;HBO&#x27;)&quot;&gt;➕ Añadir HBO&lt;/button&gt;
     &lt;/div&gt;
     
     &lt;!-- SECCIÓN ADMINISTRADOR: OTROS SERVICIOS --&gt;
@@ -807,7 +807,7 @@ function formatearDiasTexto(diff) {
     if (diff &lt; -1) return &quot;Venció hace &quot; + Math.abs(diff) + &quot;d&quot;;
     return diff + &quot;d&quot;;
 }
-const tooltip = document.getElementById('tooltip-flotante');
+const tooltip = document.getElementById(&#x27;tooltip-flotante&#x27;);
 
 let esperando2FA = false;
 
@@ -886,7 +886,7 @@ function programarRender() {
         clearTimeout(_timerPerfiles);
         _timerPerfiles = setTimeout(() =&gt; {
             // No refrescar perfiles si estás editando una fila en este momento
-            if (document.querySelector('[id^=&quot;edit-cor-&quot;]:not([readonly])')) return;
+            if (document.querySelector(&#x27;[id^=&quot;edit-cor-&quot;]:not([readonly])&#x27;)) return;
             cargarAdminPerfiles();
         }, 400);
     }, 30);
@@ -1000,7 +1000,7 @@ for (const docVenta of ventasSnapshot.docs) {
 
 // Renderizar el select
 const selectPerfil = document.getElementById(&quot;selectPerfilTV&quot;);
-selectPerfil.innerHTML = '&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;';
+selectPerfil.innerHTML = &#x27;&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;&#x27;;
 
 for (let i = 1; i &lt;= 5; i++) {
     const num = String(i);
@@ -1010,12 +1010,16 @@ for (let i = 1; i &lt;= 5; i++) {
     // Buscamos si existe una venta para este perfil
     const ventaEncontrada = ventasSnapshot.docs.find(d =&gt; String(d.data().perfil) === num);
 
-    if (ventaEncontrada) {
-        const nombre = nombresClientes[ventaEncontrada.data().clienteId];
-        option.text = `Perfil ${num} (${nombre})`; // ¡Aquí saldrá el nombre!
-        option.disabled = true;
-        option.style.backgroundColor = &quot;#ffcccc&quot;;
-    } else {
+    if (ventaEncontrada &amp;&amp; typeof idRenovacionTV !== &quot;undefined&quot; &amp;&amp; idRenovacionTV &amp;&amp; ventaEncontrada.id === idRenovacionTV &amp;&amp; ventaEncontrada.data().clienteId === document.getElementById(&quot;clienteIdSeleccionadoTV&quot;).value) {
+option.text = `Perfil ${num} (Renovando)`;
+option.disabled = false;
+option.style.backgroundColor = &quot;&quot;;
+} else if (ventaEncontrada) {
+const nombre = nombresClientes[ventaEncontrada.data().clienteId];
+option.text = `Perfil ${num} (${nombre})`; // ¡Aquí saldrá el nombre!
+option.disabled = true;
+option.style.backgroundColor = &quot;#ffcccc&quot;;
+} else {
         option.text = `Perfil ${num} (Libre)`;
     }
     selectPerfil.appendChild(option);
@@ -1032,7 +1036,7 @@ async function cargarCuentasBase() {
 
     try {
         const snap = await db.collection(&quot;cuentas_base&quot;).get();
-        const ventas = (typeof listaSuscripcionesGlobal !== 'undefined') ? listaSuscripcionesGlobal : [];
+        const ventas = (typeof listaSuscripcionesGlobal !== &#x27;undefined&#x27;) ? listaSuscripcionesGlobal : [];
 
         snap.forEach(doc =&gt; {
             const d = doc.data();
@@ -1045,7 +1049,7 @@ async function cargarCuentasBase() {
                 // Dibujar los 6 perfiles
                 for (let i = 1; i &lt;= 6; i++) {
                     const ocupado = ventas.some(v =&gt; v.correo === d.correo &amp;&amp; v.plataforma === d.plataforma &amp;&amp; v.perfil == i);
-                    perfilesHTML += `&lt;td&gt;&lt;div class=&quot;perfil-circulo ${ocupado ? 'ocupado' : 'libre'}&quot;&gt;${i}&lt;/div&gt;&lt;/td&gt;`;
+                    perfilesHTML += `&lt;td&gt;&lt;div class=&quot;perfil-circulo ${ocupado ? &#x27;ocupado&#x27; : &#x27;libre&#x27;}&quot;&gt;${i}&lt;/div&gt;&lt;/td&gt;`;
                 }
 
                 // AQUÍ SE GENERA EL BOTÓN - REVISA QUE ESTÉ IGUAL
@@ -1056,9 +1060,9 @@ async function cargarCuentasBase() {
                     ${perfilesHTML}
                     &lt;td&gt;
                         &lt;button class=&quot;edit-btn&quot;
-onclick=&quot;abrirModalEditarCuenta('${id}', '${d.correo}', '${d.clave}')&quot;&gt;✏️&lt;/button&gt;
+onclick=&quot;abrirModalEditarCuenta(&#x27;${id}&#x27;, &#x27;${d.correo}&#x27;, &#x27;${d.clave}&#x27;)&quot;&gt;✏️&lt;/button&gt;
 
-                        &lt;button onclick=&quot;eliminarCuentaBase('${id}')&quot; style=&quot;background:none; border:none; cursor:pointer; font-size:18px;&quot; title=&quot;Eliminar&quot;&gt;🗑️&lt;/button&gt;
+                        &lt;button onclick=&quot;eliminarCuentaBase(&#x27;${id}&#x27;)&quot; style=&quot;background:none; border:none; cursor:pointer; font-size:18px;&quot; title=&quot;Eliminar&quot;&gt;🗑️&lt;/button&gt;
                     &lt;/td&gt;
                 `;
                 document.getElementById(&quot;tablaOtrosBody&quot;).appendChild(tr);
@@ -1144,7 +1148,7 @@ if (d.plataforma === &quot;Netflix TV&quot;) {
 
     let listaOrdenada = Object.values(gruposVencimiento).map(g =&gt; {
 
-    const partesFin = g.fin.split('-');
+    const partesFin = g.fin.split(&#x27;-&#x27;);
     const fechaVenceObj = new Date(partesFin[0], partesFin[1] - 1, partesFin[2]);
     fechaVenceObj.setHours(0,0,0,0);
 
@@ -1154,11 +1158,13 @@ if (d.plataforma === &quot;Netflix TV&quot;) {
     let diff = Math.round((fechaVenceObj - hoyLocal) / 86400000);
 
     // --- MES COMERCIAL 30 DIAS ---
-    const partesInicio = g.inicio.split('-');
+    const partesInicio = g.inicio.split(&#x27;-&#x27;);
     const fechaInicioObj = new Date(partesInicio[0], partesInicio[1] - 1, partesInicio[2]);
     fechaInicioObj.setHours(0,0,0,0);
 
-    if (fechaInicioObj.getTime() === hoyLocal.getTime() &amp;&amp; diff &gt; 0 &amp;&amp; diff &lt; 31) {
+    if (fechaInicioObj.getTime() === hoyLocal.getTime() &amp;&amp; diff &gt;= 29 &amp;&amp; diff &lt;= 31) {
+        // Solo el mes comercial real (29-31 dias) se redondea a 30.
+        // Un fin a 1-5 dias, aunque inicie hoy, conserva su diff real y sale en Proximas.
         diff = 30;
     }
 
@@ -1193,7 +1199,7 @@ listaOrdenada.sort((a,b) =&gt; {
 listaOrdenada.forEach(g =&gt; {
 
     // --- LÓGICA DE DÍAS (MES COMERCIAL 30D) ---
-    const partesFin = g.fin.split('-');
+    const partesFin = g.fin.split(&#x27;-&#x27;);
     const fechaVenceObj = new Date(partesFin[0], partesFin[1] - 1, partesFin[2]);
     fechaVenceObj.setHours(0, 0, 0, 0);
 
@@ -1215,8 +1221,8 @@ listaOrdenada.forEach(g =&gt; {
     const ahoraMomento = new Date();
     const diasSemana = [&quot;domingo&quot;, &quot;lunes&quot;, &quot;martes&quot;, &quot;miercoles&quot;, &quot;jueves&quot;, &quot;viernes&quot;, &quot;sabado&quot;];
     const diaNombreVence = diasSemana[fechaVenceObj.getDay()];
-    const fechaVenceFormato = g.fin.split('-').reverse().join('-');
-    const horaActual = ahoraMomento.getHours().toString().padStart(2, '0') + &quot;:&quot; + ahoraMomento.getMinutes().toString().padStart(2, '0');
+    const fechaVenceFormato = g.fin.split(&#x27;-&#x27;).reverse().join(&#x27;-&#x27;);
+    const horaActual = ahoraMomento.getHours().toString().padStart(2, &#x27;0&#x27;) + &quot;:&quot; + ahoraMomento.getMinutes().toString().padStart(2, &#x27;0&#x27;);
 
     let btnWhatsapp = &quot;&quot;;
     let btnRenovar = &quot;&quot;;
@@ -1244,13 +1250,13 @@ listaOrdenada.forEach(g =&gt; {
             &quot;Mensaje enviado el dia *&quot; + diasSemana[ahoraMomento.getDay()] + &quot;*, *&quot; + ahoraMomento.toLocaleDateString() + &quot;* a las *&quot; + horaActual + &quot;*.\n&quot; +
             &quot;*Somos MultiEntretenimiento BC ʕ•́ᴥ•̀ʔっ, El mejor entretenimiento para todos*&quot;;
 
-        let soloNumeros = telC.replace(/\D/g, '');
+        let soloNumeros = telC.replace(/\D/g, &#x27;&#x27;);
 
         if (soloNumeros) {
             btnWhatsapp = `&lt;a href=&quot;https://wa.me/${soloNumeros}?text=${encodeURIComponent(cuerpoTxt)}&quot; target=&quot;_blank&quot; class=&quot;btn-ws-table&quot;&gt;🟢&lt;/a&gt;`;
         }
 
-        btnRenovar = `&lt;button class=&quot;renew-btn&quot; onclick='cargarLoteParaRenovar(${JSON.stringify(g.clienteId)}, ${JSON.stringify(g.dataRenew)}, &quot;${rowId}&quot;, ${JSON.stringify(g.ids)})'&gt;✔&lt;/button&gt;`;
+        btnRenovar = `&lt;button class=&quot;renew-btn&quot; onclick=&#x27;cargarLoteParaRenovar(${JSON.stringify(g.clienteId)}, ${JSON.stringify(g.dataRenew)}, &quot;${rowId}&quot;, ${JSON.stringify(g.ids)})&#x27;&gt;✔&lt;/button&gt;`;
     }
 
     let row = `&lt;tr id=&quot;${rowId}&quot; class=&quot;${clasePersistente} ${claseAzul}&quot;&gt;
@@ -1278,16 +1284,16 @@ listaOrdenada.forEach(g =&gt; {
         let fechaFull = &quot;---&quot;;
         if(d.fechaRegistro) {
             const dateObj = new Date(d.fechaRegistro);
-            fechaFull = `${String(dateObj.getDate()).padStart(2, '0')}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${dateObj.getFullYear()} &lt;br&gt; &lt;small&gt;${String(dateObj.getHours()).padStart(2, '0')}:${String(dateObj.getMinutes()).padStart(2, '0')}&lt;/small&gt;`;
+            fechaFull = `${String(dateObj.getDate()).padStart(2, &#x27;0&#x27;)}/${String(dateObj.getMonth() + 1).padStart(2, &#x27;0&#x27;)}/${dateObj.getFullYear()} &lt;br&gt; &lt;small&gt;${String(dateObj.getHours()).padStart(2, &#x27;0&#x27;)}:${String(dateObj.getMinutes()).padStart(2, &#x27;0&#x27;)}&lt;/small&gt;`;
         }
-        var iconoNota = '';
-var notaTexto = d.nota_cuenta || d.nota_cambio || '';
+        var iconoNota = &#x27;&#x27;;
+var notaTexto = d.nota_cuenta || d.nota_cambio || &#x27;&#x27;;
 
-if (notaTexto !== '') {
-    var estiloNota = 'cursor:help; background:#007bff; color:white; border-radius:50%; padding:2px 7px; font-size:11px; margin-right:5px; font-weight:bold; display:inline-block;';
-    iconoNota = '&lt;span title=\'' + notaTexto + '\' style=\'' + estiloNota + '\'&gt;?&lt;/span&gt;';
+if (notaTexto !== &#x27;&#x27;) {
+    var estiloNota = &#x27;cursor:help; background:#007bff; color:white; border-radius:50%; padding:2px 7px; font-size:11px; margin-right:5px; font-weight:bold; display:inline-block;&#x27;;
+    iconoNota = &#x27;&lt;span title=\&#x27;&#x27; + notaTexto + &#x27;\&#x27; style=\&#x27;&#x27; + estiloNota + &#x27;\&#x27;&gt;?&lt;/span&gt;&#x27;;
 }
-        var iconoNota = '';
+        var iconoNota = &#x27;&#x27;;
 if (d.nota_cambio != null) {
     if (d.nota_cambio != notaFinal) {
         notaFinal = d.nota_cambio;
@@ -1334,7 +1340,7 @@ if (notaIndependiente != String()) {
 
 function verNota(texto) {
     // Esto mostrará la nota en el centro de la pantalla del celular
-    alert('NOTA:\n' + texto);
+    alert(&#x27;NOTA:\n&#x27; + texto);
 }
         
         
@@ -1342,15 +1348,15 @@ function verNota(texto) {
     &lt;td style=&quot;font-size:15px;&quot;&gt;${iconoNota}${fechaFull}&lt;/td&gt;
     &lt;td&gt;&lt;b&gt;${nomC}&lt;/b&gt;&lt;/td&gt;
     &lt;td&gt;${d.plataformasCojuntas.join(&quot;&lt;br&gt;&quot;)}&lt;/td&gt;
-    &lt;td style=&quot;color:#28a745; font-weight:bold;&quot;&gt;$${d.valorTotal.toFixed(2)}&lt;br&gt;&lt;small style=&quot;color:gray;&quot;&gt;(${d.metodoPago || 'Transferencia'})&lt;/small&gt;&lt;/td&gt;
-    &lt;td style=&quot;text-align:left; font-size:15px;&quot;&gt;${d.detallesFull.join(&quot;&lt;hr style='margin:5px 0; border:0; border-top:1px dashed #ccc'&gt;&quot;)}&lt;/td&gt;
+    &lt;td style=&quot;color:#28a745; font-weight:bold;&quot;&gt;$${d.valorTotal.toFixed(2)}&lt;br&gt;&lt;small style=&quot;color:gray;&quot;&gt;(${d.metodoPago || &#x27;Transferencia&#x27;})&lt;/small&gt;&lt;/td&gt;
+    &lt;td style=&quot;text-align:left; font-size:15px;&quot;&gt;${d.detallesFull.join(&quot;&lt;hr style=&#x27;margin:5px 0; border:0; border-top:1px dashed #ccc&#x27;&gt;&quot;)}&lt;/td&gt;
     &lt;td&gt;${d.fin}&lt;/td&gt;
     &lt;td&gt;&lt;b&gt;${formatearDiasTexto(diff)}&lt;/b&gt;&lt;/td&gt;
     &lt;td&gt;
         &lt;div style=&quot;display: flex; gap: 4px; flex-wrap: wrap; justify-content: center;&quot;&gt;
-            &lt;button onclick=&quot;enviarWhatsAppLote('${d.idsParaEliminar.join(',')}')&quot; title=&quot;Enviar WhatsApp&quot; style=&quot;background:#25d366; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;📱&lt;/button&gt;
-            &lt;button onclick=&quot;gestionarEdicionLote('${d.idsParaEliminar.join(',')}', '${d.plataforma}')&quot; title=&quot;Editar Manual&quot; style=&quot;background:#ffc107; color:black; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;✏️&lt;/button&gt;
-            &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarLoteHistorial('${d.idsParaEliminar.join(',')}')&quot; style=&quot;padding:6px; font-size:16px;&quot;&gt;🗑️&lt;/button&gt;
+            &lt;button onclick=&quot;enviarWhatsAppLote(&#x27;${d.idsParaEliminar.join(&#x27;,&#x27;)}&#x27;)&quot; title=&quot;Enviar WhatsApp&quot; style=&quot;background:#25d366; color:white; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;📱&lt;/button&gt;
+            &lt;button onclick=&quot;gestionarEdicionLote(&#x27;${d.idsParaEliminar.join(&#x27;,&#x27;)}&#x27;, &#x27;${d.plataforma}&#x27;)&quot; title=&quot;Editar Manual&quot; style=&quot;background:#ffc107; color:black; border:none; padding:6px; border-radius:4px; cursor:pointer; font-size:16px;&quot;&gt;✏️&lt;/button&gt;
+            &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarLoteHistorial(&#x27;${d.idsParaEliminar.join(&#x27;,&#x27;)}&#x27;)&quot; style=&quot;padding:6px; font-size:16px;&quot;&gt;🗑️&lt;/button&gt;
         &lt;/div&gt;
     &lt;/td&gt;
 &lt;/tr&gt;`);
@@ -1370,135 +1376,135 @@ function gestionarEdicionLote(ids, plataforma) {
 }
 
 async function abrirNuevoEditorNetflixTV(ids) {
-  const primerId = String(ids).split(',')[0].trim();
+  const primerId = String(ids).split(&#x27;,&#x27;)[0].trim();
 
   /* 1) Leer la venta actual del cliente */
-  let correoActual='', nombreCliente='Cliente', fechaVence='';
-  let perfilActual='', pinActual='', claveActual='';
-  let estadoActual = 'tv-activo';
-  let codigoTVActual = '';
-  let modeloTVActual = '';
+  let correoActual=&#x27;&#x27;, nombreCliente=&#x27;Cliente&#x27;, fechaVence=&#x27;&#x27;;
+  let perfilActual=&#x27;&#x27;, pinActual=&#x27;&#x27;, claveActual=&#x27;&#x27;;
+  let estadoActual = &#x27;tv-activo&#x27;;
+  let codigoTVActual = &#x27;&#x27;;
+  let modeloTVActual = &#x27;&#x27;;
   try {
-    const s = await db.collection('cuentas').doc(primerId).get();
+    const s = await db.collection(&#x27;cuentas&#x27;).doc(primerId).get();
     if (s.exists) {
       const d = s.data();
-      correoActual  = (d.correo||'').trim();
-      claveActual   = d.clave  || '';
-      perfilActual  = d.perfil || '';
-      pinActual     = d.pin    || '';
-      fechaVence    = d.fin    || '';
-      estadoActual  = d.estado || 'tv-activo';
+      correoActual  = (d.correo||&#x27;&#x27;).trim();
+      claveActual   = d.clave  || &#x27;&#x27;;
+      perfilActual  = d.perfil || &#x27;&#x27;;
+      pinActual     = d.pin    || &#x27;&#x27;;
+      fechaVence    = d.fin    || &#x27;&#x27;;
+      estadoActual  = d.estado || &#x27;tv-activo&#x27;;
       nombreCliente = d.perfil_etiqueta
-        ? (d.perfil_etiqueta.split('. ')[1] || d.cliente || 'Cliente')
-        : (d.cliente || 'Cliente');
-        codigoTVActual = d.codigo_tv || '';
-        modeloTVActual = d.modeloTV || '';
+        ? (d.perfil_etiqueta.split(&#x27;. &#x27;)[1] || d.cliente || &#x27;Cliente&#x27;)
+        : (d.cliente || &#x27;Cliente&#x27;);
+        codigoTVActual = d.codigo_tv || &#x27;&#x27;;
+        modeloTVActual = d.modeloTV || &#x27;&#x27;;
     }
-  } catch(e){ console.warn('No se pudo leer venta', e); }
+  } catch(e){ console.warn(&#x27;No se pudo leer venta&#x27;, e); }
 
   const datosCliente = { correo: correoActual, clave: claveActual, perfil: perfilActual, pin: pinActual };
 
   /* 2) Construir modal */
-  const div = document.createElement('div');
-  div.id = 'modalNetflixTV';
-div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px 0;';
+  const div = document.createElement(&#x27;div&#x27;);
+  div.id = &#x27;modalNetflixTV&#x27;;
+div.style.cssText = &#x27;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;display:flex;justify-content:center;align-items:flex-start;padding:20px 0;&#x27;;
 
 
   const estados = [
-  { v:'desconectado',   t:'❌ Desconectado' },
-    { v:'procesando',     t:'⏳ Procesando' },
-    { v:'tv-activo',      t:'✅ TV Activo' },
-    { v:'error-netflix',  t:'⚠️ Error Netflix' },
-    { v:'error-conexion', t:'📡 Error Conexión' }
+  { v:&#x27;desconectado&#x27;,   t:&#x27;❌ Desconectado&#x27; },
+    { v:&#x27;procesando&#x27;,     t:&#x27;⏳ Procesando&#x27; },
+    { v:&#x27;tv-activo&#x27;,      t:&#x27;✅ TV Activo&#x27; },
+    { v:&#x27;error-netflix&#x27;,  t:&#x27;⚠️ Error Netflix&#x27; },
+    { v:&#x27;error-conexion&#x27;, t:&#x27;📡 Error Conexión&#x27; }
   ];
-  let optsEstado = '';
+  let optsEstado = &#x27;&#x27;;
   estados.forEach(function(e){
-    optsEstado += '&lt;option value=&quot;'+e.v+'&quot;'+(e.v===estadoActual?' selected':'')+'&gt;'+e.t+'&lt;/option&gt;';
+    optsEstado += &#x27;&lt;option value=&quot;&#x27;+e.v+&#x27;&quot;&#x27;+(e.v===estadoActual?&#x27; selected&#x27;:&#x27;&#x27;)+&#x27;&gt;&#x27;+e.t+&#x27;&lt;/option&gt;&#x27;;
   });
 
   div.innerHTML =
-'&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;margin:auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;'
+&#x27;&lt;div style=&quot;background:white;padding:25px;border-radius:10px;width:90%;max-width:600px;margin:auto;box-shadow:0 4px 15px rgba(0,0,0,0.3);&quot;&gt;&#x27;
 
-+   '&lt;h3 style=&quot;margin-top:0;&quot;&gt;🛠️ GARANTÍA / EDICIÓN: '+nombreCliente+'&lt;/h3&gt;'
-  +   '&lt;div style=&quot;background:#fff3cd;padding:10px;border-radius:5px;margin-bottom:15px;&quot;&gt;'
-  +     '&lt;strong&gt;ID:&lt;/strong&gt; '+primerId+' | &lt;strong&gt;Servicio:&lt;/strong&gt; Netflix TV'
-  +   '&lt;/div&gt;'
-  +   '&lt;label&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;'
-  +   '&lt;div style=&quot;margin-bottom:10px;&quot;&gt;'
-  +     '&lt;select id=&quot;selectCuentaTV&quot; style=&quot;width:100%;padding:8px;&quot;&gt;&lt;option&gt;Cargando cuentas...&lt;/option&gt;&lt;/select&gt;'
-  +   '&lt;/div&gt;'
-  +   '&lt;div style=&quot;display:flex;gap:10px;margin-bottom:15px;&quot;&gt;'
-  +     '&lt;input type=&quot;text&quot; id=&quot;claveTV&quot;  value=&quot;'+claveActual +'&quot; placeholder=&quot;Clave&quot; style=&quot;flex:1;padding:8px;&quot; readonly&gt;'
-  +     '&lt;input type=&quot;text&quot; id=&quot;perfilTV&quot; value=&quot;'+perfilActual+'&quot; placeholder=&quot;P&quot;     style=&quot;width:50px;padding:8px;&quot; readonly&gt;'
-  +     '&lt;input type=&quot;text&quot; id=&quot;pinTV&quot;    value=&quot;'+pinActual   +'&quot; placeholder=&quot;PIN&quot;   style=&quot;width:80px;padding:8px;&quot; readonly&gt;'
-  +   '&lt;/div&gt;'
-  +   '&lt;div style=&quot;background:#d4edda;padding:15px;border-radius:5px;text-align:center;margin-bottom:15px;&quot;&gt;'
-  +     '&lt;label&gt;🎁 Días Extra (GENERAL):&lt;/label&gt; '
-  +     '&lt;input type=&quot;number&quot; id=&quot;inputDiasExtra&quot; value=&quot;0&quot; style=&quot;width:60px;text-align:center;&quot;&gt;'
-  +     '&lt;p id=&quot;displayNuevaFecha&quot; style=&quot;margin:5px 0 0 0;font-weight:bold;&quot;&gt;Nueva fecha: '+fechaVence+'&lt;/p&gt;'
-  +   '&lt;/div&gt;'
-  +   '&lt;div style=&quot;margin-bottom:15px;&quot;&gt;'
-  +     '&lt;label&gt;📺 Estado TV:&lt;/label&gt;'
-  +     '&lt;select id=&quot;selectEstadoTV&quot; style=&quot;width:100%;padding:8px;margin-top:5px;&quot;&gt;'
++   &#x27;&lt;h3 style=&quot;margin-top:0;&quot;&gt;🛠️ GARANTÍA / EDICIÓN: &#x27;+nombreCliente+&#x27;&lt;/h3&gt;&#x27;
+  +   &#x27;&lt;div style=&quot;background:#fff3cd;padding:10px;border-radius:5px;margin-bottom:15px;&quot;&gt;&#x27;
+  +     &#x27;&lt;strong&gt;ID:&lt;/strong&gt; &#x27;+primerId+&#x27; | &lt;strong&gt;Servicio:&lt;/strong&gt; Netflix TV&#x27;
+  +   &#x27;&lt;/div&gt;&#x27;
+  +   &#x27;&lt;label&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;&#x27;
+  +   &#x27;&lt;div style=&quot;margin-bottom:10px;&quot;&gt;&#x27;
+  +     &#x27;&lt;select id=&quot;selectCuentaTV&quot; style=&quot;width:100%;padding:8px;&quot;&gt;&lt;option&gt;Cargando cuentas...&lt;/option&gt;&lt;/select&gt;&#x27;
+  +   &#x27;&lt;/div&gt;&#x27;
+  +   &#x27;&lt;div style=&quot;display:flex;gap:10px;margin-bottom:15px;&quot;&gt;&#x27;
+  +     &#x27;&lt;input type=&quot;text&quot; id=&quot;claveTV&quot;  value=&quot;&#x27;+claveActual +&#x27;&quot; placeholder=&quot;Clave&quot; style=&quot;flex:1;padding:8px;&quot; readonly&gt;&#x27;
+  +     &#x27;&lt;input type=&quot;text&quot; id=&quot;perfilTV&quot; value=&quot;&#x27;+perfilActual+&#x27;&quot; placeholder=&quot;P&quot;     style=&quot;width:50px;padding:8px;&quot; readonly&gt;&#x27;
+  +     &#x27;&lt;input type=&quot;text&quot; id=&quot;pinTV&quot;    value=&quot;&#x27;+pinActual   +&#x27;&quot; placeholder=&quot;PIN&quot;   style=&quot;width:80px;padding:8px;&quot; readonly&gt;&#x27;
+  +   &#x27;&lt;/div&gt;&#x27;
+  +   &#x27;&lt;div style=&quot;background:#d4edda;padding:15px;border-radius:5px;text-align:center;margin-bottom:15px;&quot;&gt;&#x27;
+  +     &#x27;&lt;label&gt;🎁 Días Extra (GENERAL):&lt;/label&gt; &#x27;
+  +     &#x27;&lt;input type=&quot;number&quot; id=&quot;inputDiasExtra&quot; value=&quot;0&quot; style=&quot;width:60px;text-align:center;&quot;&gt;&#x27;
+  +     &#x27;&lt;p id=&quot;displayNuevaFecha&quot; style=&quot;margin:5px 0 0 0;font-weight:bold;&quot;&gt;Nueva fecha: &#x27;+fechaVence+&#x27;&lt;/p&gt;&#x27;
+  +   &#x27;&lt;/div&gt;&#x27;
+  +   &#x27;&lt;div style=&quot;margin-bottom:15px;&quot;&gt;&#x27;
+  +     &#x27;&lt;label&gt;📺 Estado TV:&lt;/label&gt;&#x27;
+  +     &#x27;&lt;select id=&quot;selectEstadoTV&quot; style=&quot;width:100%;padding:8px;margin-top:5px;&quot;&gt;&#x27;
   +       optsEstado
-  +     '&lt;/select&gt;'
-  +     '&lt;div style=&quot;display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;&quot; id=&quot;btnsEstadoTV&quot;&gt;&lt;/div&gt;'
-  +   '&lt;/div&gt;'
+  +     &#x27;&lt;/select&gt;&#x27;
+  +     &#x27;&lt;div style=&quot;display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;&quot; id=&quot;btnsEstadoTV&quot;&gt;&lt;/div&gt;&#x27;
+  +   &#x27;&lt;/div&gt;&#x27;
   
   
   
   
-+    '&lt;div style=&quot;margin-bottom:10px;&quot;&gt;'
-+      '&lt;label&gt;📟 Código TV Netflix:&lt;/label&gt;'
-+      '&lt;div style=&quot;width:100%; padding:8px; margin-top:5px; background:#f8f9fa; border:1px solid #ccc; border-radius:4px; color:#555;&quot;&gt;'
++    &#x27;&lt;div style=&quot;margin-bottom:10px;&quot;&gt;&#x27;
++      &#x27;&lt;label&gt;📟 Código TV Netflix:&lt;/label&gt;&#x27;
++      &#x27;&lt;div style=&quot;width:100%; padding:8px; margin-top:5px; background:#f8f9fa; border:1px solid #ccc; border-radius:4px; color:#555;&quot;&gt;&#x27;
 +        (codigoTVActual &amp;&amp; codigoTVActual.trim() !== &quot;&quot; ? codigoTVActual : &quot;Sin código&quot;)
-+      '&lt;/div&gt;'
-+    '&lt;/div&gt;'
-+    '&lt;div style=&quot;margin-bottom:15px;&quot;&gt;'
-+      '&lt;label&gt;📺 Modelo TV:&lt;/label&gt;'
-+      '&lt;div style=&quot;width:100%; padding:8px; margin-top:5px; background:#f8f9fa; border:1px solid #ccc; border-radius:4px; color:#555;&quot;&gt;'
++      &#x27;&lt;/div&gt;&#x27;
++    &#x27;&lt;/div&gt;&#x27;
++    &#x27;&lt;div style=&quot;margin-bottom:15px;&quot;&gt;&#x27;
++      &#x27;&lt;label&gt;📺 Modelo TV:&lt;/label&gt;&#x27;
++      &#x27;&lt;div style=&quot;width:100%; padding:8px; margin-top:5px; background:#f8f9fa; border:1px solid #ccc; border-radius:4px; color:#555;&quot;&gt;&#x27;
 +        (modeloTVActual &amp;&amp; modeloTVActual.trim() !== &quot;&quot; ? modeloTVActual : &quot;Sin TV activa&quot;)
-+      '&lt;/div&gt;'
-+    '&lt;/div&gt;'
++      &#x27;&lt;/div&gt;&#x27;
++    &#x27;&lt;/div&gt;&#x27;
 
 
 
 
 
-  +   '&lt;textarea id=&quot;notaCambioTV&quot; placeholder=&quot;Nota de cambio...&quot; style=&quot;width:100%;height:60px;margin-bottom:15px;&quot;&gt;&lt;/textarea&gt;'
-  +   '&lt;button id=&quot;btnGuardarTV&quot;  style=&quot;width:100%;padding:12px;background:#007bff;color:white;border:none;border-radius:5px;font-size:16px;&quot;&gt;Finalizar y Guardar Venta&lt;/button&gt;'
-  +   '&lt;button id=&quot;btnCancelarTV&quot; style=&quot;width:100%;padding:10px;background:#6c757d;color:white;border:none;border-radius:5px;margin-top:5px;&quot;&gt;Cancelar&lt;/button&gt;'
-  + '&lt;/div&gt;';
+  +   &#x27;&lt;textarea id=&quot;notaCambioTV&quot; placeholder=&quot;Nota de cambio...&quot; style=&quot;width:100%;height:60px;margin-bottom:15px;&quot;&gt;&lt;/textarea&gt;&#x27;
+  +   &#x27;&lt;button id=&quot;btnGuardarTV&quot;  style=&quot;width:100%;padding:12px;background:#007bff;color:white;border:none;border-radius:5px;font-size:16px;&quot;&gt;Finalizar y Guardar Venta&lt;/button&gt;&#x27;
+  +   &#x27;&lt;button id=&quot;btnCancelarTV&quot; style=&quot;width:100%;padding:10px;background:#6c757d;color:white;border:none;border-radius:5px;margin-top:5px;&quot;&gt;Cancelar&lt;/button&gt;&#x27;
+  + &#x27;&lt;/div&gt;&#x27;;
 
   document.body.appendChild(div);
 
-  const $sel    = div.querySelector('#selectCuentaTV');
-  const $clave  = div.querySelector('#claveTV');
-  const $perf   = div.querySelector('#perfilTV');
-  const $pin    = div.querySelector('#pinTV');
-  const $dias   = div.querySelector('#inputDiasExtra');
-  const $fecha  = div.querySelector('#displayNuevaFecha');
-  const $estado = div.querySelector('#selectEstadoTV');
-  const $nota   = div.querySelector('#notaCambioTV');
-  const $btnsEs = div.querySelector('#btnsEstadoTV');
+  const $sel    = div.querySelector(&#x27;#selectCuentaTV&#x27;);
+  const $clave  = div.querySelector(&#x27;#claveTV&#x27;);
+  const $perf   = div.querySelector(&#x27;#perfilTV&#x27;);
+  const $pin    = div.querySelector(&#x27;#pinTV&#x27;);
+  const $dias   = div.querySelector(&#x27;#inputDiasExtra&#x27;);
+  const $fecha  = div.querySelector(&#x27;#displayNuevaFecha&#x27;);
+  const $estado = div.querySelector(&#x27;#selectEstadoTV&#x27;);
+  const $nota   = div.querySelector(&#x27;#notaCambioTV&#x27;);
+  const $btnsEs = div.querySelector(&#x27;#btnsEstadoTV&#x27;);
 
   /* Botones rápidos para estado */
   const coloresEstado = {
-    'procesando':'#ffc107',
-    'tv-activo':'#28a745',
-    'error-netflix':'#dc3545',
-    'error-conexion':'#fd7e14',
-    'desconectado':'#6c757d'
+    &#x27;procesando&#x27;:&#x27;#ffc107&#x27;,
+    &#x27;tv-activo&#x27;:&#x27;#28a745&#x27;,
+    &#x27;error-netflix&#x27;:&#x27;#dc3545&#x27;,
+    &#x27;error-conexion&#x27;:&#x27;#fd7e14&#x27;,
+    &#x27;desconectado&#x27;:&#x27;#6c757d&#x27;
   };
   estados.forEach(function(e){
-    const b = document.createElement('button');
-    b.type = 'button';
+    const b = document.createElement(&#x27;button&#x27;);
+    b.type = &#x27;button&#x27;;
     b.innerText = e.t;
     b.dataset.val = e.v;
-    b.style.cssText = 'flex:1;min-width:110px;padding:6px;border:none;border-radius:4px;color:white;cursor:pointer;background:'+coloresEstado[e.v]+';opacity:'+(e.v===estadoActual?'1':'0.55')+';';
-    b.addEventListener('click', function(){
+    b.style.cssText = &#x27;flex:1;min-width:110px;padding:6px;border:none;border-radius:4px;color:white;cursor:pointer;background:&#x27;+coloresEstado[e.v]+&#x27;;opacity:&#x27;+(e.v===estadoActual?&#x27;1&#x27;:&#x27;0.55&#x27;)+&#x27;;&#x27;;
+    b.addEventListener(&#x27;click&#x27;, function(){
       $estado.value = e.v;
-      $btnsEs.querySelectorAll('button').forEach(function(x){ x.style.opacity = (x.dataset.val===e.v?'1':'0.55'); });
+      $btnsEs.querySelectorAll(&#x27;button&#x27;).forEach(function(x){ x.style.opacity = (x.dataset.val===e.v?&#x27;1&#x27;:&#x27;0.55&#x27;); });
     });
     $btnsEs.appendChild(b);
   });
@@ -1506,13 +1512,13 @@ div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;backgrou
   /* 3) Cargar cuentas base y preseleccionar la del cliente */
   let listaCuentas = [];
   try {
-    const snap = await db.collection('cuentas_base').where('plataforma','==','Netflix TV').get();
-    let html = '&lt;option value=&quot;&quot;&gt;Selecciona una cuenta...&lt;/option&gt;';
+    const snap = await db.collection(&#x27;cuentas_base&#x27;).where(&#x27;plataforma&#x27;,&#x27;==&#x27;,&#x27;Netflix TV&#x27;).get();
+    let html = &#x27;&lt;option value=&quot;&quot;&gt;Selecciona una cuenta...&lt;/option&gt;&#x27;;
     snap.forEach(function(doc){
       const d = doc.data();
       listaCuentas.push(d);
-      const sel = (d.correo === correoActual) ? ' selected' : '';
-      html += '&lt;option value=&quot;'+d.correo+'&quot;'+sel+'&gt;'+d.correo+'&lt;/option&gt;';
+      const sel = (d.correo === correoActual) ? &#x27; selected&#x27; : &#x27;&#x27;;
+      html += &#x27;&lt;option value=&quot;&#x27;+d.correo+&#x27;&quot;&#x27;+sel+&#x27;&gt;&#x27;+d.correo+&#x27;&lt;/option&gt;&#x27;;
     });
     $sel.innerHTML = html;
   } catch(e){ console.warn(e); }
@@ -1521,52 +1527,53 @@ div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;backgrou
     const correo = $sel.value;
     const info = listaCuentas.find(function(c){ return c.correo === correo; });
     if (!info) return;
-    $clave.value = info.clave || '';
+    $clave.value = info.clave || &#x27;&#x27;;
     if (correo === datosCliente.correo) {
-      $perf.value = datosCliente.perfil || '';
-      $pin.value  = datosCliente.pin    || '';
+      $perf.value = datosCliente.perfil || &#x27;&#x27;;
+      $pin.value  = datosCliente.pin    || &#x27;&#x27;;
     } else {
-      $perf.value = '';
-      $pin.value  = info.pin || '';
+      $perf.value = &#x27;&#x27;;
+      $pin.value  = info.pin || &#x27;&#x27;;
     }
   }
   if (correoActual) autoCompletar();
-  $sel.addEventListener('change', autoCompletar);
+  $sel.addEventListener(&#x27;change&#x27;, autoCompletar);
 
-  $dias.addEventListener('input', function(){
-    if (!fechaVence) { $fecha.innerText = 'Nueva fecha: '; return; }
+  $dias.addEventListener(&#x27;input&#x27;, function(){
+    if (!fechaVence) { $fecha.innerText = &#x27;Nueva fecha: &#x27;; return; }
     const extra = parseInt($dias.value) || 0;
-    const f = new Date(fechaVence + 'T00:00:00');
+    const f = new Date(fechaVence + &#x27;T00:00:00&#x27;);
     f.setDate(f.getDate() + extra);
-    $fecha.innerText = 'Nueva fecha: ' + f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0');
+    $fecha.innerText = &#x27;Nueva fecha: &#x27; + f.getFullYear()+&#x27;-&#x27;+String(f.getMonth()+1).padStart(2,&#x27;0&#x27;)+&#x27;-&#x27;+String(f.getDate()).padStart(2,&#x27;0&#x27;);
   });
 
-  div.querySelector('#btnCancelarTV').addEventListener('click', function(){ div.remove(); });
+  div.querySelector(&#x27;#btnCancelarTV&#x27;).addEventListener(&#x27;click&#x27;, function(){ div.remove(); });
 
-  div.querySelector('#btnGuardarTV').addEventListener('click', async function(){
+  div.querySelector(&#x27;#btnGuardarTV&#x27;).addEventListener(&#x27;click&#x27;, async function(){
     try {
-    const btnActivo = div.querySelector('.btn-estado.active');
+    const btnActivo = div.querySelector(&#x27;.btn-estado.active&#x27;);
     
       const nuevoCorreo = $sel.value;
-      if (!nuevoCorreo) return alert('⚠️ Selecciona una cuenta');
+      if (!nuevoCorreo) return alert(&#x27;⚠️ Selecciona una cuenta&#x27;);
 
       const extra = parseInt($dias.value) || 0;
       let fechaFinal = fechaVence;
       if (fechaVence) {
-        const f = new Date(fechaVence + 'T00:00:00');
+        const f = new Date(fechaVence + &#x27;T00:00:00&#x27;);
         f.setDate(f.getDate() + extra);
-        fechaFinal = f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0');
+        fechaFinal = f.getFullYear()+&#x27;-&#x27;+String(f.getMonth()+1).padStart(2,&#x27;0&#x27;)+&#x27;-&#x27;+String(f.getDate()).padStart(2,&#x27;0&#x27;);
       }
 
-      const prevSnap = await db.collection('cuentas').doc(primerId).get();
+      const prevSnap = await db.collection(&#x27;cuentas&#x27;).doc(primerId).get();
       const prev = prevSnap.exists ? prevSnap.data() : {};
       const nombreCli = prev.perfil_etiqueta
-        ? (prev.perfil_etiqueta.split('. ')[1] || prev.cliente || '')
-        : (prev.cliente || '');
-      const nuevaEtiqueta = $perf.value ? ($perf.value + '. ' + nombreCli) : (prev.perfil_etiqueta || '');
-        const nuevoEstado = btnActivo ? btnActivo.getAttribute('data-estado') : $estado.value;
+        ? (prev.perfil_etiqueta.split(&#x27;. &#x27;)[1] || prev.cliente || &#x27;&#x27;)
+        : (prev.cliente || &#x27;&#x27;);
+      const nuevaEtiqueta = $perf.value ? ($perf.value + &#x27;. &#x27; + nombreCli) : (prev.perfil_etiqueta || &#x27;&#x27;);
+        const nuevoEstado = btnActivo ? btnActivo.getAttribute(&#x27;data-estado&#x27;) : $estado.value;
         
         const datosUpdate = {
+        fechaRegistro: Date.now(),
           correo: nuevoCorreo,
           clave:  $clave.value,
           perfil: $perf.value,
@@ -1577,24 +1584,25 @@ div.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;backgrou
           estado: nuevoEstado
         };
         
-        if (nuevoEstado === 'desconectado') {
-          datosUpdate.codigo_tv = '';
-          datosUpdate.modeloTV = '';
+        if (nuevoEstado === &#x27;desconectado&#x27;) {
+          datosUpdate.codigo_tv = &#x27;&#x27;;
+          datosUpdate.modeloTV = &#x27;&#x27;;
         }
         
-        await db.collection('cuentas').doc(primerId).update(datosUpdate);
+        await db.collection(&#x27;cuentas&#x27;).doc(primerId).update(datosUpdate);
 
-      alert('✅ Venta Netflix TV actualizada con éxito');
+      alert(&#x27;✅ Venta Netflix TV actualizada con éxito&#x27;);
       div.remove();
-      if (typeof actualizarTodo === 'function') actualizarTodo();
+      if (typeof actualizarTodo === &#x27;function&#x27;) actualizarTodo();
+      if (typeof mostrar === &#x27;function&#x27;) mostrar(&#x27;seccionVentas&#x27;);
     } catch(e) {
-      alert('Error al actualizar: ' + e.message);
+      alert(&#x27;Error al actualizar: &#x27; + e.message);
     }
   });
 }
 
-async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
-async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
+async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(&#x27;,&#x27;); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
+async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add(&#x27;row-finalizada-color&#x27;); }
 
 function renderizarTablaClientes(){ 
     const filasClientes = []; // ⚡ RAPIDEZ: se arma todo y se pinta una sola vez
@@ -1619,7 +1627,7 @@ function renderizarTablaClientes(){
 
             hServ += `
                 &lt;span class=&quot;badge-service ${cl}&quot; 
-                      data-info='${infoTooltip}' 
+                      data-info=&#x27;${infoTooltip}&#x27; 
                       onmousemove=&quot;mostrarTooltip(event)&quot; 
                       onmouseleave=&quot;ocultarTooltip()&quot;&gt;
                       ${ser.plataforma} (${diff}d)
@@ -1635,16 +1643,16 @@ function renderizarTablaClientes(){
                 &lt;td&gt;📞 ${c.whatsapp}&lt;/td&gt;
                 &lt;td&gt;${hServ}&lt;/td&gt;
                 &lt;td&gt;
-                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')&quot;&gt;✏️&lt;/button&gt;
-                    &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente('${c.id}')&quot;&gt;🗑️&lt;/button&gt;
+                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion(&#x27;${c.id}&#x27;,&#x27;${c.nombre}&#x27;,&#x27;${c.whatsapp}&#x27;)&quot;&gt;✏️&lt;/button&gt;
+                    &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente(&#x27;${c.id}&#x27;)&quot;&gt;🗑️&lt;/button&gt;
                 &lt;/td&gt;
             &lt;/tr&gt;`); 
     }); 
     bodyClientes.innerHTML = filasClientes.join(&quot;&quot;);
 }
 
-async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(','); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
-async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add('row-finalizada-color'); }
+async function eliminarLoteHistorial(idsString) { if(confirm(&quot;¿Eliminar este registro de venta completo?&quot;)) { const ids = idsString.split(&#x27;,&#x27;); const batch = db.batch(); ids.forEach(id =&gt; batch.delete(db.collection(&quot;cuentas&quot;).doc(id))); await batch.commit(); actualizarTodo(); } }
+async function marcarComoRenovadoEnBD(listaIds, rowId) { const batch = db.batch(); listaIds.forEach(id =&gt; { const ref = db.collection(&quot;cuentas&quot;).doc(id); batch.update(ref, { marcado_renovado: true }); }); await batch.commit(); const fila = document.getElementById(rowId); if(fila) fila.classList.add(&#x27;row-finalizada-color&#x27;); }
 
 function renderizarTablaClientes(){ 
     const filasClientes = []; // ⚡ RAPIDEZ: se arma todo y se pinta una sola vez
@@ -1669,7 +1677,7 @@ function renderizarTablaClientes(){
 
             hServ += `
                 &lt;span class=&quot;badge-service ${cl}&quot; 
-                      data-info='${infoTooltip}' 
+                      data-info=&#x27;${infoTooltip}&#x27; 
                       onmousemove=&quot;mostrarTooltip(event)&quot; 
                       onmouseleave=&quot;ocultarTooltip()&quot;&gt;
                       ${ser.plataforma} (${diff}d)
@@ -1685,8 +1693,8 @@ function renderizarTablaClientes(){
                 &lt;td&gt;📞 ${c.whatsapp}&lt;/td&gt;
                 &lt;td&gt;${hServ}&lt;/td&gt;
                 &lt;td&gt;
-                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion('${c.id}','${c.nombre}','${c.whatsapp}')&quot;&gt;✏️&lt;/button&gt;
-                    &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente('${c.id}')&quot;&gt;🗑️&lt;/button&gt;
+                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;prepararEdicion(&#x27;${c.id}&#x27;,&#x27;${c.nombre}&#x27;,&#x27;${c.whatsapp}&#x27;)&quot;&gt;✏️&lt;/button&gt;
+                    &lt;button class=&quot;delete-btn&quot; onclick=&quot;eliminarCliente(&#x27;${c.id}&#x27;)&quot;&gt;🗑️&lt;/button&gt;
                 &lt;/td&gt;
             &lt;/tr&gt;`); 
     }); 
@@ -1695,8 +1703,15 @@ function renderizarTablaClientes(){
 
 
 
-function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = &quot;✏️ Editando Cliente&quot;; btnGuardar.innerText = &quot;Actualizar Cliente&quot;; btnCancel.style.display = &quot;inline-block&quot;; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(&quot; &quot;); if (partes.length &gt; 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1]; } else { c_whatsapp.value = whatsappFull; } window.scrollTo({top: 0, behavior: 'smooth'}); }
+function prepararEdicion(id, nombre, whatsappFull) { formTitle.innerText = &quot;✏️ Editando Cliente&quot;; btnGuardar.innerText = &quot;Actualizar Cliente&quot;; btnCancel.style.display = &quot;inline-block&quot;; c_id_hidden.value = id; c_nombre.value = nombre; const partes = whatsappFull.split(&quot; &quot;); if (partes.length &gt; 1) { c_codigo.value = partes[0]; c_whatsapp.value = partes[1].replace(/\D/g, &quot;&quot;).slice(-(c_codigo.value === &quot;+34&quot; ? 9 : 10)); } else { c_whatsapp.value = whatsappFull.replace(/\D/g, &quot;&quot;).slice(-(c_codigo.value === &quot;+34&quot; ? 9 : 10)); } window.scrollTo({top: 0, behavior: &#x27;smooth&#x27;}); }
+function limpiarWhatsApp() {
+    const esEspana = document.getElementById(&quot;c_codigo&quot;) &amp;&amp; document.getElementById(&quot;c_codigo&quot;).value === &quot;+34&quot;;
+    const maxDigitos = esEspana ? 9 : 10;
+    const campo = document.getElementById(&quot;c_whatsapp&quot;);
+    if (campo) campo.value = campo.value.replace(/\D/g, &quot;&quot;).slice(-maxDigitos);
+}
 function guardarCliente(){
+    limpiarWhatsApp();
     const id = c_id_hidden.value;
     const data = { nombre: c_nombre.value, whatsapp: c_codigo.value + &quot; &quot; + c_whatsapp.value };
     if(!data.nombre || !c_whatsapp.value) return alert(&quot;Completa los datos&quot;);
@@ -1712,28 +1727,83 @@ function guardarCliente(){
     }
 }
 function cancelarEdicion(){ c_id_hidden.value=&quot;&quot;; c_nombre.value=&quot;&quot;; c_whatsapp.value=&quot;&quot;; formTitle.innerText=&quot;✨ Registrar Nuevo Cliente&quot;; btnGuardar.innerText=&quot;Guardar Cliente&quot;; btnCancel.style.display=&quot;none&quot;; }
+let idRenovacionTV = null;
 function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
+    // RENOVACION NETFLIX TV: mismo ID, sin duplicar. Solo si es un solo item Netflix TV.
+    const esSoloTV = items &amp;&amp; items.length === 1 &amp;&amp; (items[0].plat === &quot;Netflix TV&quot; || items[0].plat === &quot;NetflixTV&quot;);
+    if (esSoloTV) {
+        marcarComoRenovadoEnBD(listaIds, rowId);
+        document.querySelectorAll(&#x27;tr&#x27;).forEach(r =&gt; r.classList.remove(&#x27;row-selected-renew&#x27;));
+        if (rowId) {
+            const filaRen = document.getElementById(rowId);
+            if (filaRen) filaRen.classList.add(&#x27;row-selected-renew&#x27;);
+            idFilaSeleccionadaAzul = rowId;
+        }
+        const tv = items[0];
+        idRenovacionTV = (listaIds &amp;&amp; listaIds[0]) ? listaIds[0] : (tv.id || &quot;&quot;);
+        const clienteTV = listaClientesLocal.find(c =&gt; c.id === cliId);
+        const hoyTV = new Date();
+        hoyTV.setHours(0, 0, 0, 0);
+        let diasRestTV = 0;
+        const finTV = new Date((tv.fin || &quot;&quot;) + &quot;T00:00:00&quot;);
+        if (!isNaN(finTV.getTime())) {
+            diasRestTV = Math.floor((finTV - hoyTV) / (1000 * 60 * 60 * 24));
+            if (diasRestTV &lt; 0) diasRestTV = 0;
+        }
+        const finNuevaTV = new Date(hoyTV);
+        finNuevaTV.setDate(hoyTV.getDate() + 30 + diasRestTV);
+        mostrar(&quot;cuentasNetflixTV&quot;);
+        if (document.getElementById(&quot;clienteIdSeleccionadoTV&quot;)) document.getElementById(&quot;clienteIdSeleccionadoTV&quot;).value = cliId;
+        if (document.getElementById(&quot;inputBuscarClienteTV&quot;) &amp;&amp; clienteTV) document.getElementById(&quot;inputBuscarClienteTV&quot;).value = clienteTV.nombre;
+        if (document.getElementById(&quot;txtElegidoTV&quot;)) document.getElementById(&quot;txtElegidoTV&quot;).innerText = &quot;✅ Renovando Netflix TV de &quot; + (clienteTV ? clienteTV.nombre : &quot;&quot;) + &quot; (mismo ID: &quot; + idRenovacionTV + &quot;)&quot;;
+        if (document.getElementById(&quot;fechaInicioTV&quot;)) document.getElementById(&quot;fechaInicioTV&quot;).value = hoyTV.toISOString().split(&quot;T&quot;)[0];
+        if (document.getElementById(&quot;fechaFinTV&quot;)) document.getElementById(&quot;fechaFinTV&quot;).value = finNuevaTV.toISOString().split(&quot;T&quot;)[0];
+        if (document.getElementById(&quot;diasTV&quot;)) document.getElementById(&quot;diasTV&quot;).value = &quot;30&quot;;
+        if (document.getElementById(&quot;selectPerfilTV&quot;)) document.getElementById(&quot;selectPerfilTV&quot;).value = tv.perfil;
+        if (document.getElementById(&quot;inputPinTV&quot;)) document.getElementById(&quot;inputPinTV&quot;).value = tv.pin;
+        if (document.getElementById(&quot;inputClaveTV&quot;)) document.getElementById(&quot;inputClaveTV&quot;).value = tv.clave;
+        if (document.getElementById(&quot;estadoTvLista&quot;)) document.getElementById(&quot;estadoTvLista&quot;).value = &quot;true&quot;;
+        setTimeout(async () =&gt; {
+            const selTV = document.getElementById(&quot;selectNetflixTVBase&quot;);
+            if (selTV) {
+                for (let i = 0; i &lt; selTV.options.length; i++) {
+                    if (selTV.options[i].text &amp;&amp; selTV.options[i].text.trim() === (tv.correo || &quot;&quot;).trim()) { selTV.selectedIndex = i; break; }
+                }
+                if (typeof procesarCuentaSeleccionada === &quot;function&quot;) await procesarCuentaSeleccionada(selTV.value);
+                const selPerfilTV = document.getElementById(&quot;selectPerfilTV&quot;);
+                if (selPerfilTV) {
+                    for (let i = 0; i &lt; selPerfilTV.options.length; i++) {
+                        if (selPerfilTV.options[i].value === String(tv.perfil)) { selPerfilTV.options[i].disabled = false; selPerfilTV.options[i].style.backgroundColor = &quot;&quot;; selPerfilTV.options[i].text = &quot;Perfil &quot; + tv.perfil + &quot; (Renovando)&quot;; }
+                    }
+                    selPerfilTV.value = String(tv.perfil);
+                }
+                if (document.getElementById(&quot;inputPinTV&quot;)) document.getElementById(&quot;inputPinTV&quot;).value = tv.pin;
+                if (document.getElementById(&quot;inputClaveTV&quot;)) document.getElementById(&quot;inputClaveTV&quot;).value = tv.clave;
+            }
+        }, 300);
+        return;
+    }
     marcarComoRenovadoEnBD(listaIds, rowId);
-    document.querySelectorAll('tr').forEach(r =&gt; r.classList.remove('row-selected-renew'));
+    document.querySelectorAll(&#x27;tr&#x27;).forEach(r =&gt; r.classList.remove(&#x27;row-selected-renew&#x27;));
 
     if (rowId) {
         const fila = document.getElementById(rowId);
-        if (fila) fila.classList.add('row-selected-renew');
+        if (fila) fila.classList.add(&#x27;row-selected-renew&#x27;);
         idFilaSeleccionadaAzul = rowId;
     }
 
-    mostrar('cuentas', true);
+    mostrar(&#x27;cuentas&#x27;, true);
     const cliente = listaClientesLocal.find(c =&gt; c.id === cliId);
     clienteIdSeleccionado.value = cliId;
     inputBuscarCliente.value = cliente.nombre;
-    txtElegido.innerText = '✅ Renovando Lote de ' + cliente.nombre;
+    txtElegido.innerText = &#x27;✅ Renovando Lote de &#x27; + cliente.nombre;
     
     // --- LÓGICA DE ABONO DE DÍAS (SÓLO SI LE QUEDABAN DÍAS) ---
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
     // Tomamos la fecha de fin del primer ítem para comparar
-    const fechaVenceActual = new Date(items[0].fin + 'T00:00:00');
+    const fechaVenceActual = new Date(items[0].fin + &#x27;T00:00:00&#x27;);
     
     // Calcular días restantes
     const diffMilis = fechaVenceActual - hoy;
@@ -1746,35 +1816,35 @@ function cargarLoteParaRenovar(cliId, items, rowId, listaIds) {
     }
 
     // Calcular las nuevas fechas
-    const fInicioNueva = hoy.toISOString().split('T')[0];
+    const fInicioNueva = hoy.toISOString().split(&#x27;T&#x27;)[0];
     
     const fFinNuevaDate = new Date(hoy);
     fFinNuevaDate.setDate(hoy.getDate() + diasParaSumar);
-    const fFinNueva = fFinNuevaDate.toISOString().split('T')[0];
+    const fFinNueva = fFinNuevaDate.toISOString().split(&#x27;T&#x27;)[0];
 
     // Asignar a los campos del formulario
-    if (document.getElementById('fechaInicio')) document.getElementById('fechaInicio').value = fInicioNueva;
-    if (document.getElementById('fechaFin')) document.getElementById('fechaFin').value = fFinNueva;
-    if (document.getElementById('dias')) document.getElementById('dias').value = '30';
+    if (document.getElementById(&#x27;fechaInicio&#x27;)) document.getElementById(&#x27;fechaInicio&#x27;).value = fInicioNueva;
+    if (document.getElementById(&#x27;fechaFin&#x27;)) document.getElementById(&#x27;fechaFin&#x27;).value = fFinNueva;
+    if (document.getElementById(&#x27;dias&#x27;)) document.getElementById(&#x27;dias&#x27;).value = &#x27;30&#x27;;
     // ---------------------------------------------------------
 
-    tipoCompra.value = (items.length &gt; 1) ? 'combo' : 'individual';
-    document.getElementById('btnMasPlat').style.display = (items.length &gt; 1) ? 'inline-block' : 'none';
+    tipoCompra.value = (items.length &gt; 1) ? &#x27;combo&#x27; : &#x27;individual&#x27;;
+    document.getElementById(&#x27;btnMasPlat&#x27;).style.display = (items.length &gt; 1) ? &#x27;inline-block&#x27; : &#x27;none&#x27;;
     
-    plataformas.innerHTML = '';
+    plataformas.innerHTML = &#x27;&#x27;;
 
 // Usamos el índice (i) para emparejar cada item con su ID real de la listaIds
 items.forEach((it, i) =&gt; {
-    const div = document.createElement('div');
-    div.className = 'fila-plataforma';
-    const idFilaHTML = 'renov-' + Math.random().toString(36).substring(2, 9);
+    const div = document.createElement(&#x27;div&#x27;);
+    div.className = &#x27;fila-plataforma&#x27;;
+    const idFilaHTML = &#x27;renov-&#x27; + Math.random().toString(36).substring(2, 9);
     div.id = idFilaHTML;
     
-    div.style = 'margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;';
+    div.style = &#x27;margin-bottom:10px; border-bottom:1px solid #333; padding-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;&#x27;;
     
     // IMPORTANTE: listaIds viene de la función cargarLoteParaRenovar(cliId, items, rowId, listaIds)
     // Extraemos el ID que corresponde a esta suscripción específica
-    const idSuscripcionReal = (listaIds &amp;&amp; listaIds[i]) ? listaIds[i] : (it.id || '');
+    const idSuscripcionReal = (listaIds &amp;&amp; listaIds[i]) ? listaIds[i] : (it.id || &#x27;&#x27;);
 
     div.innerHTML = `
         &lt;select class=&quot;tipo&quot; onchange=&quot;cargarCorreosParaEstaFila(this)&quot; style=&quot;padding:4px; background:#333; color:white; border:1px solid #555;&quot;&gt;
@@ -1807,7 +1877,7 @@ items.forEach((it, i) =&gt; {
         &lt;/div&gt;
 
         &lt;!-- Pasamos el idSuscripcionReal que ahora sí está garantizado --&gt;
-        &lt;button onclick=&quot;eliminarSuscripcionDirecto('${idSuscripcionReal}', '${idFilaHTML}')&quot; 
+        &lt;button onclick=&quot;eliminarSuscripcionDirecto(&#x27;${idSuscripcionReal}&#x27;, &#x27;${idFilaHTML}&#x27;)&quot; 
                 style=&quot;background:#ff4d4d; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer;&quot; 
                 title=&quot;Eliminar servicio&quot;&gt;
             🗑️
@@ -1815,23 +1885,23 @@ items.forEach((it, i) =&gt; {
     `;
     plataformas.appendChild(div);
     
-    if(typeof cargarCorreosParaEstaFila === 'function') {
-        cargarCorreosParaEstaFila(div.querySelector('.tipo'), it.correo);
+    if(typeof cargarCorreosParaEstaFila === &#x27;function&#x27;) {
+        cargarCorreosParaEstaFila(div.querySelector(&#x27;.tipo&#x27;), it.correo);
     }
 });
 }
 
 async function eliminarSuscripcionDirecto(idFirebase, idFilaHTML) {
     // Verificamos si el ID es válido sin usar comillas dobles
-    if (!idFirebase || idFirebase === 'undefined') {
-        return alert('❌ No se puede eliminar: El ID de la suscripción no llegó correctamente.');
+    if (!idFirebase || idFirebase === &#x27;undefined&#x27;) {
+        return alert(&#x27;❌ No se puede eliminar: El ID de la suscripción no llegó correctamente.&#x27;);
     }
 
     // Ventana de confirmación
-    if (confirm('¿Seguro que deseas eliminar este servicio definitivamente?')) {
+    if (confirm(&#x27;¿Seguro que deseas eliminar este servicio definitivamente?&#x27;)) {
         try {
             // Eliminación en Firebase
-            await db.collection('suscripciones').doc(idFirebase).delete();
+            await db.collection(&#x27;suscripciones&#x27;).doc(idFirebase).delete();
             
             // Eliminación visual de la fila en el formulario
             const fila = document.getElementById(idFilaHTML);
@@ -1839,22 +1909,22 @@ async function eliminarSuscripcionDirecto(idFirebase, idFilaHTML) {
                 fila.remove();
             }
             
-            alert('✅ Servicio eliminado y perfil liberado.');
+            alert(&#x27;✅ Servicio eliminado y perfil liberado.&#x27;);
 
             // Refresco de las tablas principales si la función existe
-            if (typeof cargarAdminPerfiles === 'function') {
+            if (typeof cargarAdminPerfiles === &#x27;function&#x27;) {
                 cargarAdminPerfiles();
             }
             
         } catch (e) {
-            alert('Error 1003: ' + e.message);
+            alert(&#x27;Error 1003: &#x27; + e.message);
         }
     }
 }
 
 /* --- FUNCION WHATSAPP PARA LOTES --- */
 function enviarWhatsAppLote(idsStr) {
-    const ids = idsStr.split(','); 
+    const ids = idsStr.split(&#x27;,&#x27;); 
     const ventas = listaSuscripcionesGlobal.filter(v =&gt; ids.includes(v.id)); 
     if(ventas.length === 0) return; 
     const c = listaClientesLocal.find(cl =&gt; cl.id === ventas[0].clienteId); 
@@ -1863,25 +1933,25 @@ function enviarWhatsAppLote(idsStr) {
     const esNetflixTV = ventas.some(v =&gt; v.plataforma === &quot;Netflix TV&quot;);
 
     const hoy = new Date();
-    const fechaHoy = hoy.toLocaleDateString('es-ES');
-    const horaHoy = hoy.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const nombreDia = hoy.toLocaleDateString('es-ES', { weekday: 'long' });
+    const fechaHoy = hoy.toLocaleDateString(&#x27;es-ES&#x27;);
+    const horaHoy = hoy.toLocaleTimeString(&#x27;es-ES&#x27;, { hour: &#x27;2-digit&#x27;, minute: &#x27;2-digit&#x27;, second: &#x27;2-digit&#x27; });
+    const nombreDia = hoy.toLocaleDateString(&#x27;es-ES&#x27;, { weekday: &#x27;long&#x27; });
 
-    const metodo = ventas[0].metodoPago || 'Otro';
+    const metodo = ventas[0].metodoPago || &#x27;Otro&#x27;;
     const fechaCompra = ventas[0].inicio || fechaHoy;
-    const fechaVence = ventas[0].fin || '---';
+    const fechaVence = ventas[0].fin || &#x27;---&#x27;;
     const valorTotal = ventas.reduce((acc, v) =&gt; acc + (parseFloat(v.valor) || 0), 0);
     
     const totalDispositivos = ventas.length;
-    const reglaUso = totalDispositivos &gt; 1 ? `${totalDispositivos} DISPOSITIVOS, 1 PANTALLA EN SIMULTANEO POR SERVICIO Y/O PERFIL ADQUIRIDO` : '1 DISPOSITIVO EN SIMULTANEO';
+    const reglaUso = totalDispositivos &gt; 1 ? `${totalDispositivos} DISPOSITIVOS, 1 PANTALLA EN SIMULTANEO POR SERVICIO Y/O PERFIL ADQUIRIDO` : &#x27;1 DISPOSITIVO EN SIMULTANEO&#x27;;
 
     const fVence = new Date(fechaVence);
-    let diasGarantizados = ventas[0].dias || '30';
+    let diasGarantizados = ventas[0].dias || &#x27;30&#x27;;
     if (!isNaN(fVence.getTime())) {
         diasGarantizados = Math.ceil((fVence - hoy) / (1000 * 60 * 60 * 24));
     }
 
-    let detalleMsg = ''; 
+    let detalleMsg = &#x27;&#x27;; 
     
     
     if (esNetflixTV) {
@@ -1901,29 +1971,28 @@ function enviarWhatsAppLote(idsStr) {
 
     ventas.forEach(v =&gt; { 
         // TRUCO MAESTRO: Limpiamos + y # en correo y clave
-        let correoLimpio = v.correo ? v.correo.toString() : '';
-let claveLimpia = v.clave ? v.clave.toString() : '';
-
+        let correoLimpio = v.correo ? v.correo.toString().replace(/\+/g, &#x27;%2B&#x27;).replace(/#/g, &#x27;%23&#x27;) : &#x27;&#x27;;
+        let claveLimpia = v.clave ? v.clave.toString().replace(/\+/g, &#x27;%2B&#x27;).replace(/#/g, &#x27;%23&#x27;) : &#x27;&#x27;;
         
         detalleMsg += `%0A------------------------------------------------`;
         detalleMsg += `%0A*Información De La Cuenta de: ${v.plataforma}*`;
         detalleMsg += `%0A📧 : ${correoLimpio}`;
         detalleMsg += `%0A🔐 : *${claveLimpia}*`;
-        detalleMsg += `%0A👤 : ${v.perfil || ''}) ${c.nombre}`;
-        detalleMsg += `%0A🔒 : ${v.pin || '---'}`;
+        detalleMsg += `%0A👤 : ${v.perfil || &#x27;&#x27;}) ${c.nombre}`;
+        detalleMsg += `%0A🔒 : ${v.pin || &#x27;---&#x27;}`;
         detalleMsg += `%0A------------------------------------------------`;
     });
     }
 
-    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN AUTOMATTIZADA* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel de autgestión correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes consultar códigos de inicio, códigos hogar, revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso al panel es con tu numero de WhatsApp.)*`; 
+    const msg = `Hola Estimado/a *${c.nombre}*%0A%0ATu Servicio ha sido activado exitosamente, y ya se encuentran listos para disfrutar a partir de hoy 🤩.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A👉🏻 *VALOR DEL SERVICIO:* $${valorTotal}.%0A👉🏻 *METODO DE PAGO:* ${metodo}.%0A👉🏻 *CONDICIONES:* 📺 ${reglaUso}.%0A👉🏻 *FECHA DE COMPRA:* ${fechaCompra}.%0A📅 *LA FECHA DE VENCIMIENTO ES EL:* ${fechaVence}.%0A_*CON UN SERVICIO GARANTIZADO DE: 🗓️ ${diasGarantizados} 🗓️ Días disponibles a partir de hoy ${fechaHoy}.*_%0A${detalleMsg}%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido 😊.%0A%0A_Mensaje automático enviado por *MultiBot* el día ${nombreDia}, ${fechaHoy}. a las ${horaHoy}._%0A%0A*Somos MultiEntretenimiento BC* 📱🍿%0A_El mejor entretenimiento para todos 🍿_%0A%0A _%0A%0A💡 *CENTRO DE AYUDA Y GESTIÓN* 💡%0A%0A📺 Tutorial: https://youtu.be/5l_1yDMqtJw _(Mira este video para aprender a usar tu oficina virtual y navegar en tu panel correctamente.)_ %0A%0A🚀 *¡NUEVA PLATAFORMA DE AUTOGESTIÓN!*: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/, _Desde aquí puedes revisar tus cuentas activas, consulta tus vencimientos, realiza tus renovaciones al instante, aprovechar ofertas, y autogestionar tu hogar de manera rapida, sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu numero de WhatsApp.)*`; 
 
-    const cod = c.codigo ? c.codigo.toString().replace(/\D/g, '') : '';
-    const num = c.whatsapp ? c.whatsapp.toString().replace(/\D/g, '') : '';
+    const cod = c.codigo ? c.codigo.toString().replace(/\D/g, &#x27;&#x27;) : &#x27;&#x27;;
+    const num = c.whatsapp ? c.whatsapp.toString().replace(/\D/g, &#x27;&#x27;) : &#x27;&#x27;;
     const telLimpio = cod + num;
 
     // ABRIR WHATSAPP: El replace final asegura que nada se rompa
     // Reemplazamos # por %23 globalmente en el mensaje final
-    let mensajeFinal = encodeURIComponent(msg.split('%0A').join('\n'));
+    let mensajeFinal = msg.replace(/#/g, &#x27;%23&#x27;);
     
     window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&amp;text=${mensajeFinal}`); 
 }
@@ -1931,7 +2000,7 @@ let claveLimpia = v.clave ? v.clave.toString() : '';
 /* --- FUNCION EDITAR MANUAL (INDIVIDUAL O LOTE) --- */
 /* --- FUNCION EDITAR MANUAL CON PROTECCION DE CUENTAS BASE --- */
 async function abrirEditorManualLote(idsStr) { 
-    const ids = idsStr.split(','); 
+    const ids = idsStr.split(&#x27;,&#x27;); 
     let venta = null;
 
     if(ids.length &gt; 1) {
@@ -1960,6 +2029,7 @@ async function abrirEditorManualLote(idsStr) {
     const nPin = prompt(&quot;Nuevo PIN:&quot;, venta.pin); 
 
     await db.collection(&quot;cuentas&quot;).doc(venta.id).update({ 
+        fechaRegistro: Date.now(),
         correo: nCor.trim(), 
         clave: nCla.trim(), 
         pin: nPin, 
@@ -1985,16 +2055,16 @@ async function filtrarCuentasParaEdicion(plataforma, div, correoActual) {
 
     if (snap.empty) {
         cont.innerHTML =
-            &quot;&lt;input class='correo-select' value='&quot; + correoActual + &quot;' style='padding:6px; width:80%;'&gt;&quot;;
+            &quot;&lt;input class=&#x27;correo-select&#x27; value=&#x27;&quot; + correoActual + &quot;&#x27; style=&#x27;padding:6px; width:80%;&#x27;&gt;&quot;;
         return;
     }
 
-    var html = &quot;&lt;select class='correo-select' style='padding:6px; width:80%;'&gt;&quot;;
+    var html = &quot;&lt;select class=&#x27;correo-select&#x27; style=&#x27;padding:6px; width:80%;&#x27;&gt;&quot;;
 
     snap.forEach(function(doc) {
         var d = doc.data();
         var sel = (d.correo === correoActual) ? &quot;selected&quot; : &quot;&quot;;
-        html += &quot;&lt;option value='&quot; + d.correo + &quot;' &quot; + sel + &quot;&gt;&quot; + d.correo + &quot;&lt;/option&gt;&quot;;
+        html += &quot;&lt;option value=&#x27;&quot; + d.correo + &quot;&#x27; &quot; + sel + &quot;&gt;&quot; + d.correo + &quot;&lt;/option&gt;&quot;;
     });
 
     html += &quot;&lt;/select&gt;&quot;;
@@ -2047,7 +2117,7 @@ let datosVenta = {
 
     if (!snap.empty) { 
         /* --- MODO AUTOMÁTICO (Netflix, Disney, HBO) --- */
-        let ops = '&lt;option value=&quot;&quot;&gt;Cuenta...&lt;/option&gt;'; 
+        let ops = &#x27;&lt;option value=&quot;&quot;&gt;Cuenta...&lt;/option&gt;&#x27;; 
         snap.forEach(doc =&gt; { ops += `&lt;option value=&quot;${doc.data().clave}&quot;&gt;${doc.data().correo.trim()}&lt;/option&gt;`; }); 
 
         f.querySelector(&quot;.cont-correo&quot;).innerHTML = `&lt;select class=&quot;correo-select&quot; onchange=&quot;validarDisponibilidad(this)&quot;&gt;${ops}&lt;/select&gt;`; 
@@ -2110,7 +2180,7 @@ async function corregirFallaCuenta(idVenta) {
 
         // B. ACTUALIZACIÓN EN CASCADA
         if (idBase) {
-            // 1. Actualizar la raíz en 'cuentas_base'
+            // 1. Actualizar la raíz en &#x27;cuentas_base&#x27;
             batch.update(db.collection(&quot;cuentas_base&quot;).doc(idBase), {
                 correo: nuevoCor.trim(),
                 clave: nuevaCla.trim(),
@@ -2225,12 +2295,12 @@ async function guardarServicioManual() {
 
 
 /* --- PARTE 1: GESTIÓN DE CUENTAS Y AUTO-SELECCIÓN --- */
-async function filtrarCuentas(sel) { const p = sel.value; if (!p) return; const f = sel.parentElement; const clienteId = clienteIdSeleccionado.value; const snap = await db.collection(&quot;cuentas_base&quot;).where(&quot;plataforma&quot;, &quot;==&quot;, p).get(); let ops = '&lt;option value=&quot;&quot;&gt;Cuenta...&lt;/option&gt;'; snap.forEach(doc =&gt; { const d = doc.data(); ops += `&lt;option value=&quot;${d.clave}&quot;&gt;${d.correo.trim()}&lt;/option&gt;`; }); f.querySelector(&quot;.cont-correo&quot;).innerHTML = `&lt;select class=&quot;correo-select&quot; onchange=&quot;validarDisponibilidad(this)&quot;&gt;${ops}&lt;/select&gt;`; f.querySelector(&quot;.cont-clave&quot;).innerHTML = `&lt;input class=&quot;clave&quot; readonly style=&quot;width:80px&quot;&gt;`; f.querySelector(&quot;.bloque-perfiles&quot;).innerHTML = `&lt;div class=&quot;item-perfil&quot;&gt;&lt;span class=&quot;cont-perfil&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cont-pin&quot;&gt;&lt;/span&gt;&lt;button class=&quot;add-perfil-btn&quot; onclick=&quot;crearNuevaFilaPerfil(this)&quot;&gt;+&lt;/button&gt;&lt;/div&gt;`; if (clienteId) { const yaTiene = listaSuscripcionesGlobal.find(s =&gt; s.clienteId === clienteId &amp;&amp; s.plataforma.trim().toLowerCase() === p.trim().toLowerCase() &amp;&amp; (new Date(s.fin + &quot;T12:00:00&quot;) &gt;= new Date(hoy.getTime() - (7 * 86400000)))); if (yaTiene) { setTimeout(() =&gt; { const selCorreo = f.querySelector(&quot;.correo-select&quot;); if (!selCorreo) return; let enc = false; for (let i = 0; i &lt; selCorreo.options.length; i++) { if (selCorreo.options[i].text.trim().toLowerCase() === yaTiene.correo.trim().toLowerCase()) { selCorreo.selectedIndex = i; enc = true; break; } } if (enc) { validarDisponibilidad(selCorreo); selCorreo.style.border = &quot;2px solid #28a745&quot;; selCorreo.style.backgroundColor = &quot;#e8f5e9&quot;; } }, 60); } } }
+async function filtrarCuentas(sel) { const p = sel.value; if (!p) return; const f = sel.parentElement; const clienteId = clienteIdSeleccionado.value; const snap = await db.collection(&quot;cuentas_base&quot;).where(&quot;plataforma&quot;, &quot;==&quot;, p).get(); let ops = &#x27;&lt;option value=&quot;&quot;&gt;Cuenta...&lt;/option&gt;&#x27;; snap.forEach(doc =&gt; { const d = doc.data(); ops += `&lt;option value=&quot;${d.clave}&quot;&gt;${d.correo.trim()}&lt;/option&gt;`; }); f.querySelector(&quot;.cont-correo&quot;).innerHTML = `&lt;select class=&quot;correo-select&quot; onchange=&quot;validarDisponibilidad(this)&quot;&gt;${ops}&lt;/select&gt;`; f.querySelector(&quot;.cont-clave&quot;).innerHTML = `&lt;input class=&quot;clave&quot; readonly style=&quot;width:80px&quot;&gt;`; f.querySelector(&quot;.bloque-perfiles&quot;).innerHTML = `&lt;div class=&quot;item-perfil&quot;&gt;&lt;span class=&quot;cont-perfil&quot;&gt;&lt;/span&gt;&lt;span class=&quot;cont-pin&quot;&gt;&lt;/span&gt;&lt;button class=&quot;add-perfil-btn&quot; onclick=&quot;crearNuevaFilaPerfil(this)&quot;&gt;+&lt;/button&gt;&lt;/div&gt;`; if (clienteId) { const yaTiene = listaSuscripcionesGlobal.find(s =&gt; s.clienteId === clienteId &amp;&amp; s.plataforma.trim().toLowerCase() === p.trim().toLowerCase() &amp;&amp; (new Date(s.fin + &quot;T12:00:00&quot;) &gt;= new Date(hoy.getTime() - (7 * 86400000)))); if (yaTiene) { setTimeout(() =&gt; { const selCorreo = f.querySelector(&quot;.correo-select&quot;); if (!selCorreo) return; let enc = false; for (let i = 0; i &lt; selCorreo.options.length; i++) { if (selCorreo.options[i].text.trim().toLowerCase() === yaTiene.correo.trim().toLowerCase()) { selCorreo.selectedIndex = i; enc = true; break; } } if (enc) { validarDisponibilidad(selCorreo); selCorreo.style.border = &quot;2px solid #28a745&quot;; selCorreo.style.backgroundColor = &quot;#e8f5e9&quot;; } }, 60); } } }
 
 
 
 /* --- PARTE 2: RENDERIZADO DE PERFILES Y PIN (SÍMBOLO ESPECIAL) --- */
-function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(&quot;.cont-perfil&quot;); it.querySelector(&quot;.cont-pin&quot;).innerHTML = `&lt;input class=&quot;pin&quot; style=&quot;width:50px&quot; readonly&gt;`; contP.innerHTML = `&lt;select class=&quot;perfil-select&quot; onchange=&quot;actualizarPin(this)&quot;&gt;&lt;option value=&quot;&quot;&gt;P...&lt;/option&gt;&lt;/select&gt;`; const selP = contP.querySelector(&quot;.perfil-select&quot;); const max = plat === &quot;Disney&quot; ? 7 : 7; const margenVencido = new Date(hoy.getTime() - (3 * 86400000)); const ocup = listaSuscripcionesGlobal.filter(s =&gt; s.correo === corr &amp;&amp; s.plataforma.trim().toLowerCase() === plat.trim().toLowerCase() &amp;&amp; new Date(s.fin+&quot;T12:00:00&quot;) &gt;= margenVencido); const miP = ocup.find(s =&gt; s.clienteId === cId); for(let i=1; i&lt;=max; i++) { const o = ocup.find(x =&gt; parseInt(x.perfil) === i); const opt = document.createElement(&quot;option&quot;); opt.value = i; if(o) { const n = o.perfil_etiqueta ? (o.perfil_etiqueta.split('. ')[1] || 'Ocup') : 'Ocup'; const esVencidoReciente = new Date(o.fin + &quot;T12:00:00&quot;) &lt; hoy; opt.text = `P${i} ${o.clienteId === cId ? '(Tu Perfil)' : '('+n+')'} ${esVencidoReciente ? '[V]' : ''}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miP) { selP.value = miP.perfil; actualizarPin(selP); } }
+function renderizarSelectPerfil(it, plat, corr) { const cId = clienteIdSeleccionado.value; const contP = it.querySelector(&quot;.cont-perfil&quot;); it.querySelector(&quot;.cont-pin&quot;).innerHTML = `&lt;input class=&quot;pin&quot; style=&quot;width:50px&quot; readonly&gt;`; contP.innerHTML = `&lt;select class=&quot;perfil-select&quot; onchange=&quot;actualizarPin(this)&quot;&gt;&lt;option value=&quot;&quot;&gt;P...&lt;/option&gt;&lt;/select&gt;`; const selP = contP.querySelector(&quot;.perfil-select&quot;); const max = plat === &quot;Disney&quot; ? 7 : 7; const margenVencido = new Date(hoy.getTime() - (3 * 86400000)); const ocup = listaSuscripcionesGlobal.filter(s =&gt; s.correo === corr &amp;&amp; s.plataforma.trim().toLowerCase() === plat.trim().toLowerCase() &amp;&amp; new Date(s.fin+&quot;T12:00:00&quot;) &gt;= margenVencido); const miP = ocup.find(s =&gt; s.clienteId === cId); for(let i=1; i&lt;=max; i++) { const o = ocup.find(x =&gt; parseInt(x.perfil) === i); const opt = document.createElement(&quot;option&quot;); opt.value = i; if(o) { const n = o.perfil_etiqueta ? (o.perfil_etiqueta.split(&#x27;. &#x27;)[1] || &#x27;Ocup&#x27;) : &#x27;Ocup&#x27;; const esVencidoReciente = new Date(o.fin + &quot;T12:00:00&quot;) &lt; hoy; opt.text = `P${i} ${o.clienteId === cId ? &#x27;(Tu Perfil)&#x27; : &#x27;(&#x27;+n+&#x27;)&#x27;} ${esVencidoReciente ? &#x27;[V]&#x27; : &#x27;&#x27;}`; if(o.clienteId !== cId) opt.disabled = true; } else { opt.text = `P${i} (Libre)`; } selP.appendChild(opt); } if(miP) { selP.value = miP.perfil; actualizarPin(selP); } }
 
 /* --- PARTE 3: SINCRONIZACIÓN AUTOMÁTICA DE CLAVES --- */
 
@@ -2250,7 +2320,7 @@ async function cargarParaModificar(idsVenta) {
         idModificando = listaIds;
         plataformas.innerHTML = &quot;&quot;;
 
-        if(typeof mostrar === 'function') mostrar(&quot;cuentas&quot;);
+        if(typeof mostrar === &#x27;function&#x27;) mostrar(&quot;cuentas&quot;);
 
         // 1. OBTENER EL REGISTRO BASE (Para rellenar la parte superior)
         const primerDoc = await db.collection(&quot;cuentas&quot;).doc(listaIds[0].trim()).get();
@@ -2358,30 +2428,30 @@ if (document.getElementById(idVPago)) {
             div.style = &quot;background:#ffffff; padding:25px; border:2px solid #e67e22; border-radius:12px; margin-bottom:15px; color:#333;&quot;;
 
             div.innerHTML = 
-                '&lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;' + v.plataforma + '&quot;&gt;' +
-                '&lt;div style=&quot;text-align:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px; color:#000;&quot;&gt;' +
-                    '&lt;b&gt;Servicio:&lt;/b&gt; ' + v.plataforma + ' | &lt;b&gt;Vence:&lt;/b&gt; ' + v.fin +
-                '&lt;/div&gt;' +
-                '&lt;div style=&quot;display:flex; flex-direction:column; gap:12px; align-items:center;&quot;&gt;' +
-                    '&lt;div style=&quot;width:100%; text-align:center;&quot;&gt;' +
-                        '&lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;&lt;br&gt;' +
-                        '&lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;' +
-                    '&lt;/div&gt;' +
-                    '&lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;' +
-                        '&lt;div style=&quot;text-align:center;&quot;&gt;' +
-                            '&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;CLAVE&lt;/label&gt;&lt;br&gt;' +
-                            '&lt;input class=&quot;clave&quot; value=&quot;' + v.clave + '&quot; readonly style=&quot;width:120px; padding:8px; text-align:center; background:#eee; border:1px solid #ccc; color:#000;&quot;&gt;' +
-                        '&lt;/div&gt;' +
-                        '&lt;div style=&quot;text-align:center;&quot;&gt;' +
-                            '&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;P&lt;/label&gt;&lt;br&gt;' +
-                            '&lt;input class=&quot;perfil-select&quot; value=&quot;' + v.perfil + '&quot; readonly style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;' +
-                        '&lt;/div&gt;' +
-                        '&lt;div style=&quot;text-align:center;&quot;&gt;' +
-                            '&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;PIN&lt;/label&gt;&lt;br&gt;' +
-                            '&lt;input class=&quot;pin&quot; value=&quot;' + v.pin + '&quot; readonly style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;' +
-                        '&lt;/div&gt;' +
-                    '&lt;/div&gt;' +
-                '&lt;/div&gt;';
+                &#x27;&lt;input type=&quot;hidden&quot; class=&quot;tipo&quot; value=&quot;&#x27; + v.plataforma + &#x27;&quot;&gt;&#x27; +
+                &#x27;&lt;div style=&quot;text-align:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px; color:#000;&quot;&gt;&#x27; +
+                    &#x27;&lt;b&gt;Servicio:&lt;/b&gt; &#x27; + v.plataforma + &#x27; | &lt;b&gt;Vence:&lt;/b&gt; &#x27; + v.fin +
+                &#x27;&lt;/div&gt;&#x27; +
+                &#x27;&lt;div style=&quot;display:flex; flex-direction:column; gap:12px; align-items:center;&quot;&gt;&#x27; +
+                    &#x27;&lt;div style=&quot;width:100%; text-align:center;&quot;&gt;&#x27; +
+                        &#x27;&lt;label style=&quot;font-weight:bold; color:#000;&quot;&gt;Seleccionar Nueva Cuenta:&lt;/label&gt;&lt;br&gt;&#x27; +
+                        &#x27;&lt;span class=&quot;cont-correo&quot;&gt;Cargando cuentas base...&lt;/span&gt;&#x27; +
+                    &#x27;&lt;/div&gt;&#x27; +
+                    &#x27;&lt;div style=&quot;display:flex; gap:10px; justify-content:center; background:#f4f4f4; padding:15px; border-radius:8px; width:100%; border:1px solid #ddd;&quot;&gt;&#x27; +
+                        &#x27;&lt;div style=&quot;text-align:center;&quot;&gt;&#x27; +
+                            &#x27;&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;CLAVE&lt;/label&gt;&lt;br&gt;&#x27; +
+                            &#x27;&lt;input class=&quot;clave&quot; value=&quot;&#x27; + v.clave + &#x27;&quot; readonly style=&quot;width:120px; padding:8px; text-align:center; background:#eee; border:1px solid #ccc; color:#000;&quot;&gt;&#x27; +
+                        &#x27;&lt;/div&gt;&#x27; +
+                        &#x27;&lt;div style=&quot;text-align:center;&quot;&gt;&#x27; +
+                            &#x27;&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;P&lt;/label&gt;&lt;br&gt;&#x27; +
+                            &#x27;&lt;input class=&quot;perfil-select&quot; value=&quot;&#x27; + v.perfil + &#x27;&quot; readonly style=&quot;width:45px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;&#x27; +
+                        &#x27;&lt;/div&gt;&#x27; +
+                        &#x27;&lt;div style=&quot;text-align:center;&quot;&gt;&#x27; +
+                            &#x27;&lt;label style=&quot;font-size:11px; font-weight:bold; color:#000;&quot;&gt;PIN&lt;/label&gt;&lt;br&gt;&#x27; +
+                            &#x27;&lt;input class=&quot;pin&quot; value=&quot;&#x27; + v.pin + &#x27;&quot; readonly style=&quot;width:55px; padding:8px; text-align:center; background:#eee; color:#000; border:1px solid #ccc;&quot;&gt;&#x27; +
+                        &#x27;&lt;/div&gt;&#x27; +
+                    &#x27;&lt;/div&gt;&#x27; +
+                &#x27;&lt;/div&gt;&#x27;;
 
             plataformas.appendChild(div);
             await filtrarCuentasParaEdicion(v.plataforma, div, v.correo);
@@ -2391,20 +2461,20 @@ if (document.getElementById(idVPago)) {
         const divExtra = document.createElement(&quot;div&quot;);
         divExtra.style = &quot;background:#d5f5e3; padding:12px; border-radius:8px; border:1px solid #2ecc71; text-align:center; margin-top:10px;&quot;;
         divExtra.innerHTML = 
-            '&lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 Días Extra (GENERAL)&lt;/label&gt;&lt;br&gt;' +
-            '&lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot; oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot; style=&quot;width:80px; padding:6px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;';
+            &#x27;&lt;label style=&quot;font-weight:bold; color:#145a32;&quot;&gt;🎁 Días Extra (GENERAL)&lt;/label&gt;&lt;br&gt;&#x27; +
+            &#x27;&lt;input type=&quot;number&quot; id=&quot;dias_regalo&quot; value=&quot;0&quot; min=&quot;0&quot; oninput=&quot;calcularNuevaFechaCompensacion(this.value)&quot; style=&quot;width:80px; padding:6px; text-align:center; font-weight:bold; color:#27ae60; border:1px solid #27ae60;&quot;&gt;&#x27;;
         plataformas.appendChild(divExtra);
 
         // 6. NOTA GENERAL
         const divNota = document.createElement(&quot;div&quot;);
         divNota.style = &quot;margin-top:10px; background:#fff3cd; padding:10px; border-radius:8px; border:1px solid #ffeeba;&quot;;
         divNota.innerHTML = 
-            '&lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;' +
-            '&lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;' +
-            '&lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;';
+            &#x27;&lt;label style=&quot;font-weight:bold; color:#856404;&quot;&gt;📝 Nota de cambio:&lt;/label&gt;&#x27; +
+            &#x27;&lt;textarea id=&quot;txt_obs_cambio&quot; style=&quot;width:100%; height:50px; color:#000; background:#fff;&quot;&gt;&lt;/textarea&gt;&#x27; +
+            &#x27;&lt;div id=&quot;info_nueva_fecha&quot; style=&quot;margin-top:5px; font-weight:bold; color:#2980b9; text-align:center;&quot;&gt;&lt;/div&gt;&#x27;;
         plataformas.appendChild(divNota);
 
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: &#x27;smooth&#x27; });
 
     } catch (e) {
         alert(&quot;Error al unificar: &quot; + e.message);
@@ -2426,7 +2496,7 @@ async function filtrarCuentasParaEdicion(plataforma, filaDiv, correoActual) {
     });
 
     filaDiv.querySelector(&quot;.cont-correo&quot;).innerHTML = `
-        &lt;select class=&quot;correo-select&quot; style=&quot;width:200px; padding:5px;&quot; onchange=&quot;this.parentElement.parentElement.parentElement.querySelector('.clave').value = this.value&quot;&gt;
+        &lt;select class=&quot;correo-select&quot; style=&quot;width:200px; padding:5px;&quot; onchange=&quot;this.parentElement.parentElement.parentElement.querySelector(&#x27;.clave&#x27;).value = this.value&quot;&gt;
             ${ops}
         &lt;/select&gt;`;
 }
@@ -2442,41 +2512,41 @@ async function guardarCuentas() {
             var inputBusca = document.getElementById(&quot;inputBuscarCliente&quot;);
             idCli = inputBusca ? inputBusca.getAttribute(&quot;data-id&quot;) : &quot;&quot;;
         }
-        if (idCli == '') return alert('Selecciona un cliente');
+        if (idCli == &#x27;&#x27;) return alert(&#x27;Selecciona un cliente&#x27;);
 
-        var nombreCli = document.getElementById('inputBuscarCliente')?.value || '';
-        var fInicio = document.getElementById('fechaInicio')?.value || '';
-        var fFin = document.getElementById('fechaFin')?.value || '';
-        var mPago = document.getElementById('metodoPago')?.value || 'Efectivo';
+        var nombreCli = document.getElementById(&#x27;inputBuscarCliente&#x27;)?.value || &#x27;&#x27;;
+        var fInicio = document.getElementById(&#x27;fechaInicio&#x27;)?.value || &#x27;&#x27;;
+        var fFin = document.getElementById(&#x27;fechaFin&#x27;)?.value || &#x27;&#x27;;
+        var mPago = document.getElementById(&#x27;metodoPago&#x27;)?.value || &#x27;Efectivo&#x27;;
         
-        var elVPago = document.getElementById('valorPago');
-        var vPagoTotal = parseFloat((elVPago != null) ? elVPago.value : '0') || 0;
+        var elVPago = document.getElementById(&#x27;valorPago&#x27;);
+        var vPagoTotal = parseFloat((elVPago != null) ? elVPago.value : &#x27;0&#x27;) || 0;
 
-        var elNotaCambio = document.getElementById('txt_obs_cambio');
-        var notaTexto = (elNotaCambio != null) ? elNotaCambio.value : '';
+        var elNotaCambio = document.getElementById(&#x27;txt_obs_cambio&#x27;);
+        var notaTexto = (elNotaCambio != null) ? elNotaCambio.value : &#x27;&#x27;;
 
-        var elRegalo = document.getElementById('dias_regalo');
+        var elRegalo = document.getElementById(&#x27;dias_regalo&#x27;);
         var diasExtra = (elRegalo != null) ? parseInt(elRegalo.value) || 0 : 0;
 
         // LÓGICA DE DÍAS EXTRA
         var fechaFinalCalculada = fFin;
-        if (diasExtra &gt; 0 &amp;&amp; fFin != '') {
-            var fechaAux = new Date(fFin + 'T00:00:00');
+        if (diasExtra &gt; 0 &amp;&amp; fFin != &#x27;&#x27;) {
+            var fechaAux = new Date(fFin + &#x27;T00:00:00&#x27;);
             fechaAux.setDate(fechaAux.getDate() + diasExtra);
             var anio = fechaAux.getFullYear();
-            var mes = (fechaAux.getMonth() + 1).toString().padStart(2, '0');
-            var dia = fechaAux.getDate().toString().padStart(2, '0');
-            fechaFinalCalculada = anio + '-' + mes + '-' + dia;
+            var mes = (fechaAux.getMonth() + 1).toString().padStart(2, &#x27;0&#x27;);
+            var dia = fechaAux.getDate().toString().padStart(2, &#x27;0&#x27;);
+            fechaFinalCalculada = anio + &#x27;-&#x27; + mes + &#x27;-&#x27; + dia;
         }
 
         var marcaTiempoUnica = Date.now();
-        var filas = document.querySelectorAll('.fila-plataforma, .fila-plataformaTV');
+        var filas = document.querySelectorAll(&#x27;.fila-plataforma, .fila-plataformaTV&#x27;);
 
         var contadorFilasValidas = 0;
         for (var j = 0; j &lt; filas.length; j++) {
-            var cSel = filas[j].querySelector('.correo-select, .tipo');
-            var correoTemp = cSel?.tagName == 'SELECT' ? cSel.options[cSel.selectedIndex].text : (cSel?.value || filas[j].querySelector('.cont-correo')?.innerText || '');
-            if (correoTemp != '' &amp;&amp; correoTemp != 'Seleccione...') {
+            var cSel = filas[j].querySelector(&#x27;.correo-select, .tipo&#x27;);
+            var correoTemp = cSel?.tagName == &#x27;SELECT&#x27; ? cSel.options[cSel.selectedIndex].text : (cSel?.value || filas[j].querySelector(&#x27;.cont-correo&#x27;)?.innerText || &#x27;&#x27;);
+            if (correoTemp != &#x27;&#x27; &amp;&amp; correoTemp != &#x27;Seleccione...&#x27;) {
                 contadorFilasValidas++;
             }
         }
@@ -2488,58 +2558,58 @@ async function guardarCuentas() {
         var lote = db.batch();
         for (var i = 0; i &lt; filas.length; i++) {
             var f = filas[i];
-            var idDocViejo = f.getAttribute('data-id');
-            var elTipo = f.querySelector('.tipo');
-            var elClave = f.querySelector('.clave');
-            var elPerf = f.querySelector('.perfil-select');
-            var elPin = f.querySelector('.pin');
-            var elCSel = f.querySelector('.correo-select');
+            var idDocViejo = f.getAttribute(&#x27;data-id&#x27;);
+            var elTipo = f.querySelector(&#x27;.tipo&#x27;);
+            var elClave = f.querySelector(&#x27;.clave&#x27;);
+            var elPerf = f.querySelector(&#x27;.perfil-select&#x27;);
+            var elPin = f.querySelector(&#x27;.pin&#x27;);
+            var elCSel = f.querySelector(&#x27;.correo-select&#x27;);
 
-            var correoF = '';
-            if (elCSel != null &amp;&amp; elCSel.tagName == 'SELECT') {
+            var correoF = &#x27;&#x27;;
+            if (elCSel != null &amp;&amp; elCSel.tagName == &#x27;SELECT&#x27;) {
                 correoF = elCSel.options[elCSel.selectedIndex].text;
             } else {
-                correoF = elCSel?.value || f.querySelector('.cont-correo')?.innerText || '';
+                correoF = elCSel?.value || f.querySelector(&#x27;.cont-correo&#x27;)?.innerText || &#x27;&#x27;;
             }
 
-            if (correoF == '' || correoF == 'Seleccione...') continue;
+            if (correoF == &#x27;&#x27; || correoF == &#x27;Seleccione...&#x27;) continue;
 
             if (idDocViejo) {
-                lote.delete(db.collection('cuentas').doc(idDocViejo));
+                lote.delete(db.collection(&#x27;cuentas&#x27;).doc(idDocViejo));
             } else if (idModificando) {
-                lote.delete(db.collection('cuentas').doc(idModificando));
+                lote.delete(db.collection(&#x27;cuentas&#x27;).doc(idModificando));
             }
             
             
 
             var objetoNuevo = new Object();
             objetoNuevo.clienteId = idCli;
-            objetoNuevo.plataforma = (elTipo != null) ? elTipo.value : '';
+            objetoNuevo.plataforma = (elTipo != null) ? elTipo.value : &#x27;&#x27;;
             objetoNuevo.correo = correoF;
-            objetoNuevo.clave = (elClave != null) ? elClave.value : '';
-            objetoNuevo.perfil = (elPerf != null) ? elPerf.value : '1';
-            objetoNuevo.perfil_etiqueta = objetoNuevo.perfil + '. ' + nombreCli;
-            objetoNuevo.pin = (elPin != null) ? elPin.value : '';
+            objetoNuevo.clave = (elClave != null) ? elClave.value : &#x27;&#x27;;
+            objetoNuevo.perfil = (elPerf != null) ? elPerf.value : &#x27;1&#x27;;
+            objetoNuevo.perfil_etiqueta = objetoNuevo.perfil + &#x27;. &#x27; + nombreCli;
+            objetoNuevo.pin = (elPin != null) ? elPin.value : &#x27;&#x27;;
             objetoNuevo.inicio = fInicio;
             objetoNuevo.fin = fechaFinalCalculada;
             objetoNuevo.metodoPago = mPago;
             objetoNuevo.valor = valorPorPlataforma.toString(); 
             objetoNuevo.fechaRegistro = marcaTiempoUnica; 
-            objetoNuevo.estado = 'Activa';
+            objetoNuevo.estado = &#x27;Activa&#x27;;
             objetoNuevo.nota_cuenta = notaTexto; 
 
-            lote.set(db.collection('cuentas').doc(), objetoNuevo);
+            lote.set(db.collection(&#x27;cuentas&#x27;).doc(), objetoNuevo);
         }
 
-        lote.commit().catch(function (e) { alert('Error 1006: ' + e.message); });
-        avisoRapido('✅ Venta procesada con éxito');
-        alert('✅ Venta procesada con éxito');
+        lote.commit().catch(function (e) { alert(&#x27;Error 1006: &#x27; + e.message); });
+        avisoRapido(&#x27;✅ Venta procesada con éxito&#x27;);
+        alert(&#x27;✅ Venta procesada con éxito&#x27;);
         reiniciarFormVentas(); 
 
         var fueGarantia = (idModificando != null); 
         idModificando = null;
 
-        if (typeof reiniciarFormVentas == 'function') { 
+        if (typeof reiniciarFormVentas == &#x27;function&#x27;) { 
             reiniciarFormVentas(); 
         }
 
@@ -2559,27 +2629,28 @@ async function guardarCuentas() {
 var fechaHoyStr = formatearFecha(f);
             
             
-            var fechaHoyStr = hoy.toISOString().split('T')[0];
+            var fechaHoyStr = hoy.toISOString().split(&#x27;T&#x27;)[0];
             
             var fechaVence = new Date();
             fechaVence.setDate(hoy.getDate() + 30);
-            var fechaVenceStr = fechaVence.toISOString().split('T')[0];
+            var fechaVenceStr = fechaVence.toISOString().split(&#x27;T&#x27;)[0];
 
-            if (document.getElementById('fechaInicio')) document.getElementById('fechaInicio').value = fechaHoyStr;
-            if (document.getElementById('fechaFin')) document.getElementById('fechaFin').value = fechaVenceStr;
-            if (document.getElementById('valorPago')) document.getElementById('valorPago').value = '0';
+            if (document.getElementById(&#x27;fechaInicio&#x27;)) document.getElementById(&#x27;fechaInicio&#x27;).value = fechaHoyStr;
+            if (document.getElementById(&#x27;fechaFin&#x27;)) document.getElementById(&#x27;fechaFin&#x27;).value = fechaVenceStr;
+            if (document.getElementById(&#x27;valorPago&#x27;)) document.getElementById(&#x27;valorPago&#x27;).value = &#x27;0&#x27;;
             
             // PRESELECCIONAR 30 DÍAS POR DEFECTO
-            var elDias = document.getElementById('dias'); // Asegúrate que el ID sea 'dias'
+            var elDias = document.getElementById(&#x27;dias&#x27;); // Asegúrate que el ID sea &#x27;dias&#x27;
             if (elDias) {
-                elDias.value = '30';
+                elDias.value = &#x27;30&#x27;;
             }
         }
 
-        if (typeof actualizarTodo == 'function') actualizarTodo();
+        if (typeof actualizarTodo == &#x27;function&#x27;) actualizarTodo();
+        if (fueGarantia &amp;&amp; typeof mostrar === &#x27;function&#x27;) mostrar(&#x27;seccionVentas&#x27;);
 
     } catch (error) {
-        alert('Error 1006: ' + error.message);
+        alert(&#x27;Error 1006: &#x27; + error.message);
     }
 }
 
@@ -2601,7 +2672,7 @@ async function guardarCuentasTV() {
         var clave = document.getElementById(&quot;inputClaveTV&quot;).value;
         var perfil = document.getElementById(&quot;selectPerfilTV&quot;).value;
         var pin = document.getElementById(&quot;inputPinTV&quot;).value;
-        var estadoTV = document.getElementById(&quot;estadoTvLista&quot;).value; // 'true' o 'false'
+        var estadoTV = document.getElementById(&quot;estadoTvLista&quot;).value; // &#x27;true&#x27; o &#x27;false&#x27;
         
         // Validación básica de campos vacíos
         if (!idCuentaBase || !perfil) {
@@ -2613,7 +2684,7 @@ async function guardarCuentasTV() {
 
         // 3. Generación del ID único y creación del objeto
         var codigoAleatorio = Math.floor(100000 + Math.random() * 900000);
-        var idDocumento = &quot;01NetflixTV&quot; + codigoAleatorio;
+        var idDocumento = (typeof idRenovacionTV !== &quot;undefined&quot; &amp;&amp; idRenovacionTV) ? idRenovacionTV : &quot;01NetflixTV&quot; + codigoAleatorio;
 
         var objetoVenta = {
             clienteId: idCli,
@@ -2637,6 +2708,7 @@ async function guardarCuentasTV() {
         db.collection(&quot;cuentas&quot;).doc(idDocumento).set(objetoVenta).catch(e =&gt; alert(&quot;Error 1007: &quot; + e.message));
 
         alert(&quot;✅ Venta de Netflix TV guardada con éxito (ID: &quot; + idDocumento + &quot;)&quot;);
+        if (idRenovacionTV) { idRenovacionTV = null; setTimeout(() =&gt; { if (typeof mostrar === &quot;function&quot;) mostrar(&quot;seccionVentas&quot;); }, 300); }
         
         // 5. Limpieza y refresco
         reiniciarFormTV();
@@ -2682,12 +2754,12 @@ document.getElementById(&quot;fechaFinTV&quot;).value = anioV + &quot;-&quot; + 
     document.getElementById(&quot;inputPinTV&quot;).value = &quot;&quot;;
     
     var selectPerfil = document.getElementById(&quot;selectPerfilTV&quot;);
-    selectPerfil.innerHTML = '&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;';
+    selectPerfil.innerHTML = &#x27;&lt;option value=&quot;&quot;&gt;Seleccione un perfil...&lt;/option&gt;&#x27;;
     
     // PRESELECCIONAR 30 DÍAS POR DEFECTO
-            var elDias = document.getElementById('diasTV'); // Asegúrate que el ID sea 'dias'
+            var elDias = document.getElementById(&#x27;diasTV&#x27;); // Asegúrate que el ID sea &#x27;dias&#x27;
             if (elDias) {
-                elDias.value = '30';
+                elDias.value = &#x27;30&#x27;;
             }
 }
 
@@ -2741,7 +2813,7 @@ function dibujarSeccionOtrosAdmin(plataforma, cuentasBase, ventasActivas) {
                 // 3. DISEÑO DE LA CELDA OCUPADA
                 html += `&lt;td style=&quot;background: ${colorFondo}; color: ${colorTexto}; padding: 6px; text-align: center; border: 1px solid #fff; min-width: 90px;&quot;&gt;
                     &lt;div style=&quot;font-weight: bold; font-size: 10px; border-bottom: 1px solid rgba(255,255,255,0.4); margin-bottom: 3px;&quot;&gt;
-                        ${diferencia &lt;= 0 ? 'VENCIDO' : 'Faltan ' + diferencia + 'd'}
+                        ${diferencia &lt;= 0 ? &#x27;VENCIDO&#x27; : &#x27;Faltan &#x27; + diferencia + &#x27;d&#x27;}
                     &lt;/div&gt;
                     &lt;div style=&quot;font-size: 9px; line-height: 1;&quot;&gt;
                         👤 ${asignacion.cliente_nombre || &quot;Sin Nombre&quot;}
@@ -2770,13 +2842,11 @@ function buscarClienteHibrido(idInput, idLista, idSeleccionado, idTxtElegido) {
     const hiddenId = document.getElementById(idSeleccionado);
     const txtElegido = document.getElementById(idTxtElegido);
     
-    function quitarTildes(t){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
-const txt = quitarTildes(input.value);
-
+    const txt = input.value.normalize(&quot;NFD&quot;).replace(/[\u0300-\u036f]/g, &quot;&quot;).toLowerCase();
     lista.innerHTML = &quot;&quot;;
     
     const filtrados = listaClientesLocal.filter(c =&gt; 
-        quitarTildes(c.nombre).includes(txt) || String(c.whatsapp || '').includes(txt)
+        (c.nombre || &quot;&quot;).normalize(&quot;NFD&quot;).replace(/[\u0300-\u036f]/g, &quot;&quot;).toLowerCase().includes(txt) || c.whatsapp.includes(txt)
     );
 
     if (filtrados.length &gt; 0) {
@@ -2905,7 +2975,7 @@ function agregarPlataforma(){
 function mostrar(id, esRenovacion = false){ 
     document.querySelectorAll(&quot;.content&gt;div&quot;).forEach(d=&gt;d.style.display=&quot;none&quot;); 
     document.getElementById(id).style.display=&quot;block&quot;; 
-    if(id === 'cuentas' &amp;&amp; !esRenovacion) {
+    if(id === &#x27;cuentas&#x27; &amp;&amp; !esRenovacion) {
         reiniciarFormVentas();
     }
 }
@@ -3100,12 +3170,8 @@ document.addEventListener(&quot;DOMContentLoaded&quot;, () =&gt; {
 });
 
 function eliminarCliente(id){ if(confirm(&quot;¿Eliminar?&quot;)) db.collection(&quot;clientes&quot;).doc(id).delete().then(()=&gt;actualizarTodo()); }
-function quitarTildesTabla(t){ return String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
-function filtrarTablaClientes(){ const bus=quitarTildesTabla(filtroCliente.value); const filas=bodyClientes.getElementsByTagName('tr'); for(let f of filas) f.style.display=quitarTildesTabla(f.innerText).includes(bus)?'':'none'; }
-function filtrarHistorialVentas(){ const bus=quitarTildesTabla(busquedaHistorial.value); const filas=document.getElementById('bodyVentasHistorial').getElementsByTagName('tr'); for(let f of filas) f.style.display=quitarTildesTabla(f.innerText).includes(bus)?'':'none'; }
-function limpiarWhatsApp(campo, pegado){ const t = String(campo.value || '').trim(); const conMas = t.charAt(0) === '+'; let n = t.replace(/\D/g, ''); const codigos = ['57', '58', '52', '34', '1']; for (const c of codigos) { if (n.indexOf(c) === 0) { const resto = n.slice(c.length); const quitar = conMas || (pegado ? (n.length > 10 ? (resto.length === 10 || resto.length === 9) : false) : false); if (quitar) { n = resto; document.getElementById('c_codigo').value = '+' + c; } break; } } if (campo.value !== n) campo.value = n; }
-document.getElementById('c_whatsapp').addEventListener('input', function(e){ limpiarWhatsApp(this, e.inputType === 'insertFromPaste'); });
-
+function filtrarTablaClientes(){ const bus=filtroCliente.value.toLowerCase(); const filas=bodyClientes.getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
+function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase(); const filas=document.getElementById(&quot;bodyVentasHistorial&quot;).getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
 
 // -------------------------------------------------------------------------
 // CARGAR ADMIN PERFILES (CON LOS CAMBIOS SOLICITADOS)
@@ -3199,9 +3265,9 @@ if (asig) {
 
             const row = document.createElement(&quot;tr&quot;);
             let btnBorrar = (body === tablas[&quot;OTROS&quot;]) ? 
-    '&lt;button onclick=&quot;eliminarCuentaGenerica(\'' + id + '\', \'' + colOrigen + '\')&quot; ' +
-    'style=&quot;background:none; border:none; cursor:pointer; font-size:16px;&quot; ' +
-    'title=&quot;Eliminar cuenta&quot;&gt;🗑️&lt;/button&gt;' 
+    &#x27;&lt;button onclick=&quot;eliminarCuentaGenerica(\&#x27;&#x27; + id + &#x27;\&#x27;, \&#x27;&#x27; + colOrigen + &#x27;\&#x27;)&quot; &#x27; +
+    &#x27;style=&quot;background:none; border:none; cursor:pointer; font-size:16px;&quot; &#x27; +
+    &#x27;title=&quot;Eliminar cuenta&quot;&gt;🗑️&lt;/button&gt;&#x27; 
     : &quot;&quot;;
             let colPlataforma = (body === tablas[&quot;OTROS&quot;]) ? `&lt;td style=&quot;padding:10px; font-weight:bold; font-size:13px;&quot;&gt;${d.plataforma}&lt;/td&gt;` : &quot;&quot;;
 
@@ -3212,7 +3278,7 @@ if (asig) {
                 ${celdas}
                 &lt;td style=&quot;font-size:13px; color:gray;&quot;&gt;${fMod}&lt;/td&gt;
                 &lt;td id=&quot;td-accion-${id}&quot; style=&quot;white-space:nowrap;&quot;&gt;
-                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;habilitarEdicionFila('${id}', '${colOrigen}')&quot;&gt;✏️&lt;/button&gt;
+                    &lt;button class=&quot;edit-btn&quot; onclick=&quot;habilitarEdicionFila(&#x27;${id}&#x27;, &#x27;${colOrigen}&#x27;)&quot;&gt;✏️&lt;/button&gt;
                     ${btnBorrar}
                 &lt;/td&gt;
             `;
@@ -3234,7 +3300,7 @@ function habilitarEdicionFila(id, coleccion) {
     inputCla.readOnly = false;
 
     // 2. ESTILO DE CAJÓN ABIERTO
-    // El 'cursor: text' es vital para que el mouse te deje seleccionar letras
+    // El &#x27;cursor: text&#x27; es vital para que el mouse te deje seleccionar letras
     let estiloEditable = &quot;background:#fff !important; border:2px solid #25d366 !important; color:#000 !important; cursor:text !important; pointer-events: auto !important;&quot;;
     
     inputCor.setAttribute(&quot;style&quot;, estiloEditable);
@@ -3242,7 +3308,7 @@ function habilitarEdicionFila(id, coleccion) {
 
     // 3. CAMBIO DE BOTONES
     tdAccion.innerHTML = `
-        &lt;button onclick=&quot;guardarCambiosCompletos('${id}', '${coleccion}')&quot; style=&quot;background:#25d366; color:white; border:none; padding:8px; border-radius:4px; cursor:pointer;&quot;&gt;💾&lt;/button&gt;
+        &lt;button onclick=&quot;guardarCambiosCompletos(&#x27;${id}&#x27;, &#x27;${coleccion}&#x27;)&quot; style=&quot;background:#25d366; color:white; border:none; padding:8px; border-radius:4px; cursor:pointer;&quot;&gt;💾&lt;/button&gt;
         &lt;button onclick=&quot;cargarAdminPerfiles()&quot; style=&quot;background:#e74c3c; color:white; border:none; padding:8px; border-radius:4px; cursor:pointer; margin-left:5px;&quot;&gt;✖&lt;/button&gt;
     `;
 
@@ -3273,13 +3339,13 @@ async function guardarCambiosCompletos(id, coleccion) {
         
         // --- ESTO ES LO QUE DEBES AGREGAR ---
         // 1. Si estás en la misma página de Admin Perfiles, refresca esa tabla
-        if (typeof cargarAdminPerfiles === 'function') {
+        if (typeof cargarAdminPerfiles === &#x27;function&#x27;) {
             await cargarAdminPerfiles();
         }
 
         // 2. Si tienes la tabla de Historial/Ventas en la misma pantalla, la refrescamos
-        // Suponiendo que tu función de historial se llama 'cargarHistorialVentas'
-        if (typeof cargarHistorialVentas === 'function') {
+        // Suponiendo que tu función de historial se llama &#x27;cargarHistorialVentas&#x27;
+        if (typeof cargarHistorialVentas === &#x27;function&#x27;) {
             await cargarHistorialVentas();
         }
         
@@ -3349,7 +3415,7 @@ async function actualizarCuentaBase(id) {
         alert(&quot;✅ ¡Excelente! Se actualizó cuentas_base y se sincronizó con la colección cuentas.&quot;);
         
         // 5. REFRESCAR LA PÁGINA (Para que veas el cambio en tu tabla)
-        if (typeof cargarAdminPerfiles === 'function') {
+        if (typeof cargarAdminPerfiles === &#x27;function&#x27;) {
             await cargarAdminPerfiles();
         }
 
@@ -3415,7 +3481,7 @@ async function guardarCambiosCompletos(id, coleccion) {
         alert(&quot;✅ Guardado en cuentas_base y actualizado en cuentas de clientes.&quot;);
         
         // 5. Refrescamos la tabla que estás viendo
-        if (typeof cargarAdminPerfiles === 'function') {
+        if (typeof cargarAdminPerfiles === &#x27;function&#x27;) {
             await cargarAdminPerfiles();
         }
 
@@ -3460,16 +3526,16 @@ async function eliminarCuentaGenerica(id, coleccion) {
 
 
 function mostrarTooltip(e) {
-    const info = e.currentTarget.getAttribute('data-info');
+    const info = e.currentTarget.getAttribute(&#x27;data-info&#x27;);
     if (info) {
         tooltip.innerHTML = info;
-        tooltip.style.display = 'block';
-        tooltip.style.left = (e.clientX + 15) + 'px';
-        tooltip.style.top = (e.clientY + 15) + 'px';
+        tooltip.style.display = &#x27;block&#x27;;
+        tooltip.style.left = (e.clientX + 15) + &#x27;px&#x27;;
+        tooltip.style.top = (e.clientY + 15) + &#x27;px&#x27;;
     }
 }
 
-function ocultarTooltip() { tooltip.style.display = 'none'; }
+function ocultarTooltip() { tooltip.style.display = &#x27;none&#x27;; }
 
 
 
@@ -3515,15 +3581,15 @@ async function actualizarCuentaBase(idCuenta) {
 }
 
 function mostrarSeccion(id) {
-    const secciones = document.querySelectorAll('.content-section');
-    secciones.forEach(s =&gt; { s.style.display = 'none'; });
+    const secciones = document.querySelectorAll(&#x27;.content-section&#x27;);
+    secciones.forEach(s =&gt; { s.style.display = &#x27;none&#x27;; });
 
     const activa = document.getElementById(id);
     if (activa) {
-        activa.style.display = 'block';
+        activa.style.display = &#x27;block&#x27;;
     }
 
-    if (id === 'seccionLogs') {
+    if (id === &#x27;seccionLogs&#x27;) {
         cargarLogsAuditoria();
     }
 }
@@ -3532,7 +3598,7 @@ function mostrarSeccion(id) {
     const visor = document.getElementById(&quot;tablaLogsBody&quot;);
     if (!visor) return;
 
-    visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; padding:20px; color:#555;'&gt;Conectando con registro...&lt;/td&gt;&lt;/tr&gt;&quot;;
+    visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan=&#x27;4&#x27; style=&#x27;text-align:center; padding:20px; color:#555;&#x27;&gt;Conectando con registro...&lt;/td&gt;&lt;/tr&gt;&quot;;
 
     db.collection(&quot;logs_codigos&quot;)
         .orderBy(&quot;timestamp&quot;, &quot;desc&quot;)
@@ -3542,7 +3608,7 @@ function mostrarSeccion(id) {
             visor.innerHTML = &quot;&quot;;
 
             if (snapshot.empty) {
-                visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; padding:20px;'&gt;No hay registros en la base de datos.&lt;/td&gt;&lt;/tr&gt;&quot;;
+                visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan=&#x27;4&#x27; style=&#x27;text-align:center; padding:20px;&#x27;&gt;No hay registros en la base de datos.&lt;/td&gt;&lt;/tr&gt;&quot;;
                 return;
             }
 
@@ -3552,15 +3618,15 @@ function mostrarSeccion(id) {
                 const tr = document.createElement(&quot;tr&quot;);
                 tr.style.borderBottom = &quot;1px solid #2a2a2a&quot;;
 
-                const fondoP = item.plataforma === 'DISNEY' ? '#0063e5' : '#e50914';
+                const fondoP = item.plataforma === &#x27;DISNEY&#x27; ? &#x27;#0063e5&#x27; : &#x27;#e50914&#x27;;
 
                 tr.innerHTML = `
-                    &lt;td style='padding:12px;font-weight:bold; font-size:13px; color:#075E35;'&gt;${item.fecha || '---'}&lt;/td&gt;
-                    &lt;td style='padding:12px; font-weight:bold; color:#000;'&gt;${item.nombre_cliente || '---'}&lt;/td&gt;
-                    &lt;td style='padding:12px;'&gt;
-                        &lt;span style='background:${fondoP}; padding:2px 8px; border-radius:4px; font-size:13px; font-weight:bold;'&gt;${item.plataforma || '---'}&lt;/span&gt;
+                    &lt;td style=&#x27;padding:12px;font-weight:bold; font-size:13px; color:#075E35;&#x27;&gt;${item.fecha || &#x27;---&#x27;}&lt;/td&gt;
+                    &lt;td style=&#x27;padding:12px; font-weight:bold; color:#000;&#x27;&gt;${item.nombre_cliente || &#x27;---&#x27;}&lt;/td&gt;
+                    &lt;td style=&#x27;padding:12px;&#x27;&gt;
+                        &lt;span style=&#x27;background:${fondoP}; padding:2px 8px; border-radius:4px; font-size:13px; font-weight:bold;&#x27;&gt;${item.plataforma || &#x27;---&#x27;}&lt;/span&gt;
                     &lt;/td&gt;
-                    &lt;td style='padding:12px; font-family:monospace; color:#11075E; font-weight:bold; font-size:16px;'&gt;${item.codigo_visto || '---'}&lt;/td&gt;
+                    &lt;td style=&#x27;padding:12px; font-family:monospace; color:#11075E; font-weight:bold; font-size:16px;&#x27;&gt;${item.codigo_visto || &#x27;---&#x27;}&lt;/td&gt;
                 `;
 
                 visor.appendChild(tr);
@@ -3571,7 +3637,7 @@ function mostrarSeccion(id) {
 
             console.error(&quot;Error en logs_codigos:&quot;, error);
 
-            visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan='4' style='text-align:center; color:red; padding:20px;'&gt;⚠️ ERROR 1008: Revisa el índice de Firestore en la consola (F12)&lt;/td&gt;&lt;/tr&gt;&quot;;
+            visor.innerHTML = &quot;&lt;tr&gt;&lt;td colspan=&#x27;4&#x27; style=&#x27;text-align:center; color:red; padding:20px;&#x27;&gt;⚠️ ERROR 1008: Revisa el índice de Firestore en la consola (F12)&lt;/td&gt;&lt;/tr&gt;&quot;;
 
         });
 
@@ -3596,8 +3662,8 @@ function abrirModalNuevaCuenta(plat) {
     cargarCuentasBase();
 });
 // Al cargar el panel, ponemos la fecha de hoy y calculamos el vencimiento
-window.addEventListener('load', () =&gt; {
-    const hoy = new Date().toISOString().split('T')[0];
+window.addEventListener(&#x27;load&#x27;, () =&gt; {
+    const hoy = new Date().toISOString().split(&#x27;T&#x27;)[0];
     document.getElementById(&quot;fechaInicioTV&quot;).value = hoy;
     calcularFechaFinTV();
 });
