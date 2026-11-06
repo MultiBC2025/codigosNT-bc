@@ -288,7 +288,7 @@
         .hw-modal-close { position: absolute; top: 15px; right: 20px; font-size: 30px; cursor: pointer; color: var(--text-muted); }
         .btn-autogestion.hw-btn-code { background: #0d6efd !important; color: white !important; border: none !important; margin-left: 5px; font-weight: bold; }
         .btn-autogestion.hw-btn-hogar { background: #D000D4 !important; color: white !important; border: none !important; margin-left: 5px; font-weight: bold; }
-        .btn-autogestion.hw-btn-auto { background: #ffc107 !important; color: #212529 !important; border: none !important; margin-left: 5px; font-weight: bold; font-size: 0.62em !important; padding: 4px 6px !important; min-height: 30px !important; line-height: 1.2 !important; }
+        .btn-autogestion.hw-btn-auto { background: #ffc107 !important; color: #212529 !important; border: none !important; margin-left: 5px; font-weight: bold; font-size: 0.62em !important; padding: 4px 6px !important; min-height: 5px !important; line-height: 1.2 !important; }
         .hw-cod-visor { font-size: 16px; color: #0d6efd; font-weight: bold; margin-top: 8px; text-align: center; min-height: 24px; }
         .hw-note { background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.8rem; border-left: 4px solid #ffc107; margin-top: 10px; text-align: left; }
         .hw-note b { color: #bc9105; }
@@ -1612,7 +1612,7 @@ async function cargarPanelCliente(clientesEncontrados) {
                 const fVenceObj = new Date(d.fin + "T12:00:00");
                 const diff = Math.ceil((fVenceObj - hoyLocal) / (1000 * 60 * 60 * 24)) - 1;
                 // Agregamos el nombre del titular al objeto para saber de quién es cada cuenta
-                if (diff >= -20) servicios.push({ ...d, diff, nombreTitular: cliente.nombre });
+                if (diff >= -20) servicios.push({ ...d, id: doc.id, diff, nombreTitular: cliente.nombre });
             });
         }
 
@@ -1658,7 +1658,11 @@ async function cargarPanelCliente(clientesEncontrados) {
             const fV = s.fin.split('-').reverse().join('/');
             const ahoraMomento = new Date();
             const pName = s.plataforma.toUpperCase();
+            // Netflix TV: sin correo ni clave en la tarjeta, solo perfil y PIN,
+            // y abajo un botón a la página de vinculación con el ID del documento.
+            const esTV = pName.includes("NETFLIX") && pName.includes("TV");
             let btnLink = "";
+            let msgPruebaAuto = "";
             if(s.diff >= 0) {
             const linkNetflix = "https://multibc2025.github.io/codigosNT-bc/";
             const linkDisney = "https://multibc2025.github.io/disney/";
@@ -1690,6 +1694,10 @@ async function cargarPanelCliente(clientesEncontrados) {
                 // Espacio para el resultado
                 btnLink += `<div id="cod-${s.correo.replace(/[^a-zA-Z0-9]/g, '')}" 
                             class="hw-cod-visor"></div>`;
+
+                // Mensaje de pruebas de automatización: solo en Netflix (no TV),
+                // se muestra debajo de los botones y antes de las fechas.
+                msgPruebaAuto = `<div style="font-size:0.8rem; text-align:center; margin:10px 0 4px; padding:8px 10px; border:1px dashed #ffc107; border-radius:8px; background:rgba(255,193,7,0.08);">🙏 <b>Apreciado cliente</b>, en estos momentos estamos realizando pruebas de automatización de los correos de activación de hogar de Netflix y necesitamos tu ayuda para verificar y confirmar que nuestro servidor y el servicio automatizado estén funcionando sin problemas. Te invitamos a probar el botón amarillo <b>"Activar Hogar / Código temp - Automatizado"</b> en el momento que vayas a confirmar la Activacion Hogar, y te daremos un beneficio por tu colaboración. Esta automatización queda registrada en nuestra base de datos y podemos confirmar quiénes nos colaboraron. Agradecemos esperar el tiempo requerido hasta el mensaje final, y el responder la encuesta de satisfacción. <br><small><b>Solo para activación de hogar y código temporal de hogar. No vale para código de inicio de sesión.</b></small></div>`;
                             
                             
                 btnLink += `<div class="contenedor-codigo" style="margin-top:10px;"></div>`;            
@@ -1735,11 +1743,17 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                 textoOfertaWA = `🎁 *Deseo aplicar al descuento especial por renovación el día ${diaDeLaOferta}*.\n\n`;
             }
 
+            // En Netflix TV el mensaje de renovación lleva el ID del documento
+            // en vez del correo; en el resto queda el correo como siempre.
+            const lineaDatoCuenta = (esTV && s.id)
+                ? "🆔 *ID:* " + s.id + "\n"
+                : "📧 *Correo:* " + s.correo + "\n";
+
             let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
                             "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
                             "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
                             "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
-                            "📧 *Correo:* " + s.correo + "\n" +
+                            lineaDatoCuenta +
                             "👤 *Perfil:* " + s.perfil + "\n" +
                             "👤 *Cliente:* " + s.nombreTitular + "\n\n" + // USAMOS EL NOMBRE DEL TITULAR ESPECÍFICO
                             "Deseo realizar el proceso de renovación un nuevo mes.\n" +
@@ -1765,6 +1779,22 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
             const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
             const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
 
+            // Botón TV: solo en Netflix TV vigente, abre la página de vinculación
+            // con el ID del documento (?id=01NetflixTV...).
+            let btnTV = "";
+            if (esTV && s.diff >= 0 && s.id) {
+                btnTV = `<a href="https://multibc2025.github.io/codigosNT-bc/tv-netflix/?id=${encodeURIComponent(s.id)}" target="_blank" class="btn-autogestion" style="display:block; text-align:center; margin-top:10px;">📺 Acceda a la página para continuar el proceso de vinculación al TV</a>`;
+            }
+
+            // Datos de la tarjeta: en Netflix TV no se muestran correo ni clave,
+            // solo titular, perfil y PIN. En el resto queda igual.
+            const htmlDatos = esTV
+                ? `<p class="mb-1">👤 <b>Titular:</b> <span class="mb-0">${s.nombreTitular}</span></p>
+                        <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>`
+                : `<p class="mb-1">👤 <b>Titular:</b> <span class="mb-0">${s.nombreTitular}</span></p> <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
+                        <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
+                        <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>`;
+
             return `
             <div class="card servicio-card shadow-sm ${colorClase} mb-3">
                 <div class="card-body p-3">
@@ -1772,15 +1802,15 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                         <h5 class="mb-0 text-uppercase"><b>${s.plataforma}</b> ${btnLink}</h5>
                         <span class="badge badge-status ${badgeColor}">${formatearDiasTexto(s.diff)}</span>
                     </div>
+                    ${msgPruebaAuto}
                     <div class="row text-center mb-2" style="font-size: 0.8rem;">
                         <div class="col-6 border-end">INICIO: <b>${s.inicio.split('-').reverse().join('/')}</b></div>
                         <div class="col-6">FIN: <b>${fV}</b></div>
                     </div>
                     <div class="info-row" style="font-size: 0.85rem;">
-                        <p class="mb-1">👤 <b>Titular:</b> <span class="mb-0">${s.nombreTitular}</span></p> <p class="mb-1">📧 <b>Correo:</b> ${s.correo}</p>
-                        <p class="mb-0">🔑 <b>Clave:</b> ${s.diff < 0 ? '********' : s.clave}</p>
-                        <p class="mb-1">👤 <b>Perfil:</b> ${s.perfil} | <b>PIN:</b> <span class="pin-box">${s.pin}</span></p>
+                    ${htmlDatos}
                     ${htmlNotas}</div>
+                    ${btnTV}
                     ${btnWA}
                 </div>
             </div>`;
@@ -2180,6 +2210,7 @@ function solicitarAccesoNetflix(correo, perfil, botonPresionado) {
 // ========================================================
 var URL_APPS_SCRIPT_AUTOMATIZADO = "https://script.google.com/macros/s/AKfycbwLLr3D7nZnWx1_oa0P6qMk5_BZvNuCR-xsWBTc4-PX3IZ3pXVPsYqZvo06d7N5nfClTQ/exec";
 window.URL_APPS_SCRIPT_AUTOMATIZADO = URL_APPS_SCRIPT_AUTOMATIZADO;
+var datosAutoPorJob = {};
 
 function buscarVisorAuto(boton, correo) {
     var visor = null;
@@ -2292,7 +2323,9 @@ function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId)
             + "<div style='font-size:12px; color:#666; margin-top:8px;'>Usa este código para ver Netflix en tu dispositivo.</div>"
             + "</div>"
             + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, data.codigo);
-        try { registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, data.codigo); } catch (e) { console.log("No se pudo registrar el log, pero el código se muestra."); }
+        if (typeof datosAutoPorJob === "undefined") { datosAutoPorJob = {}; }
+        datosAutoPorJob[jobId] = { correo: correo, nombreCliente: nombreClienteFinal, plataforma: plataformaLog, codigo: data.codigo, idLog: null };
+        try { var promesaLogAuto = registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, data.codigo); if (promesaLogAuto && promesaLogAuto.then) { promesaLogAuto.then(function(ref) { if (ref && ref.id && typeof datosAutoPorJob !== "undefined" && datosAutoPorJob[jobId]) { datosAutoPorJob[jobId].idLog = ref.id; } }); } } catch (e) { console.log("No se pudo registrar el log, pero el código se muestra."); }
     } else if (data.resultado === "autorizado") {
         visor.innerHTML = "<div style='margin-top:15px; padding:20px; text-align:center; background: #f0fff4; border-radius: 18px; border: 1px solid #198754;'>"
             + "<div style='font-size:16px; font-weight:900; color:#198754;'>SOLICITUD APROBADA</div>"
@@ -2301,7 +2334,9 @@ function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId)
             + "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>"
             + "</div>"
             + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, "Solicitud Procesada - Automatizado");
-        try { registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Solicitud Procesada - Automatizado"); } catch (e) { console.log("No se pudo registrar el log."); }
+        if (typeof datosAutoPorJob === "undefined") { datosAutoPorJob = {}; }
+        datosAutoPorJob[jobId] = { correo: correo, nombreCliente: nombreClienteFinal, plataforma: plataformaLog, codigo: "Solicitud Procesada - Automatizado", idLog: null };
+        try { var promesaLogAuto = registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Solicitud Procesada - Automatizado"); if (promesaLogAuto && promesaLogAuto.then) { promesaLogAuto.then(function(ref) { if (ref && ref.id && typeof datosAutoPorJob !== "undefined" && datosAutoPorJob[jobId]) { datosAutoPorJob[jobId].idLog = ref.id; } }); } } catch (e) { console.log("No se pudo registrar el log."); }
     } else {
         var motivo = data.motivo || "El enlace pudo haber caducado, por favor vuelve a solicitarlo.";
         visor.innerHTML = "<div style='margin-top:15px; padding:20px; text-align:center; background: #fff5f5; border-radius: 18px; border: 1px solid #E50914;'>"
@@ -2310,7 +2345,9 @@ function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId)
             + "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>"
             + "</div>"
             + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, "Error - Automatizado");
-        try { registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Error - Automatizado"); } catch (e) { console.log("No se pudo registrar el log."); }
+        if (typeof datosAutoPorJob === "undefined") { datosAutoPorJob = {}; }
+        datosAutoPorJob[jobId] = { correo: correo, nombreCliente: nombreClienteFinal, plataforma: plataformaLog, codigo: "Error - Automatizado", idLog: null };
+        try { var promesaLogAuto = registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Error - Automatizado"); if (promesaLogAuto && promesaLogAuto.then) { promesaLogAuto.then(function(ref) { if (ref && ref.id && typeof datosAutoPorJob !== "undefined" && datosAutoPorJob[jobId]) { datosAutoPorJob[jobId].idLog = ref.id; } }); } } catch (e) { console.log("No se pudo registrar el log."); }
     }
 }
 
@@ -2343,17 +2380,46 @@ function enviarEncuestaAutomatizado(jobId, correo, botonEnviar) {
     var comentario = document.getElementById("coment-" + idSeguro);
     var textoComentario = comentario ? comentario.value.trim() : "";
     botonEnviar.disabled = true;
-    var encuestaTexto = "Encuesta Automatizado: ¿Funcionó? " + funciono.value + " | ¿Implementar? " + gustaria.value + (textoComentario ? " | Comentario: " + textoComentario : "");
-    try {
-        registrarEventoCodigo("Encuesta Automatizado", correo, "NETFLIX HOGAR AUTOMATIZADO (ENCUESTA)", encuestaTexto);
-    } catch (e) { console.log("No se pudo registrar la encuesta."); }
-    if (msg) { msg.style.color = "#198754"; msg.innerText = "Gracias por responder, nos ayuda a mejorar nuestros servicios."; }
+    var comentarioSeguro = textoComentario.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    var encuestaTexto = "Encuesta Automatizado: ¿Funcionó? " + funciono.value + " | ¿Implementar? " + gustaria.value + (textoComentario ? " | Comentario: " + comentarioSeguro : "");
+    guardarEncuestaAuto(jobId, correo, encuestaTexto, 0);
+    var encuestaDiv = document.getElementById("enc-auto-" + idSeguro);
+    if (encuestaDiv) {
+        encuestaDiv.innerHTML = "<div style='font-size:13px; font-weight:800; text-align:center; color:#198754;'>Gracias por responder la encuesta, nos ayuda mucho a mejorar nuestros servicios.<br>Hemos recibido tu respuesta.</div>";
+    }
+    var visorAuto = null;
+    try { visorAuto = botonEnviar.closest('.contenedor-codigo'); } catch (e) {}
+    setTimeout(function() { if (visorAuto) { visorAuto.innerHTML = ""; } }, 45000);
+}
+
+function guardarEncuestaAuto(jobId, correo, encuestaTexto, intento) {
+    var datosJobAuto = (typeof datosAutoPorJob !== "undefined") ? datosAutoPorJob[jobId] : null;
+    if (!datosJobAuto) {
+        try { registrarEventoCodigo("Cliente Panel", correo, "NETFLIX HOGAR AUTOMATIZADO", encuestaTexto); } catch (e) { console.log("No se pudo registrar la encuesta."); }
+        return;
+    }
+    if (!datosJobAuto.idLog && intento < 2) {
+        setTimeout(function() { guardarEncuestaAuto(jobId, correo, encuestaTexto, intento + 1); }, 1200);
+        return;
+    }
+    var codigoNuevoAuto = datosJobAuto.codigo + "<br>" + encuestaTexto;
+    if (datosJobAuto.idLog && typeof db !== "undefined") {
+        var idLogAuto = datosJobAuto.idLog;
+        datosJobAuto.idLog = null;
+        datosJobAuto.codigo = codigoNuevoAuto;
+        try {
+            db.collection("logs_codigos").doc(idLogAuto).update({ codigo_visto: codigoNuevoAuto })
+                .catch(function() { try { registrarEventoCodigo(datosJobAuto.nombreCliente, correo, datosJobAuto.plataforma, codigoNuevoAuto); } catch (e2) { console.log("No se pudo registrar la encuesta."); } });
+        } catch (e) { try { registrarEventoCodigo(datosJobAuto.nombreCliente, correo, datosJobAuto.plataforma, codigoNuevoAuto); } catch (e2) { console.log("No se pudo registrar la encuesta."); } }
+    } else {
+        try { registrarEventoCodigo(datosJobAuto.nombreCliente, correo, datosJobAuto.plataforma, codigoNuevoAuto); } catch (e) { console.log("No se pudo registrar la encuesta."); }
+    }
 }
 
 function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
     // Usamos 'db' porque es tu variable de Firestore
     if (typeof db !== 'undefined') {
-        db.collection("logs_codigos").add({
+        return db.collection("logs_codigos").add({
             nombre_cliente: nombre || "Cliente Panel",
             correo_cuenta: correo,
             plataforma: plataforma,
@@ -2361,7 +2427,7 @@ function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
             fecha: new Date().toLocaleString('es-CO'),
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })
-        .then(() => { console.log("✅ Registro guardado en Firestore"); })
+        .then((ref) => { console.log("✅ Registro guardado en Firestore"); return ref; })
         .catch((error) => { console.error("❌ Error Firestore:", error); });
     }
 }
