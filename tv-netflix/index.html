@@ -131,6 +131,15 @@
     let hogarClickLocalMs = 0;
     let mostrarAdvertenciaHogar = false;
     let ultimaVistaHogar = "";
+    // Registro en vivo (logs_codigos, misma colección del panel admin):
+    // una fila por intento de código TV, que se va actualizando en la
+    // misma fila, sin crear registros nuevos. Al actualizar también se
+    // refresca el timestamp para que la fila quede de primera.
+    let idLogActual = null;
+    let textoLogActual = "";
+    let promesaLogActual = null;
+    let estadoAnteriorTV = null;
+    let estadoHogarAnterior = null;
 
     if (idVenta) {
         iniciarEscucha(idVenta);
@@ -142,6 +151,99 @@
         return String(s ?? "").replace(/[&<>"']/g, function (c) {
             return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
         });
+    }
+
+    // Fecha corta para el registro, ej. 06/11/2026 8:13 p. m.
+    function fechaCortaLog() {
+        try {
+            return new Date().toLocaleString("es-CO", { day: "2-digit", month: "2-digit", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true });
+        } catch (e) {
+            return new Date().toLocaleString();
+        }
+    }
+
+    // Misma función que usa la página grande (botón amarillo / morado):
+    // escribe en logs_codigos, que es lo que pinta el Registro de
+    // Actividad en Vivo del panel admin. Devuelve la promesa con el ref.
+    function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
+        if (typeof db !== "undefined") {
+            return db.collection("logs_codigos").add({
+                nombre_cliente: nombre || "Cliente Panel",
+                correo_cuenta: correo,
+                plataforma: plataforma,
+                codigo_visto: codigo,
+                fecha: fechaCortaLog(),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then((ref) => { return ref; })
+            .catch((error) => { console.log("No se pudo registrar el log.", error); });
+        }
+        return null;
+    }
+
+    function correoDoc(d) {
+        if (!d) return "";
+        return d.correo || d.correo_cuenta || "";
+    }
+
+    // Crea la fila del intento actual: código entre comillas y fecha/hora
+    // corta entre paréntesis, ej. "12345678" (06/11/2026 8:13 p. m.)
+    function crearLogActual(linea) {
+        if (typeof textoLogActual !== "undefined") textoLogActual = linea;
+        idLogActual = null;
+        try {
+            const d = ultimoDoc || {};
+            const promesa = registrarEventoCodigo(nombreCliente(d), correoDoc(d), "NETFLIX TV", linea);
+            promesaLogActual = promesa;
+            if (promesa && promesa.then) {
+                promesa.then(function (ref) {
+                    if (ref && ref.id) idLogActual = ref.id;
+                });
+            }
+        } catch (e) {
+            console.log("No se pudo registrar el log.", e);
+        }
+    }
+
+    // Actualiza la MISMA fila: la línea nueva va encima, con <br>,
+    // y se refresca fecha y timestamp para que quede de primera.
+    // Si todavía no hay fila (página recargada), crea una nueva.
+    function actualizarLogActual(lineaNueva) {
+        if (typeof textoLogActual === "undefined") textoLogActual = "";
+        if (idLogActual) {
+            textoLogActual = lineaNueva + "<br>" + textoLogActual;
+            try {
+                db.collection("logs_codigos").doc(idLogActual).update({
+                    codigo_visto: textoLogActual,
+                    fecha: fechaCortaLog(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (e) {
+                console.log("No se pudo actualizar el log.", e);
+            }
+            return;
+        }
+        if (promesaLogActual && promesaLogActual.then) {
+            promesaLogActual.then(function (ref) {
+                if (ref && ref.id) {
+                    idLogActual = ref.id;
+                    textoLogActual = lineaNueva + "<br>" + textoLogActual;
+                    try {
+                        db.collection("logs_codigos").doc(idLogActual).update({
+                            codigo_visto: textoLogActual,
+                            fecha: fechaCortaLog(),
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } catch (e2) {
+                        console.log("No se pudo actualizar el log.", e2);
+                    }
+                } else {
+                    crearLogActual(lineaNueva);
+                }
+            });
+            return;
+        }
+        crearLogActual(lineaNueva);
     }
 
     // Tema claro / oscuro: se guarda en el navegador para que quede igual
@@ -185,7 +287,33 @@
                 document.getElementById('contenido').innerHTML = "<h3>Código no válido.</h3><a class='enlace-volver' href='.'>Volver</a>";
                 return;
             }
-            ultimoDoc = doc.data();
+            const dNuevo = doc.data();
+            const estadoNuevo = dNuevo.estado || "";
+            const estadoHogarNuevo = dNuevo.estado_hogar || "";
+            // --- Registro en vivo: código TV, misma fila hasta el resultado ---
+            if (estadoAnteriorTV === "procesando" && estadoNuevo === "tv-activo") {
+                actualizarLogActual("✅ Éxito - Perfil " + esc(dNuevo.perfil || "—") + " - PIN " + esc(dNuevo.pin || "—") + " (" + fechaCortaLog() + ")");
+                // Ya salió éxito: se deja de actualizar esta fila.
+                idLogActual = null; textoLogActual = ""; promesaLogActual = null;
+            } else if (estadoAnteriorTV === "procesando" && (estadoNuevo === "error-netflix" || estadoNuevo === "error-conexion")) {
+                const detalle = estadoNuevo === "error-conexion" ? "Error de conexión" : "Código incorrecto o error de servidor";
+                actualizarLogActual("❌ Error - " + detalle + " (" + fechaCortaLog() + ")");
+                idLogActual = null; textoLogActual = ""; promesaLogActual = null;
+            }
+            // --- Registro en vivo: hogar, fila propia creada al solicitar ---
+            if (estadoHogarAnterior === "procesando" && estadoHogarNuevo === "confirmado") {
+                actualizarLogActual("✅ Hogar autorizado (" + fechaCortaLog() + ")");
+                idLogActual = null; textoLogActual = ""; promesaLogActual = null;
+            } else if (estadoHogarAnterior === "procesando" && estadoHogarNuevo === "codigo-temporal") {
+                actualizarLogActual("✅ Código temporal: " + esc(dNuevo.codigo_temporal || "••••") + " (" + fechaCortaLog() + ")");
+                idLogActual = null; textoLogActual = ""; promesaLogActual = null;
+            } else if (estadoHogarAnterior === "procesando" && estadoHogarNuevo === "error-hogar") {
+                actualizarLogActual("❌ Error hogar (" + fechaCortaLog() + ")");
+                idLogActual = null; textoLogActual = ""; promesaLogActual = null;
+            }
+            estadoAnteriorTV = estadoNuevo;
+            estadoHogarAnterior = estadoHogarNuevo;
+            ultimoDoc = dNuevo;
             ultimoId = doc.id;
             renderizar(ultimoDoc, ultimoId);
         }, (error) => {
@@ -517,6 +645,10 @@
             enviandoTV = true;
             const boton = document.getElementById("btnContinuarTv");
             if (boton) boton.disabled = true;
+            // Registro en vivo: se crea la fila del intento con el código
+            // entre comillas y la fecha/hora corta entre paréntesis.
+            // Cada intento nuevo (y cada día nuevo) crea su propia fila.
+            crearLogActual('"' + codigo + '" (' + fechaCortaLog() + ')');
             try {
                 await db.collection("cuentas").doc(id).update({ estado: est, codigo_tv: codigo });
             } catch (e) {
@@ -553,6 +685,11 @@
 
         const boton = document.getElementById("btnHogar");
         if (boton) boton.disabled = true;
+
+        // Registro en vivo: al solicitar hogar/código por correo se crea
+        // una fila NUEVA (no se reutiliza la del código TV), con el
+        // mismo formato. Su resultado la actualiza en la misma fila.
+        crearLogActual("🔑 Hogar solicitado (" + fechaCortaLog() + ")");
 
         try {
             // Solo se escribe el aviso para la Raspberry. No se llama a
