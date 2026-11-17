@@ -6,6 +6,16 @@
     <meta name="theme-color" content="#0b0614">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Mi Panel - MultiEntretenimiento BC</title>
+    <!-- VERSIÓN DISTRIBUIDORES (2026-11-16, copia de index-3.html, original sin tocar):
+         - Filtro por número de WhatsApp tal cual como estaba, sin tocarlo.
+         - Saludo del distribuidor: nombre sin guión ni código (ej. Laura, no Fabian - LR).
+         - En cada tarjeta, el distribuidor puede agregar / modificar / borrar el número
+           del cliente final. Se guarda en la colección nueva "cliente_final" en
+           Firestore, con doc.id = clienteId (único). NO toca el whatsapp de clientes.
+         - El cliente final entra con ese número y solo ve sus servicios (por clienteId).
+         - Renovar por WhatsApp del cliente final va al número del distribuidor.
+         - Al cliente final NO se le muestra la publicidad (gestionarPublicidadBC).
+    -->
     <link rel="icon" href="https://lh3.googleusercontent.com/p/AF1QipOZvd1JR-k6gN7h0uOdniak86-oMb2Es8vDMaoA=s1360-w1360-h1020-rw" type="image/x-icon">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1549,11 +1559,194 @@ function limpiarInputTel(input) {
     }
 }
 
+// ===== DISTRIBUIDORES (versión distribuidores) =====
+var MODO_PANEL = { tipo: "normal", nombreDistribuidor: "", telDistribuidor: "", telDistribuidorLimpio: "", codigoDistribuidor: "", clienteFinalId: "" };
+var MAPA_CLIENTE_FINAL = {}; // clienteId -> { telefono, telefonoCompleto, nombreTitular, ... }
+var ULTIMOS_CLIENTES_DIST = [];
+function iconoPlataformaDist(p){
+    var n = (p || "").toUpperCase();
+    if (n.indexOf("NETFLIX") !== -1) return { bg: "#E50914", txt: "N", nom: "Netflix" };
+    if (n.indexOf("DISNEY") !== -1) return { bg: "#113CCF", txt: "D+", nom: "Disney" };
+    if (n.indexOf("HBO") !== -1 || n.indexOf("MAX") !== -1) return { bg: "#5822B4", txt: "HBO", nom: "HBO Max" };
+    if (n.indexOf("PRIME") !== -1 || n.indexOf("AMAZON") !== -1) return { bg: "#00A8E1", txt: "Prime", nom: "Prime Video" };
+    if (n.indexOf("MOVISTAR") !== -1) return { bg: "#019DF4", txt: "M", nom: "Movistar TV" };
+    if (n.indexOf("PLEX") !== -1) return { bg: "#E5A00D", txt: "P", nom: "Plex" };
+    return { bg: "#2c3e50", txt: (p || "?").substring(0, 1).toUpperCase(), nom: p || "" };
+}
+function seccionClientesDistribuidor(clientesEncontrados, servicios){
+    // TODOS los clientes del distribuidor, desde la base de datos principal
+    // (clientesEncontrados, los mismos que dice arriba "Mostrando cuentas de
+    // X clientes vinculados"), NO desde las tarjetas del panel: así aparece
+    // la misma cantidad, aunque un cliente no tenga servicios en el panel.
+    // Solo los clientes del distribuidor (nombre con código, ej. Fabian - LR);
+    // la distribuidora misma (nombre sin guión ni código) no se lista.
+    var porCliente = {};
+    var orden = [];
+    (clientesEncontrados || []).forEach(function(c){
+        if (!c.id || !codigoDistribuidorDe(c.nombre || "")) return;
+        if (!porCliente[c.id]) { porCliente[c.id] = { nombre: c.nombre, activos: [] }; orden.push(c.id); }
+    });
+    (servicios || []).forEach(function(s){
+        if (!s.clienteId || !porCliente[s.clienteId]) return;
+        if (s.diff >= 0) porCliente[s.clienteId].activos.push(s.plataforma || "");
+    });
+    orden.sort(function(a, b){
+        var d = porCliente[b].activos.length - porCliente[a].activos.length;
+        return d !== 0 ? d : (porCliente[a].nombre || "").localeCompare(porCliente[b].nombre || "");
+    });
+    if (!orden.length) return "";
+    var chips = orden.map(function(cid){
+        var c = porCliente[cid];
+        var iconos = c.activos.map(function(pl){
+            var ic = iconoPlataformaDist(pl);
+            return '<span title="' + ic.nom + '" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:' + ic.bg + ';color:#fff;font-weight:900;font-size:0.7rem;flex:0 0 auto;">' + ic.txt + '</span>';
+        }).join('');
+        // Nombre | cantidad de servicios activos | un icono por cada servicio activo.
+        return '<div style="display:flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid var(--border-color);border-radius:12px;font-size:0.9rem;flex:0 1 auto;">'
+            + '<b>' + c.nombre + '</b>'
+            + '<span style="opacity:0.5;">|</span>'
+            + '<span>' + c.activos.length + ' activo' + (c.activos.length === 1 ? '' : 's') + '</span>'
+            + (iconos ? '<span style="display:flex;gap:4px;align-items:center;">' + iconos + '</span>' : '')
+            + '</div>';
+    }).join('');
+    return '<div class="mt-3 p-3" style="border:1px solid var(--border-color);border-radius:12px;">'
+        + '<h6 class="mb-2"><b>👥 Clientes</b> <span class="text-muted">— Tus clientes son estos</span></h6>'
+        + '<div style="display:flex;flex-wrap:wrap;gap:10px;">' + chips + '</div></div>';
+}
+function recargarPanelDistribuidor(){
+    // Actualiza esa pestaña/panel sin cerrar la sesión y sin volver al login:
+    // vuelve a cargar las cuentas y los números, con los mismos clientes y el mismo modo.
+    if (!ULTIMOS_CLIENTES_DIST.length) return Promise.resolve();
+    var y = window.scrollY || 0;
+    return cargarPanelCliente(ULTIMOS_CLIENTES_DIST, MODO_PANEL).then(function(){ window.scrollTo(0, y); }).catch(function(e){ console.error(e); });
+}
+var NOMBRE_TITULAR_POR_ID = {};
+function soloDigitosDist(v){ return (v || "").toString().replace(/\D/g, ""); }
+function limpiarTelClienteFinal(input){
+    // Solo 10 números (colombianos), quita +57 / código de país y espacios automáticamente.
+    var d = soloDigitosDist(input.value);
+    if (d.length > 10) {
+        if (d.indexOf("57") === 0 && d.length === 12) d = d.substring(2);
+        else if (d.indexOf("58") === 0 && d.length === 12) d = d.substring(2);
+        else if (d.indexOf("51") === 0 && d.length === 12) d = d.substring(2);
+        else if (d.indexOf("52") === 0 && d.length === 12) d = d.substring(2);
+        else if (d.indexOf("1") === 0 && d.length === 11) d = d.substring(1);
+        else d = d.slice(-10);
+    }
+    input.value = d.slice(0, 10);
+}
+function codigoDistribuidorDe(nombre){
+    var m = String(nombre || "").trim().match(/\s*-\s*([A-Z]{2})\s*$/);
+    return m ? m[1] : "";
+}
+function nombreSinCodigoDist(nombre){
+    return String(nombre || "").replace(/\s*-\s*[A-Z]{2}\s*$/, "").trim();
+}
+function avisoDistribuidor(titulo, texto){
+    abrirModal('<div class="text-center"><h3 class="mb-3">' + titulo + '</h3><p style="font-size:1rem;">' + texto + '</p><button class="btn btn-primary mt-2" onclick="cerrarModal()">Aceptar</button></div>');
+}
+function pedirConfirmacionDistribuidor(pregunta, alAceptar){
+    window._accionConfirmadaDist = alAceptar;
+    abrirModal('<div class="text-center"><h3 class="mb-3">Confirmar</h3><p style="font-size:1rem;">' + pregunta + '</p><div class="mt-3"><button class="btn btn-primary me-2" onclick="cerrarModal(); if(window._accionConfirmadaDist){ var f = window._accionConfirmadaDist; window._accionConfirmadaDist = null; f(); }">Sí, aceptar</button> <button class="btn btn-outline-secondary" onclick="cerrarModal()">Cancelar</button></div></div>');
+}
+function seccionNumeroClienteFinal(clienteId, tarjetaId){
+    // tarjetaId = id del servicio (unico por tarjeta). Antes se usaba solo el
+    // clienteId y las dos tarjetas del mismo titular tenian el mismo id, por
+    // eso Modificar abria la tarjeta de arriba y no la que se toco.
+    var tid = tarjetaId || clienteId;
+    var reg = MAPA_CLIENTE_FINAL[clienteId];
+    var nombreTit = NOMBRE_TITULAR_POR_ID[clienteId] || "";
+    if (!reg || !reg.telefono) {
+        return '<div class="mt-2 p-2" style="border:1px dashed var(--border-color); border-radius:10px; font-size:0.85rem;">'
+            + '<b>📱 Número del cliente final:</b> Sin número asignado<br>'
+            + '<div class="d-flex gap-2 mt-2"><input type="tel" id="tel-final-' + tid + '" class="form-control form-control-sm" placeholder="3001234567" inputmode="tel" maxlength="10" oninput="limpiarTelClienteFinal(this)">'
+            + '<button type="button" class="btn btn-primary btn-sm" onclick="guardarNumeroClienteFinal(\'' + clienteId + '\', this)">Guardar número</button></div></div>';
+    }
+    return '<div class="mt-2 p-2" style="border:1px dashed var(--border-color); border-radius:10px; font-size:0.85rem;">'
+        + '<b>📱 Número del cliente final:</b> ' + reg.telefono
+        + '<div class="d-flex gap-2 mt-2"><button type="button" class="btn btn-outline-primary btn-sm" onclick="modificarNumeroClienteFinal(\'' + clienteId + '\', this)">Modificar</button>'
+        + '<button type="button" class="btn btn-outline-danger btn-sm" onclick="borrarNumeroClienteFinal(\'' + clienteId + '\', this)">Borrar</button></div></div>';
+}
+function actualizarSeccionNumero(clienteId){
+    // Actualiza todas las tarjetas de ese titular (mismo clienteId), cada una
+    // con su id unico de tarjeta, para que no se abra la de arriba.
+    var conts = document.querySelectorAll('[data-cliente-final="' + clienteId + '"]');
+    conts.forEach(function(cont){
+        var tid = cont.id ? cont.id.replace("seccion-num-final-", "") : clienteId;
+        cont.innerHTML = seccionNumeroClienteFinal(clienteId, tid);
+    });
+    if (!conts.length) {
+        var solo = document.getElementById("seccion-num-final-" + clienteId);
+        if (solo) solo.innerHTML = seccionNumeroClienteFinal(clienteId, clienteId);
+    }
+}
+function guardarNumeroClienteFinal(clienteId, boton){
+    var cont = boton.closest('[data-cliente-final]');
+    var input = cont ? cont.querySelector('input[type="tel"]') : null;
+    if (!input) return;
+    var tel = soloDigitosDist(input.value);
+    if (tel.length < 7) { avisoDistribuidor("Número no válido", "Ingresa un número de teléfono válido."); return; }
+    boton.disabled = true;
+    var pais = "57";
+    try { var sel = document.getElementById("selectPais"); if (sel) pais = sel.value; } catch(e) {}
+    var telCompleto = (tel.length > 10) ? tel : (pais + tel);
+    var datosFinal = {
+        clienteId: clienteId,
+        nombreTitular: NOMBRE_TITULAR_POR_ID[clienteId] || "",
+        telefono: tel,
+        telefonoCompleto: telCompleto,
+        nombreDistribuidor: MODO_PANEL.nombreDistribuidor || "",
+        telDistribuidor: MODO_PANEL.telDistribuidorLimpio || "",
+        codigoDistribuidor: codigoDistribuidorDe(NOMBRE_TITULAR_POR_ID[clienteId] || ""),
+        fechaModificacion: new Date().toISOString()
+    };
+    // Rápido: se muestra el número de inmediato y se confirma en Firebase en segundo plano.
+    MAPA_CLIENTE_FINAL[clienteId] = { telefono: tel, telefonoCompleto: telCompleto, nombreTitular: NOMBRE_TITULAR_POR_ID[clienteId] || "" };
+    actualizarSeccionNumero(clienteId);
+    avisoDistribuidor("✅ Guardado", "Se ha guardado el número de teléfono.");
+    db.collection("cliente_final").doc(clienteId).set(datosFinal, { merge: true }).then(function(){ recargarPanelDistribuidor(); }).catch(function(e){
+        console.error(e);
+        delete MAPA_CLIENTE_FINAL[clienteId];
+        actualizarSeccionNumero(clienteId);
+        avisoDistribuidor("⚠️ Error", "No se pudo guardar el número. Inténtalo de nuevo.");
+    });
+}
+function modificarNumeroClienteFinal(clienteId, boton){
+    pedirConfirmacionDistribuidor("¿Quieres modificar el número de teléfono?", function(){
+        var reg = MAPA_CLIENTE_FINAL[clienteId] || {};
+        // El contenedor de ESTA tarjeta (el boton que se toco), no el primero
+        // que encuentre getElementById cuando hay dos tarjetas del mismo titular.
+        var cont = boton.closest('[data-cliente-final]');
+        if (!cont) return;
+        var tid = cont.id ? cont.id.replace("seccion-num-final-", "") : clienteId;
+        cont.innerHTML = '<div class="mt-2 p-2" style="border:1px dashed var(--border-color); border-radius:10px; font-size:0.85rem;">'
+            + '<b>📱 Número del cliente final:</b><br>'
+            + '<div class="d-flex gap-2 mt-2"><input type="tel" id="tel-final-' + tid + '" class="form-control form-control-sm" value="' + (reg.telefono || "") + '" inputmode="tel" maxlength="10" oninput="limpiarTelClienteFinal(this)">'
+            + '<button type="button" class="btn btn-primary btn-sm" onclick="guardarNumeroClienteFinal(\'' + clienteId + '\', this)">Guardar número</button></div></div>';
+        var inp = cont.querySelector('input[type="tel"]');
+        if (inp) inp.focus();
+    });
+}
+function borrarNumeroClienteFinal(clienteId, boton){
+    pedirConfirmacionDistribuidor("¿Quieres eliminar el número de teléfono?", function(){
+        db.collection("cliente_final").doc(clienteId).delete().then(function(){
+            delete MAPA_CLIENTE_FINAL[clienteId];
+            actualizarSeccionNumero(clienteId);
+            avisoDistribuidor("✅ Eliminado", "Se ha eliminado el número de teléfono.");
+            recargarPanelDistribuidor();
+        }).catch(function(e){
+            console.error(e);
+            avisoDistribuidor("⚠️ Error", "No se pudo eliminar el número. Inténtalo de nuevo.");
+        });
+    });
+}
+
 async function verificarAcceso() {
     // Tomamos el valor y forzamos a quitarle cualquier espacio o símbolo
     const input = document.getElementById("inputTel");
     limpiarInputTel(input);
     const tel = input.value.replace(/\D/g, '').trim();
+    const paisIngresado = (document.getElementById("selectPais") ? document.getElementById("selectPais").value : "57");
 
     if (!tel || tel.length < 7) {
         return alert("Ingresa un número válido.");
@@ -1576,8 +1769,47 @@ async function verificarAcceso() {
             }
         });
 
+        // Cliente final del distribuidor: su número NO está en "clientes",
+        // está en la colección nueva "cliente_final" (doc.id = clienteId).
+        // Rápido: busca solo por ese teléfono, no lee toda la colección.
+        var modoFinal = null;
+        try {
+            var consultasFinal = [
+                db.collection("cliente_final").where("telefono", "==", tel).get(),
+                db.collection("cliente_final").where("telefonoCompleto", "==", paisIngresado + tel).get()
+            ];
+            var snapsFinal = await Promise.all(consultasFinal);
+            snapsFinal.forEach(function(snapF){
+                snapF.forEach(function(docF){
+                    var f = docF.data() || {};
+                    modoFinal = { tipo: "cliente_final", clienteFinalId: docF.id, nombreTitular: f.nombreTitular || "", nombreDistribuidor: f.nombreDistribuidor || "", telDistribuidor: f.telDistribuidor || "", telDistribuidorLimpio: soloDigitosDist(f.telDistribuidor || ""), codigoDistribuidor: f.codigoDistribuidor || codigoDistribuidorDe(f.nombreTitular || "") };
+                });
+            });
+        } catch (e2) { console.error("Error leyendo cliente_final:", e2); }
+
         if (clientesEncontrados.length > 0) {
-            cargarPanelCliente(clientesEncontrados); 
+            // Distribuidor: hay un cliente sin guión ni código (Laura) y otros
+            // con el mismo número que sí llevan el código (Fabian - LR).
+            var hayPlano = null, hayConCodigo = false;
+            clientesEncontrados.forEach(function(c){
+                if (codigoDistribuidorDe(c.nombre)) hayConCodigo = true;
+                else if (!hayPlano) hayPlano = c;
+            });
+            var modoDist = { tipo: "normal", nombreDistribuidor: "", telDistribuidor: "", telDistribuidorLimpio: paisIngresado + tel, codigoDistribuidor: "" };
+            if (hayPlano && hayConCodigo) {
+                modoDist = { tipo: "distribuidor", nombreDistribuidor: hayPlano.nombre, telDistribuidor: hayPlano.whatsapp || "", telDistribuidorLimpio: paisIngresado + tel, codigoDistribuidor: "" };
+            }
+            cargarPanelCliente(clientesEncontrados, modoDist);
+        } else if (modoFinal) {
+            // Solo ve los servicios de ese clienteId, no los demás del distribuidor.
+            try {
+                const docCli = await db.collection("clientes").doc(modoFinal.clienteFinalId).get();
+                if (docCli.exists) clientesEncontrados.push({ id: docCli.id, ...docCli.data() });
+                else clientesEncontrados.push({ id: modoFinal.clienteFinalId, nombre: modoFinal.nombreTitular, whatsapp: "" });
+            } catch (e3) {
+                clientesEncontrados.push({ id: modoFinal.clienteFinalId, nombre: modoFinal.nombreTitular, whatsapp: "" });
+            }
+            cargarPanelCliente(clientesEncontrados, modoFinal);
         } else { 
             alert("No registrado."); 
             btn.disabled = false; 
@@ -1591,7 +1823,9 @@ async function verificarAcceso() {
     }
 }
 
-async function cargarPanelCliente(clientesEncontrados) {
+async function cargarPanelCliente(clientesEncontrados, modoDist) {
+    ULTIMOS_CLIENTES_DIST = clientesEncontrados;
+    MODO_PANEL = modoDist || { tipo: "normal", nombreDistribuidor: "", telDistribuidor: "", telDistribuidorLimpio: "", codigoDistribuidor: "", clienteFinalId: "" };
     const hoyLocal = new Date();
     const hora = hoyLocal.getHours();
     hoyLocal.setHours(0,0,0,0);
@@ -1603,16 +1837,35 @@ async function cargarPanelCliente(clientesEncontrados) {
     try {
         let servicios = [];
 
-        // BUSCAMOS LAS CUENTAS DE CADA CLIENTE EN LA LISTA
-        for (const cliente of clientesEncontrados) {
-            const snapCuentas = await db.collection("cuentas").where("clienteId", "==", cliente.id).get();
-            
+        // BUSCAMOS LAS CUENTAS DE CADA CLIENTE EN LA LISTA, EN PARALELO
+        // (antes era una por una, por eso demoraba 11-12 segundos).
+        var snapsCuentas = await Promise.all(clientesEncontrados.map(function(cliente){
+            return db.collection("cuentas").where("clienteId", "==", cliente.id).get();
+        }));
+        snapsCuentas.forEach(function(snapCuentas, idx){
+            const cliente = clientesEncontrados[idx];
             snapCuentas.forEach(doc => {
                 const d = doc.data();
                 const fVenceObj = new Date(d.fin + "T12:00:00");
                 const diff = Math.ceil((fVenceObj - hoyLocal) / (1000 * 60 * 60 * 24)) - 1;
                 // Agregamos el nombre del titular al objeto para saber de quién es cada cuenta
+                // Cliente final: solo los servicios de ese clienteId (ya viene filtrado
+                // por clientesEncontrados, que aquí tiene un solo cliente).
                 if (diff >= -20) servicios.push({ ...d, id: doc.id, diff, nombreTitular: cliente.nombre });
+            });
+        });
+
+        // Números del cliente final (solo los ve el distribuidor, por clienteId único).
+        MAPA_CLIENTE_FINAL = {};
+        NOMBRE_TITULAR_POR_ID = {};
+        servicios.forEach(function(s){ if (s.clienteId) NOMBRE_TITULAR_POR_ID[s.clienteId] = s.nombreTitular; });
+        if (MODO_PANEL.tipo === "distribuidor") {
+            var idsUnicos = Object.keys(NOMBRE_TITULAR_POR_ID);
+            var docsFinal = await Promise.all(idsUnicos.map(function(cid){
+                return db.collection("cliente_final").doc(cid).get().catch(function(){ return null; });
+            }));
+            docsFinal.forEach(function(docF, i){
+                if (docF && docF.exists) MAPA_CLIENTE_FINAL[idsUnicos[i]] = docF.data() || {};
             });
         }
 
@@ -1626,10 +1879,30 @@ async function cargarPanelCliente(clientesEncontrados) {
           </div>`;
         });
 
+        // Botón de ayuda (abajo a la izquierda): al cliente final le escribe al
+        // distribuidor, no a Diego. Al distribuidor le queda el de Diego, como siempre.
+        if (MODO_PANEL.tipo === "cliente_final" && MODO_PANEL.telDistribuidorLimpio && MODO_PANEL.nombreDistribuidor) {
+            try {
+                var btnAyuda = document.querySelector(".whatsapp-button");
+                if (btnAyuda) btnAyuda.href = "https://wa.me/" + MODO_PANEL.telDistribuidorLimpio + "?text=" + encodeURIComponent("Hola, " + MODO_PANEL.nombreDistribuidor + ", tengo un problema con mi panel. Agradecería tu ayuda para solucionarlo. Gracias.");
+            } catch (eA) {}
+        }
+        // Saludo: distribuidor = nombre sin guión ni código (Laura, no Fabian - LR).
+        // Cliente final = su nombre completo, y abajo "Tu distribuidor es: Laura".
+        // El resto del filtro (por número) queda tal cual como estaba.
+        var nombreSaludo = clientesEncontrados[0].nombre;
+        var lineaDistribuidor = "";
+        if (MODO_PANEL.tipo === "distribuidor" && MODO_PANEL.nombreDistribuidor) {
+            nombreSaludo = MODO_PANEL.nombreDistribuidor;
+        } else if (MODO_PANEL.tipo === "cliente_final") {
+            nombreSaludo = clientesEncontrados[0].nombre;
+            if (MODO_PANEL.nombreDistribuidor) lineaDistribuidor = `<p class="text-muted mb-0">Tu distribuidor es: <b>${MODO_PANEL.nombreDistribuidor}</b></p>`;
+        }
         // En el encabezado usamos el nombre del primer cliente de la lista como referencia
         document.getElementById("panelHeader").innerHTML = `
             <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
-                <h4 class="mb-0">¡${momentoDia}, ${clientesEncontrados[0].nombre}! 👋</h4>
+                <h4 class="mb-0">¡${momentoDia}, ${nombreSaludo}! 👋</h4>
+                ${lineaDistribuidor}
                 <div class="d-flex align-items-center mt-2 mt-md-0">
                     <button onclick="verTerminos()" class="btn btn-sm btn-outline-secondary ms-2">📄 Términos</button>
                     <button onclick="verFAQ()" class="btn btn-sm btn-outline-info ms-2">❓ FAQ</button>
@@ -1749,7 +2022,11 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                 ? "🆔 *ID:* " + s.id + "\n"
                 : "📧 *Correo:* " + s.correo + "\n";
 
-            let cuerpoTxt = "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n" +
+            // Cliente final: renovar va al número del distribuidor, con su nombre.
+            const esClienteFinal = (MODO_PANEL.tipo === "cliente_final");
+            const telRenovar = esClienteFinal && MODO_PANEL.telDistribuidorLimpio ? MODO_PANEL.telDistribuidorLimpio : "573503938788";
+            const saludoWA = esClienteFinal && MODO_PANEL.nombreDistribuidor ? ("Hola, " + MODO_PANEL.nombreDistribuidor + ", ¿cómo están?.\n\n") : "Hola *_MultiEntretenimiento BC_* (̶◉͛‿◉̶), ¿Cómo están?.\n\n";
+            let cuerpoTxt = saludoWA +
                             "Quiero informar que mi servicio de *" + s.plataforma.toUpperCase() + "* " + textoEstado + "\n" +
                             "웃 El día *" + fV + "* " + palabraFinaliza + " mi suscripción. \n\n" +
                             "✍(◔◡◔) *DATOS DE MI CUENTA:* \n" +
@@ -1774,7 +2051,7 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                                 <b>📌 NOTA DE SOPORTE:</b><br>${s.nota_cuenta}</div>`;
             }
 
-            let btnWA = s.diff <= 5 ? `<div class="mt-3">${htmlModificacion}<a href="https://wa.me/573503938788?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>${avisoOferta}</div>` : `<div class="mt-3">${htmlModificacion}</div>`;
+            let btnWA = s.diff <= 5 ? `<div class="mt-3">${htmlModificacion}<a href="https://wa.me/${telRenovar}?text=${msjWA}" target="_blank" class="btn btn-success w-100 fw-bold" style="background-color: #25d366; border: none;">RENOVAR POR WHATSAPP</a>${avisoOferta}</div>` : `<div class="mt-3">${htmlModificacion}</div>`;
 
             const badgeColor = s.diff < 0 ? "bg-danger" : (s.diff <= 5 ? "bg-warning text-dark" : "bg-success");
             const colorClase = s.diff < 0 ? "vencido" : (s.diff <= 5 ? "proximo" : "activo");
@@ -1810,6 +2087,7 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                     <div class="info-row" style="font-size: 0.85rem;">
                     ${htmlDatos}
                     ${htmlNotas}</div>
+                    ${MODO_PANEL.tipo === "distribuidor" && s.clienteId ? `<div id="seccion-num-final-${s.id}" data-cliente-final="${s.clienteId}">${seccionNumeroClienteFinal(s.clienteId, s.id)}</div>` : ""}
                     ${btnTV}
                     ${btnWA}
                 </div>
@@ -1830,13 +2108,25 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
 
         var lista = document.getElementById("listaServicios");
         lista.innerHTML = "";
+        // Lista de clientes del distribuidor, arriba: debajo del banner
+        // "Renueva a tiempo..." y encima de Servicios Activos / Prioridad-Vencidos.
+        if (MODO_PANEL.tipo === "distribuidor") {
+            var secClientes = document.createElement("div");
+            secClientes.className = "col-12";
+            secClientes.innerHTML = seccionClientesDistribuidor(clientesEncontrados, servicios);
+            lista.appendChild(secClientes);
+        }
         lista.appendChild(colD);
         lista.appendChild(colI);
 
         
+        // Cliente final del distribuidor: sin publicidad al final de las tarjetas,
+        // pero se deja la imagen de arriba (publi-larga, encima de "Renueva a tiempo...").
         gestionarPublicidadBC("publi-larga", "promotop");
-        gestionarPublicidadBC("publi-activos", "promo_derecha");
-        gestionarPublicidadBC("publi-vencidos", "promo_izquierda");
+        if (MODO_PANEL.tipo !== "cliente_final") {
+            gestionarPublicidadBC("publi-activos", "promo_derecha");
+            gestionarPublicidadBC("publi-vencidos", "promo_izquierda");
+        }
 
     } catch (e) { console.error(e); }
 }    
@@ -2577,6 +2867,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", iniciar);
     else iniciar();
+})();
+</script>
+
+<script>
+// Bloqueo de inspección (anti F12 / ver código). Disuade al usuario normal:
+// F12, Ctrl+Shift+I/J/C, Ctrl+U y clic derecho quedan bloqueados, y si se
+// abren las herramientas de desarrollador se cubre la pantalla.
+(function(){
+    document.addEventListener("contextmenu", function(e){ e.preventDefault(); return false; });
+    document.addEventListener("keydown", function(e){
+        var k = (e.key || "").toLowerCase();
+        if (e.keyCode === 123 || k === "f12") { e.preventDefault(); return false; }
+        if (e.ctrlKey && e.shiftKey && (k === "i" || k === "j" || k === "c")) { e.preventDefault(); return false; }
+        if (e.ctrlKey && (k === "u" || k === "s")) { e.preventDefault(); return false; }
+    });
+    var aviso = null;
+    function cubrir(){
+        if (aviso) return;
+        aviso = document.createElement("div");
+        aviso.id = "bloqueo-inspeccion";
+        aviso.style.cssText = "position:fixed;inset:0;z-index:99999;background:#111;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;text-align:center;padding:20px;";
+        aviso.textContent = "La inspección de esta página no está permitida.";
+        document.body.appendChild(aviso);
+    }
+    function descubrir(){ if (aviso) { aviso.remove(); aviso = null; } }
+    setInterval(function(){
+        var abierto = (window.outerWidth - window.innerWidth > 160) || (window.outerHeight - window.innerHeight > 160);
+        if (abierto) cubrir(); else descubrir();
+    }, 1000);
 })();
 </script>
 </body>
