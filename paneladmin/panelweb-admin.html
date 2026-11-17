@@ -1971,8 +1971,8 @@ function enviarWhatsAppLote(idsStr) {
 
     ventas.forEach(v =&gt; { 
         // TRUCO MAESTRO: Limpiamos + y # en correo y clave
-        let correoLimpio = v.correo ? v.correo.toString().replace(/\+/g, &#x27;%2B&#x27;).replace(/#/g, &#x27;%23&#x27;) : &#x27;&#x27;;
-        let claveLimpia = v.clave ? v.clave.toString().replace(/\+/g, &#x27;%2B&#x27;).replace(/#/g, &#x27;%23&#x27;) : &#x27;&#x27;;
+        let correoLimpio = v.correo ? v.correo.toString() : &#x27;&#x27;;
+        let claveLimpia = v.clave ? v.clave.toString() : &#x27;&#x27;;
         
         detalleMsg += `%0A------------------------------------------------`;
         detalleMsg += `%0A*Información De La Cuenta de: ${v.plataforma}*`;
@@ -1992,9 +1992,9 @@ function enviarWhatsAppLote(idsStr) {
 
     // ABRIR WHATSAPP: El replace final asegura que nada se rompa
     // Reemplazamos # por %23 globalmente en el mensaje final
-    let mensajeFinal = msg.replace(/#/g, &#x27;%23&#x27;);
+    let mensajeFinal = msg.split(&quot;%0A&quot;).map(function(parte){ return encodeURIComponent(parte); }).join(&quot;%0A&quot;);
     
-    window.open(`https://api.whatsapp.com/send?phone=${telLimpio}&amp;text=${mensajeFinal}`); 
+    window.open(`https://wa.me/${telLimpio}?text=${mensajeFinal}`); 
 }
 
 /* --- FUNCION EDITAR MANUAL (INDIVIDUAL O LOTE) --- */
@@ -3170,8 +3170,8 @@ document.addEventListener(&quot;DOMContentLoaded&quot;, () =&gt; {
 });
 
 function eliminarCliente(id){ if(confirm(&quot;¿Eliminar?&quot;)) db.collection(&quot;clientes&quot;).doc(id).delete().then(()=&gt;actualizarTodo()); }
-function filtrarTablaClientes(){ const bus=filtroCliente.value.toLowerCase(); const filas=bodyClientes.getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
-function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.toLowerCase(); const filas=document.getElementById(&quot;bodyVentasHistorial&quot;).getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
+function filtrarTablaClientes(){ const bus=filtroCliente.value.normalize(&quot;NFD&quot;).replace(/[\u0300-\u036f]/g,&quot;&quot;).toLowerCase(); const filas=bodyClientes.getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.normalize(&quot;NFD&quot;).replace(/[\u0300-\u036f]/g,&quot;&quot;).toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
+function filtrarHistorialVentas(){ const bus=busquedaHistorial.value.normalize(&quot;NFD&quot;).replace(/[\u0300-\u036f]/g,&quot;&quot;).toLowerCase(); const filas=document.getElementById(&quot;bodyVentasHistorial&quot;).getElementsByTagName(&quot;tr&quot;); for(let f of filas) f.style.display=f.innerText.normalize(&quot;NFD&quot;).replace(/[\u0300-\u036f]/g,&quot;&quot;).toLowerCase().includes(bus)?&quot;&quot;:&quot;none&quot;; }
 
 // -------------------------------------------------------------------------
 // CARGAR ADMIN PERFILES (CON LOS CAMBIOS SOLICITADOS)
