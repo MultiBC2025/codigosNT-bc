@@ -1951,8 +1951,11 @@ async function cargarPanelCliente(clientesEncontrados, modoDist) {
                             </button>`;
                             
                  // NUEVO BOTÓN UNIFICADO: Busca Temporal y Hogar usando el perfil dinámico
+                 // BOTÓN MORADO (manual): oculto al cargar la página.
+                 // Solo se muestra si el Automático falla porque no se
+                 // consiguió el correo. Al recargar, vuelve a estar oculto.
                  btnLink += `<button type="button" onclick="solicitarAccesoNetflix('${s.correo}','${s.perfil}', this)" 
-                            class="btn-autogestion hw-btn-hogar">
+                            class="btn-autogestion hw-btn-hogar" style="display:none;">
                             🔑 Activar Hogar / Código temp
                             </button>`;
 
@@ -2523,8 +2526,39 @@ function mostrarBuscandoAuto(visor) {
     if (!visor) return;
     var hwOn = (typeof HW_ON !== 'undefined') ? HW_ON : false;
     visor.innerHTML = hwOn
-        ? "<div style='margin-top:15px; padding:15px; text-align:center; background: var(--info-row-bg); border-radius: 12px; border: 1px dashed var(--hw-pumpkin);'><div style='color:var(--hw-pumpkin); font-size:12px; font-weight:800; letter-spacing:1px;'>BUSCANDO Y AUTORIZANDO HOGAR... (AUTOMATIZADO)</div><div style='font-size:11px; margin-top:6px;'>Por favor no cierres esta página. Máximo 2 minutos.</div></div>"
-        : "<div style='margin-top:15px; padding:15px; text-align:center; background: #fffcf0; border-radius: 12px; border: 1px dashed #daa520;'><div style='color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;'>BUSCANDO Y AUTORIZANDO HOGAR... (AUTOMATIZADO)</div><div style='font-size:11px; color:#666; margin-top:6px;'>Por favor no cierres esta página. Máximo 2 minutos.</div></div>";
+        ? "<div style='margin-top:15px; padding:15px; text-align:center; background: var(--info-row-bg); border-radius: 12px; border: 1px dashed var(--hw-pumpkin);'><div style='color:var(--hw-pumpkin); font-size:12px; font-weight:800; letter-spacing:1px;'>BUSCANDO Y AUTORIZANDO HOGAR... (AUTOMATIZADO)</div><div class='cuenta-atras-auto' style='font-size:22px; font-weight:900; margin-top:8px;'>2:00</div><div style='font-size:11px; margin-top:6px;'>Por favor no cierres esta página. Tiempo estimado: 2 minutos.</div></div>"
+        : "<div style='margin-top:15px; padding:15px; text-align:center; background: #fffcf0; border-radius: 12px; border: 1px dashed #daa520;'><div style='color:#daa520; font-size:12px; font-weight:bold; letter-spacing:1px;'>BUSCANDO Y AUTORIZANDO HOGAR... (AUTOMATIZADO)</div><div class='cuenta-atras-auto' style='font-size:22px; font-weight:900; margin-top:8px;'>2:00</div><div style='font-size:11px; color:#666; margin-top:6px;'>Por favor no cierres esta página. Tiempo estimado: 2 minutos.</div></div>";
+    iniciarCuentaAtrasAuto(visor);
+}
+
+// Temporizador de 2 minutos hacia atrás (2:00, 1:59, 1:58...).
+// Es estimado: la espera real es de 24 intentos cada 5 segundos.
+// Se detiene solo cuando llega el resultado o hay error.
+// Temporizador de 2 minutos hacia atrás (2:00, 1:59, 1:58...).
+// Es estimado: la espera real es de 24 intentos cada 5 segundos.
+// Cada tarjeta tiene SU propio temporizador, guardado en su visor:
+// pulsar un botón solo arranca o reinicia el de esa tarjeta, nunca
+// el de las demás, aunque sean del mismo correo o del mismo cliente.
+function detenerCuentaAtrasAuto(visor) {
+    if (visor && visor._intervaloCuentaAtrasAuto) { clearInterval(visor._intervaloCuentaAtrasAuto); visor._intervaloCuentaAtrasAuto = null; }
+}
+function iniciarCuentaAtrasAuto(visor) {
+    if (!visor) return;
+    detenerCuentaAtrasAuto(visor);
+    var restantes = 120;
+    var elemento = visor.querySelector(".cuenta-atras-auto");
+    function pintar() {
+        if (!elemento) return;
+        var m = Math.floor(restantes / 60);
+        var s = restantes % 60;
+        elemento.textContent = m + ":" + (s < 10 ? "0" + s : s);
+    }
+    pintar();
+    visor._intervaloCuentaAtrasAuto = setInterval(function() {
+        restantes--;
+        if (restantes <= 0) { restantes = 0; pintar(); detenerCuentaAtrasAuto(visor); return; }
+        pintar();
+    }, 1000);
 }
 
 // El clic del boton amarillo pasa SIEMPRE por aqui primero, para que
@@ -2553,6 +2587,7 @@ function solicitarAccesoNetflixAutomatizado(correo, perfil, botonPresionado) {
     var visor = buscarVisorAuto(botonPresionado, correo);
     if (!visor) return;
     if (!URL_APPS_SCRIPT_AUTOMATIZADO || URL_APPS_SCRIPT_AUTOMATIZADO.indexOf("PEGA_AQUI") !== -1) {
+        detenerCuentaAtrasAuto(visor);
         visor.innerHTML = "<div style='color:#E50914; font-size:12px; margin-top:15px; text-align:center; font-weight:800;'>Aún no está configurada la URL del proyecto Netflix Automatizado.</div>";
         return;
     }
@@ -2593,6 +2628,7 @@ function solicitarAccesoNetflixAutomatizado(correo, perfil, botonPresionado) {
             mostrarResultadoAutomatizado(visor, { resultado: "error", tipo: "", nombre: "", dispositivo: "", fecha: "", codigo: "", motivo: "No se recibió respuesta en 2 minutos. Por favor intenta de nuevo o hazlo manual." }, correo, nombreTitularAuto, jobId);
         })
         .catch(function (error) {
+            detenerCuentaAtrasAuto(visor);
             visor.innerHTML = "<div style='color:#E50914; font-size:12px; margin-top:15px; text-align:center;'>ERROR DE CONEXIÓN: " + (error && error.message ? error.message : "intenta de nuevo") + "</div>";
         })
         .finally(function () {
@@ -2601,9 +2637,25 @@ function solicitarAccesoNetflixAutomatizado(correo, perfil, botonPresionado) {
         });
 }
 
+// Muestra el botón morado (manual) de la misma tarjeta del visor.
+// Solo se llama cuando el Automático falla por correo no encontrado.
+function mostrarBotonHogarManual(visor) {
+    if (!visor) return;
+    var tarjeta = null;
+    try { tarjeta = visor.closest('.card-body'); } catch (e) {}
+    if (!tarjeta) tarjeta = visor.parentElement;
+    if (!tarjeta) return;
+    var btn = tarjeta.querySelector('.hw-btn-hogar');
+    if (btn) btn.style.display = '';
+}
+
 function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId) {
+    detenerCuentaAtrasAuto(visor);
     var tipoTexto = data.tipo === "codigo-temporal" ? "CÓDIGO DE ACCESO TEMPORAL" : "ACTUALIZACIÓN DE HOGAR";
     var plataformaLog = "NETFLIX HOGAR AUTOMATIZADO (" + tipoTexto + ")";
+    // Fecha y hora del correo que leyó la Pi (Apps Script la devuelve
+    // ya en hora de Colombia, GMT-5, como "18 de noviembre, 5:34 p. m.").
+    var lineaFechaCorreo = data.fecha ? "<div style='font-size:12px; color:#555; margin-top:8px;'>Correo enviado el: <b>" + data.fecha + "</b></div>" : "";
     var nombreClienteFinal = (data.nombre ? data.nombre + " (" + nombreTitular + ")" : nombreTitular);
 
     if (data.resultado === "codigo" && data.codigo) {
@@ -2611,6 +2663,7 @@ function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId)
             + "<div style='background: linear-gradient(90deg, #E50914, #b20710); color: white; display: inline-block; padding: 10px 25px; border-radius: 25px; font-size: 15px; font-weight: 800;'>" + tipoTexto + " - AUTOMATIZADO</div>"
             + "<div style='margin-top:15px; font-size:13px; color:#555;'>CÓDIGO ACTUAL:<br><span style='font-size: 28px; color: #198754; font-weight: 900; letter-spacing: 2px;'>" + data.codigo + "</span></div>"
             + "<div style='font-size:12px; color:#666; margin-top:8px;'>Usa este código para ver Netflix en tu dispositivo.</div>"
+            + lineaFechaCorreo
             + "</div>"
             + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, data.codigo);
         if (typeof datosAutoPorJob === "undefined") { datosAutoPorJob = {}; }
@@ -2621,6 +2674,7 @@ function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId)
             + "<div style='font-size:16px; font-weight:900; color:#198754;'>SOLICITUD APROBADA</div>"
             + "<div style='font-size:13px; color:#333; margin-top:10px;'>Ingresa para revisar la solicitud ya aprobada.</div>"
             + (data.nombre ? "<div style='font-size:12px; color:#555; margin-top:8px;'>Solicitud de: <b>" + data.nombre + "</b>" + (data.dispositivo ? " - desde: <b>" + data.dispositivo + "</b>" : "") + (data.fecha ? "<br>Fecha/hora: <b>" + data.fecha + "</b>" : "") + "</div>" : "")
+            + lineaFechaCorreo
             + "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>"
             + "</div>"
             + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, "Solicitud Procesada - Automatizado");
@@ -2628,16 +2682,39 @@ function mostrarResultadoAutomatizado(visor, data, correo, nombreTitular, jobId)
         datosAutoPorJob[jobId] = { correo: correo, nombreCliente: nombreClienteFinal, plataforma: plataformaLog, codigo: "Solicitud Procesada - Automatizado", idLog: null };
         try { var promesaLogAuto = registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Solicitud Procesada - Automatizado"); if (promesaLogAuto && promesaLogAuto.then) { promesaLogAuto.then(function(ref) { if (ref && ref.id && typeof datosAutoPorJob !== "undefined" && datosAutoPorJob[jobId]) { datosAutoPorJob[jobId].idLog = ref.id; } }); } } catch (e) { console.log("No se pudo registrar el log."); }
     } else {
+        // Enlace caducado: la Pi devuelve motivo "enlace caducado, volver
+        // a solicitar". En ese caso no se muestra código ni motivo genérico,
+        // sino el aviso de volver a solicitar en el dispositivo, distinto
+        // para código temporal y para activación de hogar.
+        // Correo no encontrado (ni en la Pi ni en los 2 minutos de
+        // espera): se muestra el botón morado para hacerlo manual.
+        // Si llegó código o quedó autorizado, el morado sigue oculto.
+        var esCorreoNoEncontrado = /no se (consigui[oó]|recibi[oó])|correo no encontrado/i.test(data.motivo || "");
+        if (esCorreoNoEncontrado) { mostrarBotonHogarManual(visor); }
+        var esCaducado = (data.motivo || "").toLowerCase().indexOf("caduc") !== -1;
+        var tituloError = esCaducado ? "ENLACE CADUCADO" : "NO SE PUDO AUTORIZAR";
         var motivo = data.motivo || "El enlace pudo haber caducado, por favor vuelve a solicitarlo.";
+        if (esCaducado && data.tipo === "codigo-temporal") {
+            motivo = "El enlace ya caducó. Vuelve a solicitar el código en tu dispositivo para verlo.";
+        } else if (esCaducado) {
+            motivo = "No se activó porque el enlace ya caducó. Vuelve a solicitarlo en tu dispositivo para autorizar.";
+        }
+        // Lo que se registra en el Registro de Actividad: el tipo de
+        // error, no solo "Error - Automatizado".
+        var codigoError = "Error - Automatizado";
+        if (esCaducado) { codigoError = "Error - Automatizado - Enlace caducado"; }
+        else if (esCorreoNoEncontrado) { codigoError = "Error - Automatizado - No se consiguió el correo"; }
+        else if (motivo) { codigoError = "Error - Automatizado - " + motivo; }
         visor.innerHTML = "<div style='margin-top:15px; padding:20px; text-align:center; background: #fff5f5; border-radius: 18px; border: 1px solid #E50914;'>"
-            + "<div style='font-size:15px; font-weight:900; color:#E50914;'>NO SE PUDO AUTORIZAR</div>"
+            + "<div style='font-size:15px; font-weight:900; color:#E50914;'>" + tituloError + "</div>"
             + "<div style='font-size:13px; color:#555; margin-top:10px;'>" + motivo + "</div>"
-            + "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>"
+            + lineaFechaCorreo
+            + (esCaducado ? "" : "<div style='font-size:12px; color:#666; margin-top:10px;'>Si no ves la solicitud aprobada en tu dispositivo, por favor hazlo manual, estamos en fase de prueba para entregarte un servicio más automatizado.</div>")
             + "</div>"
-            + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, "Error - Automatizado");
+            + mostrarEncuestaAutomatizado(jobId, correo, nombreClienteFinal, plataformaLog, codigoError);
         if (typeof datosAutoPorJob === "undefined") { datosAutoPorJob = {}; }
-        datosAutoPorJob[jobId] = { correo: correo, nombreCliente: nombreClienteFinal, plataforma: plataformaLog, codigo: "Error - Automatizado", idLog: null };
-        try { var promesaLogAuto = registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, "Error - Automatizado"); if (promesaLogAuto && promesaLogAuto.then) { promesaLogAuto.then(function(ref) { if (ref && ref.id && typeof datosAutoPorJob !== "undefined" && datosAutoPorJob[jobId]) { datosAutoPorJob[jobId].idLog = ref.id; } }); } } catch (e) { console.log("No se pudo registrar el log."); }
+        datosAutoPorJob[jobId] = { correo: correo, nombreCliente: nombreClienteFinal, plataforma: plataformaLog, codigo: codigoError, idLog: null };
+        try { var promesaLogAuto = registrarEventoCodigo(nombreClienteFinal, correo, plataformaLog, codigoError); if (promesaLogAuto && promesaLogAuto.then) { promesaLogAuto.then(function(ref) { if (ref && ref.id && typeof datosAutoPorJob !== "undefined" && datosAutoPorJob[jobId]) { datosAutoPorJob[jobId].idLog = ref.id; } }); } } catch (e) { console.log("No se pudo registrar el log."); }
     }
 }
 
