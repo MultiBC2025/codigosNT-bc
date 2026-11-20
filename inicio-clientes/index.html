@@ -1137,9 +1137,9 @@
     
 <div id="customModal" class="hw-modal" style="display: none;">
     <div class="hw-modal-card">
-        <span onclick="cerrarModal()" class="hw-modal-close">&times;</span>
+        <span onclick="cerrarModal()" class="hw-modal-close" id="modalCloseX">&times;</span>
         <div id="modalBody"></div>
-        <div class="text-center mt-4">
+        <div class="text-center mt-4" id="modalFooterCerrar">
             <button class="btn btn-primary" onclick="cerrarModal()"><span class="hw-only">🎃 </span>Cerrar</button>
         </div>
     </div>
@@ -1459,8 +1459,13 @@
     const linkDisney = "https://onlinealarmkur.com/date/es/#count-days";
 
     function cerrarModal() { document.getElementById("customModal").style.display = "none"; }
-    function abrirModal(html) {
+    function abrirModal(html, opciones) {
         document.getElementById("modalBody").innerHTML = html;
+        // soloBoton: el aviso trae su propio botón (Aceptar o Sí/Cancelar) y
+        // se ocultan la X y el Cerrar del pie, que hacían lo mismo.
+        var solo = opciones && opciones.soloBoton;
+        document.getElementById("modalCloseX").style.display = solo ? "none" : "";
+        document.getElementById("modalFooterCerrar").style.display = solo ? "none" : "";
         document.getElementById("customModal").style.display = "flex";
     }
 
@@ -1643,11 +1648,66 @@ function nombreSinCodigoDist(nombre){
     return String(nombre || "").replace(/\s*-\s*[A-Z]{2}\s*$/, "").trim();
 }
 function avisoDistribuidor(titulo, texto){
-    abrirModal('<div class="text-center"><h3 class="mb-3">' + titulo + '</h3><p style="font-size:1rem;">' + texto + '</p><button class="btn btn-primary mt-2" onclick="cerrarModal()">Aceptar</button></div>');
+    abrirModal('<div class="text-center"><h3 class="mb-3">' + titulo + '</h3><p style="font-size:1rem;">' + texto + '</p><button class="btn btn-primary mt-2" onclick="cerrarModal()">Aceptar</button></div>', { soloBoton: true });
+}
+
+// COMPARTIR DEL DISTRIBUIDOR: solo en modo distribuidor. El mensaje sale
+// al número del cliente final guardado en esa tarjeta; si no hay número,
+// avisa que primero hay que agregarlo. Activas y vencidas comparten.
+// COPIAR: solo en activas y próximas a vencer (diff >= 0), nunca en
+// vencidas; copia titular, correo, clave, perfil, PIN, inicio y fin.
+function mensajeCompartirDistribuidor(s){
+    var nombreDist = MODO_PANEL.nombreDistribuidor || "";
+    var fechaHoy = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    var fInicio = String(s.inicio || "").split('-').reverse().join('/');
+    var fFin = String(s.fin || "").split('-').reverse().join('/');
+    // Firma: hasta "Servicio prestado por MultiEntretenimiento BC." (la lleva el mensaje activo y el de renovación).
+    var pieFirma = "%0A%0A_Mensaje enviado por: " + nombreDist + "._%0A_Servicio prestado por MultiEntretenimiento BC._";
+    // Centro de ayuda y garantía: solo el mensaje de cuenta activa. La renovación es solo avisar que venció.
+    var pieAyuda = "%0A%0A\ud83d\udca1 *CENTRO DE AYUDA Y GESTIÓN* \ud83d\udca1%0A%0ATienes disponible un panel, la plataforma de autogestión: https://multibc2025.github.io/codigosNT-bc/inicio-clientes/ _Desde aquí puedes revisar tus cuentas activas, consultar tus vencimientos, realizar renovaciones al instante, autogestionar tu hogar de manera rápida y sencilla y en tiempo real._ *(Tu ingreso personalizado es con tu número de WhatsApp.)* También puedes activar el hogar de Netflix cuando se requiera.%0A%0A\ud83d\udca1 Toda cuenta tiene garantía dentro del tiempo del servicio. Si llegas a presentar fallos, por favor, repórtalo inmediatamente con el distribuidor para dar solución a la cuenta.";
+    if (s.diff >= 0) {
+        return "Hola Estimado/a *" + s.nombreTitular + "*%0A%0ATu servicio de *" + s.plataforma + "* ha sido activado exitosamente, y ya se encuentra listo para disfrutar a partir de hoy \ud83e\udd29.%0A------------------------------------------------%0A*INFORMACIÓN DEL SERVICIO:*%0A%0A\ud83d\udc49\ud83c\udffb *CONDICIONES:* \ud83d\udcfa Un dispositivo en simultáneo a la vez.%0A\ud83d\udc49\ud83c\udffb *FECHA DE COMPRA:* " + fInicio + ".%0A\ud83d\udcc5 *LA FECHA DE VENCIMIENTO ES EL:* " + fFin + ".%0A_*CON UN SERVICIO GARANTIZADO DE: \ud83d\uddd3\ufe0f " + s.diff + " \ud83d\uddd3\ufe0f Días disponibles a partir de hoy " + fechaHoy + ".*_%0A%0AMuchas gracias por su compra, disfruta del servicio adquirido \ud83d\ude0a." + pieFirma + pieAyuda;
+    }
+    var diasVencido = Math.abs(s.diff);
+    return "Hola Estimado/a *" + s.nombreTitular + "*%0A%0APara informarte que tu servicio de *" + s.plataforma + "* *ya venció hace " + diasVencido + " " + (diasVencido === 1 ? "día" : "días") + "*.%0A\uc6c3 El día *" + fFin + "* finalizó el servicio.%0A%0A\u270d(\u25d4\u25e1\u25d4) Por favor confirma si deseas renovar nuevamente el servicio con nosotros.%0AQuedamos muy atentos a tu mensaje de respuesta." + pieFirma;
+}
+function compartirDistribuidor(servicioId){
+    var s = (window._serviciosDist || {})[servicioId];
+    if (!s) return;
+    var reg = MAPA_CLIENTE_FINAL[s.clienteId] || {};
+    var tel = String(reg.telefonoCompleto || reg.telefono || "").replace(/\D/g, "");
+    if (!tel || tel.length < 7) { avisoDistribuidor("Agrega el número primero", "Primero agrega el número del cliente para continuar."); return; }
+    var msg = mensajeCompartirDistribuidor(s);
+    // Igual que el panel admin: se codifica por partes separadas por %0A.
+    var mensajeFinal = msg.split("%0A").map(function(parte){ return encodeURIComponent(parte); }).join("%0A");
+    window.open("https://wa.me/" + tel + "?text=" + mensajeFinal);
+}
+function copiarTextoDistribuidor(texto){
+    function listo(){ avisoDistribuidor("✅ Datos copiados", "Datos copiados exitosamente en tu portapapeles."); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(listo).catch(function(){ copiarTextoRespaldoDistribuidor(texto); listo(); });
+    } else { copiarTextoRespaldoDistribuidor(texto); listo(); }
+}
+function copiarTextoRespaldoDistribuidor(texto){
+    var ta = document.createElement("textarea");
+    ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+}
+function copiarDatosDistribuidor(servicioId){
+    var s = (window._serviciosDist || {})[servicioId];
+    if (!s) return;
+    var fInicio = String(s.inicio || "").split('-').reverse().join('/');
+    var fFin = String(s.fin || "").split('-').reverse().join('/');
+    var texto = "\ud83d\udcfa " + s.plataforma + "\n\ud83d\udc64 " + s.nombreTitular;
+    if (!s.esTV) { texto += "\n\ud83d\udce7 " + s.correo + "\n\ud83d\udd11 " + s.clave; }
+    texto += "\n\ud83d\udc64 Perfil: " + s.perfil + " | \ud83d\udccc PIN: " + s.pin + "\n\n\ud83d\udcc5 Inicio: " + fInicio + "\n\ud83d\udcc5 Fin: " + fFin;
+    copiarTextoDistribuidor(texto);
 }
 function pedirConfirmacionDistribuidor(pregunta, alAceptar){
     window._accionConfirmadaDist = alAceptar;
-    abrirModal('<div class="text-center"><h3 class="mb-3">Confirmar</h3><p style="font-size:1rem;">' + pregunta + '</p><div class="mt-3"><button class="btn btn-primary me-2" onclick="cerrarModal(); if(window._accionConfirmadaDist){ var f = window._accionConfirmadaDist; window._accionConfirmadaDist = null; f(); }">Sí, aceptar</button> <button class="btn btn-outline-secondary" onclick="cerrarModal()">Cancelar</button></div></div>');
+    abrirModal('<div class="text-center"><h3 class="mb-3">Confirmar</h3><p style="font-size:1rem;">' + pregunta + '</p><div class="mt-3"><button class="btn btn-primary me-2" onclick="cerrarModal(); if(window._accionConfirmadaDist){ var f = window._accionConfirmadaDist; window._accionConfirmadaDist = null; f(); }">Sí, aceptar</button> <button class="btn btn-outline-secondary" onclick="cerrarModal()">Cancelar</button></div></div>', { soloBoton: true });
 }
 function seccionNumeroClienteFinal(clienteId, tarjetaId){
     // tarjetaId = id del servicio (unico por tarjeta). Antes se usaba solo el
@@ -1934,6 +1994,9 @@ async function cargarPanelCliente(clientesEncontrados, modoDist) {
             // Netflix TV: sin correo ni clave en la tarjeta, solo perfil y PIN,
             // y abajo un botón a la página de vinculación con el ID del documento.
             const esTV = pName.includes("NETFLIX") && pName.includes("TV");
+            // Datos de esta tarjeta para Compartir/Copiar del distribuidor.
+            if (!window._serviciosDist) window._serviciosDist = {};
+            window._serviciosDist[s.id] = { plataforma: s.plataforma, correo: s.correo, clave: s.clave, perfil: s.perfil, pin: s.pin, inicio: s.inicio, fin: s.fin, diff: s.diff, nombreTitular: s.nombreTitular, clienteId: s.clienteId, esTV: esTV };
             let btnLink = "";
             let msgPruebaAuto = "";
             if(s.diff >= 0) {
@@ -2091,6 +2154,7 @@ btnLink += "<button type='button' onclick='pedirCodigoDisney(\"" + s.correo + "\
                     ${htmlDatos}
                     ${htmlNotas}</div>
                     ${MODO_PANEL.tipo === "distribuidor" && s.clienteId ? `<div id="seccion-num-final-${s.id}" data-cliente-final="${s.clienteId}">${seccionNumeroClienteFinal(s.clienteId, s.id)}</div>` : ""}
+                    ${MODO_PANEL.tipo === "distribuidor" && s.clienteId ? `<div class="mt-2 d-flex gap-2"><button type="button" class="btn btn-success flex-fill fw-bold" style="background-color:#25d366; border:none;" onclick="compartirDistribuidor('${s.id}')">📲 Compartir por WhatsApp</button>${s.diff >= 0 ? `<button type="button" class="btn btn-outline-secondary fw-bold" onclick="copiarDatosDistribuidor('${s.id}')">📋 Copiar</button>` : ""}</div>` : ""}
                     ${btnTV}
                     ${btnWA}
                 </div>
