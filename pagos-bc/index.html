@@ -250,6 +250,33 @@ import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, sendP
 
     let esperando2FA = false;
 
+  // --- ARREGLO FECHA/HORA BE MÓVIL ---
+  // Firebase guarda fecha/hora como texto "19-11-2026" / "19:31:32".
+  // Si alguna vez llegan como Timestamp de Firestore o como Date,
+  // se formatean en español (19-11-2026 y 19:31:32) y nunca se muestra
+  // el texto horrible en inglés ("Thu Nov 19 2026 00:00:00 GMT-0500...").
+  function textoFecha(v) {
+    if (!v) return "";
+    if (v && typeof v.toDate === "function") v = v.toDate();
+    if (v instanceof Date) {
+      const dd = String(v.getDate()).padStart(2, "0");
+      const mm = String(v.getMonth() + 1).padStart(2, "0");
+      return dd + "-" + mm + "-" + v.getFullYear();
+    }
+    return String(v);
+  }
+  function textoHora(v) {
+    if (!v) return "";
+    if (v && typeof v.toDate === "function") v = v.toDate();
+    if (v instanceof Date) {
+      const hh = String(v.getHours()).padStart(2, "0");
+      const mi = String(v.getMinutes()).padStart(2, "0");
+      const ss = String(v.getSeconds()).padStart(2, "0");
+      return hh + ":" + mi + ":" + ss;
+    }
+    return String(v);
+  }
+
   function mostrarTarjeta(idTarjeta) {
     document.getElementById("card-credenciales").style.display = idTarjeta === "card-credenciales" ? "block" : "none";
     document.getElementById("card-recuperar").style.display = idTarjeta === "card-recuperar" ? "block" : "none";
@@ -643,7 +670,7 @@ document.getElementById("btnCompartir").onclick = async () => {
       div.innerHTML = `
         <div class="recibo-info">
           <b>👤 ${r.cliente}</b><br>
-          <small>📅 ${r.fecha} | 🕒 ${r.hora}</small><br>
+          <small>📅 ${textoFecha(r.fecha)} | 🕒 ${textoHora(r.hora)}</small><br>
           <span>${r.convenio} - Ref: ${r.referencia}</span><br>
           <strong style="color:#059669">Valor: $ ${Number(r.valor.toString().replace(/[^0-9]/g, "")).toLocaleString("es-CO")}</strong>
         </div>
@@ -660,8 +687,8 @@ document.getElementById("btnCompartir").onclick = async () => {
         document.getElementById("btn-volver").classList.remove("hidden");
         document.getElementById("out-cliente").innerText = r.cliente;
         document.getElementById("out-empresa").innerText = (r.empresa || "").toUpperCase();
-        document.getElementById("out-fec").innerText = r.fecha;
-        document.getElementById("out-hor").innerText = r.hora;
+        document.getElementById("out-fec").innerText = textoFecha(r.fecha);
+        document.getElementById("out-hor").innerText = textoHora(r.hora);
         document.getElementById("out-conv").innerText = (r.convenio || "").toUpperCase();
         document.getElementById("out-ref").innerText = r.referencia;
         document.getElementById("out-aut").innerText = r.autorizacion;
@@ -713,7 +740,7 @@ document.getElementById("btnCompartir").onclick = async () => {
     div.innerHTML = `
         <div>
             <b>💰 ${data.convenio || "---"}</b> - Ref: ${data.referencia || "---"}<br>
-            <small><b>Fecha:</b> ${data.fecha || ""} ${data.hora || ""}  💲 <b>Por valor de:</b> ${data.compraNeta || ""}</small>
+            <small><b>Fecha:</b> ${textoFecha(data.fecha)} ${textoHora(data.hora)}  💲 <b>Por valor de:</b> ${data.compraNeta || ""}</small>
         </div>
         <button class="btn-save" onclick="window.confirmarRecibo('${docSnap.id}')">✅</button>
         <button class="btn-logout" onclick="window.descartarRecibo('${docSnap.id}')">❌</button>
@@ -752,9 +779,12 @@ window.confirmarRecibo = async (id) => {
             const d = docSnap.data();
             
             // Llenar los campos (Lógica visual)
-            document.getElementById("out-empresa").innerText = "Pago Fácil - Coguasimales";
-            document.getElementById("out-fec").innerText = d.fecha || "---";
-            document.getElementById("out-hor").innerText = d.hora || "---";
+            // ARREGLO BE MÓVIL: la empresa sale del documento en Firebase.
+            // Los de BE traen empresa "BEMÓVIL", los viejos no traen nada
+            // y quedan como antes: "Pago Fácil - Coguasimales".
+            document.getElementById("out-empresa").innerText = (d.empresa || "Pago Fácil - Coguasimales").toUpperCase();
+            document.getElementById("out-fec").innerText = textoFecha(d.fecha) || "---";
+            document.getElementById("out-hor").innerText = textoHora(d.hora) || "---";
             document.getElementById("out-conv").innerText = (d.convenio || "---").toUpperCase();
             document.getElementById("out-ref").innerText = d.referencia || "---";
             document.getElementById("row-aut").classList.remove("hidden");
