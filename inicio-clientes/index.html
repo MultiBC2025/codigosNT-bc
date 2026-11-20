@@ -2848,10 +2848,22 @@ function guardarEncuestaAuto(jobId, correo, encuestaTexto, intento) {
 }
 
 function registrarEventoCodigo(nombre, correo, plataforma, codigo) {
+    // Quién hizo el proceso, para saberlo en el registro:
+    // - cliente final (modo cliente_final): nombre + " (Cliente)"
+    // - distribuidor (modo distribuidor): nombre + " (nombre del distribuidor, ej. Laura Rangel)"
+    // - modo normal (Diego): solo el nombre, como antes.
+    var nombreLog = nombre || "Cliente Panel";
+    if (typeof MODO_PANEL !== "undefined") {
+        if (MODO_PANEL.tipo === "cliente_final") {
+            nombreLog = nombreLog + " (Cliente)";
+        } else if (MODO_PANEL.tipo === "distribuidor" && MODO_PANEL.nombreDistribuidor) {
+            nombreLog = nombreLog + " (" + MODO_PANEL.nombreDistribuidor + ")";
+        }
+    }
     // Usamos 'db' porque es tu variable de Firestore
     if (typeof db !== 'undefined') {
         return db.collection("logs_codigos").add({
-            nombre_cliente: nombre || "Cliente Panel",
+            nombre_cliente: nombreLog,
             correo_cuenta: correo,
             plataforma: plataforma,
             codigo_visto: codigo,
